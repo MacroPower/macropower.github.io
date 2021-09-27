@@ -15,7 +15,7 @@ HTB{B[REDACTED]Z} There were probably a lot of additional ways this one could ha
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ltrace -i -C ./baby
 </code></pre></div><p>We&rsquo;re prompted and can start off by inserting random value, e.g. <code>asd</code>.</p>
 <p>A call to <code>strcmp</code> is intercepted by <code>ltrace</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">strcmp<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;asd\n&#34;</span>, <span style="color:#e6db74">&#34;ab[REDACTED]13\n&#34;</span><span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">strcmp(<span style="color:#e6db74">&#34;asd</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;ab[REDACTED]13</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
 </code></pre></div><p>Let&rsquo;s start by trying to pass <code>ab[REDACTED]13</code>.</p>
 <p>In this case it was just that simple, and we receive the flag.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">HTB{B[REDACTED]Z}
