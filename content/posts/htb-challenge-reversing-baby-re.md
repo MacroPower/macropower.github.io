@@ -22,7 +22,7 @@ We're prompted and can start off by inserting random value, e.g. `asd`.
 
 A call to `strcmp` is intercepted by `ltrace`.
 
-```bash
+```c++
 strcmp("asd\n", "ab[REDACTED]13\n")
 ```
 
