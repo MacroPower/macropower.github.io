@@ -4,19 +4,11 @@ date    = "2021-09-27"
 aliases = ["about-me", "me", "contact"]
 +++
 
-This is basically everything you'd want to know.
-
----
-
 I love open source. I make most of the stuff I do in my free time public on GitHub. There's a lot more detail about my current goals and projects on my [profile](https://github.com/MacroPower).
 
 ---
 
 I have a homelab and am [slowly moving](https://github.com/MacroPower/homelab) to an entirely IaC, all K8s setup with HCloud and several NUCs. I use both unraid and freenas for 100TB+ persistent storage.
-
----
-
-I was into virtual currency before it was cool (TF2 hats in 2011, crypto in 2013). Now that it's cool I don't like it. This is completely unrelated to the fact that I'm still working.
 
 ---
 
