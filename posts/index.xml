@@ -12,12 +12,12 @@ A call to strcmp is intercepted by ltrace.
 strcmp(&amp;#34;asd\n&amp;#34;, &amp;#34;ab[REDACTED]13\n&amp;#34;) Let&amp;rsquo;s start by trying to pass ab[REDACTED]13.
 In this case it was just that simple, and we receive the flag.
 HTB{B[REDACTED]Z} There were probably a lot of additional ways this one could have been solved, and I think I got lucky by starting in this direction.</description><content type="html"><![CDATA[<p>We can start off by running <a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">ltrace</a>, which runs a command and intercepts dynamic library &amp; sys calls.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ltrace -i -C ./baby
-</code></pre></div><p>We&rsquo;re prompted and can start off by inserting random value, e.g. <code>asd</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ltrace -i -C ./baby
+</span></span></code></pre></div><p>We&rsquo;re prompted and can start off by inserting random value, e.g. <code>asd</code>.</p>
 <p>A call to <code>strcmp</code> is intercepted by <code>ltrace</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">strcmp(<span style="color:#e6db74">&#34;asd</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;ab[REDACTED]13</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
-</code></pre></div><p>Let&rsquo;s start by trying to pass <code>ab[REDACTED]13</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>strcmp(<span style="color:#e6db74">&#34;asd</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;ab[REDACTED]13</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>Let&rsquo;s start by trying to pass <code>ab[REDACTED]13</code>.</p>
 <p>In this case it was just that simple, and we receive the flag.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">HTB{B[REDACTED]Z}
-</code></pre></div><p>There were probably a lot of additional ways this one could have been solved, and I think I got lucky by starting in this direction.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>HTB{B[REDACTED]Z}
+</span></span></code></pre></div><p>There were probably a lot of additional ways this one could have been solved, and I think I got lucky by starting in this direction.</p>
 ]]></content></item></channel></rss>
