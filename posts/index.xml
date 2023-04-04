@@ -1,4 +1,299 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Sun, 02 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>I am building a cluster that includes a Turing Pi (a mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I discovered.
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Linkerd Multi-cluster Without a Public IP</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip/</guid><description>Recently, I&amp;rsquo;ve set up Linkerd in my homelab. One of the features I was really interested in was Multi-cluster communication. This allows you to mirror services between clusters. Meaning, apps in one cluster can communicate with services in another cluster, as if they were in the same cluster.
+Once you have Linkerd set up, it&amp;rsquo;s pretty easy to set up multi-cluster under ideal conditions. However, many problems arise if one of the clusters does not have the ability to create services of type LoadBalancer (with a Public, or otherwise routable IP address).</description><content type="html"><![CDATA[<p>Recently, I&rsquo;ve set up <a href="https://github.com/linkerd/linkerd2">Linkerd</a> in my homelab. One of the features I
+was really interested in was <a href="https://linkerd.io/2.12/tasks/multicluster/">Multi-cluster communication</a>. This
+allows you to mirror services between clusters. Meaning, apps in one cluster can
+communicate with services in another cluster, as if they were in the same
+cluster.</p>
+<p>Once you have Linkerd set up, it&rsquo;s pretty easy to set up multi-cluster under
+ideal conditions. However, many problems arise if one of the clusters does not
+have the ability to create services of type <code>LoadBalancer</code> (with a Public, or
+otherwise routable IP address).</p>
+<h2 id="the-basics">The Basics</h2>
+<p>One thing that was not immediately clear to me, when I was following the
+multi-cluster setup docs for the first time, was how services are mirrored
+bi-directionally between clusters. The docs give examples of how to link a
+theoretical &ldquo;east&rdquo; cluster to a &ldquo;west&rdquo; cluster, which can be done via this
+command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>linkerd --context<span style="color:#f92672">=</span>east multicluster link --cluster-name east |
+</span></span><span style="display:flex;"><span>  kubectl --context<span style="color:#f92672">=</span>west apply -f -
+</span></span></code></pre></div><p>However, this only allows you to mirror services from the &ldquo;east&rdquo; cluster to the
+&ldquo;west&rdquo; cluster. If you want to mirror services from the &ldquo;west&rdquo; cluster to the
+&ldquo;east&rdquo; cluster, you need to run this command a second time, but in the inverse
+order:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>linkerd --context<span style="color:#f92672">=</span>west multicluster link --cluster-name west |
+</span></span><span style="display:flex;"><span>  kubectl --context<span style="color:#f92672">=</span>east apply -f -
+</span></span></code></pre></div><p>This means that if you want bi-directional mirroring between two clusters, each
+cluster needs to have the ability to create services of type <code>LoadBalancer</code>,
+with an IP address that can be reached by the other cluster.</p>
+<p>To say it differently, any clusters acting as a source for service mirrors must
+be routable from any destination clusters. If the source isn&rsquo;t routable, you
+have to find a way to make it so, regardless of the networking situation on the
+other cluster.</p>
+<h2 id="the-recommended-solution">The Recommended Solution</h2>
+<p>Linkerd&rsquo;s <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster docs</a> recommend looking into
+<a href="https://blog.alexellis.io/ingress-for-your-local-kubernetes-cluster/">inlets</a>. The concept is very cool and also pretty simple.</p>
+<p>Basically, in your home / non-routable cluster, you can have a client acting as a sort
+of proxy to any local services. The client establishes a tunnel to a server
+running somewhere accessible from the cloud / routable cluster. This means that you should
+be able to just point Linkerd to the inlets server, and from there it will be
+routed to the client, and then to the previously non-routable Linkerd gateway!</p>
+<p><img src="https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png" alt="diagram"></p>
+<p>However, inlets is no longer the open-source project it once was. The author
+stopped maintaining the open-source version a while ago, before eventually
+deleting all of the source code. Now, it&rsquo;s available for purchase as a monthly
+subscription, with personal licenses starting at $20/month. For me, this is a
+completely infeasible price to pay. There are still parts of the project that
+are open-source, notably <a href="https://github.com/inlets/inlets-operator">inlets-operator</a>, but it spins up an
+entire VPS for the tunnel, which we then have to pay for, when we already have a
+perfectly good K8s cluster we could be hosting it on.</p>
+<p>Luckily, a fork of inlets was created, <a href="https://github.com/cubed-it/inlets">cubed-it/inlets</a>. This will
+allow us to manually create a client in our home / non-routable cluster, and a
+server in our cloud / routable cluster. Again, very luckily, the fork adds
+support for tunneling TCP ports (as opposed to HTTP), which we will need for
+both Linkerd and also the K8s API server.</p>
+<h2 id="my-implementation">My Implementation</h2>
+<p>Conceptually, what I wanted to do was this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>┌────────────────────────────────────────┐     ┌─────────────────────────────────────────┐
+</span></span><span style="display:flex;"><span>│             Cloud Cluster              │  │  │              Home Cluster               │
+</span></span><span style="display:flex;"><span>│                                        │     │                                         │
+</span></span><span style="display:flex;"><span>│ ┌───────────────┐     ┌─────────────┐  │  │  │ ┌─────────────┐      ┌─────────────┐    │
+</span></span><span style="display:flex;"><span>│ │ Inlets Server │◀────│   Ingress   │◀─┼─────┼─│Inlets Client│──┬──▶│   Linkerd   │──┐ │
+</span></span><span style="display:flex;"><span>│ └───────────────┘     └─────────────┘  │  │  │ └─────────────┘  │   │   Gateway   │  │ │
+</span></span><span style="display:flex;"><span>│         ▲                              │     │                  │   └─────────────┘  │ │
+</span></span><span style="display:flex;"><span>│         ├───────────────────┐          │  │  │                  │   ┌─────────────┐  │ │
+</span></span><span style="display:flex;"><span>│         │                   │          │     │                  └──▶│   K8s API   │  │ │
+</span></span><span style="display:flex;"><span>│         │                   │          │  │  │                      └─────────────┘  │ │
+</span></span><span style="display:flex;"><span>│ ┌───────────────┐ ╔══════════════════╗ │     │                      ╔═════════════╗  │ │
+</span></span><span style="display:flex;"><span>│ │Linkerd Service│ ║      Foobar      ║ │  │  │                      ║   Foobar    ║  │ │
+</span></span><span style="display:flex;"><span>│ │    Mirror     │ ║      Mirror      ║─│─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─▶║   Service   ║◀─┘ │
+</span></span><span style="display:flex;"><span>│ └───────────────┘ ╚══════════════════╝ │  │  │                      ╚═════════════╝    │
+</span></span><span style="display:flex;"><span>│         │                   ▲          │     │                                         │
+</span></span><span style="display:flex;"><span>│         └────────Creates────┘          │  │  │                                         │
+</span></span><span style="display:flex;"><span>└────────────────────────────────────────┘     └─────────────────────────────────────────┘
+</span></span></code></pre></div><p>In this implementation, the inlets client and server is entirely contained
+within Kubernetes. This is great, because we don&rsquo;t have to pay anything extra,
+and also it&rsquo;s great from a security perspective because the only thing we need
+to expose outside the cluster is a single endpoint for the tunnel, which can be
+done via our normal ingress.</p>
+<p>I&rsquo;ve created a Helm chart for both the inlets server and client, which works
+with <a href="https://github.com/cubed-it/inlets">cubed-it/inlets</a>.</p>
+<p>First, add a new namespace in every cluster:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl create namespace inlets
+</span></span></code></pre></div><p>And create a secret in every cluster with the same token:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>token<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span> head -c <span style="color:#ae81ff">16</span> /dev/urandom | shasum | cut -d<span style="color:#e6db74">&#34; &#34;</span> -f1 <span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>kubectl create secret generic linkerd-tunnel-token <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --from-literal<span style="color:#f92672">=</span>token<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>token<span style="color:#e6db74">}</span>
+</span></span></code></pre></div><p>In our cloud cluster, we can use the <code>inlets-server</code> chart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">kustomize.config.k8s.io/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Kustomization</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">helmCharts</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">inlets-server</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">repo</span>: <span style="color:#ae81ff">https://jacobcolvin.com/helm-charts/</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;0.1.1&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">releaseName</span>: <span style="color:#ae81ff">linkerd-tunnel</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">inlets</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">valuesInline</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">inlets</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Port is the main port that serves any HTTP traffic.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Other TCP ports are assigned on the client.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4191</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">disableTransportWrapping</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">tokenSecretName</span>: <span style="color:#ae81ff">linkerd-tunnel-token</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">data-plane</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ClusterIP</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">kube</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6443</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">proxy</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4143</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">admin</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4191</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ingress</span>: {}
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#  main:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#    enabled: true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#    hosts:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#      - host: linkerd-tunnel.example.com</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#        paths:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#          - path: /</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#            pathType: Prefix</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#    tls:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#      - hosts: [linkerd-tunnel.example.com]</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#    annotations: {}</span>
+</span></span></code></pre></div><p>In our home cluster, we can use the <code>inlets-client</code> chart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">kustomize.config.k8s.io/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Kustomization</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">helmCharts</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">inlets-client</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">repo</span>: <span style="color:#ae81ff">https://jacobcolvin.com/helm-charts/</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;0.1.2&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">releaseName</span>: <span style="color:#ae81ff">linkerd-tunnel</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">inlets</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">valuesInline</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">inlets</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># The url points to the ingress of the other cluster.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">url</span>: <span style="color:#ae81ff">wss://linkerd-tunnel.example.com</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Since we don&#39;t want to restrict the hostnames the other cluster can</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># use, strictForwarding should be false.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">strictForwarding</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">tokenSecretName</span>: <span style="color:#ae81ff">linkerd-tunnel-token</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Configure upstreams for Linkerd. Any traffic coming to `match` will</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># be forwarded to `target`. If the `match` value is `tcp:PORT`, the</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># server will automatically create a server listening on that port.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">upstreams</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#75715e"># Accessible on inlets.port / 4191.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">target</span>: <span style="color:#ae81ff">http://linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191</span>
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">match</span>: <span style="color:#ae81ff">tcp:6443</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">target</span>: <span style="color:#ae81ff">kubernetes.default.svc.cluster.local:443</span>
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">match</span>: <span style="color:#ae81ff">tcp:4143</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">target</span>: <span style="color:#ae81ff">linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143</span>
+</span></span></code></pre></div><p>In <em>theory</em>, you would expect to then be able to Link the clusters, just by
+overriding the defaults for the gateway and API server addresses:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>linkerd --context<span style="color:#f92672">=</span>home multicluster link --cluster-name home <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --gateway-addresses <span style="color:#e6db74">&#34;linkerd-tunnel-data-plane.inlets.svc.cluster.local&#34;</span> --gateway-port <span style="color:#ae81ff">4143</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --api-server-address <span style="color:#e6db74">&#34;https://linkerd-tunnel-data-plane.inlets.svc.cluster.local:6443&#34;</span> |
+</span></span><span style="display:flex;"><span>  kubectl --context<span style="color:#f92672">=</span>cloud apply -f -
+</span></span></code></pre></div><p>But this is not the case. There are multiple interactions between the normal
+output of <code>linkerd multicluster link</code> and the inlets tunnel that need to be
+accounted for.</p>
+<p>First of all, the <code>linkerd multicluster link</code> command creates a <code>probe-gateway</code>
+service, which points to the gateway&rsquo;s health endpoint. However, in this case,
+that health endpoint is actually another Kubernetes service. Now, I&rsquo;m not
+confident on exactly why this is, but this is not a configuration that works in
+Kubernetes. The <code>probe-gateway</code> service will time out every time, even though
+the endpoint it points to will work just fine. To work around this issue, we
+need to change the <code>probe-gateway</code> service so that it&rsquo;s of type <code>ExternalName</code>,
+with an <code>externalName</code> of the inlets server service.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">probe-gateway-home</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">linkerd-multicluster</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">mirror.linkerd.io/mirrored-gateway</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">mirror.linkerd.io/cluster-name</span>: <span style="color:#ae81ff">home</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ExternalName</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">externalName</span>: <span style="color:#ae81ff">linkerd-tunnel-data-plane.inlets.svc.cluster.local</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mc-probe</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4191</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span></code></pre></div><p>Once this is done, the <code>linkerd multicluster link</code> command will work, and the
+<code>linkerd multicluster check</code> command will actually succeed as well. However, if
+you then create a service mirror, it will not work. This is because the service
+mirror actually suffers from the same issue. It creates a service that points
+to the gateway&rsquo;s proxy endpoint, which is another Kubernetes service.
+Unfortunately, we can&rsquo;t solve this so easily since the service mirror is
+created dynamically by Linkerd. But, we can get around this issue by changing
+the way that we expose the gateway&rsquo;s proxy endpoint. Instead of using a normal
+service, we can create a <code>LoadBalancer</code> service, which is very annoying, but I
+couldn&rsquo;t find any better workarounds for it. Note that this service does not
+need to be exposed outside the cluster, so don&rsquo;t feel a need to add a firewall
+exception or anything like that.</p>
+<p>This introduces an additional issue. If we already have a <code>LoadBalancer</code> in our
+cluster for the gateway (for services being mirrored in the other direction),
+we can&rsquo;t reuse the same port.</p>
+<p>You can implement all of this by first making a slight modification to the
+upstreams declared in the <code>inlets-client</code> chart, to remap the ports:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">upstreams</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">target</span>: <span style="color:#ae81ff">http://linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">match</span>: <span style="color:#ae81ff">tcp:6443</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">target</span>: <span style="color:#ae81ff">kubernetes.default.svc.cluster.local:443</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">match</span>: <span style="color:#ae81ff">tcp:6143</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">target</span>: <span style="color:#ae81ff">linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143</span>
+</span></span></code></pre></div><p>And also changing the services declared in the <code>inlets-server</code> chart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">inlets</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6191</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">service</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">data-plane</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ClusterIP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">kube</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6443</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">admin</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6191</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">data-plane-lb</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">LoadBalancer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Add any annotations you need, e.g. for MetalLB.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">annotations</span>: {}
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">proxy</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">6143</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span></code></pre></div><p>As a bit of a plus, this means that we can mesh the inlets pods themselves,
+since the <code>linkerd-proxy</code> also used the same ports. You can do this by adding
+<code>linkerd.io/inject: enabled</code> to the namespace annotations:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Namespace</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">inlets</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">linkerd.io/inject</span>: <span style="color:#ae81ff">enabled</span>
+</span></span></code></pre></div><p>The only change you will need to make is on the client. You will also need to
+skip the Linkerd outbound ports, which you can do by adding the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">podAnnotations</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">config.linkerd.io/skip-outbound-ports</span>: <span style="color:#e6db74">&#34;4143,4191&#34;</span>
+</span></span></code></pre></div><p>With these workarounds in place, the architecture looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>┌──────────────────────────────────────────────────────────┐     ┌─────────────────────────────────────┐
+</span></span><span style="display:flex;"><span>│                      Cloud Cluster                       │  │  │            Home Cluster             │
+</span></span><span style="display:flex;"><span>│                                                          │     │                                     │
+</span></span><span style="display:flex;"><span>│ ┌───────────────┐   ┌───────────────┐   ┌─────────────┐  │  │  │ ┌───────────────┐   ┌─────────────┐ │
+</span></span><span style="display:flex;"><span>│ │ Inlets Server │◀──│ Service: 8123 │◀──│   Ingress   │◀─┼─────┼─│ Inlets Client │──▶│   K8s API   │ │
+</span></span><span style="display:flex;"><span>│ └───────────────┘   └───────────────┘   └─────────────┘  │  │  │ └───────────────┘   └─────────────┘ │
+</span></span><span style="display:flex;"><span>│         ▲                                                │     │         │                           │
+</span></span><span style="display:flex;"><span>│         ├─────────────────┬───────────────────┐          │  │  │         │                           │
+</span></span><span style="display:flex;"><span>│         │                 │                   │          │     │         │                           │
+</span></span><span style="display:flex;"><span>│ ┌───────────────┐ ┌───────────────┐ ┌──────────────────┐ │  │  │         │                           │
+</span></span><span style="display:flex;"><span>│ │    K8s API    │ │Gateway Health │ │  Gateway Proxy   │ │     │         └──────────────────┐        │
+</span></span><span style="display:flex;"><span>│ │ Service: 6443 │ │ Service: 6191 │ │ Private LB: 6143 │ │  │  │                            │        │
+</span></span><span style="display:flex;"><span>│ └───────────────┘ └───────────────┘ └──────────────────┘ │     │                            │        │
+</span></span><span style="display:flex;"><span>│         ▲                 ▲                   ▲          │  │  │                            │        │
+</span></span><span style="display:flex;"><span>│         │                 │                   │          │     │                            ▼        │
+</span></span><span style="display:flex;"><span>│ ┌───────────────┐  ┌─────────────┐  ╔══════════════════╗ │  │  │  ╔═════════════╗    ┌─────────────┐ │
+</span></span><span style="display:flex;"><span>│ │Linkerd Service│  │probe-gateway│  ║      Foobar      ║ │     │  ║   Foobar    ║    │   Linkerd   │ │
+</span></span><span style="display:flex;"><span>│ │    Mirror     │─▶│ExternalName │  ║      Mirror      ║─│─ ┼ ─│─▶║   Service   ║◀───│   Gateway   │ │
+</span></span><span style="display:flex;"><span>│ └───────────────┘  └─────────────┘  ╚══════════════════╝ │     │  ╚═════════════╝    └─────────────┘ │
+</span></span><span style="display:flex;"><span>│                                                          │  │  │                                     │
+</span></span><span style="display:flex;"><span>└──────────────────────────────────────────────────────────┘     └─────────────────────────────────────┘
+</span></span></code></pre></div><p>If you would like to see my exact and up-to-date implementation of everything
+above, check out my homelab repo:</p>
+<ul>
+<li><a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></li>
+</ul>
+<h2 id="other-options">Other Options</h2>
+<p>There are tons of other avenues that could be explored for this. I went down
+this particular path because it was recommended in the Linkerd docs. However,
+basically any solution that would allow our cloud cluster to talk directly to
+our homelab would have worked. For example, setting up something like Wireguard
+would also have probably been a very reasonable solution.</p>
+<p>There are also other options for multi-cluster communication, besides Linkerd.
+However, I believe they will all have the same or worse networking requirements.
+For example, some solutions require that all individual nodes be routable across
+all clusters.</p>
+<h2 id="future-work">Future Work</h2>
+<ul>
+<li>
+<p>I don&rsquo;t think there&rsquo;s any reason why a K8s provisioner couldn&rsquo;t be added to
+<a href="https://github.com/inlets/inlets-operator">inlets-operator</a>, which means we wouldn&rsquo;t have to use the
+forked version of inlets.</p>
+</li>
+<li>
+<p>There may also be a way to modify the service mirrors created by
+<a href="https://github.com/linkerd/linkerd2">Linkerd</a>, such that they can be directly routed through the tunnel,
+instead of having to hit a LoadBalancer first, e.g. by creating them as type
+<code>ExternalName</code>.</p>
+</li>
+</ul>
+]]></content></item><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>I am building a cluster that includes a Turing Pi (a mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I discovered.
 As of writing, I have made a purchase (I went with the MyElectronics chassis) and am waiting for it to arrive.</description><content type="html"><![CDATA[<p>I am building a cluster that includes a <a href="https://turingpi.com/">Turing Pi</a> (a
 mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put
 both of these in a single chassis to save space, which is possible with a &ldquo;dual
