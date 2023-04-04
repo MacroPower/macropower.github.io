@@ -5,18 +5,24 @@ lastmod     = "2023-04-03 21:30"
 type        = ["posts", "post"]
 series      = ["My Homelab"]
 
-title = "Linkerd Multi-cluster Without a Public IP"
-description = "Linkerd Multi-cluster communication is a great feature, but using it in scenarios where at least one cluster does not have a public IP address can be tricky. In this article, I'll cover how I tackled this issue in my homelab."
-slug = "linkerd-multicluster-without-a-public-ip"
+title = "Linkerd Multi-cluster Without a Public IP Address"
+slug = "linkerd-multicluster-without-a-public-ip-addr"
+description = """
+Linkerd multi-cluster communication is a great feature, but using it in \
+scenarios where at least one cluster does not have a public IP address can be \
+tricky. In this article, I'll cover how I tackled this issue in my homelab. \
+"""
 
-keywords = ["Homelab", "Kubernetes", "K8s", "Linkerd", "Multi-cluster"]
+keywords = [
+  "Homelab", "Kubernetes", "K8s", "Linkerd", "Multi-cluster", "Inlets"
+]
 +++
 
-Recently, I've set up [Linkerd][linkerd] in my homelab. One of the features I
-was really interested in was [Multi-cluster communication][multi-cluster]. This
-allows you to mirror services between clusters. Meaning, apps in one cluster can
-communicate with services in another cluster, as if they were in the same
-cluster.
+Recently, I've set up [Linkerd][linkerd] in my [homelab][homelab]. One of the
+features I was really interested in was [multi-cluster communication][multi-cluster].
+This allows you to mirror services between clusters. Meaning, apps in one
+cluster can communicate with services in another cluster, as if they were in the
+same cluster.
 
 Once you have Linkerd set up, it's pretty easy to set up multi-cluster under
 ideal conditions. However, many problems arise if one of the clusters does not
@@ -26,10 +32,10 @@ otherwise routable IP address).
 ## The Basics
 
 One thing that was not immediately clear to me, when I was following the
-multi-cluster setup docs for the first time, was how services are mirrored
-bi-directionally between clusters. The docs give examples of how to link a
-theoretical "east" cluster to a "west" cluster, which can be done via this
-command:
+[multi-cluster setup docs][multi-cluster] for the first time, was how services
+are mirrored bi-directionally between clusters. The docs give examples of how to
+link a theoretical "east" cluster to a "west" cluster, which can be done via
+this command:
 
 ```bash
 linkerd --context=east multicluster link --cluster-name east |
@@ -60,11 +66,12 @@ other cluster.
 Linkerd's [multi-cluster docs][multi-cluster] recommend looking into
 [inlets][inlets-alexellis]. The concept is very cool and also pretty simple.
 
-Basically, in your home / non-routable cluster, you can have a client acting as a sort
-of proxy to any local services. The client establishes a tunnel to a server
-running somewhere accessible from the cloud / routable cluster. This means that you should
-be able to just point Linkerd to the inlets server, and from there it will be
-routed to the client, and then to the previously non-routable Linkerd gateway!
+Basically, in your home / non-routable cluster, you can have a client acting as
+a sort of proxy to any local services. The client establishes a tunnel to a
+server running somewhere accessible from the cloud / routable cluster. This
+means that you should be able to just point Linkerd to the inlets server, and
+from there it will be routed to the client, and then to the previously
+non-routable Linkerd gateway!
 
 ![diagram](https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png)
 
@@ -303,6 +310,27 @@ service:
         protocol: TCP
 ```
 
+And the `probe-gateway` service that we changed, we need to change it again for
+the new `mc-probe` port:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-gateway-home
+  namespace: linkerd-multicluster
+  labels:
+    mirror.linkerd.io/mirrored-gateway: "true"
+    mirror.linkerd.io/cluster-name: home
+spec:
+  type: ExternalName
+  externalName: linkerd-tunnel-data-plane.inlets.svc.cluster.local
+  ports:
+  - name: mc-probe
+    port: 6191 # <-- The new port.
+    protocol: TCP
+```
+
 As a bit of a plus, this means that we can mesh the inlets pods themselves,
 since the `linkerd-proxy` also used the same ports. You can do this by adding
 `linkerd.io/inject: enabled` to the namespace annotations:
@@ -348,6 +376,15 @@ With these workarounds in place, the architecture looks like this:
 │ └───────────────┘  └─────────────┘  ╚══════════════════╝ │     │  ╚═════════════╝    └─────────────┘ │
 │                                                          │  │  │                                     │
 └──────────────────────────────────────────────────────────┘     └─────────────────────────────────────┘
+```
+
+Now we can link the two clusters (but for real this time):
+
+```bash
+linkerd --context=home multicluster link --cluster-name home \
+    --gateway-addresses "<The address of your LoadBalancer>" --gateway-port 6143 \
+    --api-server-address "https://linkerd-tunnel-data-plane.inlets.svc.cluster.local:6443" |
+  kubectl --context=cloud apply -f -
 ```
 
 If you would like to see my exact and up-to-date implementation of everything
