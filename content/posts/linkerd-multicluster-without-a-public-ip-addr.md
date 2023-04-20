@@ -1,7 +1,7 @@
 +++
 categories  = ["Homelab", "Kubernetes", "K8s"]
 date        = "2023-04-03"
-lastmod     = "2023-04-20 18:00"
+lastmod     = "2023-04-20 19:50"
 type        = ["posts", "post"]
 series      = ["My Homelab"]
 
@@ -18,7 +18,7 @@ keywords = [
 ]
 +++
 
-Recently, I've set up [Linkerd][linkerd] in my [homelab][homelab], and one of
+Recently, I've set up [Linkerd][linkerd] in my homelab, and one of
 the features I was really interested in was [multi-cluster communication][multi-cluster].
 This allows you to mirror services between clusters. Meaning, apps in one
 cluster can communicate with services in another cluster, as if they were in the
@@ -35,6 +35,9 @@ through my design and implementation process, discuss the challenges I faced,
 and share the workarounds I came up with to make everything run smoothly.
 Additionally, I'll explore some alternative options for multi-cluster
 communication and potential improvements to my current setup.
+
+> My exact and up-to-date implementation of everything in this article can be
+> found in my homelab repo! https://github.com/MacroPower/homelab
 
 ## The Basics
 
@@ -240,7 +243,7 @@ But this is not the case. There are multiple interactions between the normal
 output of `linkerd multicluster link` and the inlets tunnel that need to be
 accounted for.
 
-## Fixing the robe-gateway service
+## Fixing the probe-gateway service
 
 First of all, the `linkerd multicluster link` command creates a `probe-gateway`
 service, which points to the gateway's health endpoint. However, in this case,
@@ -407,11 +410,6 @@ linkerd --context=home multicluster link --cluster-name home \
   kubectl --context=cloud apply -f -
 ```
 
-If you would like to see my exact and up-to-date implementation of everything
-above, check out my homelab repo:
-
-- [https://github.com/MacroPower/homelab][homelab]
-
 ## Other Options
 
 There are tons of other avenues that could be explored for this. I went down
@@ -435,6 +433,19 @@ all clusters.
   [Linkerd][linkerd], such that they can be directly routed through the tunnel,
   instead of having to hit a LoadBalancer first, e.g. by creating them as type
   `ExternalName`.
+
+## Links
+
+- Linkerd: [https://github.com/linkerd/linkerd2][linkerd]
+- Linkerd Multi-Cluster: [https://linkerd.io/2.12/tasks/multicluster/][multi-cluster]
+- Inlets: [https://blog.alexellis.io/ingress-for-your-local-kubernetes-cluster/][inlets-alexellis]
+- Inlets Operator: [https://github.com/inlets/inlets-operator][inlets-operator]
+- Inlets Fork by cubed-it: [https://github.com/cubed-it/inlets][inlets-fork]
+
+And finally, again, if you would like to see my exact and up-to-date
+implementation of everything above, check out my homelab repo:
+
+- [https://github.com/MacroPower/homelab][homelab]
 
 [homelab]: https://github.com/MacroPower/homelab
 [linkerd]: https://github.com/linkerd/linkerd2
