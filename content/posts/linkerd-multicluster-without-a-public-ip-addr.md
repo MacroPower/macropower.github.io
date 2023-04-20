@@ -1,7 +1,7 @@
 +++
 categories  = ["Homelab", "Kubernetes", "K8s"]
 date        = "2023-04-03"
-lastmod     = "2023-04-03 21:30"
+lastmod     = "2023-04-20 18:00"
 type        = ["posts", "post"]
 series      = ["My Homelab"]
 
@@ -9,8 +9,8 @@ title = "Linkerd Multi-cluster Without a Public IP Address"
 slug = "linkerd-multicluster-without-a-public-ip-addr"
 description = """
 Linkerd multi-cluster communication is a great feature, but using it in \
-scenarios where at least one cluster does not have a public IP address can be \
-tricky. In this article, I'll cover how I tackled this issue in my homelab. \
+scenarios where one cluster does not have a public IP address can be tricky. \
+In this article, I'll cover how I tackled this issue in my homelab. \
 """
 
 keywords = [
@@ -18,16 +18,23 @@ keywords = [
 ]
 +++
 
-Recently, I've set up [Linkerd][linkerd] in my [homelab][homelab]. One of the
-features I was really interested in was [multi-cluster communication][multi-cluster].
+Recently, I've set up [Linkerd][linkerd] in my [homelab][homelab], and one of
+the features I was really interested in was [multi-cluster communication][multi-cluster].
 This allows you to mirror services between clusters. Meaning, apps in one
 cluster can communicate with services in another cluster, as if they were in the
 same cluster.
 
-Once you have Linkerd set up, it's pretty easy to set up multi-cluster under
-ideal conditions. However, many problems arise if one of the clusters does not
-have the ability to create services of type `LoadBalancer` (with a Public, or
-otherwise routable IP address).
+Setting up multi-cluster communication with Linkerd is straightforward under
+ideal conditions. However, it can be more challenging if one of the clusters
+cannot create services of type `LoadBalancer` (with a public, or otherwise
+routable IP address). This is the case for me, as I have clusters both at home
+and in Hetzner, with my home Kubernetes cluster running behind NAT.
+
+Fortunately, there are ways to work around this! In this post, I'll walk you
+through my design and implementation process, discuss the challenges I faced,
+and share the workarounds I came up with to make everything run smoothly.
+Additionally, I'll explore some alternative options for multi-cluster
+communication and potential improvements to my current setup.
 
 ## The Basics
 
@@ -120,8 +127,12 @@ and also it's great from a security perspective because the only thing we need
 to expose outside the cluster is a single endpoint for the tunnel, which can be
 done via our normal ingress.
 
-I've created a Helm chart for both the inlets server and client, which works
-with [cubed-it/inlets][inlets-fork].
+In this section, I will walk you through my implementation for setting up a
+secure tunnel between my home and cloud Kubernetes clusters using inlets. We
+will be deploying inlets server and client using Helm charts I created for both
+the inlets server and client, which works with [cubed-it/inlets][inlets-fork],
+and then addressing some of the challenges encountered with Linkerd during the
+process.
 
 First, add a new namespace in every cluster:
 
@@ -229,6 +240,8 @@ But this is not the case. There are multiple interactions between the normal
 output of `linkerd multicluster link` and the inlets tunnel that need to be
 accounted for.
 
+## Fixing the robe-gateway service
+
 First of all, the `linkerd multicluster link` command creates a `probe-gateway`
 service, which points to the gateway's health endpoint. However, in this case,
 that health endpoint is actually another Kubernetes service. Now, I'm not
@@ -258,16 +271,19 @@ spec:
 
 Once this is done, the `linkerd multicluster link` command will work, and the
 `linkerd multicluster check` command will actually succeed as well. However, if
-you then create a service mirror, it will not work. This is because the service
-mirror actually suffers from the same issue. It creates a service that points
-to the gateway's proxy endpoint, which is another Kubernetes service.
-Unfortunately, we can't solve this so easily since the service mirror is
-created dynamically by Linkerd. But, we can get around this issue by changing
-the way that we expose the gateway's proxy endpoint. Instead of using a normal
-service, we can create a `LoadBalancer` service, which is very annoying, but I
-couldn't find any better workarounds for it. Note that this service does not
-need to be exposed outside the cluster, so don't feel a need to add a firewall
-exception or anything like that.
+you then create a service mirror, it will not work.
+
+## Fixing the service mirror
+
+The service mirror suffers from the same issue as the probe gateway. It creates
+a service that points to the gateway's proxy endpoint, which is another
+Kubernetes service. Unfortunately, we can't solve this so easily since the
+service mirror is created dynamically by Linkerd. But, we can get around this
+issue by changing the way that we expose the gateway's proxy endpoint. Instead
+of using a normal service, we can create a `LoadBalancer` service, which is very
+annoying, but I couldn't find any better workarounds for it. Note that this
+service does not need to be exposed outside the cluster, so don't feel a need to
+add a firewall exception or anything like that.
 
 This introduces an additional issue. If we already have a `LoadBalancer` in our
 cluster for the gateway (for services being mirrored in the other direction),
@@ -331,9 +347,11 @@ spec:
     protocol: TCP
 ```
 
-As a bit of a plus, this means that we can mesh the inlets pods themselves,
-since the `linkerd-proxy` also used the same ports. You can do this by adding
-`linkerd.io/inject: enabled` to the namespace annotations:
+## Meshing the inlets pods
+
+As a bit of a plus, using different ports from `linkerd-proxy` means that we can
+mesh the inlets pods themselves. You can do this by adding `linkerd.io/inject:
+enabled` to the namespace annotations:
 
 ```yaml
 apiVersion: v1
@@ -352,7 +370,9 @@ podAnnotations:
   config.linkerd.io/skip-outbound-ports: "4143,4191"
 ```
 
-With these workarounds in place, the architecture looks like this:
+## Linking the clusters
+
+With all these workarounds in place, the architecture looks like this:
 
 ```text
 ┌──────────────────────────────────────────────────────────┐     ┌─────────────────────────────────────┐
