@@ -1,0 +1,22 @@
+.highlight pre {
+    border-radius: .5em;
+    border: 0.1em solid #545454;
+    box-shadow: none;
+}
+
+.highlight pre code {
+    display: inline-block;
+    font-size: 0.8rem;
+    line-height: 1.2rem;
+    text-shadow: none;
+}
+
+.highlight pre code[data-lang="text"] {
+    display: inline-block;
+    font-family: Consolas, monospace;
+    letter-spacing: -0.1rem;
+    line-height: 0.9rem;
+    font-size: 1rem;
+    text-shadow: none;
+    opacity: 1;
+}
