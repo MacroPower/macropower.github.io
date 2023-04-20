@@ -1,5 +1,5 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Linkerd Multi-cluster Without a Public IP Address</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</guid><description>Recently, I&amp;rsquo;ve set up Linkerd in my homelab, and one of the features I was really interested in was multi-cluster communication. This allows you to mirror services between clusters. Meaning, apps in one cluster can communicate with services in another cluster, as if they were in the same cluster.
-Setting up multi-cluster communication with Linkerd is straightforward under ideal conditions. However, it can be more challenging if one of the clusters cannot create services of type LoadBalancer (with a public, or otherwise routable IP address).</description><content type="html"><![CDATA[<p>Recently, I&rsquo;ve set up <a href="https://github.com/linkerd/linkerd2">Linkerd</a> in my <a href="https://github.com/MacroPower/homelab">homelab</a>, and one of
+Setting up multi-cluster communication with Linkerd is straightforward under ideal conditions. However, it can be more challenging if one of the clusters cannot create services of type LoadBalancer (with a public, or otherwise routable IP address).</description><content type="html"><![CDATA[<p>Recently, I&rsquo;ve set up <a href="https://github.com/linkerd/linkerd2">Linkerd</a> in my homelab, and one of
 the features I was really interested in was <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster communication</a>.
 This allows you to mirror services between clusters. Meaning, apps in one
 cluster can communicate with services in another cluster, as if they were in the
@@ -14,6 +14,10 @@ through my design and implementation process, discuss the challenges I faced,
 and share the workarounds I came up with to make everything run smoothly.
 Additionally, I&rsquo;ll explore some alternative options for multi-cluster
 communication and potential improvements to my current setup.</p>
+<blockquote>
+<p>My exact and up-to-date implementation of everything in this article can be
+found in my homelab repo! <a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></p>
+</blockquote>
 <h2 id="the-basics">The Basics</h2>
 <p>One thing that was not immediately clear to me, when I was following the
 <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster setup docs</a> for the first time, was how services
@@ -173,7 +177,7 @@ overriding the defaults for the gateway and API server addresses:</p>
 </span></span></code></pre></div><p>But this is not the case. There are multiple interactions between the normal
 output of <code>linkerd multicluster link</code> and the inlets tunnel that need to be
 accounted for.</p>
-<h2 id="fixing-the-robe-gateway-service">Fixing the robe-gateway service</h2>
+<h2 id="fixing-the-probe-gateway-service">Fixing the probe-gateway service</h2>
 <p>First of all, the <code>linkerd multicluster link</code> command creates a <code>probe-gateway</code>
 service, which points to the gateway&rsquo;s health endpoint. However, in this case,
 that health endpoint is actually another Kubernetes service. Now, I&rsquo;m not
@@ -300,12 +304,7 @@ skip the Linkerd outbound ports, which you can do by adding the following:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --gateway-addresses <span style="color:#e6db74">&#34;&lt;The address of your LoadBalancer&gt;&#34;</span> --gateway-port <span style="color:#ae81ff">6143</span> <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --api-server-address <span style="color:#e6db74">&#34;https://linkerd-tunnel-data-plane.inlets.svc.cluster.local:6443&#34;</span> |
 </span></span><span style="display:flex;"><span>  kubectl --context<span style="color:#f92672">=</span>cloud apply -f -
-</span></span></code></pre></div><p>If you would like to see my exact and up-to-date implementation of everything
-above, check out my homelab repo:</p>
-<ul>
-<li><a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></li>
-</ul>
-<h2 id="other-options">Other Options</h2>
+</span></span></code></pre></div><h2 id="other-options">Other Options</h2>
 <p>There are tons of other avenues that could be explored for this. I went down
 this particular path because it was recommended in the Linkerd docs. However,
 basically any solution that would allow our cloud cluster to talk directly to
@@ -328,6 +327,19 @@ forked version of inlets.</p>
 instead of having to hit a LoadBalancer first, e.g. by creating them as type
 <code>ExternalName</code>.</p>
 </li>
+</ul>
+<h2 id="links">Links</h2>
+<ul>
+<li>Linkerd: <a href="https://github.com/linkerd/linkerd2">https://github.com/linkerd/linkerd2</a></li>
+<li>Linkerd Multi-Cluster: <a href="https://linkerd.io/2.12/tasks/multicluster/">https://linkerd.io/2.12/tasks/multicluster/</a></li>
+<li>Inlets: <a href="https://blog.alexellis.io/ingress-for-your-local-kubernetes-cluster/">https://blog.alexellis.io/ingress-for-your-local-kubernetes-cluster/</a></li>
+<li>Inlets Operator: <a href="https://github.com/inlets/inlets-operator">https://github.com/inlets/inlets-operator</a></li>
+<li>Inlets Fork by cubed-it: <a href="https://github.com/cubed-it/inlets">https://github.com/cubed-it/inlets</a></li>
+</ul>
+<p>And finally, again, if you would like to see my exact and up-to-date
+implementation of everything above, check out my homelab repo:</p>
+<ul>
+<li><a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></li>
 </ul>
 ]]></content></item><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>I am building a cluster that includes a Turing Pi (a mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I discovered.
 As of writing, I have made a purchase (I went with the MyElectronics chassis) and am waiting for it to arrive.</description><content type="html"><![CDATA[<p>I am building a cluster that includes a <a href="https://turingpi.com/">Turing Pi</a> (a
