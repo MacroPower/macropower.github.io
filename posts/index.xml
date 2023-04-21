@@ -328,7 +328,8 @@ instead of having to hit a LoadBalancer first, e.g. by creating them as type
 <code>ExternalName</code>.</p>
 </li>
 </ul>
-<h2 id="links">Links</h2>
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope this was helpful. To learn more, you can check out the following links:</p>
 <ul>
 <li>Linkerd: <a href="https://github.com/linkerd/linkerd2">https://github.com/linkerd/linkerd2</a></li>
 <li>Linkerd Multi-Cluster: <a href="https://linkerd.io/2.12/tasks/multicluster/">https://linkerd.io/2.12/tasks/multicluster/</a></li>
@@ -341,6 +342,7 @@ implementation of everything above, check out my homelab repo:</p>
 <ul>
 <li><a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></li>
 </ul>
+<p> </p>
 ]]></content></item><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>I am building a cluster that includes a Turing Pi (a mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I discovered.
 As of writing, I have made a purchase (I went with the MyElectronics chassis) and am waiting for it to arrive.</description><content type="html"><![CDATA[<p>I am building a cluster that includes a <a href="https://turingpi.com/">Turing Pi</a> (a
 mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put

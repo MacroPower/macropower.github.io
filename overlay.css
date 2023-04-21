@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Fira Code';
+    src: url('/FiraCode-VariableFont_wght.ttf')
+}
+
 .highlight pre {
     border-radius: .5em;
     border: 0.1em solid #545454;
@@ -5,15 +10,16 @@
 }
 
 .highlight pre code {
-    display: inline-block;
-    font-size: 0.8rem;
-    line-height: 1.2rem;
+    display: block;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    line-height: 1.25rem;
     text-shadow: none;
 }
 
 .highlight pre code[data-lang="text"] {
-    display: inline-block;
-    font-family: Consolas, monospace;
+    display: block;
+    font-family: 'Fira Code', monospace;
     letter-spacing: -0.1rem;
     line-height: 0.9rem;
     font-size: 1rem;
