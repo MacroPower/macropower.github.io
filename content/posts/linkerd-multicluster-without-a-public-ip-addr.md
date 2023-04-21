@@ -434,7 +434,9 @@ all clusters.
   instead of having to hit a LoadBalancer first, e.g. by creating them as type
   `ExternalName`.
 
-## Links
+## Conclusion
+
+I hope this was helpful. To learn more, you can check out the following links:
 
 - Linkerd: [https://github.com/linkerd/linkerd2][linkerd]
 - Linkerd Multi-Cluster: [https://linkerd.io/2.12/tasks/multicluster/][multi-cluster]
@@ -446,6 +448,8 @@ And finally, again, if you would like to see my exact and up-to-date
 implementation of everything above, check out my homelab repo:
 
 - [https://github.com/MacroPower/homelab][homelab]
+
+&nbsp;
 
 [homelab]: https://github.com/MacroPower/homelab
 [linkerd]: https://github.com/linkerd/linkerd2
