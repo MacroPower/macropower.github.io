@@ -1,7 +1,7 @@
 baseURL      = "https://jacobcolvin.com"
 title        = "Jacob Colvin"
 languageCode = "en-us"
-theme        = ["hello-friend-ng", "hugo-embed-pdf-shortcode"]
+theme        = ["hello-friend-ng"]
 
 PygmentsCodeFences = true
 PygmentsStyle      = "monokai"
