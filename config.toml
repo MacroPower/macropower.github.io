@@ -48,6 +48,9 @@ disableHugoGeneratorInject = false
   series   = "series"
 
 [params]
+  [params.author]
+    name = "Jacob Colvin"
+
   dateform        = "Jan 2, 2006"
   dateformShort   = "Jan 2"
   dateformNum     = "2006-01-02"
@@ -78,7 +81,7 @@ disableHugoGeneratorInject = false
   # 
   # This options enables the theme toggle for the theme. 
   # Per default, this option is off. 
-  # The theme is respecting the prefers-color-scheme of the operating systeme. 
+  # The theme is respecting the prefers-color-scheme of the operating system. 
   # With this option on, the page user is able to set the scheme he wants. 
   enableThemeToggle = true
 
@@ -106,14 +109,18 @@ disableHugoGeneratorInject = false
   #
   justifyContent = false  # Set "text-align: justify" to .post-content.
 
+  # Integrate Plausible.io
+  # plausibleDataDomain = 'test.com'
+  # plausibleScriptSource = 'https://plausible.io/js/script.js'
+
   # Custom footer 
   # If you want, you can easily override the default footer with your own content. 
   #
   [params.footer]
-    trademark = true
-    rss       = true
+    trademark = 2024
+    rss = true
     copyright = true
-    author    = true
+    author = true
 
     topText = []
     bottomText = [
@@ -124,22 +131,36 @@ disableHugoGeneratorInject = false
   # Colors for favicons
   #
   [params.favicon.color]
-    mask          = "#1b1c1d"
+    mask = "#1b1c1d"
     msapplication = "#1b1c1d"
-    theme         = "#1b1c1d"
+    theme = "#1b1c1d"
 
   [params.logo]
     logoMark     = ">"
     logoText     = "$ cd /home/"
     logoHomeLink = "/"
-    logoCursorPathname = true
     # Set true to remove the logo cursor entirely.
     # logoCursorDisabled = false
     # Set to a valid CSS color to change the cursor in the logo.
     # logoCursorColor    = "#67a2c9"
     # Set to a valid CSS time value to change the animation duration, "0s" to disable.
     # logoCursorAnimate  = "2s"
+    # Append the current url pathname to logoText 
+    logoCursorPathname = true
 
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+  # Addon: Startpage portrait 
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # Uncomment this if you want a portrait on your start page
+  #
+  # [params.portrait]
+  #   path     = "/img/image.jpg"
+  #   alt      = "Portrait"
+  #   maxWidth = "50px"
+
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+  # Addon: Commento
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   # Commento is more than just a comments widget you can embed — 
   # it’s a return to the roots of the internet. 
   # An internet without the tracking and invasions of privacy. 
@@ -151,14 +172,50 @@ disableHugoGeneratorInject = false
   # [params.commento]
   #   url = ""
 
-  # Uncomment this if you want a portrait on your start page
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+  # Addon: Utteranc.es
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # Utteranc.es is a lightweight comments widget built on GitHub issues.
+  # See https://utteranc.es/ for documentation
+  # Uncomment this to enable Utteranc.es.
   #
-  # [params.portrait]
-  #   path     = "/img/image.jpg"
-  #   alt      = "Portrait"
-  #   maxWidth = "50px"
+  # [params.utterances]
+  #   Your GitHub repository
+  #
+  #   repository = ""
+  #
+  #   label used for GitHub issues
+  #
+  #   label      = ""
+  # 
+  #   Blog Post <-> Issue mapping. This parameter is optional. Possible values are:
+  #      - pathname
+  #      - url
+  #      - title
+  #      - og:title
+  #      - issue number
+  #      - specific term
+  #
+  #   issueTerm  = ""
+  #
+  #   Theme used: possible values are:
+  #      - github-light
+  #      - github-dark
+  #      - preferred-color-scheme
+  #      - github-dark-orange
+  #      - icy-dark
+  #      - dark-blue
+  #      - photon-dark
+  #      - boxy-light
+  #      - gruvbox-dark
+  #
+  #   theme      = ""
+  # 
 
-  # Social icons
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+  # Addon: Social icons
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #
   [[params.social]]
     name = "github"
     url  = "https://github.com/MacroPower"
@@ -199,13 +256,13 @@ disableHugoGeneratorInject = false
   #   name = "twitch"
   #   url  = "https://www.twitch.tv/macropower"
 
-  [[params.social]]
-    name = "patreon"
-    url  = "https://www.patreon.com/macropower"
+  # [[params.social]]
+  #   name = "patreon"
+  #   url  = "https://www.patreon.com/macropower"
 
-  [[params.social]]
-    name = "opencollective"
-    url  = "https://opencollective.com/jacob-colvin"
+  # [[params.social]]
+  #   name = "opencollective"
+  #   url  = "https://opencollective.com/jacob-colvin"
 
   [[params.social]]
     name = "discogs"
@@ -215,11 +272,16 @@ disableHugoGeneratorInject = false
     name = "reddit"
     url  = "https://www.reddit.com/user/macropower"
 
+  # [[params.social]]
+  #   name = "email"
+  #   url  = "mailto:nobody@example.com"
+
 [languages]
   [languages.en]
-    subtitle  = "My Website"
     weight    = 1
     copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+  [languages.en.params]
+    subtitle  = "My Website"
 
 [menu]
   [[menu.main]]
