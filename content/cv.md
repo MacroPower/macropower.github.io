@@ -11,4 +11,6 @@ If we embed the release sadly we have to deal with
 auth, a bunch of CORS stuff, and rate limits.
 -->
 
-{{< embed-pdf url="/files/ColvinJacobCV.pdf" hidePaginator="false" >}}
+{{< embed-pdf url="/files/ColvinJacobCV.pdf" hidePaginator="true" >}}
+
+[\[physically printable version\]](/files/ColvinJacobCV-A4Compatible.pdf)
