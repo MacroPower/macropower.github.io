@@ -1,7 +1,6 @@
 +++
 categories  = ["Homelab", "Kubernetes", "K8s", "Hardware"]
 date        = "2023-04-02"
-lastmod     = "2023-04-02 14:00"
 type        = ["posts", "post"]
 series      = ["My Homelab"]
 

@@ -1,7 +1,6 @@
 +++
 categories  = ["SRE", "Just-for-fun"]
 date        = "2021-07-30"
-lastmod     = "2021-07-30 08:00"
 type        = ["posts", "post"]
 
 title = "How to use Grafana and Prometheus to Rickroll your friends (or enemies)"

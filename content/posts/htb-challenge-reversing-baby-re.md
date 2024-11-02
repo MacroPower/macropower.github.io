@@ -1,7 +1,6 @@
 +++
 categories  = ["HTB", "HTB-Challenge", "Reversing"]
 date        = "2020-10-24"
-lastmod     = "2020-10-24 17:23"
 type        = ["posts", "post"]
 series      = ["HTB Writeups"]
 
