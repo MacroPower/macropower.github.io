@@ -36,9 +36,6 @@ disableHugoGeneratorInject = false
 [permalinks]
   posts = "/posts/:year/:month/:title/"
 
-[author]
-  name = "Jacob Colvin"
-
 [blackfriday]
   hrefTargetBlank = true
 
