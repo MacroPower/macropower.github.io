@@ -1,4 +1,4 @@
-# TrueNAS Multi-Cluster Scaling with Liqo
+# TrueNAS Multi-Cluster Scaling with Cilium & Liqo
 
 A while ago I made the decision to move all my NAS to TrueNAS SCALE. I knew that I wanted to use TrueNAS for many reasons, but the reason I chose to use SCALE over Core was purely for its integrated K3s instance. For the past few years, I've been moving my entire homelab to Kubernetes, and I figured that if I could define and manage workloads in an identical way everywhere, it'd just make my life easier in the long run.
 
@@ -28,8 +28,8 @@ Some other things I liked:
 ```
 kubectx admin@home
 
-eval $(liqoctl generate peer-command --context=nas01)
-eval $(liqoctl generate peer-command --context=nas02)
+eval $(liqoctl generate peer-command --only-command --context=nas01)
+eval $(liqoctl generate peer-command --only-command --context=nas02)
 
 # home -> https://liqo-auth.nas01.cin.macro.network
 # home -> https://liqo-auth.nas02.spr.macro.network
