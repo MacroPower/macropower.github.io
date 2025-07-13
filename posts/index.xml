@@ -1,4 +1,133 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Linkerd Multi-cluster Without a Public IP Address</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</guid><description>&lt;p>Recently, I&amp;rsquo;ve set up &lt;a href="https://github.com/linkerd/linkerd2">Linkerd&lt;/a> in my homelab, and one of
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Sun, 13 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Introducing kat: A TUI and rule-based rendering engine for Kubernetes manifests</title><link>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</link><pubDate>Sun, 13 Jul 2025 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</guid><description>&lt;p>I don&amp;rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is &lt;a href="https://k9scli.io/">&lt;code>k9s&lt;/code>&lt;/a>. It&amp;rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.&lt;/p>
+&lt;p>However, when it comes to rendering and validating manifests locally, I found myself frustrated with the existing tools (or lack thereof). For me, I found that working with manifest generators like &lt;code>helm&lt;/code> or &lt;code>kustomize&lt;/code> often involved a repetitive cycle:&lt;/p></description><content type="html"><![CDATA[<p>I don&rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is <a href="https://k9scli.io/"><code>k9s</code></a>. It&rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.</p>
+<p>However, when it comes to rendering and validating manifests locally, I found myself frustrated with the existing tools (or lack thereof). For me, I found that working with manifest generators like <code>helm</code> or <code>kustomize</code> often involved a repetitive cycle:</p>
+<ol>
+<li>Run <code>helm template</code>, <code>kustomize build</code>, or similar commands</li>
+<li>Search through many pages of output looking for specific resources</li>
+<li>Find some issue and make a change to the source files</li>
+<li>Re-run the rendering commands</li>
+<li>Re-run whatever search I originally did</li>
+<li>Find another issue and make a change to the source files</li>
+<li>Repeat ad nauseam</li>
+</ol>
+<p>So, I set out to build something that would make this process easier and more efficient. After a few months of work, I&rsquo;m excited to introduce you to <code>kat</code>!</p>
+<h2 id="what-is-kat">What is <code>kat</code>?</h2>
+<p><code>kat</code> automatically invokes manifest generators like <code>helm</code> or <code>kustomize</code>, and provides a persistent, navigable view of rendered resources, with support for live reloading, integrated validation, and more.</p>
+<p>It is made of two main components, which can be used together or independently:</p>
+<ol>
+<li>A <strong>rule-based engine</strong> for automatically rendering and validating manifests</li>
+<li>A <strong>terminal UI</strong> for browsing and debugging rendered Kubernetes manifests</li>
+</ol>
+<p>Together, these deliver a seamless development experience that maintains context and focus while iterating on Helm charts, Kustomize overlays, and other manifest generators.</p>
+<p><img src="https://github.com/MacroPower/kat/raw/main/docs/assets/demo.gif" alt="demo"></p>
+<blockquote>
+<p>If you&rsquo;re interested in giving <code>kat</code> a try, there are installation and usage instructions available in the repo&rsquo;s README: <a href="https://github.com/macropower/kat">github.com/macropower/kat</a></p></blockquote>
+<h3 id="features">Features</h3>
+<p><strong>Manifest Browsing</strong>: Rather than outputting a single long stream of YAML, <code>kat</code> organizes the output into a browsable list structure. Navigate through any number of rendered resources using their group/kind/ns/name metadata.</p>
+<p><strong>Live Reload</strong>: Just use the <code>-w</code> flag to automatically re-render when you modify source files, without losing your current position or context when the output changes.</p>
+<p><strong>Integrated Validation</strong>: Run tools like <code>kubeconform</code>, <code>kyverno</code>, or custom validators automatically on rendered output through configurable hooks. Additionally, you can define custom &ldquo;plugins&rdquo;, which function the same way as k9s plugins (i.e. commands invoked with a keybind).</p>
+<p><strong>Flexible Configuration</strong>: <code>kat</code> allows you to define profiles for different manifest generators (like Helm, Kustomize, etc.). Profiles can be automatically selected based on output of CEL expressions, allowing <code>kat</code> to adapt to your project structure.</p>
+<p><strong>And Customization</strong>: <code>kat</code> can be configured with your own keybindings, as well as custom themes!</p>
+<p><img src="https://github.com/MacroPower/kat/raw/main/docs/assets/themes.gif" alt="Themes"></p>
+<h2 id="how-do-i-use-it">How do I use it?</h2>
+<p>Let&rsquo;s use a simple example with <code>helm</code> to illustrate how <code>kat</code> works.</p>
+<blockquote>
+<p>Note that configuration for <code>helm</code> is included in kat&rsquo;s <a href="https://github.com/MacroPower/kat/blob/main/pkg/config/config.yaml">default configuration</a>.</p></blockquote>
+<p>First, we need to define a profile for <code>helm</code>. This profile will specify how to render manifests using <code>helm template</code>, as well as:</p>
+<ul>
+<li>Any init, preRender, and/or postRender hooks we want to apply</li>
+<li>Any plugins that should be available in this context</li>
+<li>Any UI settings that should differ from the global config</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># yaml-language-server: $schema=./config.v1beta1.json</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">kat.jacobcolvin.com/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">profiles</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">helm</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">helm</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">args</span>: [<span style="color:#ae81ff">template, ., --generate-name]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>: []
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Reload on edits to YAML and template files.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">source</span>: &gt;-<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      files.filter(f, pathExt(f) in [&#34;.yaml&#34;, &#34;.yml&#34;, &#34;.tpl&#34;])</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Inherit helm environment variables from the caller process.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">envFrom</span>: <span style="color:#75715e">&amp;helmEnvFrom</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">callerRef</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">pattern</span>: <span style="color:#ae81ff">^HELM_.+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">hooks</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Ensure that helm is installed.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">init</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">command</span>: <span style="color:#ae81ff">helm</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">args</span>: [<span style="color:#ae81ff">version]</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Build any helm dependencies before rendering.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">preRender</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">command</span>: <span style="color:#ae81ff">helm</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">args</span>: [<span style="color:#ae81ff">dependency, build]</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">envFrom</span>: <span style="color:#75715e">*helmEnvFrom</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Validate rendered resources with kubeconform.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">postRender</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">command</span>: <span style="color:#ae81ff">kubeconform</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">args</span>: [<span style="color:#e6db74">&#34;-strict&#34;</span>, <span style="color:#e6db74">&#34;-summary&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ui</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Use a custom theme for the helm profile.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">theme</span>: <span style="color:#e6db74">&#34;dracula&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">plugins</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Add a plugin to invoke helm dry-run when `H` is pressed.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">dry-run</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#ae81ff">invoke helm dry-run</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">keys</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">code</span>: <span style="color:#ae81ff">H</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">command</span>: <span style="color:#ae81ff">helm</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">args</span>: [<span style="color:#ae81ff">install, ., -g, --dry-run]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">envFrom</span>: <span style="color:#75715e">*helmEnvFrom</span>
+</span></span></code></pre></div><p>Now, we can use this profile to render manifests. For example, if we have a Helm chart in the current directory, we can run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kat . helm
+</span></span></code></pre></div><p>Next, we can define a <code>rule</code>, so that we automatically select the <code>helm</code> profile when we run <code>kat</code> in a directory containing a helm chart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># yaml-language-server: $schema=./config.v1beta1.json</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">kat.jacobcolvin.com/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">profiles</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># If there is a chart file in the current directory, and</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># it defines `apiVersion: v2`, use the `helm` profile.</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">match</span>: &gt;-<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      files.exists(f,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        pathBase(f) in [&#34;Chart.yaml&#34;, &#34;Chart.yml&#34;] &amp;&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        yamlPath(f, &#34;$.apiVersion&#34;) == &#34;v2&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      )</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">profile</span>: <span style="color:#ae81ff">helm</span>
+</span></span></code></pre></div><p>Now, if we have a Helm chart in the current directory, we can simply run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kat
+</span></span></code></pre></div><p>And <code>kat</code> will automatically select the <code>helm</code> profile, render, and validate the helm chart for us.</p>
+<p>You can continue to define additional profiles and rules to handle other manifest generators like Kustomize, Jsonnet, CUE, KCL, and more. You can also express more complex rules using CEL expressions to match specific project structures or configurations (such as using <a href="https://github.com/allenporter/flux-local">flux-local</a> if your project contains some Fluxtomizations).</p>
+<p>To learn more, check out the <a href="https://github.com/MacroPower/kat">README</a> and kat&rsquo;s <a href="https://github.com/MacroPower/kat/blob/main/docs/CEL.md">CEL Expression Guide</a>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p><code>kat</code> solved my specific workflow problems when working with Kubernetes manifests locally. And while it may not be a perfect fit for everyone, I hope it can help others who find themselves in a similar situation.</p>
+<p>If you&rsquo;re interested in giving it a try, check out the repo here:</p>
+<p><a href="https://github.com/macropower/kat">github.com/macropower/kat</a> (please ⭐ if you like it!)</p>
+<p>Also, a huge thanks to the authors of the following projects (that provided inspiration and/or code):</p>
+<ul>
+<li><a href="https://github.com/derailed/k9s">k9s</a> - <em>A terminal UI to interact with your Kubernetes clusters.</em></li>
+<li><a href="https://github.com/sharkdp/bat">bat</a> - <em>A <code>cat(1)</code> clone with wings.</em></li>
+<li><a href="https://github.com/go-task/task">task</a> - <em>A task runner for Go.</em></li>
+<li><a href="https://github.com/charmbracelet/glow">glow</a> - <em>Render markdown on the CLI, with pizzazz!</em></li>
+<li><a href="https://github.com/charmbracelet/soft-serve">soft-serve</a> - <em>The mighty, self-hostable Git server for the command line.</em></li>
+<li><a href="https://github.com/charmbracelet/wishlist">wishlist</a> - <em>The SSH directory.</em></li>
+<li><a href="https://github.com/sachaos/viddy">viddy</a> - <em>A modern <code>watch</code> command.</em></li>
+<li><a href="https://github.com/charmbracelet/bubbletea">charmbracelet/bubbletea</a> - <em>A powerful TUI framework for Go.</em>
+<ul>
+<li>&hellip;plus many other fantastic libraries from <a href="https://github.com/charmbracelet"><em>charm</em></a></li>
+</ul>
+</li>
+<li><a href="https://github.com/alecthomas/chroma">alecthomas/chroma</a> - <em>A general-purpose syntax highlighter in pure Go.</em></li>
+<li><a href="https://github.com/google/cel-go">google/cel-go</a> - <em>A fast, portable, and safe expression evaluation engine.</em></li>
+<li><a href="https://github.com/goccy/go-yaml">goccy/go-yaml</a> - <em>YAML support for Go.</em></li>
+<li><a href="https://github.com/fsnotify/fsnotify">fsnotify</a> - <em>Cross-platform filesystem notifications.</em></li>
+<li><a href="https://github.com/invopop/jsonschema">invopop/jsonschema</a> - <em>JSON Schema generation.</em></li>
+<li><a href="https://github.com/santhosh-tekuri/jsonschema">santhosh-tekuri/jsonschema</a> - <em>JSON Schema validation.</em></li>
+</ul>
+]]></content></item><item><title>Linkerd Multi-cluster Without a Public IP Address</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</guid><description>&lt;p>Recently, I&amp;rsquo;ve set up &lt;a href="https://github.com/linkerd/linkerd2">Linkerd&lt;/a> in my homelab, and one of
 the features I was really interested in was &lt;a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster communication&lt;/a>.
 This allows you to mirror services between clusters. Meaning, apps in one
 cluster can communicate with services in another cluster, as if they were in the
@@ -24,8 +153,7 @@ Additionally, I&rsquo;ll explore some alternative options for multi-cluster
 communication and potential improvements to my current setup.</p>
 <blockquote>
 <p>My exact and up-to-date implementation of everything in this article can be
-found in my homelab repo! <a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></p>
-</blockquote>
+found in my homelab repo! <a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></p></blockquote>
 <h2 id="the-basics">The Basics</h2>
 <p>One thing that was not immediately clear to me, when I was following the
 <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster setup docs</a> for the first time, was how services
@@ -56,7 +184,7 @@ server running somewhere accessible from the cloud / routable cluster. This
 means that you should be able to just point Linkerd to the inlets server, and
 from there it will be routed to the client, and then to the previously
 non-routable Linkerd gateway!</p>
-<p><img alt="diagram" src="https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png"></p>
+<p><img src="https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png" alt="diagram"></p>
 <p>However, inlets is no longer the open-source project it once was. The author
 stopped maintaining the open-source version a while ago, before eventually
 deleting all of the source code. Now, it&rsquo;s available for purchase as a monthly
@@ -419,11 +547,11 @@ contact with them.</p>
 <h3 id="travla--tawa-series">Travla / TAWA Series</h3>
 <p><strong>Items</strong>:</p>
 <ul>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=62">TAWA-T2240</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=63">TAWA-T2241</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=229">TAWA-T2242</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=230">TAWA-T2280</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=256">TAWA-T2900</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=62">TAWA-T2240</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=63">TAWA-T2241</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=229">TAWA-T2242</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=230">TAWA-T2280</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=256">TAWA-T2900</a></li>
 </ul>
 <p>All these are also available under the &ldquo;Travla&rdquo; brand <a href="https://www.mini-itx.com/store/?c=63">here</a>.</p>
 <p><strong>Notes:</strong> Number of different options. They tend to have really odd layouts
@@ -694,7 +822,7 @@ below I have two PVCs, one for <code>music</code> and one for <code>anime</code>
 <code>Schedule</code>. However, <code>anime</code> does not have this annotation, so it will not be
 included in backups.</p>
 <p>Here&rsquo;s a diagram showing how everything works together:</p>
-<p><img alt="k8up diagram" src="/k8up.drawio.svg"></p>
+<p><img src="/k8up.drawio.svg" alt="k8up diagram"></p>
 <h2 id="databases-and-other-edge-cases">Databases and Other Edge Cases</h2>
 <p>Lastly, to deal with databases, you of course can&rsquo;t simply backup their PVC.
 Thankfully, K8up has a really simple way of addressing databases and basically
@@ -727,16 +855,11 @@ exact and up-to-date implementation of everything above, please check out my hom
 ]]></content></item><item><title>How to use Grafana and Prometheus to Rickroll your friends (or enemies)</title><link>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</link><pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</guid><description>&lt;p>Source code: &lt;a href="https://github.com/MacroPower/prometheus_video_renderer">https://github.com/MacroPower/prometheus_video_renderer&lt;/a>&lt;/p>
 &lt;p>Read the blog post: &lt;a href="https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/">https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/&lt;/a>&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="allowfullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=1&amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"
->&lt;/iframe>
+&lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=1&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video">&lt;/iframe>
 &lt;/div></description><content type="html"><![CDATA[<p>Source code: <a href="https://github.com/MacroPower/prometheus_video_renderer">https://github.com/MacroPower/prometheus_video_renderer</a></p>
 <p>Read the blog post: <a href="https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/">https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</a></p>
-
-
-    
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-      <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="allowfullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&controls=1&end=0&loop=0&mute=1&start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"
-      ></iframe>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+      <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=1&amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"></iframe>
     </div>
 
 ]]></content></item><item><title>HTB Challenge - Reversing - Baby RE</title><link>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</link><pubDate>Sat, 24 Oct 2020 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</guid><description>&lt;p>We can start off by running &lt;a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">ltrace&lt;/a>, which runs a command and intercepts dynamic library &amp;amp; sys calls.&lt;/p>
