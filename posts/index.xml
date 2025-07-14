@@ -1,5 +1,5 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Sun, 13 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Introducing kat: A TUI and rule-based rendering engine for Kubernetes manifests</title><link>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</link><pubDate>Sun, 13 Jul 2025 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</guid><description>&lt;p>I don&amp;rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is &lt;a href="https://k9scli.io/">&lt;code>k9s&lt;/code>&lt;/a>. It&amp;rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.&lt;/p>
-&lt;p>However, when it comes to rendering and validating manifests locally, I found myself frustrated with the existing tools (or lack thereof). For me, I found that working with manifest generators like &lt;code>helm&lt;/code> or &lt;code>kustomize&lt;/code> often involved a repetitive cycle:&lt;/p></description><content type="html"><![CDATA[<p>I don&rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is <a href="https://k9scli.io/"><code>k9s</code></a>. It&rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.</p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jacob Colvin</title><link>https://jacobcolvin.com/posts/</link><description>Recent content in Posts on Jacob Colvin</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>&lt;a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0&lt;/a></copyright><lastBuildDate>Sun, 13 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://jacobcolvin.com/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Introducing kat: A TUI and rule-based rendering engine for Kubernetes manifests</title><link>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</link><pubDate>Sun, 13 Jul 2025 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/</guid><description>I don&amp;rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is k9s. It&amp;rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.
+However, when it comes to rendering and validating manifests locally, I found myself frustrated with the existing tools (or lack thereof).</description><content type="html"><![CDATA[<p>I don&rsquo;t know about you, but one of my favorite tools in the Kubernetes ecosystem is <a href="https://k9scli.io/"><code>k9s</code></a>. It&rsquo;s a terminal UI (TUI) for interacting with your Kubernetes clusters, and at work I have it open pretty much all of the time. After I started using it, I felt like my productivity skyrocketed, since anything you could want is just a few keystrokes away.</p>
 <p>However, when it comes to rendering and validating manifests locally, I found myself frustrated with the existing tools (or lack thereof). For me, I found that working with manifest generators like <code>helm</code> or <code>kustomize</code> often involved a repetitive cycle:</p>
 <ol>
 <li>Run <code>helm template</code>, <code>kustomize build</code>, or similar commands</li>
@@ -19,20 +19,22 @@
 <li>A <strong>terminal UI</strong> for browsing and debugging rendered Kubernetes manifests</li>
 </ol>
 <p>Together, these deliver a seamless development experience that maintains context and focus while iterating on Helm charts, Kustomize overlays, and other manifest generators.</p>
-<p><img src="https://github.com/MacroPower/kat/raw/main/docs/assets/demo.gif" alt="demo"></p>
+<p><img alt="demo" src="https://github.com/MacroPower/kat/raw/main/docs/assets/demo.gif"></p>
 <blockquote>
-<p>If you&rsquo;re interested in giving <code>kat</code> a try, there are installation and usage instructions available in the repo&rsquo;s README: <a href="https://github.com/macropower/kat">github.com/macropower/kat</a></p></blockquote>
+<p>If you&rsquo;re interested in giving <code>kat</code> a try, there are installation and usage instructions available in the repo&rsquo;s README: <a href="https://github.com/macropower/kat">github.com/macropower/kat</a></p>
+</blockquote>
 <h3 id="features">Features</h3>
 <p><strong>Manifest Browsing</strong>: Rather than outputting a single long stream of YAML, <code>kat</code> organizes the output into a browsable list structure. Navigate through any number of rendered resources using their group/kind/ns/name metadata.</p>
 <p><strong>Live Reload</strong>: Just use the <code>-w</code> flag to automatically re-render when you modify source files, without losing your current position or context when the output changes.</p>
 <p><strong>Integrated Validation</strong>: Run tools like <code>kubeconform</code>, <code>kyverno</code>, or custom validators automatically on rendered output through configurable hooks. Additionally, you can define custom &ldquo;plugins&rdquo;, which function the same way as k9s plugins (i.e. commands invoked with a keybind).</p>
 <p><strong>Flexible Configuration</strong>: <code>kat</code> allows you to define profiles for different manifest generators (like Helm, Kustomize, etc.). Profiles can be automatically selected based on output of CEL expressions, allowing <code>kat</code> to adapt to your project structure.</p>
 <p><strong>And Customization</strong>: <code>kat</code> can be configured with your own keybindings, as well as custom themes!</p>
-<p><img src="https://github.com/MacroPower/kat/raw/main/docs/assets/themes.gif" alt="Themes"></p>
+<p><img alt="Themes" src="https://github.com/MacroPower/kat/raw/main/docs/assets/themes.gif"></p>
 <h2 id="how-do-i-use-it">How do I use it?</h2>
 <p>Let&rsquo;s use a simple example with <code>helm</code> to illustrate how <code>kat</code> works.</p>
 <blockquote>
-<p>Note that configuration for <code>helm</code> is included in kat&rsquo;s <a href="https://github.com/MacroPower/kat/blob/main/pkg/config/config.yaml">default configuration</a>.</p></blockquote>
+<p>Note that configuration for <code>helm</code> is included in kat&rsquo;s <a href="https://github.com/MacroPower/kat/blob/main/pkg/config/config.yaml">default configuration</a>.</p>
+</blockquote>
 <p>First, we need to define a profile for <code>helm</code>. This profile will specify how to render manifests using <code>helm template</code>, as well as:</p>
 <ul>
 <li>Any init, preRender, and/or postRender hooks we want to apply</li>
@@ -49,7 +51,7 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>: []
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Reload on edits to YAML and template files.</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">source</span>: &gt;-<span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      files.filter(f, pathExt(f) in [&#34;.yaml&#34;, &#34;.yml&#34;, &#34;.tpl&#34;])</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      files.filter(f, pathExt(f) in [&#34;.yaml&#34;, &#34;.yml&#34;, &#34;.tpl&#34;])</span>      
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Inherit helm environment variables from the caller process.</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">envFrom</span>: <span style="color:#75715e">&amp;helmEnvFrom</span>
 </span></span><span style="display:flex;"><span>      - <span style="color:#f92672">callerRef</span>:
@@ -95,7 +97,7 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      files.exists(f,
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        pathBase(f) in [&#34;Chart.yaml&#34;, &#34;Chart.yml&#34;] &amp;&amp;
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        yamlPath(f, &#34;$.apiVersion&#34;) == &#34;v2&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      )</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      )</span>      
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">profile</span>: <span style="color:#ae81ff">helm</span>
 </span></span></code></pre></div><p>Now, if we have a Helm chart in the current directory, we can simply run:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kat
@@ -127,16 +129,8 @@
 <li><a href="https://github.com/invopop/jsonschema">invopop/jsonschema</a> - <em>JSON Schema generation.</em></li>
 <li><a href="https://github.com/santhosh-tekuri/jsonschema">santhosh-tekuri/jsonschema</a> - <em>JSON Schema validation.</em></li>
 </ul>
-]]></content></item><item><title>Linkerd Multi-cluster Without a Public IP Address</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</guid><description>&lt;p>Recently, I&amp;rsquo;ve set up &lt;a href="https://github.com/linkerd/linkerd2">Linkerd&lt;/a> in my homelab, and one of
-the features I was really interested in was &lt;a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster communication&lt;/a>.
-This allows you to mirror services between clusters. Meaning, apps in one
-cluster can communicate with services in another cluster, as if they were in the
-same cluster.&lt;/p>
-&lt;p>Setting up multi-cluster communication with Linkerd is straightforward under
-ideal conditions. However, it can be more challenging if one of the clusters
-cannot create services of type &lt;code>LoadBalancer&lt;/code> (with a public, or otherwise
-routable IP address). This is the case for me, as I have clusters both at home
-and in Hetzner, with my home Kubernetes cluster running behind NAT.&lt;/p></description><content type="html"><![CDATA[<p>Recently, I&rsquo;ve set up <a href="https://github.com/linkerd/linkerd2">Linkerd</a> in my homelab, and one of
+]]></content></item><item><title>Linkerd Multi-cluster Without a Public IP Address</title><link>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/linkerd-multi-cluster-without-a-public-ip-address/</guid><description>Recently, I&amp;rsquo;ve set up Linkerd in my homelab, and one of the features I was really interested in was multi-cluster communication. This allows you to mirror services between clusters. Meaning, apps in one cluster can communicate with services in another cluster, as if they were in the same cluster.
+Setting up multi-cluster communication with Linkerd is straightforward under ideal conditions. However, it can be more challenging if one of the clusters cannot create services of type LoadBalancer (with a public, or otherwise routable IP address).</description><content type="html"><![CDATA[<p>Recently, I&rsquo;ve set up <a href="https://github.com/linkerd/linkerd2">Linkerd</a> in my homelab, and one of
 the features I was really interested in was <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster communication</a>.
 This allows you to mirror services between clusters. Meaning, apps in one
 cluster can communicate with services in another cluster, as if they were in the
@@ -153,7 +147,8 @@ Additionally, I&rsquo;ll explore some alternative options for multi-cluster
 communication and potential improvements to my current setup.</p>
 <blockquote>
 <p>My exact and up-to-date implementation of everything in this article can be
-found in my homelab repo! <a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></p></blockquote>
+found in my homelab repo! <a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></p>
+</blockquote>
 <h2 id="the-basics">The Basics</h2>
 <p>One thing that was not immediately clear to me, when I was following the
 <a href="https://linkerd.io/2.12/tasks/multicluster/">multi-cluster setup docs</a> for the first time, was how services
@@ -184,7 +179,7 @@ server running somewhere accessible from the cloud / routable cluster. This
 means that you should be able to just point Linkerd to the inlets server, and
 from there it will be routed to the client, and then to the previously
 non-routable Linkerd gateway!</p>
-<p><img src="https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png" alt="diagram"></p>
+<p><img alt="diagram" src="https://raw.githubusercontent.com/cubed-it/inlets/master/docs/inlets.png"></p>
 <p>However, inlets is no longer the open-source project it once was. The author
 stopped maintaining the open-source version a while ago, before eventually
 deleting all of the source code. Now, it&rsquo;s available for purchase as a monthly
@@ -479,14 +474,8 @@ implementation of everything above, check out my homelab repo:</p>
 <li><a href="https://github.com/MacroPower/homelab">https://github.com/MacroPower/homelab</a></li>
 </ul>
 <p> </p>
-]]></content></item><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>&lt;p>I am building a cluster that includes a &lt;a href="https://turingpi.com/">Turing Pi&lt;/a> (a
-mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put
-both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual
-mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I
-discovered.&lt;/p>
-&lt;p>As of writing, I have made a purchase (I went with the MyElectronics chassis)
-and am waiting for it to arrive. I will eventually be writing another article
-covering my exact setup.&lt;/p></description><content type="html"><![CDATA[<p>I am building a cluster that includes a <a href="https://turingpi.com/">Turing Pi</a> (a
+]]></content></item><item><title>Building a Twin-ITX Cluster</title><link>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</link><pubDate>Sun, 02 Apr 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/04/building-a-twin-itx-cluster/</guid><description>I am building a cluster that includes a Turing Pi (a mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I discovered.
+As of writing, I have made a purchase (I went with the MyElectronics chassis) and am waiting for it to arrive.</description><content type="html"><![CDATA[<p>I am building a cluster that includes a <a href="https://turingpi.com/">Turing Pi</a> (a
 mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put
 both of these in a single chassis to save space, which is possible with a &ldquo;dual
 mini-itx&rdquo;, or &ldquo;twin-itx&rdquo; chassis. This article covers most of the chassis I
@@ -547,11 +536,11 @@ contact with them.</p>
 <h3 id="travla--tawa-series">Travla / TAWA Series</h3>
 <p><strong>Items</strong>:</p>
 <ul>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=62">TAWA-T2240</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=63">TAWA-T2241</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=229">TAWA-T2242</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=230">TAWA-T2280</a></li>
-<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&amp;path=75_78&amp;product_id=256">TAWA-T2900</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=62">TAWA-T2240</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=63">TAWA-T2241</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=229">TAWA-T2242</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=230">TAWA-T2280</a></li>
+<li><a href="https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=256">TAWA-T2900</a></li>
 </ul>
 <p>All these are also available under the &ldquo;Travla&rdquo; brand <a href="https://www.mini-itx.com/store/?c=63">here</a>.</p>
 <p><strong>Notes:</strong> Number of different options. They tend to have really odd layouts
@@ -605,16 +594,7 @@ include PSUs, but they were out of stock when I looked.</p>
 <li><a href="https://www.reddit.com/r/homelab/comments/en84r2/mitx_multi_node_case/">https://www.reddit.com/r/homelab/comments/en84r2/mitx_multi_node_case/</a></li>
 <li><a href="https://www.reddit.com/r/homelab/comments/u6062c/dual_server_chassis/">https://www.reddit.com/r/homelab/comments/u6062c/dual_server_chassis/</a></li>
 </ul>
-]]></content></item><item><title>Backups for K8s and Beyond</title><link>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</link><pubDate>Thu, 05 Jan 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</guid><description>&lt;h2 id="intro">Intro&lt;/h2>
-&lt;p>Recently I have been moving my &lt;a href="https://github.com/MacroPower/homelab">homelab&lt;/a> to Kubernetes. This has
-presented the need for a backup solution for any persistent data I might have
-there. For quite some time, I have been using &lt;a href="https://github.com/duplicati/duplicati">Duplicati&lt;/a> for my
-backups, but I haven&amp;rsquo;t been completely content with its performance, and have
-heard many horror stories of restores not working properly. So, I wanted to take
-this opportunity to find a backup solution that worked well for my personal
-computers (I have Windows, Linux, and Darwin hosts), my storage servers (UnRaid
-and FreeNAS), as well as Kubernetes. Assuming that such a solution exists, of
-course!&lt;/p></description><content type="html"><![CDATA[<h2 id="intro">Intro</h2>
+]]></content></item><item><title>Backups for K8s and Beyond</title><link>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</link><pubDate>Thu, 05 Jan 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</guid><description>Intro Recently I have been moving my homelab to Kubernetes. This has presented the need for a backup solution for any persistent data I might have there. For quite some time, I have been using Duplicati for my backups, but I haven&amp;rsquo;t been completely content with its performance, and have heard many horror stories of restores not working properly. So, I wanted to take this opportunity to find a backup solution that worked well for my personal computers (I have Windows, Linux, and Darwin hosts), my storage servers (UnRaid and FreeNAS), as well as Kubernetes.</description><content type="html"><![CDATA[<h2 id="intro">Intro</h2>
 <p>Recently I have been moving my <a href="https://github.com/MacroPower/homelab">homelab</a> to Kubernetes. This has
 presented the need for a backup solution for any persistent data I might have
 there. For quite some time, I have been using <a href="https://github.com/duplicati/duplicati">Duplicati</a> for my
@@ -822,7 +802,7 @@ below I have two PVCs, one for <code>music</code> and one for <code>anime</code>
 <code>Schedule</code>. However, <code>anime</code> does not have this annotation, so it will not be
 included in backups.</p>
 <p>Here&rsquo;s a diagram showing how everything works together:</p>
-<p><img src="/k8up.drawio.svg" alt="k8up diagram"></p>
+<p><img alt="k8up diagram" src="/k8up.drawio.svg"></p>
 <h2 id="databases-and-other-edge-cases">Databases and Other Edge Cases</h2>
 <p>Lastly, to deal with databases, you of course can&rsquo;t simply backup their PVC.
 Thankfully, K8up has a really simple way of addressing databases and basically
@@ -852,25 +832,20 @@ exact and up-to-date implementation of everything above, please check out my hom
 <li><a href="https://github.com/creativeprojects/resticprofile">resticprofile</a></li>
 <li><a href="https://github.com/emuell/restic-browser">Restic Browser</a></li>
 </ul>
-]]></content></item><item><title>How to use Grafana and Prometheus to Rickroll your friends (or enemies)</title><link>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</link><pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</guid><description>&lt;p>Source code: &lt;a href="https://github.com/MacroPower/prometheus_video_renderer">https://github.com/MacroPower/prometheus_video_renderer&lt;/a>&lt;/p>
-&lt;p>Read the blog post: &lt;a href="https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/">https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/&lt;/a>&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=1&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video">&lt;/iframe>
-&lt;/div></description><content type="html"><![CDATA[<p>Source code: <a href="https://github.com/MacroPower/prometheus_video_renderer">https://github.com/MacroPower/prometheus_video_renderer</a></p>
+]]></content></item><item><title>How to use Grafana and Prometheus to Rickroll your friends (or enemies)</title><link>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</link><pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2021/07/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</guid><description>Source code: https://github.com/MacroPower/prometheus_video_renderer
+Read the blog post: https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</description><content type="html"><![CDATA[<p>Source code: <a href="https://github.com/MacroPower/prometheus_video_renderer">https://github.com/MacroPower/prometheus_video_renderer</a></p>
 <p>Read the blog post: <a href="https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/">https://grafana.com/blog/2021/07/30/how-to-use-grafana-and-prometheus-to-rickroll-your-friends-or-enemies/</a></p>
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-      <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=1&amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"></iframe>
-    </div>
 
-]]></content></item><item><title>HTB Challenge - Reversing - Baby RE</title><link>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</link><pubDate>Sat, 24 Oct 2020 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</guid><description>&lt;p>We can start off by running &lt;a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">ltrace&lt;/a>, which runs a command and intercepts dynamic library &amp;amp; sys calls.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ltrace -i -C ./baby
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We&amp;rsquo;re prompted and can start off by inserting random value, e.g. &lt;code>asd&lt;/code>.&lt;/p>
-&lt;p>A call to &lt;code>strcmp&lt;/code> is intercepted by &lt;code>ltrace&lt;/code>.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>strcmp(&lt;span style="color:#e6db74">&amp;#34;asd&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;ab[REDACTED]13&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s start by trying to pass &lt;code>ab[REDACTED]13&lt;/code>.&lt;/p>
-&lt;p>In this case it was just that simple, and we receive the flag.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>HTB{B[REDACTED]Z}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>There were probably a lot of additional ways this one could have been solved, and I think I got lucky by starting in this direction.&lt;/p></description><content type="html"><![CDATA[<p>We can start off by running <a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">ltrace</a>, which runs a command and intercepts dynamic library &amp; sys calls.</p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/aLvh0oId3Go?autoplay=1" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+]]></content></item><item><title>HTB Challenge - Reversing - Baby RE</title><link>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</link><pubDate>Sat, 24 Oct 2020 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2020/10/htb-challenge-reversing-baby-re/</guid><description>We can start off by running ltrace, which runs a command and intercepts dynamic library &amp;amp; sys calls.
+ltrace -i -C ./baby We&amp;rsquo;re prompted and can start off by inserting random value, e.g. asd.
+A call to strcmp is intercepted by ltrace.
+strcmp(&amp;#34;asd\n&amp;#34;, &amp;#34;ab[REDACTED]13\n&amp;#34;) Let&amp;rsquo;s start by trying to pass ab[REDACTED]13.
+In this case it was just that simple, and we receive the flag.
+HTB{B[REDACTED]Z} There were probably a lot of additional ways this one could have been solved, and I think I got lucky by starting in this direction.</description><content type="html"><![CDATA[<p>We can start off by running <a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">ltrace</a>, which runs a command and intercepts dynamic library &amp; sys calls.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ltrace -i -C ./baby
 </span></span></code></pre></div><p>We&rsquo;re prompted and can start off by inserting random value, e.g. <code>asd</code>.</p>
 <p>A call to <code>strcmp</code> is intercepted by <code>ltrace</code>.</p>
