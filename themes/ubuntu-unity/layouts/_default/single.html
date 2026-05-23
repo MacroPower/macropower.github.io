@@ -1,12 +1,9 @@
 {{ define "main" }}
   {{- $name := "" -}}
-  {{- with .File -}}{{ $name = .LogicalName }}{{- end -}}
-  {{- if eq $name "about.md" -}}
-    {{ partial "page/about.html" . }}
-  {{- else if eq $name "cv.md" -}}
-    {{ partial "page/cv.html" . }}
-  {{- else if eq $name "contact.md" -}}
-    {{ partial "page/contact.html" . }}
+  {{- with .File }}{{ $name = .BaseFileName }}{{ end -}}
+  {{- $known := dict "about" true "cv" true "contact" true -}}
+  {{- if index $known $name -}}
+    {{ partial (printf "page/%s.html" $name) . }}
   {{- else -}}
     <article class="up-page selectable">
       <header class="up-page-header">

@@ -1,11 +1,10 @@
-{{- $dateFmt := "Jan 2, 2006" -}}
-{{- with .Site.Params.dateform -}}{{ $dateFmt = . }}{{- end -}}
+{{- $dateFmt := site.Params.dateform | default "Jan 2, 2006" -}}
 
 <article class="up-reader">
   <div class="up-reader-inner selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
-      {{- if .Site.Params.enableReadingTime }}
+      {{- if site.Params.enableReadingTime }}
         <span class="up-reader-meta-sep">·</span>
         <span>{{ .ReadingTime }} min read</span>
       {{- end }}

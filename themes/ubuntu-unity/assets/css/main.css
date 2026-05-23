@@ -274,10 +274,8 @@ body::after{
 }
 /* =========================================================================
    content: typography, blog three-pane, contact rows, CV embed
-   (page-content agent — all classes prefixed `up-`)
    ========================================================================= */
 
-.up-page,
 .up-about-page,
 .up-cv-page,
 .up-contact-page,
@@ -287,13 +285,29 @@ body::after{
   overflow:auto;
 }
 
-.up-page{padding:32px 40px;max-width:880px;margin:0 auto}
+.up-page{
+  display:block;width:100%;
+  background:var(--content-bg);color:var(--content-fg);overflow:auto;
+  padding:32px 40px;max-width:880px;margin:0 auto;
+}
+
+/* shared link colors across content surfaces */
+.up-page-children a,
+.up-about-meta a.up-about-meta-item,
+.up-about-bio a,
+.up-cv-main a,
+.up-contact-value,
+.up-reader-body a{color:#2B4E8E;text-decoration:none}
+.up-page-children a:hover,
+.up-about-meta a.up-about-meta-item:hover,
+.up-about-bio a:hover,
+.up-cv-main a:hover,
+.up-contact-value:hover,
+.up-reader-body a:hover{color:var(--orange-light);text-decoration:underline}
 .up-page-header h1{font-size:24px;font-weight:500;letter-spacing:-.01em;margin:0 0 16px}
 .up-page-body{font-size:14.5px;line-height:1.65}
 .up-page-children{list-style:none;padding:0;margin:16px 0}
 .up-page-children li{padding:8px 0;border-bottom:1px dashed var(--content-line)}
-.up-page-children a{color:#2B4E8E;text-decoration:none}
-.up-page-children a:hover{color:var(--orange-light);text-decoration:underline}
 
 /* ---------- About ---------- */
 .up-about-page{padding:0}
@@ -323,8 +337,6 @@ body::after{
   display:flex;flex-wrap:wrap;gap:8px;align-items:center;
 }
 .up-about-meta-item{color:#7A7570;text-decoration:none}
-.up-about-meta a.up-about-meta-item{color:#2B4E8E}
-.up-about-meta a.up-about-meta-item:hover{color:var(--orange-light);text-decoration:underline}
 .up-about-meta-sep{color:#B4ADA7}
 .up-about-bio{
   padding:24px 36px 36px;max-width:760px;
@@ -339,8 +351,6 @@ body::after{
   display:block;margin:18px 0;border-radius:4px;
   border:1px solid var(--content-line);max-width:100%;
 }
-.up-about-bio a{color:#2B4E8E;text-decoration:none}
-.up-about-bio a:hover{color:var(--orange-light);text-decoration:underline}
 
 /* ---------- Nautilus sidebar (shared by CV, Blog) ---------- */
 .up-naut-sidebar{
@@ -382,8 +392,6 @@ body::after{
 .up-cv-main{
   padding:22px 26px;overflow:auto;font-size:14px;line-height:1.6;
 }
-.up-cv-main a{color:#2B4E8E;text-decoration:none}
-.up-cv-main a:hover{color:var(--orange-light);text-decoration:underline}
 .up-cv-main #embed-pdf-container{
   margin:14px 0;border:1px solid var(--content-line);background:#fff;
 }
@@ -405,11 +413,9 @@ body::after{
   text-transform:uppercase;letter-spacing:.08em;
 }
 .up-contact-value{
-  color:#2B4E8E;text-decoration:none;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;font-size:13px;
   word-break:break-all;
 }
-.up-contact-value:hover{color:var(--orange-light);text-decoration:underline}
 
 /* ---------- Pathbar (Nautilus breadcrumb) ---------- */
 .up-pathbar{
@@ -468,9 +474,6 @@ body::after{
   font-size:11.5px;color:#8A8580;
 }
 .up-post-row.is-active .up-post-meta{color:rgba(255,255,255,.82)}
-.up-post-chip{
-  color:inherit;
-}
 .up-post-date{
   font-size:11.5px;color:#8A8580;font-variant-numeric:tabular-nums;
   align-self:start;white-space:nowrap;
@@ -542,8 +545,6 @@ body::after{
   border:1px solid var(--content-line);padding:6px 10px;text-align:left;
 }
 .up-reader-body th{background:#F2EFEC;font-weight:500}
-.up-reader-body a{color:#2B4E8E;text-decoration:none}
-.up-reader-body a:hover{color:var(--orange-light);text-decoration:underline}
 .up-reader-body code{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:.92em;background:#EFEDEB;padding:1px 5px;border-radius:2px;

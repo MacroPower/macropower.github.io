@@ -7,8 +7,7 @@
       {{ partial "page/post-sidebar.html" . }}
       {{ partial "page/post-list.html" (dict
           "pages" .RegularPages
-          "here" ""
-          "Site" .Site) }}
+          "here" "") }}
       {{ partial "page/post-list-empty-reader.html" . }}
     </div>
   </article>

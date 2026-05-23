@@ -10,8 +10,7 @@
       {{ partial "page/post-sidebar.html" . }}
       {{ partial "page/post-list.html" (dict
           "pages" .Pages
-          "here" ""
-          "Site" .Site) }}
+          "here" "") }}
       <div class="up-reader up-reader-term">
         <div class="up-reader-inner selectable">
           <div class="up-reader-meta">
@@ -22,9 +21,8 @@
           <h1 class="up-reader-title">{{ .Title }}</h1>
           <div class="up-reader-body">
             {{ .Content }}
-            <p>Showing {{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged
-              <span class="up-reader-chip">#{{ .Title | lower }}</span>.
-              Pick one on the left to read.</p>
+            <p>{{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged
+              <span class="up-reader-chip">#{{ .Title | lower }}</span>.</p>
           </div>
           <div class="up-reader-signoff">— jacob@unity:~/blog$ grep -l "{{ .Title | lower }}" posts/*.md</div>
         </div>

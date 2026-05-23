@@ -12,8 +12,7 @@
       {{ partial "page/post-sidebar.html" . }}
       {{ partial "page/post-list.html" (dict
           "pages" $siblings
-          "here" $here
-          "Site" .Site) }}
+          "here" $here) }}
       {{ partial "page/post-reader.html" . }}
     </div>
   </article>
