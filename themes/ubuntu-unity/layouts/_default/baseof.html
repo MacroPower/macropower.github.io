@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>{{ partial "head.html" . }}</head>
+<body>
+  <div id="root">
+    {{ partial "top-panel.html" . }}
+    {{ partial "launcher.html" . }}
+    {{ partial "window-frame-open.html" . }}
+    {{ block "main" . }}{{ .Content }}{{ end }}
+    {{ partial "window-frame-close.html" . }}
+    {{ partial "dialog-host.html" . }}
+    {{ partial "trash-window.html" . }}
+  </div>
+
+  <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+
+  {{ $jsOpts := dict
+      "targetPath" "js/app.js"
+      "minify" hugo.IsProduction
+      "format" "iife"
+      "shims" (dict
+        "react" "js/shims/react.js"
+        "react-dom" "js/shims/react-dom.js"
+        "react-dom/client" "js/shims/react-dom-client.js")
+  }}
+  {{ $js := resources.Get "js/app.jsx" | js.Build $jsOpts | resources.Fingerprint }}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+:root{
+  --aubergine-deep:#2C001E;
+  --aubergine:#3D0B2C;
+  --aubergine-mid:#5E2750;
+  --aubergine-light:#77216F;
+  --orange:#DD4814;
+  --orange-light:#E95420;
+  --panel:#2B2B2B;
+  --panel-grad-1:#3F3D3A;
+  --panel-grad-2:#252423;
+  --chrome-1:#3D3B37;
+  --chrome-2:#2A2825;
+  --chrome-inactive-1:#4A4744;
+  --chrome-inactive-2:#3A3735;
+  --content-bg:#F6F5F4;
+  --content-fg:#2E2E2E;
+  --content-muted:#6B6764;
+  --content-line:#D8D5D2;
+  --hud:#1F0E1A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;
+  font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;color:var(--content-fg);
+  background:#000;user-select:none;-webkit-user-select:none}
+body{font-size:13.5px;line-height:1.45}
+button{font-family:inherit}
+::selection{background:rgba(221,72,20,.35)}
+#root{height:100%}
+
+/* let normal text be selectable inside windows */
+.selectable, .selectable *{user-select:text;-webkit-user-select:text}
+
+/* chrome and component styles appended by other partials */

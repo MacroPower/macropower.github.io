@@ -1,7 +1,7 @@
 baseURL      = "https://jacobcolvin.com"
 title        = "Jacob Colvin"
 languageCode = "en-us"
-theme        = ["hello-friend-ng"]
+theme        = "ubuntu-unity"
 
 PygmentsCodeFences = true
 PygmentsStyle      = "monokai"
@@ -98,9 +98,6 @@ disableHugoGeneratorInject = false
   # Integrate Javascript files or stylesheets by adding the url to the external assets or by
   # linking local files with their path relative to the static folder, e.g. "css/styles.css"
   #
-  customCSS = [ "/overlay.css" ]
-  customJS  = [ "../js/pdf-js/build/pdf.js" ]
-
   # Toggle this option need to rebuild SCSS, requires extended version of Hugo
   #
   justifyContent = false  # Set "text-align: justify" to .post-content.
@@ -125,7 +122,7 @@ disableHugoGeneratorInject = false
 
     topText = []
     bottomText = [
-      "Made with <a href=\"http://gohugo.io\">Hugo</a> + <a href=\"https://github.com/rhazdon/hugo-theme-hello-friend-ng\">Hello Friend NG</a>",
+      "Made with <a href=\"http://gohugo.io\">Hugo</a> + ubuntu-unity",
       "Hosted on <a href=\"https://github.com/MacroPower/macropower.github.io\">Pages</a>"
     ]
 
@@ -289,14 +286,22 @@ disableHugoGeneratorInject = false
     identifier = "about"
     name       = "About"
     url        = "about/"
+    weight     = 1
   [[menu.main]]
     identifier = "cv"
     name       = "CV"
     url        = "cv/"
+    weight     = 2
   [[menu.main]]
-    identifier = "posts"
-    name       = "Posts"
+    identifier = "blog"
+    name       = "Blog"
     url        = "posts/"
+    weight     = 3
+  [[menu.main]]
+    identifier = "contact"
+    name       = "Contact"
+    url        = "contact/"
+    weight     = 4
 
 [server]
   [[server.headers]]
