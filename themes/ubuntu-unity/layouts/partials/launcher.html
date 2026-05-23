@@ -1,7 +1,11 @@
 {{ $current := .RelPermalink }}
+{{ $about   := relURL "about/" }}
+{{ $cv      := relURL "cv/" }}
+{{ $blog    := relURL "posts/" }}
+{{ $contact := relURL "contact/" }}
 <aside class="up-launcher">
-  <a class="up-launcher-tile{{ if eq $current (relURL "about/") }} is-active{{ end }}"
-     href="{{ relURL "about/" }}" data-launcher="about" aria-label="About">
+  <a class="up-launcher-tile{{ if eq $current $about }} is-active{{ end }}"
+     href="{{ $about }}" data-launcher="about" aria-label="About">
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>
@@ -19,11 +23,11 @@
       </svg>
     </span>
     <span class="up-launcher-arrow" aria-hidden="true"></span>
-    <span class="up-tooltip">About</span>
+    <span class="up-tooltip" aria-hidden="true">About</span>
   </a>
 
-  <a class="up-launcher-tile{{ if eq $current (relURL "cv/") }} is-active{{ end }}"
-     href="{{ relURL "cv/" }}" data-launcher="cv" aria-label="CV">
+  <a class="up-launcher-tile{{ if eq $current $cv }} is-active{{ end }}"
+     href="{{ $cv }}" data-launcher="cv" aria-label="CV">
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>
@@ -43,11 +47,11 @@
       </svg>
     </span>
     <span class="up-launcher-arrow" aria-hidden="true"></span>
-    <span class="up-tooltip">CV</span>
+    <span class="up-tooltip" aria-hidden="true">CV</span>
   </a>
 
-  <a class="up-launcher-tile{{ if hasPrefix $current (relURL "posts/") }} is-active{{ end }}"
-     href="{{ relURL "posts/" }}" data-launcher="blog" aria-label="Blog">
+  <a class="up-launcher-tile{{ if hasPrefix $current $blog }} is-active{{ end }}"
+     href="{{ $blog }}" data-launcher="blog" aria-label="Blog">
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>
@@ -79,11 +83,11 @@
       </svg>
     </span>
     <span class="up-launcher-arrow" aria-hidden="true"></span>
-    <span class="up-tooltip">Blog</span>
+    <span class="up-tooltip" aria-hidden="true">Blog</span>
   </a>
 
-  <a class="up-launcher-tile{{ if eq $current (relURL "contact/") }} is-active{{ end }}"
-     href="{{ relURL "contact/" }}" data-launcher="contact" aria-label="Contact">
+  <a class="up-launcher-tile{{ if eq $current $contact }} is-active{{ end }}"
+     href="{{ $contact }}" data-launcher="contact" aria-label="Contact">
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>
@@ -100,12 +104,12 @@
       </svg>
     </span>
     <span class="up-launcher-arrow" aria-hidden="true"></span>
-    <span class="up-tooltip">Contact</span>
+    <span class="up-tooltip" aria-hidden="true">Contact</span>
   </a>
 
   <div class="up-launcher-spacer"></div>
 
-  <button class="up-launcher-tile up-launcher-trash" data-launcher="trash" aria-label="Trash" type="button">
+  <button class="up-launcher-tile" data-launcher="trash" aria-label="Trash" type="button">
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>
@@ -157,11 +161,11 @@
         <path d="M10 13.5 L13 39" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".8" stroke-linecap="round"/>
       </svg>
     </span>
-    <span class="up-tooltip">Trash</span>
+    <span class="up-tooltip" aria-hidden="true">Trash</span>
   </button>
 </aside>
 
 <div class="up-desktop-label">
   {{ with .Site.Params.author }}{{ .name | lower | replaceRE " +" "-" }}{{ end }}/personal-site<br>
-  v1.0 &middot; &quot;aubergine&quot; &middot; {{ now.Year }}
+  v1.0 · "aubergine" · {{ now.Year }}
 </div>
