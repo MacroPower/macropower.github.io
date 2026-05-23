@@ -1,0 +1,58 @@
+{{- $here := .RelPermalink -}}
+{{- $postsPage := .Site.GetPage "/posts" -}}
+{{- $allURL := "/posts/" -}}
+{{- with $postsPage -}}{{ $allURL = .RelPermalink }}{{- end -}}
+{{- $rssURL := "" -}}
+{{- with $postsPage -}}
+  {{- with .OutputFormats.Get "rss" -}}{{ $rssURL = .RelPermalink }}{{- end -}}
+{{- end -}}
+
+<aside class="up-naut-sidebar" aria-label="Filters">
+  <div class="up-naut-section">
+    <div class="up-naut-section-label">Places</div>
+    <a class="up-naut-item{{ if eq $here $allURL }} is-active{{ end }}" href="{{ $allURL }}">
+      <span class="up-naut-item-icon" aria-hidden="true">▤</span>
+      <span class="up-naut-item-label">All</span>
+      <span class="up-naut-item-count">{{ len $postsPage.RegularPages }}</span>
+    </a>
+    {{- $categories := .Site.Taxonomies.categories -}}
+    {{- range $name, $taxon := $categories -}}
+      {{- $term := $.Site.GetPage (printf "/categories/%s" $name) -}}
+      {{- if $term -}}
+        <a class="up-naut-item{{ if eq $here $term.RelPermalink }} is-active{{ end }}" href="{{ $term.RelPermalink }}">
+          <span class="up-naut-item-icon" aria-hidden="true">⊞</span>
+          <span class="up-naut-item-label">{{ $term.Title | default $name }}</span>
+          <span class="up-naut-item-count">{{ len $taxon }}</span>
+        </a>
+      {{- end -}}
+    {{- end -}}
+  </div>
+
+  {{- with .Site.Taxonomies.series -}}
+    {{- if gt (len .) 0 -}}
+      <div class="up-naut-section">
+        <div class="up-naut-section-label">Series</div>
+        {{- range $name, $taxon := . -}}
+          {{- $term := $.Site.GetPage (printf "/series/%s" $name) -}}
+          {{- if $term -}}
+            <a class="up-naut-item{{ if eq $here $term.RelPermalink }} is-active{{ end }}" href="{{ $term.RelPermalink }}">
+              <span class="up-naut-item-icon" aria-hidden="true">⌘</span>
+              <span class="up-naut-item-label">{{ $term.Title | default $name }}</span>
+              <span class="up-naut-item-count">{{ len $taxon }}</span>
+            </a>
+          {{- end -}}
+        {{- end -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $rssURL }}
+    <div class="up-naut-section">
+      <div class="up-naut-section-label">Feeds</div>
+      <a class="up-naut-item" href="{{ $rssURL }}">
+        <span class="up-naut-item-icon" aria-hidden="true">⟿</span>
+        <span class="up-naut-item-label">RSS</span>
+      </a>
+    </div>
+  {{- end }}
+</aside>

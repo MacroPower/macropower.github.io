@@ -1,2 +1,20 @@
-{{/* _default/single: filled by page-content agent. */}}
-{{ define "main" }}{{ .Content }}{{ end }}
+{{ define "main" }}
+  {{- $name := "" -}}
+  {{- with .File -}}{{ $name = .LogicalName }}{{- end -}}
+  {{- if eq $name "about.md" -}}
+    {{ partial "page/about.html" . }}
+  {{- else if eq $name "cv.md" -}}
+    {{ partial "page/cv.html" . }}
+  {{- else if eq $name "contact.md" -}}
+    {{ partial "page/contact.html" . }}
+  {{- else -}}
+    <article class="up-page selectable">
+      <header class="up-page-header">
+        <h1>{{ .Title }}</h1>
+      </header>
+      <div class="up-page-body">
+        {{ .Content }}
+      </div>
+    </article>
+  {{- end -}}
+{{ end }}

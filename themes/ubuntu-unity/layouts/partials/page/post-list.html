@@ -1,0 +1,25 @@
+{{- $pages := .pages -}}
+{{- $here := .here -}}
+{{- $dateFmt := "2006-01-02" -}}
+{{- with .Site.Params.dateformNum -}}{{ $dateFmt = . }}{{- end -}}
+
+<section class="up-post-list" aria-label="Posts">
+  <header class="up-post-list-header">
+    <span>Name</span>
+    <span>Date</span>
+  </header>
+  {{- range $pages.ByDate.Reverse }}
+    {{- $isActive := and $here (eq $here .RelPermalink) }}
+    <a class="up-post-row{{ if $isActive }} is-active{{ end }}" href="{{ .RelPermalink }}">
+      <div class="up-post-row-main">
+        <div class="up-post-title">{{ .Title }}</div>
+        <div class="up-post-meta">
+          {{- range .Params.categories }}
+            <span class="up-post-chip">#{{ . }}</span>
+          {{- end }}
+        </div>
+      </div>
+      <time class="up-post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
+    </a>
+  {{- end }}
+</section>

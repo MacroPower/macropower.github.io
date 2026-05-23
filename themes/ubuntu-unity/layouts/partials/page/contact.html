@@ -1,0 +1,14 @@
+<article class="up-contact-page selectable">
+  <header class="up-contact-header">
+    <h1 class="up-contact-title">{{ .Title }}</h1>
+    <div class="up-contact-intro">{{ .Content }}</div>
+  </header>
+  <div class="up-contact-grid">
+    {{ range .Site.Params.social }}
+      <div class="up-contact-row">
+        <span class="up-contact-label">{{ .name }}</span>
+        <a class="up-contact-value" href="{{ .url }}" rel="me noopener">{{ .url }}</a>
+      </div>
+    {{ end }}
+  </div>
+</article>

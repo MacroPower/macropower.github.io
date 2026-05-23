@@ -1,0 +1,25 @@
+{{- $sidebar := slice
+    (dict "label" "CV" "url" .RelPermalink "active" true)
+-}}
+
+<article class="up-cv-page selectable">
+  {{ partial "page/post-pathbar.html" (dict "segments" (slice
+      (dict "label" "Home" "url" "/")
+      (dict "label" "CV" "url" .RelPermalink))) }}
+  <div class="up-cv-grid">
+    <aside class="up-naut-sidebar">
+      <div class="up-naut-section">
+        <div class="up-naut-section-label">Places</div>
+        {{ range $sidebar }}
+          <a class="up-naut-item{{ if .active }} is-active{{ end }}" href="{{ .url }}">
+            <span class="up-naut-item-icon" aria-hidden="true">▤</span>
+            <span class="up-naut-item-label">{{ .label }}</span>
+          </a>
+        {{ end }}
+      </div>
+    </aside>
+    <section class="up-cv-main">
+      {{ .Content }}
+    </section>
+  </div>
+</article>

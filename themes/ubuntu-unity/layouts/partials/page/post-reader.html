@@ -1,0 +1,23 @@
+{{- $dateFmt := "Jan 2, 2006" -}}
+{{- with .Site.Params.dateform -}}{{ $dateFmt = . }}{{- end -}}
+
+<article class="up-reader">
+  <div class="up-reader-inner selectable">
+    <div class="up-reader-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
+      {{- if .Site.Params.enableReadingTime }}
+        <span class="up-reader-meta-sep">·</span>
+        <span>{{ .ReadingTime }} min read</span>
+      {{- end }}
+      {{- range .Params.categories }}
+        <span class="up-reader-meta-sep">·</span>
+        <span class="up-reader-chip">#{{ . }}</span>
+      {{- end }}
+    </div>
+    <h1 class="up-reader-title">{{ .Title }}</h1>
+    <div class="up-reader-body">
+      {{ .Content }}
+    </div>
+    <div class="up-reader-signoff">— jacob@unity:~/blog$ <span class="up-reader-cursor">█</span></div>
+  </div>
+</article>

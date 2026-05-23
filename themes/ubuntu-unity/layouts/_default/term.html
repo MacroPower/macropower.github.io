@@ -1,0 +1,34 @@
+{{ define "main" }}
+  {{- $plural := .Data.Plural -}}
+  <article class="up-blog selectable" data-blog-kind="term">
+    {{ partial "page/post-pathbar.html" (dict "segments" (slice
+        (dict "label" "Home" "url" "/")
+        (dict "label" "Posts" "url" "/posts/")
+        (dict "label" (humanize $plural) "url" (printf "/%s/" $plural))
+        (dict "label" .Title "url" .RelPermalink))) }}
+    <div class="up-blog-grid">
+      {{ partial "page/post-sidebar.html" . }}
+      {{ partial "page/post-list.html" (dict
+          "pages" .Pages
+          "here" ""
+          "Site" .Site) }}
+      <div class="up-reader up-reader-term">
+        <div class="up-reader-inner selectable">
+          <div class="up-reader-meta">
+            <span>{{ humanize $plural }}</span>
+            <span class="up-reader-meta-sep">·</span>
+            <span>{{ len .Pages }} posts</span>
+          </div>
+          <h1 class="up-reader-title">{{ .Title }}</h1>
+          <div class="up-reader-body">
+            {{ .Content }}
+            <p>Showing {{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged
+              <span class="up-reader-chip">#{{ .Title | lower }}</span>.
+              Pick one on the left to read.</p>
+          </div>
+          <div class="up-reader-signoff">— jacob@unity:~/blog$ grep -l "{{ .Title | lower }}" posts/*.md</div>
+        </div>
+      </div>
+    </div>
+  </article>
+{{ end }}

@@ -1,2 +1,20 @@
-{{/* posts/single: filled by page-content agent (Blog reader). */}}
-{{ define "main" }}{{ .Content }}{{ end }}
+{{ define "main" }}
+  {{- $here := .RelPermalink -}}
+  {{- $section := .CurrentSection -}}
+  {{- $siblings := slice -}}
+  {{- with $section -}}{{ $siblings = .RegularPages }}{{- end -}}
+  <article class="up-blog selectable" data-blog-kind="post">
+    {{ partial "page/post-pathbar.html" (dict "segments" (slice
+        (dict "label" "Home" "url" "/")
+        (dict "label" "Posts" "url" "/posts/")
+        (dict "label" .Title "url" .RelPermalink))) }}
+    <div class="up-blog-grid">
+      {{ partial "page/post-sidebar.html" . }}
+      {{ partial "page/post-list.html" (dict
+          "pages" $siblings
+          "here" $here
+          "Site" .Site) }}
+      {{ partial "page/post-reader.html" . }}
+    </div>
+  </article>
+{{ end }}

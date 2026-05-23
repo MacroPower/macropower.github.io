@@ -1,0 +1,34 @@
+{{ define "main" }}
+  {{- $plural := .Data.Plural -}}
+  {{- $singular := .Data.Singular -}}
+  {{- $terms := .Data.Terms.Alphabetical -}}
+  <article class="up-blog selectable" data-blog-kind="taxonomy">
+    {{ partial "page/post-pathbar.html" (dict "segments" (slice
+        (dict "label" "Home" "url" "/")
+        (dict "label" "Posts" "url" "/posts/")
+        (dict "label" (humanize $plural) "url" .RelPermalink))) }}
+    <div class="up-blog-grid">
+      {{ partial "page/post-sidebar.html" . }}
+      <section class="up-post-list" aria-label="{{ humanize $plural }}">
+        <header class="up-post-list-header">
+          <span>{{ humanize $singular | title }}</span>
+          <span>Posts</span>
+        </header>
+        {{- range $terms }}
+          <a class="up-post-row" href="{{ .Page.RelPermalink }}">
+            <div class="up-post-row-main">
+              <div class="up-post-title">{{ .Page.Title }}</div>
+              <div class="up-post-meta">
+                <span class="up-post-chip">#{{ .Page.Title | lower }}</span>
+              </div>
+            </div>
+            <span class="up-post-date">{{ .Count }}</span>
+          </a>
+        {{- else }}
+          <div class="up-post-empty">No {{ $plural }} yet.</div>
+        {{- end }}
+      </section>
+      {{ partial "page/post-list-empty-reader.html" . }}
+    </div>
+  </article>
+{{ end }}

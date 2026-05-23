@@ -1,0 +1,12 @@
+{{- $segments := .segments -}}
+<nav class="up-pathbar" aria-label="Path">
+  {{ range $i, $seg := $segments }}
+    {{- $last := eq (add $i 1) (len $segments) -}}
+    {{- if $last -}}
+      <span class="up-pathbar-pill is-current">{{ $seg.label }}</span>
+    {{- else -}}
+      <a class="up-pathbar-pill" href="{{ $seg.url }}">{{ $seg.label }}</a>
+      <span class="up-pathbar-sep" aria-hidden="true">›</span>
+    {{- end -}}
+  {{ end }}
+</nav>

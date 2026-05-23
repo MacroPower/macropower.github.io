@@ -1,2 +1,15 @@
-{{/* posts/list: filled by page-content agent (Blog three-pane). */}}
-{{ define "main" }}{{ .Content }}{{ end }}
+{{ define "main" }}
+  <article class="up-blog selectable" data-blog-kind="section">
+    {{ partial "page/post-pathbar.html" (dict "segments" (slice
+        (dict "label" "Home" "url" "/")
+        (dict "label" "Posts" "url" .RelPermalink))) }}
+    <div class="up-blog-grid">
+      {{ partial "page/post-sidebar.html" . }}
+      {{ partial "page/post-list.html" (dict
+          "pages" .RegularPages
+          "here" ""
+          "Site" .Site) }}
+      {{ partial "page/post-list-empty-reader.html" . }}
+    </div>
+  </article>
+{{ end }}

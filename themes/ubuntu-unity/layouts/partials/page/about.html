@@ -1,0 +1,38 @@
+{{- $page := . -}}
+{{- $author := .Site.Params.author.name -}}
+{{- $title := .Site.Params.homeSubtitle -}}
+{{- $initials := "" -}}
+{{- range (split $author " ") -}}
+  {{- if gt (len .) 0 -}}{{- $initials = printf "%s%s" $initials (substr . 0 1) -}}{{- end -}}
+{{- end -}}
+{{- $portrait := resources.GetMatch "img/portrait.*" -}}
+{{- $github := "" -}}
+{{- range .Site.Params.social -}}
+  {{- if eq .name "github" -}}{{- $github = .url -}}{{- end -}}
+{{- end -}}
+
+<article class="up-about-page selectable">
+  <header class="up-about-header">
+    <div class="up-about-portrait" aria-hidden="true">
+      {{- with $portrait -}}
+        <img src="{{ .RelPermalink }}" alt="{{ $author }}" />
+      {{- else -}}
+        <span class="up-about-monogram">{{ upper $initials }}</span>
+      {{- end -}}
+    </div>
+    <div class="up-about-ident">
+      <h1 class="up-about-name">{{ $author }}</h1>
+      <p class="up-about-title">{{ $title }}</p>
+      <p class="up-about-meta">
+        <span class="up-about-meta-item">~/home</span>
+        {{- with $github }}
+          <span class="up-about-meta-sep">·</span>
+          <a class="up-about-meta-item" href="{{ . }}" rel="me noopener">github</a>
+        {{- end }}
+      </p>
+    </div>
+  </header>
+  <div class="up-about-bio">
+    {{ .Content }}
+  </div>
+</article>
