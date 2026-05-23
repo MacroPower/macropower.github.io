@@ -1,1 +1,18 @@
-{{/* window-frame-open: filled by visual-chrome agent (opening tags of the centered window card; matching closers MUST live in window-frame-close.html — bracket-matchers won't catch mismatches across files). */}}
+{{/* Paired with window-frame-close.html. Opens
+       <div.up-window-stage> > <section.up-window-chrome> >
+       <div.up-titlebar> + opening <div.up-window-body>.
+     The content layout's `{{ define "main" }}` body fills the slot;
+     it must emit inner content only — no extra outer wrapper,
+     no overridden titlebar text. */}}
+<div class="up-window-stage">
+  <section class="up-window-chrome is-focused" data-page-window>
+    <div class="up-titlebar" data-titlebar>
+      <div class="up-tl-group">
+        <button class="up-tl up-tl-close" type="button" aria-label="Close"><svg viewBox="0 0 6 6"><path d="M1 1 L5 5 M5 1 L1 5" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+        <button class="up-tl up-tl-min"   type="button" aria-label="Minimize"><svg viewBox="0 0 6 6"><path d="M1 4.2 L5 4.2" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+        <button class="up-tl up-tl-max"   type="button" aria-label="Maximize"><svg viewBox="0 0 6 6"><rect x="1" y="1" width="4" height="4" fill="none" stroke="#fff" stroke-width="1"/></svg></button>
+      </div>
+      <span class="up-titlebar-text">{{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}</span>
+      <div class="up-titlebar-spacer"></div>
+    </div>
+    <div class="up-window-body selectable">

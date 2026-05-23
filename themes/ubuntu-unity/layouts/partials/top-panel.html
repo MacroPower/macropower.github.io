@@ -1,1 +1,44 @@
-{{/* top-panel: filled by visual-chrome agent (Ubuntu top bar — app name slot, menus, sticky indicators, clock). */}}
+<div class="up-top-panel">
+  <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
+    {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
+  </div>
+  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="file" tabindex="0" role="button">File</span>
+  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="edit" tabindex="0" role="button">Edit</span>
+  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="view" tabindex="0" role="button">View</span>
+  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="help" tabindex="0" role="button">Help</span>
+  <div class="up-panel-spacer"></div>
+  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1">
+      <rect x="1" y="3" width="12" height="8" rx="1"/>
+      <path d="M1.5 3.5 L7 8 L12.5 3.5"/>
+    </svg>
+  </span>
+  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <rect x="2" y="9" width="2.5" height="3"/>
+      <rect x="5.5" y="6" width="2.5" height="6"/>
+      <rect x="9" y="3" width="2.5" height="9"/>
+    </svg>
+  </span>
+  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume">
+    <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor">
+      <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
+      <path d="M9 4 q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+      <path d="M11 2 q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    </svg>
+  </span>
+  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery">
+    <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1">
+      <rect x="1" y="3" width="17" height="8" rx="1"/>
+      <rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/>
+      <rect x="2.5" y="4.5" width="11" height="5" fill="currentColor" stroke="none"/>
+    </svg>
+  </span>
+  <span class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Clock">—:—</span>
+  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <circle cx="7" cy="5" r="2.5"/>
+      <path d="M2 12 c0-2.5 2.2-4.5 5-4.5 s5 2 5 4.5"/>
+    </svg>
+  </span>
+</div>

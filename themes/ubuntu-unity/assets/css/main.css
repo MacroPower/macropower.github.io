@@ -31,4 +31,248 @@ button{font-family:inherit}
 /* let normal text be selectable inside windows */
 .selectable, .selectable *{user-select:text;-webkit-user-select:text}
 
-/* chrome and component styles appended by other partials */
+/* =========================================================================
+   chrome: wallpaper, top panel, launcher, window chrome
+   ========================================================================= */
+
+body{
+  background:
+    radial-gradient(120% 100% at 50% 38%,
+      #77216F 0%, #4E1346 32%, #2C001E 68%, #1A0011 100%);
+  position:relative;
+}
+body::before{
+  content:"";
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 70% 18%,
+    rgba(255,255,255,.07) 0%, transparent 32%);
+  pointer-events:none;
+  z-index:0;
+}
+body::after{
+  content:"";
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(135deg,
+    rgba(255,255,255,.018) 0 1px, transparent 1px 7px);
+  mix-blend-mode:screen;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ---- top panel ---------------------------------------------------------- */
+
+.up-top-panel{
+  position:absolute; top:0; left:0; right:0;
+  height:24px;
+  z-index:50;
+  display:flex; align-items:stretch;
+  background:linear-gradient(180deg,
+    rgba(63,61,58,.96) 0%, rgba(37,36,35,.96) 100%);
+  border-bottom:1px solid rgba(0,0,0,.5);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  color:#E8E5E2;
+  font-size:12px;
+  user-select:none;
+}
+.up-panel-title{
+  flex:0 0 63px;
+  display:flex; align-items:center;
+  padding-left:8px;
+  color:#fff;
+  font-weight:700;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.up-panel-menu{
+  display:inline-flex; align-items:center;
+  height:100%;
+  padding:0 8px;
+  background:transparent;
+  border:0;
+  color:inherit;
+  font:inherit;
+  cursor:default;
+}
+.up-panel-menu:hover,
+.up-panel-menu.is-open{ background:rgba(255,255,255,.08); }
+.up-panel-spacer{ flex:1 1 auto; }
+.up-indicator{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:100%;
+  padding:0 6px;
+  color:inherit;
+  cursor:default;
+}
+.up-indicator:hover,
+.up-indicator.is-open{ background:rgba(255,255,255,.08); }
+.up-clock{
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+}
+
+/* ---- launcher ----------------------------------------------------------- */
+
+.up-launcher{
+  position:absolute; top:24px; left:0; bottom:0;
+  width:64px;
+  z-index:40;
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 0;
+  gap:8px;
+  background:linear-gradient(180deg,
+    rgba(28,5,22,.78) 0%, rgba(20,3,16,.84) 100%);
+  border-right:1px solid rgba(255,255,255,.06);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.up-launcher-spacer{ flex:1 1 auto; }
+.up-launcher-tile{
+  position:relative;
+  width:48px; height:48px;
+  padding:0;
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  transition:transform .12s ease;
+  text-decoration:none;
+}
+.up-launcher-tile:hover{ transform:scale(1.03); }
+.up-launcher-tile:active{ transform:scale(.92); }
+.up-launcher-icon{
+  display:block;
+  width:100%; height:100%;
+}
+.up-launcher-arrow{
+  display:none;
+  position:absolute;
+  left:-8px; top:50%;
+  transform:translateY(-50%);
+  width:0; height:0;
+  border-top:3.5px solid transparent;
+  border-bottom:3.5px solid transparent;
+  border-left:4px solid #fff;
+}
+.up-launcher-tile.is-active .up-launcher-arrow{ display:block; }
+.up-tooltip{
+  position:absolute;
+  left:60px; top:50%;
+  transform:translateY(-50%);
+  padding:3px 8px;
+  background:rgba(20,3,16,.92);
+  color:#F4F0EC;
+  font-size:12px;
+  white-space:nowrap;
+  border-radius:3px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .12s ease;
+  z-index:100;
+}
+.up-launcher-tile:hover .up-tooltip{ opacity:1; }
+
+/* ---- window chrome ------------------------------------------------------ */
+
+.up-window-stage{
+  position:absolute;
+  top:24px; left:0; right:0; bottom:0;
+  z-index:20;
+  display:flex; align-items:center; justify-content:center;
+  padding:24px 16px;
+}
+.up-window-chrome{
+  display:flex; flex-direction:column;
+  width:min(880px, calc(100% - 32px));
+  max-width:880px;
+  max-height:85vh;
+  border-radius:6px;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.55),
+    0 20px 50px rgba(0,0,0,.55),
+    0 4px 14px rgba(0,0,0,.35);
+}
+.up-titlebar{
+  flex-shrink:0;
+  height:26px;
+  display:flex; align-items:center;
+  padding:0 10px 0 6px;
+  background:linear-gradient(180deg,#3F3D3A 0%,#2A2825 100%);
+  border-top:1px solid rgba(0,0,0,.4);
+  border-left:1px solid rgba(0,0,0,.4);
+  border-right:1px solid rgba(0,0,0,.4);
+  border-bottom:1px solid rgba(0,0,0,.4);
+  cursor:default;
+}
+.up-tl-group{
+  display:flex; align-items:center; gap:4px;
+  margin-right:10px;
+}
+.up-tl{
+  width:14px; height:14px;
+  border-radius:7px;
+  border:0;
+  padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.3),
+    0 1px 0 rgba(0,0,0,.4);
+  cursor:default;
+}
+.up-tl svg{ opacity:.85; transition:opacity .12s ease; }
+.up-tl:hover svg{ opacity:1; }
+.up-tl-close{
+  background:radial-gradient(circle at 38% 32%,
+    #F0664A 0%, #C7391E 70%, #8C2410 100%);
+}
+.up-tl-close:hover{
+  background:radial-gradient(circle at 38% 32%,
+    #FF8060 0%, #DC4824 70%, #A02B12 100%);
+}
+.up-tl-min,
+.up-tl-max{
+  background:radial-gradient(circle at 38% 32%,
+    #6E6963 0%, #4A4540 70%, #2A2622 100%);
+}
+.up-tl-min:hover,
+.up-tl-max:hover{
+  background:radial-gradient(circle at 38% 32%,
+    #88837C 0%, #5C5750 70%, #34302C 100%);
+}
+.up-titlebar-text{
+  flex:1;
+  text-align:center;
+  color:#F4F0EC;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-right:60px;
+}
+.up-titlebar-spacer{ width:0; }
+.up-window-body{
+  flex:1 1 auto;
+  overflow:auto;
+  background:var(--content-bg);
+  color:var(--content-fg);
+  padding:24px 28px;
+}
+
+/* ---- desktop label ------------------------------------------------------ */
+
+.up-desktop-label{
+  position:absolute;
+  right:24px; bottom:24px;
+  z-index:10;
+  font-family:"Ubuntu Mono", monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.18);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  line-height:1.6;
+  text-align:right;
+  text-shadow:0 1px 4px rgba(0,0,0,.3);
+  pointer-events:none;
+}
