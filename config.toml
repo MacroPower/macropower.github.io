@@ -38,9 +38,6 @@ disableHugoGeneratorInject = false
 [permalinks]
   posts = "/posts/:year/:month/:title/"
 
-[author]
-  name = "Jacob Colvin"
-
 [blackfriday]
   hrefTargetBlank = true
 
@@ -108,12 +105,17 @@ disableHugoGeneratorInject = false
   #
   justifyContent = false  # Set "text-align: justify" to .post-content.
 
+  enableReadingTime = true
+
   # Integrate Plausible.io
   # plausibleDataDomain = 'test.com'
   # plausibleScriptSource = 'https://plausible.io/js/script.js'
 
-  # Custom footer 
-  # If you want, you can easily override the default footer with your own content. 
+  [params.author]
+    name = "Jacob Colvin"
+
+  # Custom footer
+  # If you want, you can easily override the default footer with your own content.
   #
   [params.footer]
     trademark = 2024

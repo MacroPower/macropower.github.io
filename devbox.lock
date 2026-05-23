@@ -2,54 +2,54 @@
   "lockfile_version": "1",
   "packages": {
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2025-06-27T03:16:46Z",
-      "resolved": "github:NixOS/nixpkgs/80d50fc87924c2a0d346372d242c27973cf8cdbf?lastModified=1750994206&narHash=sha256-3u6rEbIX9CN%2F5A5%2Fmc3u0wIO1geZ0EhjvPBXmRDHqWM%3D"
+      "last_modified": "2026-05-22T01:51:30Z",
+      "resolved": "github:NixOS/nixpkgs/6dedf69f94d03cbe7bdde106f2d4c23ae2a853bf?lastModified=1779414690&narHash=sha256-gOTcX%2F9MZVMUE0Xvb4IEcv%2B0TQJkZFNEnL757ljU360%3D"
     },
-    "hugo@0.124.0": {
-      "last_modified": "2024-03-23T13:32:18Z",
-      "resolved": "github:NixOS/nixpkgs/20bc93ca7b2158ebc99b8cef987a2173a81cde35#hugo",
+    "hugo@0.161.1": {
+      "last_modified": "2026-05-06T02:58:03Z",
+      "resolved": "github:NixOS/nixpkgs/ed67bc86e84e51d4a88e73c7fd36006dc876476f#hugo",
       "source": "devbox-search",
-      "version": "0.124.0",
+      "version": "0.161.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wdcwqw0qim2dzq3bj08jx37whx43wyb5-hugo-0.124.0",
+              "path": "/nix/store/jrv6dj1q7si162hdkbbx3kgy50kwn926-hugo-0.161.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wdcwqw0qim2dzq3bj08jx37whx43wyb5-hugo-0.124.0"
+          "store_path": "/nix/store/jrv6dj1q7si162hdkbbx3kgy50kwn926-hugo-0.161.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gaj6f8ia7ir3f8sd6rfna51s0bm1av2p-hugo-0.124.0",
+              "path": "/nix/store/n9rvp2cxgn188gpync9i4ys9vy1i75fs-hugo-0.161.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/gaj6f8ia7ir3f8sd6rfna51s0bm1av2p-hugo-0.124.0"
+          "store_path": "/nix/store/n9rvp2cxgn188gpync9i4ys9vy1i75fs-hugo-0.161.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/4cd06vgyc38fm45hp0w119fcqph294li-hugo-0.124.0",
+              "path": "/nix/store/dd1j05frj1f4hlr8jw1cws1nk4x45409-hugo-0.161.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/4cd06vgyc38fm45hp0w119fcqph294li-hugo-0.124.0"
+          "store_path": "/nix/store/dd1j05frj1f4hlr8jw1cws1nk4x45409-hugo-0.161.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/5f2lfh5ymqgx7wv5a9jx8h10srh2pdfv-hugo-0.124.0",
+              "path": "/nix/store/mb54l5cz11ppc1sl5kwipxl5rwh2zqpq-hugo-0.161.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/5f2lfh5ymqgx7wv5a9jx8h10srh2pdfv-hugo-0.124.0"
+          "store_path": "/nix/store/mb54l5cz11ppc1sl5kwipxl5rwh2zqpq-hugo-0.161.1"
         }
       }
     }
