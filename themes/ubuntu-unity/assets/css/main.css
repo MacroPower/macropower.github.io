@@ -198,6 +198,17 @@ body::after{
   transform:scale(.92);
   pointer-events:none;
 }
+.up-window-stage.is-maximized{
+  padding:0;
+  left:64px;
+}
+.up-window-stage.is-maximized .up-window-chrome{
+  width:100%;
+  max-width:none;
+  max-height:none;
+  height:100%;
+  border-radius:0;
+}
 .up-window-chrome{
   display:flex; flex-direction:column;
   width:min(880px, calc(100% - 32px));

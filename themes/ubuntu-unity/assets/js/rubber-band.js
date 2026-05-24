@@ -36,8 +36,10 @@ export function installPageRubberBand() {
 
   const closeBtn = page.querySelector(".up-tl-close");
   const minBtn   = page.querySelector(".up-tl-min");
+  const maxBtn   = page.querySelector(".up-tl-max");
   if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); hidePageWindow(page); });
   if (minBtn)   minBtn.addEventListener("click",   (e) => { e.stopPropagation(); hidePageWindow(page); });
+  if (maxBtn)   maxBtn.addEventListener("click",   (e) => { e.stopPropagation(); stage.classList.toggle("is-maximized"); });
 
   document.querySelectorAll('[data-launcher]').forEach((tile) => {
     tile.addEventListener("click", () => showPageWindow(page), { capture: true });
