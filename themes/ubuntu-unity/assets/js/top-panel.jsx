@@ -52,6 +52,15 @@ function TopPanel({ pageTitle }) {
     return () => window.removeEventListener(WINDOW_STATE_EVENT, h);
   }, []);
 
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 560);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 560px)");
+    const h = (e) => setNarrow(e.matches);
+    h(mq);
+    mq.addEventListener("change", h);
+    return () => { mq.removeEventListener("change", h); };
+  }, []);
+
   useEffect(() => {
     if (!openMenu) return;
     const handler = (e) => {
@@ -167,7 +176,7 @@ function TopPanel({ pageTitle }) {
 
       <div style={{ flex: 1 }} />
 
-      <PanelItem open={openMenu === "inbox"} onClick={() => toggle("inbox")}>
+      {!narrow && <PanelItem open={openMenu === "inbox"} onClick={() => toggle("inbox")}>
         <Glyph kind="env" />
         {openMenu === "inbox" && (
           <Dropdown align="right" stayOpen>
@@ -186,9 +195,9 @@ function TopPanel({ pageTitle }) {
             </DropBody>
           </Dropdown>
         )}
-      </PanelItem>
+      </PanelItem>}
 
-      <PanelItem open={openMenu === "net"} onClick={() => toggle("net")}>
+      {!narrow && <PanelItem open={openMenu === "net"} onClick={() => toggle("net")}>
         <Glyph kind="net" />
         {openMenu === "net" && (
           <Dropdown align="right" stayOpen>
@@ -214,7 +223,7 @@ function TopPanel({ pageTitle }) {
             </DropBody>
           </Dropdown>
         )}
-      </PanelItem>
+      </PanelItem>}
 
       <PanelItem open={openMenu === "vol"} onClick={() => toggle("vol")}>
         <Glyph kind="vol" muted={muted} />
@@ -247,7 +256,7 @@ function TopPanel({ pageTitle }) {
         )}
       </PanelItem>
 
-      <PanelItem open={openMenu === "bat"} onClick={() => toggle("bat")}>
+      {!narrow && <PanelItem open={openMenu === "bat"} onClick={() => toggle("bat")}>
         <Glyph kind="bat" />
         {openMenu === "bat" && (
           <Dropdown align="right" stayOpen>
@@ -271,10 +280,10 @@ function TopPanel({ pageTitle }) {
             </DropBody>
           </Dropdown>
         )}
-      </PanelItem>
+      </PanelItem>}
 
       <PanelItem strong open={openMenu === "clock"} onClick={() => toggle("clock")}>
-        {`${date}  ${time}`}
+        {narrow ? time : `${date}  ${time}`}
         {openMenu === "clock" && (
           <Dropdown align="right" wide stayOpen>
             <DropHeader>{longDate}</DropHeader>

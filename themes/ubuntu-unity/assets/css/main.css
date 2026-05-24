@@ -840,3 +840,19 @@ body.up-react-ready .up-top-panel[data-ssr]{display:none}
 }
 #up-trash-host > *{ pointer-events:auto; }
 
+/* =========================================================================
+   responsive: narrower launcher on phones, gentler window padding
+   ========================================================================= */
+@media (max-width:560px){
+  .up-launcher{ width:56px; }
+  .up-launcher-tile{ width:40px; height:40px; }
+  .up-launcher-arrow-left{ left:-6px; }
+  .up-launcher-arrow-right{ right:-6px; }
+  .up-launcher-tile:active .up-launcher-arrow-left{ left:-9px; }
+  .up-launcher-tile:active .up-launcher-arrow-right{ right:-9px; }
+  .up-window-stage{ padding:12px 8px; }
+  .up-window-stage.is-maximized{ left:56px; }
+  .up-pathbar-arrow,
+  .up-pathbar-icon-btn{ width:24px; height:24px; }
+}
+
