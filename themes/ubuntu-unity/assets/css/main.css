@@ -148,6 +148,7 @@ body::after{
 .up-launcher-icon{
   display:block;
   width:100%; height:100%;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));
 }
 .up-launcher-arrow{
   display:none;
