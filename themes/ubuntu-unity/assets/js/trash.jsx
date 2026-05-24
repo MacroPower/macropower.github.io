@@ -20,7 +20,7 @@ function PathBar({ handle }) {
   return (
     <div className="up-pathbar">
       <span className="up-pathbar-pill">{handle || ""}</span>
-      <span className="up-pathbar-sep">/</span>
+      <span className="up-pathbar-sep" aria-hidden="true">›</span>
       <span className="up-pathbar-pill is-current">trash</span>
     </div>
   );
