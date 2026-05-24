@@ -3,6 +3,14 @@
 <head>{{ partial "head.html" . }}</head>
 <body>
   <div id="root">
+    <svg class="up-wallpaper-glyph" width="240" height="240" viewBox="0 0 100 100" fill="#fff" aria-hidden="true">
+      <circle cx="50" cy="20" r="6"/>
+      <circle cx="22" cy="68" r="6"/>
+      <circle cx="78" cy="68" r="6"/>
+      <path d="M50 26 L26 64" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+      <path d="M50 26 L74 64" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+      <path d="M28 68 L72 68" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+    </svg>
     {{ partial "top-panel.html" . }}
     {{ partial "launcher.html" . }}
     {{ partial "window-frame-open.html" . }}
