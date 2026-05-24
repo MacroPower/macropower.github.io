@@ -21,6 +21,9 @@ function syncStageFocus(stage) {
   stage.classList.toggle("is-focused", focused);
   const chrome = stage.querySelector(".up-window-chrome");
   if (chrome) chrome.classList.toggle("is-focused", focused);
+  document.querySelectorAll('.up-launcher-tile.is-active:not([data-launcher-trash])').forEach((tile) => {
+    tile.classList.toggle('is-focused', focused);
+  });
 }
 
 export function installPageRubberBand() {
