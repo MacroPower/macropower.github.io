@@ -1,4 +1,5 @@
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
+import { installTitlebarDrag } from "./drag";
 
 interface PageWindowState {
   visible: boolean;
@@ -12,12 +13,6 @@ interface PageWindowStateWithFocus extends PageWindowState {
 }
 
 export const WINDOW_STATE_EVENT = "up:page-window-state";
-
-const damp = (d: number): number => {
-  const s = Math.sign(d);
-  const a = Math.abs(d);
-  return s * (a / (1 + a / 260));
-};
 
 function getPageTile(): HTMLElement | null {
   return (
@@ -51,7 +46,6 @@ export function installPageWindow(): void {
     maximized: false,
   };
   let transitioning = false;
-  let springRaf: number | null = null;
 
   const isFocused = (): boolean => state.visible && !getTrashFocused();
 
@@ -200,73 +194,9 @@ export function installPageWindow(): void {
   subscribe(syncFocus);
   syncFocus();
 
-  /* ----- Rubber-band drag on title bar ---------------------------------- */
-  const apply = (dx: number, dy: number): void => {
-    page.style.transform = (dx === 0 && dy === 0)
-      ? ""
-      : `translate3d(${dx}px, ${dy}px, 0)`;
-  };
-
-  page.addEventListener("mousedown", (e) => {
-    const target = e.target;
-    if (!(target instanceof Element)) return;
-    focusPageWindow();
-    if (state.maximized) return;
-    if (transitioning) return;
-
-    const tb = target.closest<HTMLElement>("[data-titlebar]");
-    if (!tb) return;
-    if (target.closest("button")) return;
-    e.preventDefault();
-
-    if (springRaf != null) {
-      cancelAnimationFrame(springRaf);
-      springRaf = null;
-    }
-    const startX = e.clientX;
-    const startY = e.clientY;
-
-    let cur = { dx: 0, dy: 0 };
-    const move = (ev: MouseEvent): void => {
-      cur = {
-        dx: damp(ev.clientX - startX),
-        dy: damp(ev.clientY - startY),
-      };
-      apply(cur.dx, cur.dy);
-    };
-    const up = (): void => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-      let x = cur.dx;
-      let y = cur.dy;
-      let vx = 0;
-      let vy = 0;
-      const stiffness = 320;
-      const damping = 26;
-      const mass = 1;
-      let lastT = performance.now();
-      const step = (now: number): void => {
-        let dt = (now - lastT) / 1000;
-        lastT = now;
-        if (dt > 0.032) dt = 0.032;
-        const ax = (-stiffness * x - damping * vx) / mass;
-        const ay = (-stiffness * y - damping * vy) / mass;
-        vx += ax * dt;
-        vy += ay * dt;
-        x  += vx * dt;
-        y  += vy * dt;
-        if (Math.abs(x) < 0.3 && Math.abs(y) < 0.3
-            && Math.abs(vx) < 0.5 && Math.abs(vy) < 0.5) {
-          apply(0, 0);
-          springRaf = null;
-          return;
-        }
-        apply(x, y);
-        springRaf = requestAnimationFrame(step);
-      };
-      springRaf = requestAnimationFrame(step);
-    };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+  page.addEventListener("mousedown", () => { focusPageWindow(); });
+  installTitlebarDrag(page, {
+    spring: true,
+    gate: () => !state.maximized && !transitioning,
   });
 }
