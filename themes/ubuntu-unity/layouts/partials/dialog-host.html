@@ -1,1 +1,23 @@
 <div id="up-dialog-host"></div>
+<template id="up-dialog-template">
+  <div class="up-dlg-backdrop"></div>
+  <div class="up-dialog" role="dialog" aria-modal="true">
+    <div class="up-dlg-titlebar" data-titlebar>
+      <button type="button" class="up-dlg-close" aria-label="Close">
+        <svg width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 L5 5 M5 1 L1 5" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg>
+      </button>
+      <div class="up-dlg-title" data-dlg-title>Information</div>
+    </div>
+    <div class="up-dlg-body">
+      <div class="up-dlg-icon up-dlg-icon-info" data-dlg-icon>
+        <span class="up-dlg-icon-glyph" data-dlg-icon-glyph>i</span>
+      </div>
+      <div class="up-dlg-content">
+        <div class="up-dlg-content-title" data-dlg-content-title hidden></div>
+        <div class="up-dlg-content-body" data-dlg-content-body hidden></div>
+        <pre class="up-dlg-content-details" data-dlg-content-details hidden></pre>
+      </div>
+    </div>
+    <div class="up-dlg-footer" data-dlg-footer></div>
+  </div>
+</template>
