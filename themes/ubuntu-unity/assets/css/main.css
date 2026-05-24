@@ -229,6 +229,11 @@ body::after{
   border-radius:6px;
   overflow:hidden;
   box-shadow:
+    0 0 0 1px rgba(0,0,0,.4),
+    0 8px 24px rgba(0,0,0,.4);
+}
+.up-window-chrome.is-focused{
+  box-shadow:
     0 0 0 1px rgba(0,0,0,.55),
     0 20px 50px rgba(0,0,0,.55),
     0 4px 14px rgba(0,0,0,.35);
