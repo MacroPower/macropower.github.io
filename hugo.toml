@@ -1,0 +1,209 @@
+baseURL      = "https://jacobcolvin.com"
+title        = "Jacob Colvin"
+languageCode = "en-us"
+theme        = "ubuntu-unity"
+
+# Maximum number of items in the RSS feed.
+rssLimit = 10
+
+# This message is only used by the RSS template.
+copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
+
+buildDrafts  = false
+buildFuture  = false
+buildExpired = false
+
+enableRobotsTXT = true
+enableGitInfo   = false
+enableEmoji     = true
+enableMissingTranslationPlaceholders = false
+disableRSS     = false
+disableSitemap = false
+disable404     = false
+
+[pagination]
+  pagerSize = 10
+
+[permalinks]
+  posts = "/posts/:year/:month/:title/"
+
+[taxonomies]
+  tag      = "tags"
+  category = "categories"
+  series   = "series"
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+  [markup.goldmark.parser.attribute]
+    # Enable {#id .class key=val} attribute lists on block and inline elements.
+    block = true
+    title = true
+
+[params]
+  dateform        = "Jan 2, 2006"
+  dateformShort   = "Jan 2"
+  dateformNum     = "2006-01-02"
+  dateformNumTime = "2006-01-02 15:04"
+
+  description = "Nice theme for homepages and blogs"
+  keywords    = ""
+  images      = [""]
+
+  # Home subtitle of the index page.
+  homeSubtitle = "Site Reliability Engineer"
+
+  # Set a background for the homepage.
+  # backgroundImage = "assets/images/background.jpg"
+
+  # Prefix of link to the git commit detail page. GitInfo must be enabled.
+  # gitUrl = ""
+
+  # Hide the links to other posts when set to true.
+  disableReadOtherPosts = false
+
+  # Enable theme toggle. The theme respects prefers-color-scheme; with this
+  # option on, the user can also explicitly set the scheme.
+  enableThemeToggle = true
+
+  # Sharing buttons. Configure custom buttons at https://sharingbuttons.io
+  # and override layouts/partials/sharing-buttons.html.
+  enableSharingButtons = true
+
+  # Enables the global language menu.
+  enableGlobalLanguageMenu = false
+
+  # Set "text-align: justify" on .post-content. Rebuilding SCSS requires
+  # the extended version of Hugo.
+  justifyContent = false
+
+  enableReadingTime = true
+
+  # Plausible analytics.
+  # plausibleDataDomain   = 'test.com'
+  # plausibleScriptSource = 'https://plausible.io/js/script.js'
+
+  [params.author]
+    name = "Jacob Colvin"
+
+  # Override the default footer.
+  [params.footer]
+    trademark = 2024
+    rss       = true
+    copyright = true
+    author    = true
+
+    topText    = []
+    bottomText = [
+      "Made with <a href=\"https://gohugo.io\">Hugo</a> + ubuntu-unity",
+      "Hosted on <a href=\"https://github.com/MacroPower/macropower.github.io\">Pages</a>"
+    ]
+
+  # Favicon mask + theme colors.
+  [params.favicon.color]
+    mask          = "#1b1c1d"
+    msapplication = "#1b1c1d"
+    theme         = "#1b1c1d"
+
+  [params.logo]
+    logoMark     = ">"
+    logoText     = "$ cd /home/"
+    logoHomeLink = "/"
+    # Remove the logo cursor entirely.
+    # logoCursorDisabled = false
+    # Override the cursor color with any valid CSS color.
+    # logoCursorColor    = "#67a2c9"
+    # Override the animation duration; "0s" disables it.
+    # logoCursorAnimate  = "2s"
+    # Append the current URL pathname to logoText.
+    logoCursorPathname = true
+
+  # Portrait on the start page.
+  # [params.portrait]
+  #   path     = "/img/image.jpg"
+  #   alt      = "Portrait"
+  #   maxWidth = "50px"
+
+  # Commento comments widget. Uncomment to enable.
+  # [params.commento]
+  #   url = ""
+
+  # Utterances comments widget. See https://utteranc.es/ for documentation.
+  # [params.utterances]
+  #   repository = ""
+  #   label      = ""
+  #   issueTerm  = ""
+  #   theme      = ""
+
+  # Social icons.
+
+  [[params.social]]
+    name = "github"
+    url  = "https://github.com/MacroPower"
+
+  [[params.social]]
+    name = "linkedin"
+    url  = "https://www.linkedin.com/in/colvinjm/"
+
+  [[params.social]]
+    name = "twitter"
+    url  = "https://twitter.com/0xMacro"
+
+  [[params.social]]
+    name = "youtube"
+    url  = "https://www.youtube.com/channel/UCZeubjnoztTC_RP_c4YOuYw"
+
+  [[params.social]]
+    name = "stackoverflow"
+    url  = "https://stackoverflow.com/users/4868262/jacob-colvin"
+
+  [[params.social]]
+    name = "hackthebox"
+    url  = "https://app.hackthebox.eu/users/427511"
+
+  [[params.social]]
+    name = "steam"
+    url  = "https://steamcommunity.com/id/MACROPOWER/"
+
+  [[params.social]]
+    name = "discogs"
+    url  = "https://www.discogs.com/user/MacroPower"
+
+  [[params.social]]
+    name = "reddit"
+    url  = "https://www.reddit.com/user/macropower"
+
+[languages]
+  [languages.en]
+    weight    = 1
+    copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+  [languages.en.params]
+    subtitle = "My Website"
+
+[menu]
+  [[menu.main]]
+    identifier = "about"
+    name       = "About"
+    url        = "about/"
+    weight     = 1
+  [[menu.main]]
+    identifier = "cv"
+    name       = "CV"
+    url        = "cv/"
+    weight     = 2
+  [[menu.main]]
+    identifier = "blog"
+    name       = "Blog"
+    url        = "posts/"
+    weight     = 3
+  [[menu.main]]
+    identifier = "contact"
+    name       = "Contact"
+    url        = "contact/"
+    weight     = 4
+
+[server]
+  [[server.headers]]
+    for = '/**.html'
+      [server.headers.values]
+        Access-Control-Allow-Origin = "*"
