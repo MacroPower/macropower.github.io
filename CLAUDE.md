@@ -11,7 +11,7 @@ Hugo static site for jacobcolvin.com, deployed to GitHub Pages from `main`. The 
 - `devbox shell` — enter a shell with the pinned Hugo on PATH.
 - `hugo server -D` — local dev server with drafts enabled; live-reloads on changes.
 - `hugo --minify` — production build into `public/` (the same command CI runs).
-- `git submodule update --remote` — refresh theme content (per README), even though there is no `.gitmodules` today; `themes/ubuntu-unity` and `themes/hello-friend-ng` are stored as regular tracked directories that point back at this same repo as `origin`. Treat them as in-tree forks unless/until a real submodule is wired up.
+- The only theme is `themes/ubuntu-unity/` — an in-tree fork. There are no git submodules even though the README mentions `git submodule update --remote`; that line is historical.
 
 ## Architecture
 
