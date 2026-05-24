@@ -321,10 +321,9 @@ body::after{
 }
 .up-window-body{
   flex:1 1 auto;
-  overflow:auto;
+  min-height:0;
   background:var(--content-bg);
   color:var(--content-fg);
-  padding:24px 28px;
 }
 
 /* ---- desktop label ------------------------------------------------------ */
