@@ -1,44 +1,207 @@
+{{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
+{{- $longDate := now.Format "Monday, 2 January 2006" -}}
+{{- $time := now.Format "15:04" -}}
+{{- $shortDate := now.Format "Mon, Jan 2" -}}
 <div class="up-top-panel" data-ssr>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
   </div>
-  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="file" tabindex="0" role="button">File</span>
-  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="edit" tabindex="0" role="button">Edit</span>
-  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="view" tabindex="0" role="button">View</span>
-  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="help" tabindex="0" role="button">Help</span>
+
+  <div class="up-panel-item">
+    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="file" tabindex="0" role="button">File</span>
+    <div class="up-dropdown" data-dropdown-for="file" data-align="left" hidden>
+      <div class="up-dropdown-body">
+        <div class="up-menu-item" data-action="nav:about"><span class="up-menu-item-label">Open about</span></div>
+        <div class="up-menu-item" data-action="nav:blog"><span class="up-menu-item-label">Open blog</span></div>
+        <div class="up-menu-item" data-action="nav:cv"><span class="up-menu-item-label">Open CV</span></div>
+        <div class="up-menu-item" data-action="nav:contact"><span class="up-menu-item-label">Open contact</span></div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Close window</span><span class="up-menu-item-shortcut">Ctrl+W</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="edit" tabindex="0" role="button">Edit</span>
+    <div class="up-dropdown" data-dropdown-for="edit" data-align="left" hidden>
+      <div class="up-dropdown-body">
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Undo</span><span class="up-menu-item-shortcut">Ctrl+Z</span></div>
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Redo</span><span class="up-menu-item-shortcut">Ctrl+Y</span></div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Cut</span><span class="up-menu-item-shortcut">Ctrl+X</span></div>
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Copy</span><span class="up-menu-item-shortcut">Ctrl+C</span></div>
+        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Paste</span><span class="up-menu-item-shortcut">Ctrl+V</span></div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-menu-item" data-action="dlg:prefs"><span class="up-menu-item-label">Preferences…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="view" tabindex="0" role="button">View</span>
+    <div class="up-dropdown" data-dropdown-for="view" data-align="left" hidden>
+      <div class="up-dropdown-body">
+        <div class="up-menu-item has-shortcut" data-action="reload"><span class="up-menu-item-label">Reload</span><span class="up-menu-item-shortcut">Ctrl+R</span></div>
+        <div class="up-menu-item" data-action="fullscreen"><span class="up-menu-item-label">Toggle full window</span></div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-menu-item has-check" data-action="dlg:launcher-info"><span class="up-menu-item-label">Show launcher</span></div>
+        <div class="up-menu-item has-check"><span class="up-menu-item-label">Show top panel</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="help" tabindex="0" role="button">Help</span>
+    <div class="up-dropdown" data-dropdown-for="help" data-align="left" hidden>
+      <div class="up-dropdown-body">
+        <div class="up-menu-item" data-action="nav:about"><span class="up-menu-item-label">About this site</span></div>
+        <div class="up-menu-item" data-action="dlg:shortcuts"><span class="up-menu-item-label">Keyboard shortcuts</span></div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-menu-item" data-action="nav:contact"><span class="up-menu-item-label">Get in touch</span></div>
+        <div class="up-menu-item" data-action="dlg:github"><span class="up-menu-item-label">View source on github</span></div>
+      </div>
+    </div>
+  </div>
+
   <div class="up-panel-spacer"></div>
-  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1">
-      <rect x="1" y="3" width="12" height="8" rx="1"/>
-      <path d="M1.5 3.5 L7 8 L12.5 3.5"/>
-    </svg>
-  </span>
-  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-      <rect x="2" y="9" width="2.5" height="3"/>
-      <rect x="5.5" y="6" width="2.5" height="6"/>
-      <rect x="9" y="3" width="2.5" height="9"/>
-    </svg>
-  </span>
-  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume">
-    <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor">
-      <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
-      <path d="M9 4 q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/>
-      <path d="M11 2 q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/>
-    </svg>
-  </span>
-  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery">
-    <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1">
-      <rect x="1" y="3" width="17" height="8" rx="1"/>
-      <rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/>
-      <rect x="2.5" y="4.5" width="11" height="5" fill="currentColor" stroke="none"/>
-    </svg>
-  </span>
-  <span class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Loading clock">—:—</span>
-  <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-      <circle cx="7" cy="5" r="2.5"/>
-      <path d="M2 12 c0-2.5 2.2-4.5 5-4.5 s5 2 5 4.5"/>
-    </svg>
-  </span>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="1" y="3" width="12" height="8" rx="1"/>
+        <path d="M1.5 3.5 L7 8 L12.5 3.5"/>
+      </svg>
+    </span>
+    <div class="up-dropdown" data-dropdown-for="inbox" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header">Messages</div>
+      <div class="up-dropdown-body">
+        <div class="up-dropdown-empty">No new messages.</div>
+        <div class="up-dropdown-row-buttons">
+          <button type="button" class="up-dropdown-btn" data-action="nav:contact">Compose</button>
+          <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">Subscribe to feed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+        <rect x="2" y="9" width="2.5" height="3"/>
+        <rect x="5.5" y="6" width="2.5" height="6"/>
+        <rect x="9" y="3" width="2.5" height="9"/>
+      </svg>
+    </span>
+    <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header">Network</div>
+      <div class="up-dropdown-body">
+        <div class="up-dropdown-row up-net-row is-strong is-on" data-net-name="café-do-bairro" data-net-on>
+          <span class="up-net-row-dot">●</span><span class="up-net-row-name">café-do-bairro</span>
+        </div>
+        <div class="up-dropdown-row up-net-row" data-net-name="MEO-WiFi">
+          <span class="up-net-row-dot">○</span><span class="up-net-row-name">MEO-WiFi</span>
+        </div>
+        <div class="up-dropdown-row up-net-row is-mono" data-net-name="ngrok-tunnel">
+          <span class="up-net-row-dot">○</span><span class="up-net-row-name">ngrok-tunnel</span>
+        </div>
+        <div class="up-dropdown-row up-net-row is-muted" data-net-name="(hidden)">
+          <span class="up-net-row-dot">○</span><span class="up-net-row-name">(hidden)</span>
+        </div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-dropdown-row" data-action="dlg:wired">Wired connection</div>
+        <div class="up-dropdown-row" data-action="dlg:hotspot">Enable hotspot</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume" data-vol-indicator>
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor" data-vol-glyph data-vol-glyph-on>
+        <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
+        <path d="M9 4 q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+        <path d="M11 2 q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+      </svg>
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor" data-vol-glyph data-vol-glyph-mute hidden>
+        <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
+        <path d="M9 4 L14 10 M14 4 L9 10" stroke="currentColor" stroke-width="1.2"/>
+      </svg>
+    </span>
+    <div class="up-dropdown" data-dropdown-for="vol" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header">Sound</div>
+      <div class="up-dropdown-body">
+        <div class="up-dropdown-row-flex">
+          <button type="button" class="up-vol-toggle" data-action="vol-toggle" aria-label="Toggle mute">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor" data-vol-glyph data-vol-glyph-on>
+              <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
+              <path d="M9 4 q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              <path d="M11 2 q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            </svg>
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="currentColor" data-vol-glyph data-vol-glyph-mute hidden>
+              <path d="M2 5 h2 l3-3 v10 l-3-3 h-2 z"/>
+              <path d="M9 4 L14 10 M14 4 L9 10" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+          <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="Volume">
+          <span class="up-vol-readout" data-vol-readout>62</span>
+        </div>
+        <div class="up-dropdown-meta">Output: <span class="up-dropdown-meta-strong">Built-in audio</span></div>
+        <div class="up-dropdown-meta-em">♪ Now playing: <i>Caetano Veloso — Transa, A1</i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery">
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1">
+        <rect x="1" y="3" width="17" height="8" rx="1"/>
+        <rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/>
+        <rect x="2.5" y="4.5" width="11" height="5" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header">Battery</div>
+      <div class="up-dropdown-body">
+        <div class="up-bat-headline">76% — discharging</div>
+        <div class="up-bat-detail">About 3 hours 14 minutes remaining</div>
+        <div class="up-bat-bar"><div class="up-bat-bar-fill" style="width:76%"></div></div>
+        <div class="up-dropdown-row" data-action="dlg:power-saver">Enable power saver</div>
+        <div class="up-dropdown-row" data-action="dlg:power">Power settings…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Clock">
+      <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
+      <span data-clock-narrow hidden>{{ $time }}</span>
+    </span>
+    <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
+      <div class="up-dropdown-body">
+        <div class="up-calendar" data-calendar></div>
+        <div class="up-dropdown-row" data-action="dlg:cal">Open calendar</div>
+        <div class="up-dropdown-row" data-action="dlg:time">Time settings…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-panel-item">
+    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+        <circle cx="7" cy="5" r="2.5"/>
+        <path d="M2 12 c0-2.5 2.2-4.5 5-4.5 s5 2 5 4.5"/>
+      </svg>
+    </span>
+    <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
+      <div class="up-dropdown-header">{{ $handle }}</div>
+      <div class="up-dropdown-body">
+        <div class="up-dropdown-row" data-action="nav:about">About me</div>
+        <div class="up-dropdown-row" data-action="nav:contact">Get in touch</div>
+        <div class="up-dropdown-sep"></div>
+        <div class="up-dropdown-row" data-action="dlg:lock">Lock screen</div>
+        <div class="up-dropdown-row" data-action="reload">Restart session</div>
+        <div class="up-dropdown-row is-danger" data-action="dlg:logout">Log out…</div>
+      </div>
+    </div>
+  </div>
 </div>
