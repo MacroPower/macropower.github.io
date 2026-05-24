@@ -725,9 +725,6 @@ body{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12px;color:#9A938D;
 }
-.up-reader-cursor{display:inline-block;animation:up-blink 1.1s steps(2,start) infinite}
-@keyframes up-blink{50%{opacity:0}}
-
 .up-reader-empty{display:flex;align-items:center;justify-content:center}
 .up-reader-empty-inner{text-align:center;color:#9A938D;font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace}
 .up-reader-empty-hint{font-size:18px;color:#7A7570;margin-bottom:8px}
