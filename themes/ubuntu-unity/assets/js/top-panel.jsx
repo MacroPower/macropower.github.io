@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
+import { subscribe, getTrashFocused } from "./focus.js";
 
 const LAUNCHER_URLS = {
   about: "/about/",
@@ -15,7 +16,9 @@ function navigate(key) {
   if (url) window.location.href = url;
 }
 
-function TopPanel({ focusedTitle }) {
+function TopPanel({ pageTitle }) {
+  const trashFocused = useSyncExternalStore(subscribe, getTrashFocused);
+  const focusedTitle = trashFocused ? "Trash" : pageTitle;
   const [now, setNow] = useState(new Date());
   const [openMenu, setOpenMenu] = useState(null);
   const [vol, setVol] = useState(62);
@@ -550,6 +553,6 @@ export function mountTopPanel() {
   host.id = "up-top-panel-host";
   root.insertBefore(host, root.firstChild);
   const titleFromSSR = document.querySelector(".up-top-panel[data-ssr] .up-panel-title");
-  const focusedTitle = (titleFromSSR?.textContent || document.title || "").trim();
-  createRoot(host).render(<TopPanel focusedTitle={focusedTitle} />);
+  const pageTitle = (titleFromSSR?.textContent || document.title || "").trim();
+  createRoot(host).render(<TopPanel pageTitle={pageTitle} />);
 }
