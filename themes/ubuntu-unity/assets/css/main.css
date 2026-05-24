@@ -586,7 +586,8 @@ body.up-react-ready .up-top-panel[data-ssr]{display:none}
 #up-trash-host{
   position:fixed;
   inset:0;
-  z-index:auto;
+  z-index:30;
   pointer-events:none;
 }
+#up-trash-host > *{ pointer-events:auto; }
 
