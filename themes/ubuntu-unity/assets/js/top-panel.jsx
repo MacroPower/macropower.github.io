@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
 import { subscribe, getTrashFocused } from "./focus.js";
+import { WINDOW_STATE_EVENT } from "./page-window.js";
 
 const LAUNCHER_URLS = {
   about: "/about/",
@@ -18,7 +19,18 @@ function navigate(key) {
 
 function TopPanel({ pageTitle }) {
   const trashFocused = useSyncExternalStore(subscribe, getTrashFocused);
-  const focusedTitle = trashFocused ? "Trash" : pageTitle;
+  const [winState, setWinState] = useState(() => {
+    const snap = (typeof window !== "undefined" && window.UP_PAGE_WINDOW_STATE) || {};
+    return {
+      visible: snap.visible !== false,
+      minimized: !!snap.minimized,
+      closed: !!snap.closed,
+    };
+  });
+  const desktopTitle = "Ubuntu";
+  const focusedTitle = trashFocused
+    ? "Trash"
+    : (winState.visible ? pageTitle : desktopTitle);
   const [now, setNow] = useState(new Date());
   const [openMenu, setOpenMenu] = useState(null);
   const [vol, setVol] = useState(62);
@@ -28,6 +40,16 @@ function TopPanel({ pageTitle }) {
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30 * 1000);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const h = (e) => setWinState({
+      visible: !!e.detail.visible,
+      minimized: !!e.detail.minimized,
+      closed: !!e.detail.closed,
+    });
+    window.addEventListener(WINDOW_STATE_EVENT, h);
+    return () => window.removeEventListener(WINDOW_STATE_EVENT, h);
   }, []);
 
   useEffect(() => {

@@ -206,11 +206,6 @@ body::after{
 .up-window-stage.is-focused{
   z-index:35;
 }
-.up-window-stage.is-hidden{
-  opacity:0;
-  transform:scale(.92);
-  pointer-events:none;
-}
 .up-window-stage.is-maximized{
   padding:0;
   left:64px;

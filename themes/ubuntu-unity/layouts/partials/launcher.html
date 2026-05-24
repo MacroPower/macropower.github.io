@@ -4,9 +4,14 @@
 {{ $cv      := relURL "cv/" }}
 {{ $blog    := relURL "posts/" }}
 {{ $contact := relURL "contact/" }}
-<aside class="up-launcher">
-  <a class="up-launcher-tile{{ if or (eq $current $about) (eq $current $home) }} is-active{{ end }}"
-     href="{{ $about }}" data-launcher="about" aria-label="About">
+{{- $aboutActive   := or (eq $current $about) (eq $current $home) -}}
+{{- $cvActive      := eq $current $cv -}}
+{{- $blogActive    := hasPrefix $current $blog -}}
+{{- $contactActive := eq $current $contact -}}
+<aside class="up-launcher" aria-label="Launcher">
+  <a class="up-launcher-tile{{ if $aboutActive }} is-active{{ end }}"
+     href="{{ $about }}" data-launcher="about" aria-label="About"
+     {{ if $aboutActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
       <svg viewBox="0 0 48 48" width="100%" height="100%">
         <defs>

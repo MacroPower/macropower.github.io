@@ -1,7 +1,7 @@
 import { mountDialogs } from "./dialogs.jsx";
 import { mountTopPanel } from "./top-panel.jsx";
 import { mountTrash } from "./trash.jsx";
-import { installPageRubberBand } from "./rubber-band.js";
+import { installPageWindow } from "./page-window.js";
 
 if (!window.React || !window.ReactDOM) {
   console.warn("ubuntu-unity: React/ReactDOM not loaded; interactive layer disabled");
@@ -9,6 +9,6 @@ if (!window.React || !window.ReactDOM) {
   mountDialogs();
   mountTopPanel();
   mountTrash();
-  installPageRubberBand();
+  installPageWindow();
   document.body.classList.add("up-react-ready");
 }
