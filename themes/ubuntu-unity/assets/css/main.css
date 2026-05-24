@@ -188,6 +188,15 @@ body::after{
   z-index:20;
   display:flex; align-items:center; justify-content:center;
   padding:24px 16px;
+  transition:opacity .18s ease, transform .25s ease;
+}
+.up-window-stage.is-focused{
+  z-index:35;
+}
+.up-window-stage.is-hidden{
+  opacity:0;
+  transform:scale(.92);
+  pointer-events:none;
 }
 .up-window-chrome{
   display:flex; flex-direction:column;
@@ -206,9 +215,12 @@ body::after{
   height:26px;
   display:flex; align-items:center;
   padding:0 10px 0 6px;
-  background:linear-gradient(180deg, var(--panel-grad-1) 0%, var(--chrome-2) 100%);
+  background:linear-gradient(180deg,#4D4A47 0%,#3B3835 100%);
   border-bottom:1px solid rgba(0,0,0,.4);
   cursor:default;
+}
+.up-window-chrome.is-focused .up-titlebar{
+  background:linear-gradient(180deg, var(--panel-grad-1) 0%, var(--chrome-2) 100%);
 }
 .up-tl-group{
   display:flex; align-items:center; gap:4px;
@@ -226,30 +238,40 @@ body::after{
     0 1px 0 rgba(0,0,0,.4);
   cursor:default;
 }
-.up-tl svg{ opacity:.85; transition:opacity .12s ease; }
-.up-tl:hover svg{ opacity:1; }
+.up-tl svg{ transition:opacity .12s ease; }
 .up-tl-close{
   background:radial-gradient(circle at 38% 32%,
-    #F0664A 0%, #C7391E 70%, #8C2410 100%);
-}
-.up-tl-close:hover{
-  background:radial-gradient(circle at 38% 32%,
-    #FF8060 0%, #DC4824 70%, #A02B12 100%);
+    #6E4842 0%, #4A2820 70%, #2C140F 100%);
 }
 .up-tl-min,
 .up-tl-max{
   background:radial-gradient(circle at 38% 32%,
+    #514D48 0%, #38342F 70%, #1F1C18 100%);
+}
+.up-window-chrome.is-focused .up-tl-close{
+  background:radial-gradient(circle at 38% 32%,
+    #F0664A 0%, #C7391E 70%, #8C2410 100%);
+}
+.up-window-chrome.is-focused .up-tl-close:hover{
+  background:radial-gradient(circle at 38% 32%,
+    #FF8060 0%, #DC4824 70%, #A02B12 100%);
+}
+.up-window-chrome.is-focused .up-tl-min,
+.up-window-chrome.is-focused .up-tl-max{
+  background:radial-gradient(circle at 38% 32%,
     #6E6963 0%, #4A4540 70%, #2A2622 100%);
 }
-.up-tl-min:hover,
-.up-tl-max:hover{
+.up-window-chrome.is-focused .up-tl-min:hover,
+.up-window-chrome.is-focused .up-tl-max:hover{
   background:radial-gradient(circle at 38% 32%,
     #88837C 0%, #5C5750 70%, #34302C 100%);
 }
+.up-tl svg{ opacity:.55; }
+.up-window-chrome.is-focused .up-tl svg{ opacity:1; }
 .up-titlebar-text{
   flex:1;
   text-align:center;
-  color:#F4F0EC;
+  color:#A8A29D;
   font-size:12px;
   font-weight:500;
   letter-spacing:.01em;
@@ -257,6 +279,9 @@ body::after{
   overflow:hidden;
   text-overflow:ellipsis;
   margin-right:60px;
+}
+.up-window-chrome.is-focused .up-titlebar-text{
+  color:#F4F0EC;
 }
 .up-window-body{
   flex:1 1 auto;

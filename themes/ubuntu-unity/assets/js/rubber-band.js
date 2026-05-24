@@ -1,4 +1,4 @@
-import { setTrashFocused } from "./focus.js";
+import { setTrashFocused, subscribe, getTrashFocused } from "./focus.js";
 
 const damp = (d) => {
   const s = Math.sign(d);
@@ -6,9 +6,39 @@ const damp = (d) => {
   return s * (a / (1 + a / 260));
 };
 
+function hidePageWindow(page) {
+  const stage = page.closest(".up-window-stage") || page;
+  stage.classList.add("is-hidden");
+}
+
+function showPageWindow(page) {
+  const stage = page.closest(".up-window-stage") || page;
+  stage.classList.remove("is-hidden");
+}
+
+function syncStageFocus(stage) {
+  const focused = !getTrashFocused();
+  stage.classList.toggle("is-focused", focused);
+  const chrome = stage.querySelector(".up-window-chrome");
+  if (chrome) chrome.classList.toggle("is-focused", focused);
+}
+
 export function installPageRubberBand() {
   const page = document.querySelector("[data-page-window]");
   if (!page) return;
+  const stage = page.closest(".up-window-stage") || page;
+
+  syncStageFocus(stage);
+  subscribe(() => syncStageFocus(stage));
+
+  const closeBtn = page.querySelector(".up-tl-close");
+  const minBtn   = page.querySelector(".up-tl-min");
+  if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); hidePageWindow(page); });
+  if (minBtn)   minBtn.addEventListener("click",   (e) => { e.stopPropagation(); hidePageWindow(page); });
+
+  document.querySelectorAll('[data-launcher]').forEach((tile) => {
+    tile.addEventListener("click", () => showPageWindow(page), { capture: true });
+  });
 
   let springRaf = null;
 
