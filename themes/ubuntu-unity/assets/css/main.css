@@ -165,18 +165,30 @@ body::after{
 .up-launcher-tile:active .up-launcher-arrow{ left:-11px; }
 .up-tooltip{
   position:absolute;
-  left:60px; top:50%;
+  left:56px; top:50%;
   transform:translateY(-50%);
-  padding:3px 8px;
-  background:rgba(20,3,16,.92);
-  color:#F4F0EC;
+  padding:5px 10px;
+  background:rgba(28,5,22,.95);
+  color:#fff;
   font-size:12px;
   white-space:nowrap;
+  border:1px solid rgba(255,255,255,.08);
   border-radius:3px;
+  box-shadow:0 4px 10px rgba(0,0,0,.4);
   opacity:0;
   pointer-events:none;
   transition:opacity .12s ease;
   z-index:100;
+}
+.up-tooltip::before{
+  content:"";
+  position:absolute;
+  left:-5px; top:50%;
+  transform:translateY(-50%);
+  width:0; height:0;
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+  border-right:5px solid rgba(28,5,22,.95);
 }
 .up-launcher-tile:hover .up-tooltip{ opacity:1; }
 
