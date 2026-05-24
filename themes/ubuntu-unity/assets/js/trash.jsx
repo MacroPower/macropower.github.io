@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
 import { WindowChrome } from "./window-chrome.jsx";
-import { setTrashFocused, subscribe, getTrashFocused } from "./focus.js";
+import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
 
 const TRASH_W = 480;
 const TRASH_H = 340;

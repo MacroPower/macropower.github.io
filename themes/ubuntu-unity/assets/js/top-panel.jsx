@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
-import { subscribe, getTrashFocused } from "./focus.js";
-import { WINDOW_STATE_EVENT } from "./page-window.js";
+import { subscribe, getTrashFocused } from "./focus";
+import { WINDOW_STATE_EVENT } from "./page-window";
 
 const LAUNCHER_URLS = {
   about: "/about/",

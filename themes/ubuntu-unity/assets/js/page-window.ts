@@ -1,43 +1,61 @@
-import { setTrashFocused, subscribe, getTrashFocused } from "./focus.js";
+import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
 
-const damp = (d) => {
+interface PageWindowState {
+  visible: boolean;
+  minimized: boolean;
+  closed: boolean;
+  maximized: boolean;
+}
+
+interface PageWindowStateWithFocus extends PageWindowState {
+  focused: boolean;
+}
+
+export const WINDOW_STATE_EVENT = "up:page-window-state";
+
+const damp = (d: number): number => {
   const s = Math.sign(d);
   const a = Math.abs(d);
   return s * (a / (1 + a / 260));
 };
 
-function getPageTile() {
-  return document.querySelector(".up-launcher-tile[data-page-current]")
-      || document.querySelector(".up-launcher-tile.is-active:not([data-launcher-trash])");
+function getPageTile(): HTMLElement | null {
+  return (
+    document.querySelector<HTMLElement>(".up-launcher-tile[data-page-current]")
+    || document.querySelector<HTMLElement>(".up-launcher-tile.is-active:not([data-launcher-trash])")
+  );
 }
 
-export const WINDOW_STATE_EVENT = "up:page-window-state";
-
-function emitState(state) {
+function emitState(state: PageWindowStateWithFocus): void {
   window.UP_PAGE_WINDOW_STATE = state;
   window.dispatchEvent(new CustomEvent(WINDOW_STATE_EVENT, { detail: state }));
 }
 
-export function installPageWindow() {
-  const page = document.querySelector("[data-page-window]");
+export function installPageWindow(): void {
+  const page = document.querySelector<HTMLElement>("[data-page-window]");
   if (!page) return;
-  const stage = page.closest(".up-window-stage") || page;
-  const chrome = stage.querySelector(".up-window-chrome") || page;
+  const stage = (page.closest<HTMLElement>(".up-window-stage") ?? page);
+  const chrome = (stage.querySelector<HTMLElement>(".up-window-chrome") ?? page);
 
-  const closeBtn = page.querySelector(".up-tl-close");
-  const minBtn   = page.querySelector(".up-tl-min");
-  const maxBtn   = page.querySelector(".up-tl-max");
-  const titlebar = page.querySelector("[data-titlebar]");
+  const closeBtn = page.querySelector<HTMLElement>(".up-tl-close");
+  const minBtn   = page.querySelector<HTMLElement>(".up-tl-min");
+  const maxBtn   = page.querySelector<HTMLElement>(".up-tl-max");
+  const titlebar = page.querySelector<HTMLElement>("[data-titlebar]");
 
   const pageTile = getPageTile();
 
-  let state = { visible: true, minimized: false, closed: false, maximized: false };
+  const state: PageWindowState = {
+    visible: true,
+    minimized: false,
+    closed: false,
+    maximized: false,
+  };
   let transitioning = false;
-  let springRaf = null;
+  let springRaf: number | null = null;
 
-  const isFocused = () => state.visible && !getTrashFocused();
+  const isFocused = (): boolean => state.visible && !getTrashFocused();
 
-  function syncFocus() {
+  function syncFocus(): void {
     const focused = isFocused();
     stage.classList.toggle("is-focused", focused);
     chrome.classList.toggle("is-focused", focused);
@@ -48,26 +66,26 @@ export function installPageWindow() {
     emitState({ ...state, focused });
   }
 
-  function focusPageWindow() {
+  function focusPageWindow(): void {
     if (!state.visible) return;
     if (!getTrashFocused()) {
       syncFocus();
       return;
     }
-    // The subscribe callback below will fire syncFocus when trash unfocuses.
+    // The subscribe callback below fires syncFocus when trash unfocuses.
     setTrashFocused(false);
   }
 
-  function waitForTransition(el, fallbackMs) {
+  function waitForTransition(el: HTMLElement, fallbackMs: number): Promise<void> {
     return new Promise((resolve) => {
       let done = false;
-      const finish = () => {
+      const finish = (): void => {
         if (done) return;
         done = true;
         el.removeEventListener("transitionend", onEnd);
         resolve();
       };
-      const onEnd = (e) => {
+      const onEnd = (e: TransitionEvent): void => {
         if (e.target !== el) return;
         if (e.propertyName !== "transform") return;
         finish();
@@ -77,7 +95,7 @@ export function installPageWindow() {
     });
   }
 
-  async function flyOut() {
+  async function flyOut(): Promise<boolean> {
     if (transitioning) return false;
     const tile = pageTile;
     if (!tile) {
@@ -101,7 +119,7 @@ export function installPageWindow() {
     return true;
   }
 
-  async function flyIn() {
+  async function flyIn(): Promise<boolean> {
     if (transitioning) return false;
     stage.style.visibility = "";
     // Force layout so the shrunk transform is committed before we animate back.
@@ -117,7 +135,7 @@ export function installPageWindow() {
     return true;
   }
 
-  async function minimize() {
+  async function minimize(): Promise<void> {
     if (!state.visible || transitioning) return;
     const ok = await flyOut();
     if (!ok) return;
@@ -127,7 +145,7 @@ export function installPageWindow() {
     syncFocus();
   }
 
-  async function close() {
+  async function close(): Promise<void> {
     if ((!state.visible && !state.minimized) || transitioning) return;
     const ok = await flyOut();
     if (!ok) return;
@@ -137,7 +155,7 @@ export function installPageWindow() {
     syncFocus();
   }
 
-  async function restore() {
+  async function restore(): Promise<void> {
     if (state.visible || transitioning) return;
     if (pageTile) pageTile.classList.add("is-active");
     const ok = await flyIn();
@@ -149,33 +167,32 @@ export function installPageWindow() {
     syncFocus();
   }
 
-  function toggleMaximize() {
+  function toggleMaximize(): void {
     state.maximized = !state.maximized;
     stage.classList.toggle("is-maximized", state.maximized);
     emitState({ ...state, focused: isFocused() });
   }
 
-  if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); close(); });
-  if (minBtn)   minBtn.addEventListener("click",   (e) => { e.stopPropagation(); minimize(); });
-  if (maxBtn)   maxBtn.addEventListener("click",   (e) => { e.stopPropagation(); toggleMaximize(); });
+  closeBtn?.addEventListener("click", (e) => { e.stopPropagation(); void close(); });
+  minBtn?.addEventListener("click",   (e) => { e.stopPropagation(); void minimize(); });
+  maxBtn?.addEventListener("click",   (e) => { e.stopPropagation(); toggleMaximize(); });
 
-  if (titlebar) {
-    titlebar.addEventListener("dblclick", (e) => {
-      if (e.target.closest("button")) return;
-      toggleMaximize();
-    });
-  }
+  titlebar?.addEventListener("dblclick", (e) => {
+    const target = e.target as Element | null;
+    if (target?.closest("button")) return;
+    toggleMaximize();
+  });
 
   if (pageTile) {
-    // active page tile behaves like Unity's dock: cycles between focus, minimize, restore
+    // Active page tile mirrors Unity's dock cycle: focus, minimize, restore.
     pageTile.addEventListener("click", (e) => {
       e.preventDefault();
       if (!state.visible) {
-        restore();
+        void restore();
       } else if (!isFocused()) {
         focusPageWindow();
       } else {
-        minimize();
+        void minimize();
       }
     });
   }
@@ -184,47 +201,51 @@ export function installPageWindow() {
   syncFocus();
 
   /* ----- Rubber-band drag on title bar ---------------------------------- */
-  const apply = (dx, dy) => {
+  const apply = (dx: number, dy: number): void => {
     page.style.transform = (dx === 0 && dy === 0)
       ? ""
       : `translate3d(${dx}px, ${dy}px, 0)`;
   };
 
   page.addEventListener("mousedown", (e) => {
-    if (!(e.target instanceof Element)) return;
+    const target = e.target;
+    if (!(target instanceof Element)) return;
     focusPageWindow();
     if (state.maximized) return;
     if (transitioning) return;
 
-    const tb = e.target.closest("[data-titlebar]");
+    const tb = target.closest<HTMLElement>("[data-titlebar]");
     if (!tb) return;
-    if (e.target.closest("button")) return;
+    if (target.closest("button")) return;
     e.preventDefault();
 
-    if (springRaf) {
+    if (springRaf != null) {
       cancelAnimationFrame(springRaf);
       springRaf = null;
     }
-    const startX = e.clientX, startY = e.clientY;
+    const startX = e.clientX;
+    const startY = e.clientY;
 
     let cur = { dx: 0, dy: 0 };
-    const move = (ev) => {
+    const move = (ev: MouseEvent): void => {
       cur = {
         dx: damp(ev.clientX - startX),
         dy: damp(ev.clientY - startY),
       };
       apply(cur.dx, cur.dy);
     };
-    const up = () => {
+    const up = (): void => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
-      let x = cur.dx, y = cur.dy;
-      let vx = 0, vy = 0;
+      let x = cur.dx;
+      let y = cur.dy;
+      let vx = 0;
+      let vy = 0;
       const stiffness = 320;
       const damping = 26;
       const mass = 1;
       let lastT = performance.now();
-      const step = (now) => {
+      const step = (now: number): void => {
         let dt = (now - lastT) / 1000;
         lastT = now;
         if (dt > 0.032) dt = 0.032;
