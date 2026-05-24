@@ -145,15 +145,16 @@ function TopPanel({ pageTitle }) {
     }}>
       <div data-panel-trigger style={{
         display: "inline-flex", alignItems: "center",
-        height: 24, paddingLeft: 8, paddingRight: 0,
-        width: 63, flex: "0 0 63px",
+        height: 24, padding: "0 12px 0 8px",
+        flex: "0 0 auto", minWidth: 0,
+        maxWidth: "min(40vw, 280px)",
         color: "#fff", fontWeight: 700, userSelect: "none",
       }}>
         <span style={{
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>{focusedTitle.split(" — ")[0] || focusedTitle}</span>
+        }}>{focusedTitle}</span>
       </div>
-      {["file", "edit", "view", "help"].map((m) => (
+      {!narrow && ["file", "edit", "view", "help"].map((m) => (
         <PanelItem key={m} open={openMenu === m} onClick={() => toggle(m)}>
           {m[0].toUpperCase() + m.slice(1)}
           {openMenu === m && (
