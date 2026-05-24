@@ -1,8 +1,10 @@
 {{ define "main" }}
   <article class="up-blog selectable" data-blog-kind="section">
-    {{ partial "page/post-pathbar.html" (dict "segments" (slice
-        (dict "label" "Home" "url" "/")
-        (dict "label" "Posts" "url" .RelPermalink))) }}
+    {{ partial "page/post-pathbar.html" (dict
+        "segments" (slice
+          (dict "label" "Home" "url" "/")
+          (dict "label" "Posts" "url" .RelPermalink))
+        "search" true) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}
       {{ partial "page/post-list.html" (dict

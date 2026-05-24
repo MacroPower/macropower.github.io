@@ -2,23 +2,40 @@
 {{- $here := .here -}}
 {{- $dateFmt := site.Params.dateformNum | default "2006-01-02" -}}
 
-<section class="up-post-list" aria-label="Posts">
-  <header class="up-post-list-header">
-    <span>Name</span>
-    <span>Date</span>
+<section class="up-post-list" aria-label="Posts" data-up-post-list>
+  <header class="up-post-list-header" role="row">
+    <button type="button" class="up-post-list-col" data-up-sort="name" role="columnheader" aria-sort="none">
+      <span>Name</span>
+      <span class="up-post-list-caret" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="up-post-list-col is-sorted is-desc" data-up-sort="date" role="columnheader" aria-sort="descending">
+      <span>Date</span>
+      <span class="up-post-list-caret" aria-hidden="true">▾</span>
+    </button>
   </header>
-  {{- range $pages.ByDate.Reverse }}
-    {{- $isActive := and (ne $here "") (eq $here .RelPermalink) }}
-    <a class="up-post-row{{ if $isActive }} is-active{{ end }}" href="{{ .RelPermalink }}">
-      <div class="up-post-row-main">
-        <div class="up-post-title">{{ .Title }}</div>
-        <div class="up-post-meta">
-          {{- range .Params.categories }}
-            <span class="up-post-chip">#{{ . }}</span>
-          {{- end }}
+  <div class="up-post-list-body" data-up-post-list-body>
+    {{- range $pages.ByDate.Reverse }}
+      {{- $isActive := and (ne $here "") (eq $here .RelPermalink) }}
+      {{- $tagList := slice }}
+      {{- range .Params.categories }}{{ $tagList = $tagList | append (lower .) }}{{ end }}
+      <a class="up-post-row{{ if $isActive }} is-active{{ end }}"
+         href="{{ .RelPermalink }}"
+         data-up-post-row
+         data-title="{{ lower .Title }}"
+         data-tags="{{ delimit $tagList " " }}"
+         data-date="{{ .Date.Format "2006-01-02" }}"
+         {{- if $isActive }} aria-current="page"{{ end }}>
+        <div class="up-post-row-main">
+          <div class="up-post-title">{{ .Title }}</div>
+          <div class="up-post-meta">
+            {{- range .Params.categories }}
+              <span class="up-post-chip">#{{ . }}</span>
+            {{- end }}
+          </div>
         </div>
-      </div>
-      <time class="up-post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
-    </a>
-  {{- end }}
+        <time class="up-post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
+      </a>
+    {{- end }}
+    <div class="up-post-empty" data-up-post-empty hidden>No posts match.</div>
+  </div>
 </section>

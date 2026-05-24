@@ -1,19 +1,22 @@
 {{ define "main" }}
-  {{- $here := .RelPermalink -}}
-  {{- $section := .CurrentSection -}}
-  {{- $siblings := slice -}}
-  {{- with $section -}}{{ $siblings = .RegularPages }}{{- end -}}
+  {{/* In Hugo, .PrevInSection walks back in time, .NextInSection walks forward. */}}
+  {{- $older := .PrevInSection -}}
+  {{- $newer := .NextInSection -}}
+  {{- $prevURL := "" }}{{ with $older }}{{ $prevURL = .RelPermalink }}{{ end }}
+  {{- $nextURL := "" }}{{ with $newer }}{{ $nextURL = .RelPermalink }}{{ end }}
+  {{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = .Title }}{{ end }}
+  {{- $nextTitle := "" }}{{ with $newer }}{{ $nextTitle = .Title }}{{ end }}
   <article class="up-blog selectable" data-blog-kind="post">
-    {{ partial "page/post-pathbar.html" (dict "segments" (slice
-        (dict "label" "Home" "url" "/")
-        (dict "label" "Posts" "url" "/posts/")
-        (dict "label" .Title "url" .RelPermalink))) }}
-    <div class="up-blog-grid">
-      {{ partial "page/post-sidebar.html" . }}
-      {{ partial "page/post-list.html" (dict
-          "pages" $siblings
-          "here" $here) }}
-      {{ partial "page/post-reader.html" . }}
+    {{ partial "page/post-pathbar.html" (dict
+        "segments" (slice
+          (dict "label" "Home" "url" "/")
+          (dict "label" "Posts" "url" "/posts/")
+          (dict "label" .Title "url" .RelPermalink))
+        "prevURL" $prevURL "prevTitle" $prevTitle
+        "nextURL" $nextURL "nextTitle" $nextTitle) }}
+    <div class="up-reader-progress" data-up-reader-progress aria-hidden="true">
+      <div class="up-reader-progress-bar" data-up-reader-progress-bar></div>
     </div>
+    {{ partial "page/post-reader.html" . }}
   </article>
 {{ end }}
