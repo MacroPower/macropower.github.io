@@ -50,6 +50,8 @@ export function installTitlebarDrag(
     const startY = e.clientY;
     const originX = baseX;
     const originY = baseY;
+    const rect = el.getBoundingClientRect();
+    const untransformedTop = rect.top - originY;
 
     let cur = { dx: originX, dy: originY };
     const move = (ev: MouseEvent): void => {
@@ -61,7 +63,10 @@ export function installTitlebarDrag(
       } else {
         dx = originX + (ev.clientX - startX);
         dy = originY + (ev.clientY - startY);
-        if (yMin != null && dy < yMin) dy = yMin;
+        if (yMin != null) {
+          const minDy = yMin - untransformedTop;
+          if (dy < minDy) dy = minDy;
+        }
       }
       cur = { dx, dy };
       apply(dx, dy);

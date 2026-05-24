@@ -1,6 +1,6 @@
 import { mountDialogs } from "./dialogs";
 import { mountTopPanel } from "./top-panel";
-import { mountTrash } from "./trash";
+import { initTrash } from "./trash";
 import { installPageWindow } from "./page-window";
 
 if (!window.React || !window.ReactDOM) {
@@ -8,7 +8,7 @@ if (!window.React || !window.ReactDOM) {
 } else {
   mountDialogs();
   mountTopPanel();
-  mountTrash();
+  initTrash();
   installPageWindow();
   document.body.classList.add("up-react-ready");
 }
