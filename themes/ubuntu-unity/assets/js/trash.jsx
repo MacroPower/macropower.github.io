@@ -5,9 +5,16 @@ import { setTrashFocused, subscribe, getTrashFocused } from "./focus.js";
 
 const TRASH_W = 480;
 const TRASH_H = 340;
-const CASCADE_X = 96;
-const CASCADE_Y = 96;
+const CASCADE_X = 32;
+const CASCADE_Y = 28;
 const SIDE_OFFSET = 64;
+
+function syncLauncherTile(open, focused) {
+  const tile = document.querySelector('[data-launcher-trash]');
+  if (!tile) return;
+  tile.classList.toggle('is-active', !!open);
+  tile.classList.toggle('is-focused', !!(open && focused));
+}
 
 function PathBar({ handle }) {
   return (
@@ -57,13 +64,17 @@ function TrashBody({ handle }) {
 function Trash() {
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const [pos, setPos] = useState({ x: SIDE_OFFSET + 32 + CASCADE_X, y: 24 + 28 + CASCADE_Y });
+  const [pos, setPos] = useState({ x: SIDE_OFFSET + CASCADE_X, y: 24 + CASCADE_Y });
   const [dragging, setDragging] = useState(false);
   const focused = useSyncExternalStore(subscribe, getTrashFocused);
   const handle = (window.UP_SITE && window.UP_SITE.handle) || "";
 
   const stateRef = useRef({ open, minimized });
   stateRef.current = { open, minimized };
+
+  useEffect(() => {
+    syncLauncherTile(open && !minimized, focused);
+  }, [open, minimized, focused]);
 
   useEffect(() => {
     const onTrashClick = (e) => {

@@ -157,9 +157,12 @@ body::after{
   width:0; height:0;
   border-top:3.5px solid transparent;
   border-bottom:3.5px solid transparent;
-  border-left:4px solid #fff;
+  border-left:4px solid rgba(255,255,255,.55);
+  transition:left .12s ease;
 }
 .up-launcher-tile.is-active .up-launcher-arrow{ display:block; }
+.up-launcher-tile.is-focused .up-launcher-arrow{ border-left-color:#fff; }
+.up-launcher-tile:active .up-launcher-arrow{ left:-11px; }
 .up-tooltip{
   position:absolute;
   left:60px; top:50%;
