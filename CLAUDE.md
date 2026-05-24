@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Hugo static site for jacobcolvin.com, deployed to GitHub Pages from `main`. The Hugo version is pinned in two places that must be kept in sync: `devbox.json` (local dev) and `.github/workflows/gh-pages.yml` (`peaceiris/actions-hugo` step). When upgrading, bump both.
+Hugo static site for jacobcolvin.com, deployed to GitHub Pages from `main`. The Hugo version is pinned in two places that must be kept in sync: `devbox.json` (local dev) and `.github/workflows/gh-pages.yml` (`peaceiris/actions-hugo` step). When upgrading, bump both. Dart Sass is pinned the same way in `devbox.json` and the `Install Dart Sass` step in `.github/workflows/gh-pages.yml`. Keep both in sync when upgrading.
 
 ## Commands
 

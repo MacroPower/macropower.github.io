@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top panel, vertical launcher dock, a single "window" containing the page content, and a trash icon. Everything is server-rendered by Hugo partials and styled by `assets/css/main.css`; small TypeScript modules under `assets/js/` enhance the SSR DOM (dropdown toggling, drag, clock tick, dialog stack, etc.). The TS compiles through Hugo Pipes (`resources.Get | js.Build | resources.Fingerprint`) at site-build time, called from `baseof.html` and `head.html` — there is no separate build step inside this directory.
+A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top panel, vertical launcher dock, a single "window" containing the page content, and a trash icon. Everything is server-rendered by Hugo partials and styled by `assets/css/main.scss`; small TypeScript modules under `assets/js/` enhance the SSR DOM (dropdown toggling, drag, clock tick, dialog stack, etc.). The TS compiles through Hugo Pipes (`resources.Get | js.Build | resources.Fingerprint`) at site-build time, called from `baseof.html` and `head.html` — there is no separate build step inside this directory.
 
 ## Anatomy
 
-- `assets/css/main.css` (~1200 lines) — every Unity-styled selector lives here, all prefixed `up-` (Ubuntu/Unity). One file by design; do not split it.
+- `assets/css/main.scss` (~1200 lines) — every Unity-styled selector lives here, all prefixed `up-` (Ubuntu/Unity). One file by design; do not split it.
 - `assets/js/app.ts` — entry point. Calls `initDialogs`, `initTopPanel`, `initTrash`, `installPageWindow`, then tags `<body>` with `up-ready`.
 - `assets/js/blog.ts` — IIFE module. Drives the post list's filter/sort/search and the focused single-post reader. Manipulates server-rendered DOM directly (`data-up-post-row`, `data-up-search-*`, etc.).
 - `assets/js/dialogs.ts` — clones `<template id="up-dialog-template">` once per `window.uiDialog(opts)` call, fills slots, stacks modal dialogs, handles Esc/Enter, backdrop-shake, and titlebar drag via CSS custom properties `--ox` / `--oy` so the shake keyframe respects per-dialog drag offset.
@@ -47,6 +47,6 @@ The Hugo partials must keep emitting these. Rename any and the corresponding TS 
 
 ## Editing notes
 
-- `hugo.IsProduction` controls esbuild minification of the app and blog bundles; the CSS path always minifies via `resources.Minify`. SRI integrity attributes are emitted for every fingerprinted asset.
+- `hugo.IsProduction` controls esbuild minification of the app and blog bundles; the CSS pipeline is `css.Sass | resources.Minify | resources.Fingerprint`, with `outputStyle: expanded` passed to Dart Sass so Hugo's minifier remains the size-reducing step. SRI integrity attributes are emitted for every fingerprinted asset.
 - Fonts are split: Ubuntu / Ubuntu Mono come from Google Fonts (preconnected in `head.html`), while Fira Code is self-hosted by the parent site under `static/`.
 - New dropdown content goes in `partials/top-panel.html` as a `[data-dropdown-for=<key>]` sibling of the matching trigger; new actionable rows just need `data-action`. Add a case to `dispatchAction()` in `top-panel.ts` if the action key is new.
