@@ -3,3 +3,5 @@
 .playwright-cli/
 resources/
 public/
+node_modules/
+*.tsbuildinfo

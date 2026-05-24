@@ -1,14 +1,19 @@
 {
   "$schema":  "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
-  "packages": ["hugo@0.161.1"],
+  "packages": [
+    "hugo@0.161.1",
+    "nodejs@22",
+    "lefthook@latest"
+  ],
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
+      "test -d node_modules || npm install --silent",
+      "lefthook install -f >/dev/null"
     ],
     "scripts": {
-      "test": [
-        "echo \"Error: no test specified\" && exit 1"
-      ]
+      "build":     ["hugo --minify"],
+      "serve":     ["hugo server -D --disableFastRender"],
+      "typecheck": ["npx tsc --noEmit"]
     }
   }
 }

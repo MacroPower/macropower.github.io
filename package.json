@@ -1,0 +1,13 @@
+{
+  "name": "jacobcolvin-com",
+  "private": true,
+  "description": "Personal Hugo site for jacobcolvin.com. Type-checks the ubuntu-unity theme's TypeScript sources; Hugo's esbuild does the actual bundling.",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.7.2"
+  }
+}
