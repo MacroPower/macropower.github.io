@@ -1,6 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 
-export function WindowChrome({ w, focused, onPointerDown, onClose, onMin, onMax, children }) {
+export interface WindowProps {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  z: number;
+  minimized: boolean;
+  dragging?: boolean;
+  dx?: number;
+  dy?: number;
+  title: string;
+}
+
+type TitleBtnKind = "close" | "min" | "max";
+
+interface WindowChromeProps {
+  w: WindowProps;
+  focused: boolean;
+  onPointerDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClose: () => void;
+  onMin: () => void;
+  onMax: () => void;
+  children?: ReactNode;
+}
+
+export function WindowChrome({
+  w,
+  focused,
+  onPointerDown,
+  onClose,
+  onMin,
+  onMax,
+  children,
+}: WindowChromeProps): JSX.Element {
   const tbActive = "linear-gradient(180deg,#3F3D3A 0%,#2A2825 100%)";
   const tbIdle   = "linear-gradient(180deg,#4D4A47 0%,#3B3835 100%)";
 
@@ -21,7 +54,7 @@ export function WindowChrome({ w, focused, onPointerDown, onClose, onMin, onMax,
         transform: w.minimized
           ? `translate(${-w.x + 24}px, ${window.innerHeight - w.y + 40}px) scale(.1)`
           : (w.dx || w.dy)
-            ? `translate(${w.dx}px, ${w.dy}px)`
+            ? `translate(${w.dx ?? 0}px, ${w.dy ?? 0}px)`
             : "none",
         pointerEvents: w.minimized ? "none" : "auto",
         transition: (w.dragging || w.dx || w.dy)
@@ -60,25 +93,38 @@ export function WindowChrome({ w, focused, onPointerDown, onClose, onMin, onMax,
   );
 }
 
-function TitleBtn({ kind, onClick, focused }) {
+interface TitleBtnProps {
+  kind: TitleBtnKind;
+  onClick: () => void;
+  focused: boolean;
+}
+
+interface Palette {
+  base: string;
+  hover: string;
+  idle: string;
+}
+
+const PALETTES: Record<TitleBtnKind, Palette> = {
+  close: {
+    base:  "radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%)",
+    hover: "radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%)",
+    idle:  "radial-gradient(circle at 38% 32%, #6E4842 0%, #4A2820 70%, #2C140F 100%)",
+  },
+  min: {
+    base:  "radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%)",
+    hover: "radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%)",
+    idle:  "radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%)",
+  },
+  max: {
+    base:  "radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%)",
+    hover: "radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%)",
+    idle:  "radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%)",
+  },
+};
+
+function TitleBtn({ kind, onClick, focused }: TitleBtnProps): JSX.Element {
   const [hover, setHover] = useState(false);
-  const PALETTES = {
-    close: {
-      base:  "radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%)",
-      hover: "radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%)",
-      idle:  "radial-gradient(circle at 38% 32%, #6E4842 0%, #4A2820 70%, #2C140F 100%)",
-    },
-    min: {
-      base:  "radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%)",
-      hover: "radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%)",
-      idle:  "radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%)",
-    },
-    max: {
-      base:  "radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%)",
-      hover: "radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%)",
-      idle:  "radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%)",
-    },
-  };
   const p = PALETTES[kind];
   const bg = !focused ? p.idle : (hover ? p.hover : p.base);
 
