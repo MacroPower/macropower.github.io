@@ -12,6 +12,14 @@
     {{ partial "trash-window.html" . }}
   </div>
 
+  {{ $gh := where .Site.Params.social "name" "github" }}
+  {{ $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower }}
+  {{ $github := "" }}{{ with index $gh 0 }}{{ $github = .url }}{{ end }}
+  {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
+  <script>
+window.UP_SITE = {{ (dict "handle" $handle "github" $github "rss" $rss) | jsonify | safeJS }};
+  </script>
+
   <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
   <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
 
