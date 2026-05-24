@@ -14,14 +14,61 @@ const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 function navigate(key: string): void {
   const url = LAUNCHER_URLS[key];
-  if (url) window.location.href = url;
+  if (!url) {
+    console.warn("ubuntu-unity: no launcher URL for", key);
+    return;
+  }
+  window.location.href = url;
 }
 
 function dlg(opts: UPDialogOptions): Promise<string | null> {
   return window.uiDialog?.(opts) ?? Promise.resolve<string | null>(null);
 }
 
-const desktopTitle = "Ubuntu";
+const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
+  "dlg:prefs": () => ({ icon: "info", title: "Preferences",
+    body: "This site doesn't ship a settings panel." }),
+  "dlg:launcher-info": () => ({ icon: "info", title: "Launcher is always shown",
+    body: "The launcher is part of the shell." }),
+  "dlg:shortcuts": () => ({
+    icon: "info", title: "Keyboard shortcuts",
+    body: "A few shortcuts work across the desktop:",
+    details: "Ctrl+W       close the focused window\nEsc           dismiss menus and dialogs\nDrag titlebar to reposition any window or dialog.",
+  }),
+  "dlg:github": (site) => ({
+    icon: "info", title: "Source",
+    body: site.github
+      ? "This is a personal site living at " + site.github + "."
+      : "This is a personal site.",
+    buttons: [{ id: "ok", label: "OK", primary: true }],
+  }),
+  "dlg:subscribe": (site) => ({
+    icon: "success", title: "Subscribed",
+    body: site.rss
+      ? "Pretend-subscribed to " + site.rss + ". Drop the URL into your reader of choice."
+      : "Pretend-subscribed. Drop the feed URL into your reader of choice.",
+  }),
+  "dlg:wired": () => ({ icon: "warning", title: "No wired connection",
+    body: "No ethernet cable detected. Plug one in to use a wired network." }),
+  "dlg:hotspot": () => ({
+    icon: "question", title: "Enable Wi-Fi hotspot?",
+    body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
+    buttons: [
+      { id: "cancel", label: "Cancel" },
+      { id: "on", label: "Enable hotspot", primary: true },
+    ],
+  }),
+  "dlg:power-saver": () => ({ icon: "success", title: "Power saver enabled",
+    body: "Screen will dim after 1 minute. Background tasks throttled." }),
+  "dlg:power": () => ({ icon: "info", title: "Power settings",
+    body: "The System Settings panel isn't wired up in this build. The raw data lives in /sys/class/power_supply/BAT0/uevent." }),
+  "dlg:cal": () => ({ icon: "info", title: "Calendar",
+    body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
+  "dlg:time": () => ({ icon: "info", title: "Time & date",
+    body: "Time zone: Europe/Lisbon (WEST, UTC+1). Synced via NTP." }),
+  "dlg:lock": () => ({ icon: "info", title: "Lock screen",
+    body: "Just kidding — there's nothing to lock. This is a website." }),
+};
 
 function renderCalendar(host: HTMLElement, now: Date): void {
   const y = now.getFullYear();
@@ -62,97 +109,30 @@ function renderCalendar(host: HTMLElement, now: Date): void {
 }
 
 function dispatchAction(action: string): void {
-  if (action.startsWith("nav:")) {
-    navigate(action.slice(4));
-    return;
-  }
+  if (action.startsWith("nav:")) { navigate(action.slice(4)); return; }
   if (action === "reload") { window.location.reload(); return; }
   if (action === "fullscreen") {
     void document.documentElement.requestFullscreen?.().catch(() => {});
     return;
   }
   const site = getSite();
-  switch (action) {
-    case "dlg:prefs":
-      void dlg({ icon: "info", title: "Preferences",
-        body: "This site doesn't ship a settings panel." });
-      return;
-    case "dlg:launcher-info":
-      void dlg({ icon: "info", title: "Launcher is always shown",
-        body: "The launcher is part of the shell." });
-      return;
-    case "dlg:shortcuts":
-      void dlg({
-        icon: "info", title: "Keyboard shortcuts",
-        body: "A few shortcuts work across the desktop:",
-        details: "Ctrl+W       close the focused window\nEsc           dismiss menus and dialogs\nDrag titlebar to reposition any window or dialog.",
-      });
-      return;
-    case "dlg:github":
-      void dlg({
-        icon: "info", title: "Source",
-        body: site.github
-          ? "This is a personal site living at " + site.github + "."
-          : "This is a personal site.",
-        buttons: [{ id: "ok", label: "OK", primary: true }],
-      });
-      return;
-    case "dlg:subscribe":
-      void dlg({
-        icon: "success", title: "Subscribed",
-        body: site.rss
-          ? "Pretend-subscribed to " + site.rss + ". Drop the URL into your reader of choice."
-          : "Pretend-subscribed. Drop the feed URL into your reader of choice.",
-      });
-      return;
-    case "dlg:wired":
-      void dlg({ icon: "warning", title: "No wired connection",
-        body: "No ethernet cable detected. Plug one in to use a wired network." });
-      return;
-    case "dlg:hotspot":
-      void dlg({
-        icon: "question", title: "Enable Wi-Fi hotspot?",
-        body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
+  const preset = DLG_PRESETS[action];
+  if (preset) { void dlg(preset(site)); return; }
+  if (action === "dlg:logout") {
+    void (async () => {
+      const r = await dlg({
+        icon: "question", title: "Log out of " + (site.handle || "user") + "?",
+        body: "All unsaved windows will be closed. You can sign back in by reloading the page.",
         buttons: [
           { id: "cancel", label: "Cancel" },
-          { id: "on", label: "Enable hotspot", primary: true },
+          { id: "out", label: "Log out", primary: true, danger: true },
         ],
       });
-      return;
-    case "dlg:power-saver":
-      void dlg({ icon: "success", title: "Power saver enabled",
-        body: "Screen will dim after 1 minute. Background tasks throttled." });
-      return;
-    case "dlg:power":
-      void dlg({ icon: "info", title: "Power settings",
-        body: "The System Settings panel isn't wired up in this build. The raw data lives in /sys/class/power_supply/BAT0/uevent." });
-      return;
-    case "dlg:cal":
-      void dlg({ icon: "info", title: "Calendar",
-        body: "No events today. The next thing on the calendar is a haircut next Tuesday." });
-      return;
-    case "dlg:time":
-      void dlg({ icon: "info", title: "Time & date",
-        body: "Time zone: Europe/Lisbon (WEST, UTC+1). Synced via NTP." });
-      return;
-    case "dlg:lock":
-      void dlg({ icon: "info", title: "Lock screen",
-        body: "Just kidding — there's nothing to lock. This is a website." });
-      return;
-    case "dlg:logout":
-      void (async () => {
-        const r = await dlg({
-          icon: "question", title: "Log out of " + (site.handle || "user") + "?",
-          body: "All unsaved windows will be closed. You can sign back in by reloading the page.",
-          buttons: [
-            { id: "cancel", label: "Cancel" },
-            { id: "out", label: "Log out", primary: true, danger: true },
-          ],
-        });
-        if (r === "out") window.location.reload();
-      })();
-      return;
+      if (r === "out") window.location.reload();
+    })();
+    return;
   }
+  console.warn("ubuntu-unity: unknown action", action);
 }
 
 async function netClick(row: HTMLElement): Promise<void> {
@@ -188,61 +168,67 @@ export function initTopPanel(): void {
   const clockLongDate = panel.querySelector<HTMLElement>("[data-clock-longdate]");
   const calendarHost = panel.querySelector<HTMLElement>("[data-calendar]");
 
-  const initialPageTitle = (titleSlot?.textContent ?? "").trim();
-  let pageTitle = initialPageTitle;
+  const pageTitle = (titleSlot?.textContent ?? "").trim();
   let winVisible = window.UP_PAGE_WINDOW_STATE?.visible !== false;
+  let lastTitleText = titleSlot?.textContent ?? "";
 
   const setTitle = (text: string): void => {
-    if (titleSlot) titleSlot.textContent = text;
+    if (text === lastTitleText || !titleSlot) return;
+    titleSlot.textContent = text;
+    lastTitleText = text;
   };
 
   const syncTitle = (): void => {
     if (getTrashFocused()) { setTitle("Trash"); return; }
-    setTitle(winVisible ? pageTitle : desktopTitle);
+    setTitle(winVisible ? pageTitle : "Ubuntu");
   };
 
   window.addEventListener(WINDOW_STATE_EVENT, (e) => {
-    const detail = (e as CustomEvent<UPPageWindowState>).detail;
-    winVisible = Boolean(detail.visible);
+    winVisible = Boolean((e as CustomEvent<UPPageWindowState>).detail.visible);
     syncTitle();
   });
   subscribe(syncTitle);
 
-  /* ----- clock ---------------------------------------------------------- */
-
   const narrowMQ = window.matchMedia("(max-width: 560px)");
+  const fmtTime = (d: Date): string =>
+    d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  const fmtShortDate = (d: Date): string =>
+    d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+  const fmtLongDate = (d: Date): string =>
+    d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+  let lastClockText = "";
   const tickClock = (): void => {
     const now = new Date();
-    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-    const date = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
-    if (clockWide) clockWide.textContent = `${date}  ${time}`;
-    if (clockNarrow) clockNarrow.textContent = time;
-    if (clockLongDate) {
-      clockLongDate.textContent = now.toLocaleDateString([],
-        { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    }
+    const text = narrowMQ.matches
+      ? fmtTime(now)
+      : `${fmtShortDate(now)}  ${fmtTime(now)}`;
+    if (text === lastClockText) return;
+    lastClockText = text;
+    const target = narrowMQ.matches ? clockNarrow : clockWide;
+    if (target) target.textContent = text;
   };
   const syncClockMode = (): void => {
     if (clockWide) clockWide.hidden = narrowMQ.matches;
     if (clockNarrow) clockNarrow.hidden = !narrowMQ.matches;
+    lastClockText = "";
+    tickClock();
   };
   syncClockMode();
-  tickClock();
   setInterval(tickClock, 30 * 1000);
   narrowMQ.addEventListener("change", syncClockMode);
-
-  /* ----- dropdown open/close ------------------------------------------- */
 
   const triggers = Array.from(
     panel.querySelectorAll<HTMLElement>("[data-panel-trigger][data-menu], [data-panel-trigger][data-indicator]"),
   );
+  const dropdownByTrigger = new Map<HTMLElement, HTMLElement>();
+  for (const t of triggers) {
+    const drop = t.parentElement?.querySelector<HTMLElement>("[data-dropdown-for]");
+    if (drop) dropdownByTrigger.set(t, drop);
+  }
+
   let openTrigger: HTMLElement | null = null;
   let openDropdown: HTMLElement | null = null;
-
-  const dropdownFor = (trig: HTMLElement): HTMLElement | null => {
-    const wrap = trig.parentElement;
-    return wrap?.querySelector<HTMLElement>("[data-dropdown-for]") ?? null;
-  };
 
   const closeOpen = (): void => {
     if (!openTrigger || !openDropdown) return;
@@ -253,7 +239,7 @@ export function initTopPanel(): void {
   };
 
   const openTriggerEl = (trig: HTMLElement): void => {
-    const drop = dropdownFor(trig);
+    const drop = dropdownByTrigger.get(trig);
     if (!drop) return;
     if (openTrigger === trig) { closeOpen(); return; }
     closeOpen();
@@ -261,8 +247,10 @@ export function initTopPanel(): void {
     trig.classList.add("is-open");
     openTrigger = trig;
     openDropdown = drop;
-    if (trig.dataset.indicator === "clock" && calendarHost) {
-      renderCalendar(calendarHost, new Date());
+    if (trig.dataset.indicator === "clock") {
+      const now = new Date();
+      if (clockLongDate) clockLongDate.textContent = fmtLongDate(now);
+      if (calendarHost) renderCalendar(calendarHost, now);
     }
   };
 
@@ -286,7 +274,25 @@ export function initTopPanel(): void {
     if (e.key === "Escape" && openTrigger) closeOpen();
   });
 
-  /* ----- action dispatch ----------------------------------------------- */
+  const vol = { level: 62, muted: false };
+  const slider = panel.querySelector<HTMLInputElement>("[data-vol-slider]");
+  const readout = panel.querySelector<HTMLElement>("[data-vol-readout]");
+  const volGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-vol-glyph]"));
+
+  const syncVolUI = (): void => {
+    for (const g of volGlyphs) {
+      const isMuteGlyph = g.hasAttribute("data-vol-glyph-mute");
+      g.hidden = isMuteGlyph ? !vol.muted : vol.muted;
+    }
+    if (slider) slider.value = String(vol.muted ? 0 : vol.level);
+    if (readout) readout.textContent = vol.muted ? "—" : String(vol.level);
+  };
+
+  slider?.addEventListener("input", () => {
+    vol.level = Number(slider.value);
+    vol.muted = false;
+    syncVolUI();
+  });
 
   panel.addEventListener("click", (e) => {
     const target = e.target as Element | null;
@@ -309,28 +315,6 @@ export function initTopPanel(): void {
     }
     closeOpen();
     dispatchAction(action);
-  });
-
-  /* ----- volume slider -------------------------------------------------- */
-
-  const vol = { level: 62, muted: false };
-  const slider = panel.querySelector<HTMLInputElement>("[data-vol-slider]");
-  const readout = panel.querySelector<HTMLElement>("[data-vol-readout]");
-  const volGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-vol-glyph]"));
-
-  const syncVolUI = (): void => {
-    for (const g of volGlyphs) {
-      const isMuteGlyph = g.hasAttribute("data-vol-glyph-mute");
-      g.hidden = isMuteGlyph ? !vol.muted : vol.muted;
-    }
-    if (slider) slider.value = String(vol.muted ? 0 : vol.level);
-    if (readout) readout.textContent = vol.muted ? "—" : String(vol.level);
-  };
-
-  slider?.addEventListener("input", () => {
-    vol.level = Number(slider.value);
-    vol.muted = false;
-    syncVolUI();
   });
 
   syncVolUI();

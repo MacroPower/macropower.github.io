@@ -56,6 +56,10 @@ function makeButton(d: DialogEntry, b: UPDialogButton, isLast: boolean): HTMLBut
   return btn;
 }
 
+// Drag is inline (not via drag.ts) because the dialog stores its offset
+// in CSS custom properties --ox/--oy so the dlgShake keyframe can compose
+// with the drag offset. drag.ts writes transform directly, which would
+// clobber the keyframe.
 function installDialogDrag(d: DialogEntry): void {
   const titlebar = d.dialog.querySelector<HTMLElement>("[data-titlebar]");
   if (!titlebar) return;
@@ -139,9 +143,6 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
       cdetailsEl.textContent = details;
       cdetailsEl.hidden = false;
     }
-
-    dialog.style.setProperty("--ox", "0px");
-    dialog.style.setProperty("--oy", "0px");
 
     const d: DialogEntry = {
       id: ++dialogSeq,
