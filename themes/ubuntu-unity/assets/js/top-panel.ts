@@ -302,13 +302,12 @@ export function initTopPanel(): void {
     if (actionEl.classList.contains("is-disabled")) return;
     const action = actionEl.dataset.action;
     if (!action) return;
-    if (action.startsWith("nav:")) closeOpen();
-    if (action !== "vol-toggle") closeOpen();
     if (action === "vol-toggle") {
       vol.muted = !vol.muted;
       syncVolUI();
       return;
     }
+    closeOpen();
     dispatchAction(action);
   });
 

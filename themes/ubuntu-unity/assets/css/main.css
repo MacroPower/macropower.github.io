@@ -1187,6 +1187,15 @@ body::after{
 }
 .up-trash-stage > *{pointer-events:auto}
 .up-trash-stage[hidden]{display:none}
+.up-trash-stage .up-window-chrome{
+  position:absolute;
+  left:96px; top:52px;
+  width:480px; height:340px;
+  max-width:none; max-height:none;
+}
+.up-trash-stage .up-window-body{
+  display:flex; flex-direction:column;
+}
 .up-trash-empty{
   flex:1;
   display:flex; flex-direction:column;

@@ -1,7 +1,3 @@
-// Plain (non-React) module driving the post list's filter/sort/search and the
-// focused single-post reader. Lives outside the React tree because it
-// manipulates server-rendered DOM directly (data-up-post-row, data-up-search-*).
-
 type SortKey = "name" | "date";
 type SortDir = "asc" | "desc";
 

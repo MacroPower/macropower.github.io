@@ -1,6 +1,6 @@
 {{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
 <div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
-  <section class="up-window-chrome" style="position:absolute; left:96px; top:52px; width:480px; height:340px; max-height:none;">
+  <section class="up-window-chrome">
     <div class="up-titlebar" data-titlebar>
       <div class="up-tl-group">
         <button class="up-tl up-tl-close" type="button" aria-label="Close"><svg width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 L5 5 M5 1 L1 5" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/></svg></button>
@@ -8,7 +8,7 @@
       </div>
       <span class="up-titlebar-text">Trash</span>
     </div>
-    <div class="up-window-body" style="display:flex; flex-direction:column;">
+    <div class="up-window-body">
       <div class="up-pathbar">
         <span class="up-pathbar-pill">{{ $handle }}</span>
         <span class="up-pathbar-sep" aria-hidden="true">›</span>

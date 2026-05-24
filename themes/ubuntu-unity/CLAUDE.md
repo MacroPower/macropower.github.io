@@ -9,7 +9,7 @@ A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top 
 ## Anatomy
 
 - `assets/css/main.css` (~1200 lines) — every Unity-styled selector lives here, all prefixed `up-` (Ubuntu/Unity). One file by design; do not split it.
-- `assets/js/app.ts` — entry point. Calls `initDialogs`, `initTopPanel`, `initTrash`, `installPageWindow`, then tags `<body>` with `up-ready` for any future CSS hook.
+- `assets/js/app.ts` — entry point. Calls `initDialogs`, `initTopPanel`, `initTrash`, `installPageWindow`, then tags `<body>` with `up-ready`.
 - `assets/js/blog.ts` — IIFE module. Drives the post list's filter/sort/search and the focused single-post reader. Manipulates server-rendered DOM directly (`data-up-post-row`, `data-up-search-*`, etc.).
 - `assets/js/dialogs.ts` — clones `<template id="up-dialog-template">` once per `window.uiDialog(opts)` call, fills slots, stacks modal dialogs, handles Esc/Enter, backdrop-shake, and titlebar drag via CSS custom properties `--ox` / `--oy` so the shake keyframe respects per-dialog drag offset.
 - `assets/js/drag.ts` — `installTitlebarDrag(el, opts)` shared by page-window and trash. `spring: true` reproduces the page-window rubber-band; `spring: false` (trash) freezes the chrome at release. Optional `yMin` clamps the final viewport-y, optional `gate` predicate suppresses drag based on outer state (maximized, transitioning).
