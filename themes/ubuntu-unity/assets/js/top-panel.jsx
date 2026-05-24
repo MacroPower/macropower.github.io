@@ -47,6 +47,7 @@ function TopPanel({ pageTitle }) {
   }, [openMenu]);
 
   const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  const date = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
   const longDate = now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   const toggle = (k) => setOpenMenu((cur) => cur === k ? null : k);
@@ -250,7 +251,7 @@ function TopPanel({ pageTitle }) {
       </PanelItem>
 
       <PanelItem strong open={openMenu === "clock"} onClick={() => toggle("clock")}>
-        {time}
+        {`${date}  ${time}`}
         {openMenu === "clock" && (
           <Dropdown align="right" wide stayOpen>
             <DropHeader>{longDate}</DropHeader>
