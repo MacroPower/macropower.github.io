@@ -153,17 +153,28 @@ body::after{
 .up-launcher-arrow{
   display:none;
   position:absolute;
-  left:-8px; top:50%;
-  transform:translateY(-50%);
+  top:50%;
   width:0; height:0;
   border-top:3.5px solid transparent;
   border-bottom:3.5px solid transparent;
-  border-left:4px solid rgba(255,255,255,.55);
-  transition:left .12s ease;
+  transform:translateY(-50%);
+  transition:left .12s ease, right .12s ease;
 }
-.up-launcher-tile.is-active .up-launcher-arrow{ display:block; }
-.up-launcher-tile.is-focused .up-launcher-arrow{ border-left-color:#fff; }
-.up-launcher-tile:active .up-launcher-arrow{ left:-11px; }
+.up-launcher-arrow-left{
+  left:-8px;
+  border-left:4px solid rgba(255,255,255,.55);
+}
+.up-launcher-arrow-right{
+  right:-8px;
+  border-right:4px solid #fff;
+}
+.up-launcher-tile.is-active .up-launcher-arrow-left{ display:block; }
+.up-launcher-tile.is-focused .up-launcher-arrow-right{ display:block; }
+.up-launcher-tile.is-focused .up-launcher-arrow-left{
+  border-left-color:#fff;
+}
+.up-launcher-tile:active .up-launcher-arrow-left{ left:-11px; }
+.up-launcher-tile:active .up-launcher-arrow-right{ right:-11px; }
 .up-tooltip{
   position:absolute;
   left:56px; top:50%;
