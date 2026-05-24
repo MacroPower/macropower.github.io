@@ -21,7 +21,6 @@
     "verbatimModuleSyntax": false
   },
   "include": [
-    "themes/ubuntu-unity/assets/js/**/*",
-    "types/**/*"
+    "themes/ubuntu-unity/assets/js/**/*"
   ]
 }

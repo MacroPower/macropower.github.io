@@ -1,6 +1,6 @@
-import { mountDialogs } from "./dialogs.jsx";
-import { mountTopPanel } from "./top-panel.jsx";
-import { mountTrash } from "./trash.jsx";
+import { mountDialogs } from "./dialogs";
+import { mountTopPanel } from "./top-panel";
+import { mountTrash } from "./trash";
 import { installPageWindow } from "./page-window";
 
 if (!window.React || !window.ReactDOM) {

@@ -1,7 +1,8 @@
-// Ambient declarations for the runtime surface that ubuntu-unity's modules
-// share through `window`. Keep this file in lockstep with the JS objects
-// assigned in baseof.html (UP_SITE), page-window.ts (UP_PAGE_WINDOW_STATE,
-// WINDOW_STATE_EVENT) and dialogs.tsx (uiDialog).
+// Shared types for ubuntu-unity's TypeScript modules, plus ambient
+// augmentation of `window` for the runtime surface those modules share.
+// Keep in lockstep with the JS objects assigned in baseof.html (UP_SITE),
+// page-window.ts (UP_PAGE_WINDOW_STATE, WINDOW_STATE_EVENT) and dialogs.tsx
+// (uiDialog).
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
 

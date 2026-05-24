@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
-import { WindowChrome } from "./window-chrome";
+import { WindowChrome, WindowProps } from "./window-chrome";
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
 
 const TRASH_W = 480;
@@ -9,25 +9,25 @@ const CASCADE_X = 32;
 const CASCADE_Y = 28;
 const SIDE_OFFSET = 64;
 
-function syncLauncherTile(open, focused) {
-  const tile = document.querySelector('[data-launcher-trash]');
+function syncLauncherTile(open: boolean, focused: boolean): void {
+  const tile = document.querySelector<HTMLElement>("[data-launcher-trash]");
   if (!tile) return;
-  tile.classList.toggle('is-active', !!open);
-  tile.classList.toggle('is-focused', !!(open && focused));
+  tile.classList.toggle("is-active", open);
+  tile.classList.toggle("is-focused", open && focused);
 }
 
-function PathBar({ handle }) {
+function PathBar({ handle }: { handle: string }): JSX.Element {
   return (
     <div className="up-pathbar">
-      <span className="up-pathbar-pill">{handle || ""}</span>
+      <span className="up-pathbar-pill">{handle}</span>
       <span className="up-pathbar-sep" aria-hidden="true">›</span>
       <span className="up-pathbar-pill is-current">trash</span>
     </div>
   );
 }
 
-function TrashBody({ handle }) {
-  const uiDialog = window.uiDialog || (() => Promise.resolve(null));
+function TrashBody({ handle }: { handle: string }): JSX.Element {
+  const uiDialog = window.uiDialog ?? (() => Promise.resolve(null));
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--content-bg)" }}>
       <PathBar handle={handle} />
@@ -47,7 +47,7 @@ function TrashBody({ handle }) {
           Nothing thrown away yet. Tried that essay about dotfiles three
           times — kept saving it.
         </div>
-        <button onClick={() => uiDialog({
+        <button onClick={() => void uiDialog({
           icon: "info", title: "Trash is already empty",
           body: "There's nothing here to remove.",
         })} style={{
@@ -61,13 +61,13 @@ function TrashBody({ handle }) {
   );
 }
 
-function Trash() {
+function Trash(): JSX.Element | null {
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [pos, setPos] = useState({ x: SIDE_OFFSET + CASCADE_X, y: 24 + CASCADE_Y });
   const [dragging, setDragging] = useState(false);
   const focused = useSyncExternalStore(subscribe, getTrashFocused);
-  const handle = (window.UP_SITE && window.UP_SITE.handle) || "";
+  const handle = window.UP_SITE?.handle ?? "";
 
   const stateRef = useRef({ open, minimized });
   stateRef.current = { open, minimized };
@@ -77,8 +77,9 @@ function Trash() {
   }, [open, minimized, focused]);
 
   useEffect(() => {
-    const onTrashClick = (e) => {
-      const t = e.target.closest && e.target.closest('[data-launcher="trash"]');
+    const onTrashClick = (e: MouseEvent): void => {
+      const target = e.target as Element | null;
+      const t = target?.closest('[data-launcher="trash"]');
       if (!t) return;
       e.preventDefault();
       const { open: o, minimized: m } = stateRef.current;
@@ -103,22 +104,23 @@ function Trash() {
 
   if (!open) return null;
 
-  const onPointerDown = (e) => {
-    if (!(e.target instanceof Element)) return;
+  const onPointerDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
     if (!focused) setTrashFocused(true);
-    const tb = e.target.closest("[data-titlebar]");
+    const tb = target.closest("[data-titlebar]");
     if (!tb) return;
-    if (e.target.closest("button")) return;
+    if (target.closest("button")) return;
     e.preventDefault();
     const startX = e.clientX, startY = e.clientY;
     const ox = pos.x, oy = pos.y;
     setDragging(true);
-    const move = (ev) => {
+    const move = (ev: MouseEvent): void => {
       const nx = ox + (ev.clientX - startX);
       const ny = Math.max(24, oy + (ev.clientY - startY));
       setPos({ x: nx, y: ny });
     };
-    const up = () => {
+    const up = (): void => {
       setDragging(false);
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
@@ -127,17 +129,17 @@ function Trash() {
     window.addEventListener("mouseup", up);
   };
 
-  const close = () => {
+  const close = (): void => {
     setOpen(false);
     setTrashFocused(false);
   };
-  const minimize = () => {
+  const minimize = (): void => {
     setMinimized(true);
     setTrashFocused(false);
   };
-  const toggleMax = () => {};
+  const toggleMax = (): void => { /* trash window does not maximize */ };
 
-  const w = {
+  const w: WindowProps = {
     x: pos.x,
     y: pos.y,
     w: TRASH_W,
@@ -162,7 +164,7 @@ function Trash() {
   );
 }
 
-export function mountTrash() {
+export function mountTrash(): void {
   const host = document.getElementById("up-trash-host");
   if (!host) {
     console.warn("ubuntu-unity: #up-trash-host not found; trash disabled");

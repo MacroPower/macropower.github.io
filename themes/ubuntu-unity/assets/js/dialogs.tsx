@@ -1,23 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
+import type {
+  UPDialogButton,
+  UPDialogIcon,
+  UPDialogOptions,
+} from "./types";
 
-const dialogListeners = new Set();
+interface Dialog {
+  id: number;
+  title: string;
+  body: string;
+  details: string | null;
+  icon: UPDialogIcon;
+  buttons: UPDialogButton[];
+  resolve: (value: string | null) => void;
+}
+
+type DialogListener = (list: Dialog[]) => void;
+
+const dialogListeners = new Set<DialogListener>();
 let dialogSeq = 0;
-const dialogQueue = [];
+const dialogQueue: Dialog[] = [];
 
-function emit() {
+function emit(): void {
   dialogListeners.forEach((fn) => fn(Array.from(dialogQueue)));
 }
 
-function uiDialog(opts) {
+function uiDialog(opts: UPDialogOptions): Promise<string | null> {
   return new Promise((resolve) => {
-    const d = {
+    const d: Dialog = {
       id: ++dialogSeq,
-      title: opts.title || "",
-      body: opts.body || "",
-      details: opts.details || null,
-      icon: opts.icon || "info",
-      buttons: opts.buttons || [{ id: "ok", label: "Close", primary: true }],
+      title: opts.title ?? "",
+      body: opts.body ?? "",
+      details: opts.details ?? null,
+      icon: opts.icon ?? "info",
+      buttons: opts.buttons ?? [{ id: "ok", label: "Close", primary: true }],
       resolve,
     };
     dialogQueue.push(d);
@@ -25,25 +42,33 @@ function uiDialog(opts) {
   });
 }
 
-function dismiss(id, value) {
+function dismiss(id: number, value: string | null): void {
   const idx = dialogQueue.findIndex((d) => d.id === id);
   if (idx < 0) return;
   const [d] = dialogQueue.splice(idx, 1);
-  d.resolve(value);
+  d?.resolve(value);
   emit();
 }
 
 window.uiDialog = uiDialog;
 
-const DialogIcon = ({ kind }) => {
-  const COLORS = {
-    info:     { bg: "#3F87C9", ring: "#2A5F94", fg: "#fff", glyph: "i" },
-    question: { bg: "#7A6FB0", ring: "#564E87", fg: "#fff", glyph: "?" },
-    warning:  { bg: "#E5A93C", ring: "#A87815", fg: "#3A2A0A", glyph: "!" },
-    error:    { bg: "#C7391E", ring: "#8C2410", fg: "#fff", glyph: "✕" },
-    success:  { bg: "#5C8A3A", ring: "#3F5F25", fg: "#fff", glyph: "✓" },
-  };
-  const c = COLORS[kind] || COLORS.info;
+interface IconColors {
+  bg: string;
+  ring: string;
+  fg: string;
+  glyph: string;
+}
+
+const ICON_COLORS: Record<Exclude<UPDialogIcon, "none">, IconColors> = {
+  info:     { bg: "#3F87C9", ring: "#2A5F94", fg: "#fff",     glyph: "i" },
+  question: { bg: "#7A6FB0", ring: "#564E87", fg: "#fff",     glyph: "?" },
+  warning:  { bg: "#E5A93C", ring: "#A87815", fg: "#3A2A0A", glyph: "!" },
+  error:    { bg: "#C7391E", ring: "#8C2410", fg: "#fff",     glyph: "✕" },
+  success:  { bg: "#5C8A3A", ring: "#3F5F25", fg: "#fff",     glyph: "✓" },
+};
+
+function DialogIcon({ kind }: { kind: UPDialogIcon }): JSX.Element {
+  const c = kind === "none" ? ICON_COLORS.info : ICON_COLORS[kind];
   return (
     <div style={{
       width: 48, height: 48, borderRadius: 24,
@@ -57,13 +82,19 @@ const DialogIcon = ({ kind }) => {
       <span style={{ transform: "translateY(-1px)" }}>{c.glyph}</span>
     </div>
   );
-};
+}
 
-function Dialog({ d, index, total }) {
+interface DialogProps {
+  d: Dialog;
+  index: number;
+  total: number;
+}
+
+function Dialog({ d, index, total }: DialogProps): JSX.Element {
   const [appear, setAppear] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const firstBtnRef = useRef(null);
+  const firstBtnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setAppear(true));
@@ -75,15 +106,15 @@ function Dialog({ d, index, total }) {
   }, [index, total]);
 
   useEffect(() => {
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent): void => {
       if (index !== total - 1) return;
       if (e.key === "Escape") {
         e.preventDefault();
         dismiss(d.id, null);
       } else if (e.key === "Enter") {
         e.preventDefault();
-        const primary = d.buttons.find((b) => b.primary) || d.buttons[d.buttons.length - 1];
-        dismiss(d.id, primary.id);
+        const primary = d.buttons.find((b) => b.primary) ?? d.buttons[d.buttons.length - 1];
+        if (primary) dismiss(d.id, primary.id);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -91,22 +122,22 @@ function Dialog({ d, index, total }) {
   }, [d, index, total]);
 
   const [shake, setShake] = useState(false);
-  const onBackdrop = () => {
+  const onBackdrop = (): void => {
     if (index !== total - 1) return;
     setShake(true);
     setTimeout(() => setShake(false), 380);
   };
 
-  const onDragStart = (e) => {
-    if (e.target.closest("button")) return;
+  const onDragStart = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if ((e.target as Element).closest("button")) return;
     e.preventDefault();
     setDragging(true);
     const sx = e.clientX, sy = e.clientY;
     const ox = offset.x, oy = offset.y;
-    const move = (ev) => {
+    const move = (ev: MouseEvent): void => {
       setOffset({ x: ox + (ev.clientX - sx), y: oy + (ev.clientY - sy) });
     };
-    const up = () => {
+    const up = (): void => {
       setDragging(false);
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
@@ -130,8 +161,8 @@ function Dialog({ d, index, total }) {
       <div role="dialog" aria-modal="true" aria-label={d.title}
         style={{
           position: "absolute", left: "50%", top: "50%",
-          "--ox": offset.x + "px",
-          "--oy": offset.y + "px",
+          ["--ox" as string]: offset.x + "px",
+          ["--oy" as string]: offset.y + "px",
           transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px)) scale(${appear ? 1 : 0.96})`,
           width: 440, maxWidth: "calc(100% - 64px)",
           background: "#EFEDEB",
@@ -148,7 +179,7 @@ function Dialog({ d, index, total }) {
           overflow: "hidden",
           zIndex: 1000 + index * 2 + 1,
           animation: shake && !dragging ? "dlgShake .38s" : "none",
-        }}>
+        } as React.CSSProperties}>
         <div
           onMouseDown={onDragStart}
           style={{
@@ -213,7 +244,7 @@ function Dialog({ d, index, total }) {
   );
 }
 
-function DialogCloseBtn({ onClick }) {
+function DialogCloseBtn({ onClick }: { onClick: () => void }): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <button
@@ -235,55 +266,62 @@ function DialogCloseBtn({ onClick }) {
   );
 }
 
-const DialogBtn = React.forwardRef(function DialogBtn({ button, onClick }, ref) {
-  const [hover, setHover] = useState(false);
-  const [pressed, setPressed] = useState(false);
-  const primary = button.primary;
-  const danger = button.danger;
+interface DialogBtnProps {
+  button: UPDialogButton;
+  onClick: () => void;
+}
 
-  const bg = primary
-    ? `linear-gradient(180deg, ${pressed ? "#BD3D11" : hover ? "#EC5A29" : "#DD4814"} 0%, ${pressed ? "#922F0C" : "#B23B11"} 100%)`
-    : danger
-    ? `linear-gradient(180deg, ${pressed ? "#8C2410" : hover ? "#FBFAF9" : "#FBFAF9"} 0%, ${pressed ? "#8C2410" : "#E5E2DF"} 100%)`
-    : `linear-gradient(180deg, ${pressed ? "#D8D5D2" : hover ? "#FFFFFF" : "#FBFAF9"} 0%, ${pressed ? "#C5C1BD" : "#E5E2DF"} 100%)`;
+const DialogBtn = React.forwardRef<HTMLButtonElement, DialogBtnProps>(
+  function DialogBtn({ button, onClick }, ref) {
+    const [hover, setHover] = useState(false);
+    const [pressed, setPressed] = useState(false);
+    const primary = Boolean(button.primary);
+    const danger = Boolean(button.danger);
 
-  const color = primary ? "#fff" : danger ? "#A02B12" : "#2E2B28";
-  const borderColor = primary ? "rgba(0,0,0,.35)" : "#B5AFAA";
+    const bg = primary
+      ? `linear-gradient(180deg, ${pressed ? "#BD3D11" : hover ? "#EC5A29" : "#DD4814"} 0%, ${pressed ? "#922F0C" : "#B23B11"} 100%)`
+      : danger
+        ? `linear-gradient(180deg, ${pressed ? "#8C2410" : hover ? "#FBFAF9" : "#FBFAF9"} 0%, ${pressed ? "#8C2410" : "#E5E2DF"} 100%)`
+        : `linear-gradient(180deg, ${pressed ? "#D8D5D2" : hover ? "#FFFFFF" : "#FBFAF9"} 0%, ${pressed ? "#C5C1BD" : "#E5E2DF"} 100%)`;
 
-  return (
-    <button
-      ref={ref}
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => { setHover(false); setPressed(false); }}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      style={{
-        minWidth: 84,
-        padding: "5px 14px",
-        background: bg,
-        color,
-        border: "1px solid " + borderColor,
-        borderRadius: 3,
-        fontSize: 13, fontWeight: primary ? 500 : 400,
-        fontFamily: "Ubuntu",
-        cursor: "default",
-        boxShadow: pressed
-          ? "inset 0 1px 3px rgba(0,0,0,.25)"
-          : primary
-            ? "inset 0 1px 0 rgba(255,255,255,.25), 0 1px 1px rgba(0,0,0,.15)"
-            : "inset 0 1px 0 rgba(255,255,255,.6), 0 1px 1px rgba(0,0,0,.08)",
-        outline: "none",
-      }}>{button.label}</button>
-  );
-});
+    const color = primary ? "#fff" : danger ? "#A02B12" : "#2E2B28";
+    const borderColor = primary ? "rgba(0,0,0,.35)" : "#B5AFAA";
 
-function DialogHost() {
-  const [dialogs, setDialogs] = useState([]);
+    return (
+      <button
+        ref={ref}
+        onClick={onClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => { setHover(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        style={{
+          minWidth: 84,
+          padding: "5px 14px",
+          background: bg,
+          color,
+          border: "1px solid " + borderColor,
+          borderRadius: 3,
+          fontSize: 13, fontWeight: primary ? 500 : 400,
+          fontFamily: "Ubuntu",
+          cursor: "default",
+          boxShadow: pressed
+            ? "inset 0 1px 3px rgba(0,0,0,.25)"
+            : primary
+              ? "inset 0 1px 0 rgba(255,255,255,.25), 0 1px 1px rgba(0,0,0,.15)"
+              : "inset 0 1px 0 rgba(255,255,255,.6), 0 1px 1px rgba(0,0,0,.08)",
+          outline: "none",
+        }}>{button.label}</button>
+    );
+  },
+);
+
+function DialogHost(): JSX.Element | null {
+  const [dialogs, setDialogs] = useState<Dialog[]>([]);
   useEffect(() => {
-    const fn = (list) => setDialogs(list);
+    const fn: DialogListener = (list) => setDialogs(list);
     dialogListeners.add(fn);
-    return () => dialogListeners.delete(fn);
+    return () => { dialogListeners.delete(fn); };
   }, []);
   if (!dialogs.length) return null;
   return (
@@ -305,7 +343,7 @@ function DialogHost() {
   );
 }
 
-export function mountDialogs() {
+export function mountDialogs(): void {
   const el = document.getElementById("up-dialog-host");
   if (!el) {
     console.warn("ubuntu-unity: #up-dialog-host not found; dialogs disabled");

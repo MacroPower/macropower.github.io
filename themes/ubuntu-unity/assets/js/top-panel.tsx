@@ -1,41 +1,63 @@
-import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { subscribe, getTrashFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
+import type { UPPageWindowState, UPSite } from "./types";
 
-const LAUNCHER_URLS = {
+type LauncherKey = "about" | "cv" | "blog" | "contact";
+type MenuKey = "file" | "edit" | "view" | "help";
+type FlyoutKey = "inbox" | "net" | "vol" | "bat" | "clock" | "user";
+type OpenKey = MenuKey | FlyoutKey | null;
+
+interface MenuItemDef {
+  sep?: false;
+  label: string;
+  sc?: string;
+  check?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+}
+interface MenuSeparator { sep: true }
+type MenuEntry = MenuItemDef | MenuSeparator;
+
+const LAUNCHER_URLS: Record<LauncherKey, string> = {
   about: "/about/",
   cv: "/cv/",
   blog: "/posts/",
   contact: "/contact/",
 };
 
-const SITE = () => window.UP_SITE || {};
+const EMPTY_SITE: UPSite = { handle: "", github: "", rss: "" };
+const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
-function navigate(key) {
+function navigate(key: LauncherKey): void {
   const url = LAUNCHER_URLS[key];
   if (url) window.location.href = url;
 }
 
-function TopPanel({ pageTitle }) {
+interface TopPanelProps {
+  pageTitle: string;
+}
+
+function TopPanel({ pageTitle }: TopPanelProps): JSX.Element {
   const trashFocused = useSyncExternalStore(subscribe, getTrashFocused);
   const [winState, setWinState] = useState(() => {
-    const snap = (typeof window !== "undefined" && window.UP_PAGE_WINDOW_STATE) || {};
+    const snap = (typeof window !== "undefined" ? window.UP_PAGE_WINDOW_STATE : undefined) ?? null;
     return {
-      visible: snap.visible !== false,
-      minimized: !!snap.minimized,
-      closed: !!snap.closed,
+      visible: snap?.visible !== false,
+      minimized: Boolean(snap?.minimized),
+      closed: Boolean(snap?.closed),
     };
   });
   const desktopTitle = "Ubuntu";
   const focusedTitle = trashFocused
     ? "Trash"
     : (winState.visible ? pageTitle : desktopTitle);
-  const [now, setNow] = useState(new Date());
-  const [openMenu, setOpenMenu] = useState(null);
+  const [now, setNow] = useState(() => new Date());
+  const [openMenu, setOpenMenu] = useState<OpenKey>(null);
   const [vol, setVol] = useState(62);
   const [muted, setMuted] = useState(false);
-  const wrapRef = useRef(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30 * 1000);
@@ -43,19 +65,24 @@ function TopPanel({ pageTitle }) {
   }, []);
 
   useEffect(() => {
-    const h = (e) => setWinState({
-      visible: !!e.detail.visible,
-      minimized: !!e.detail.minimized,
-      closed: !!e.detail.closed,
-    });
+    const h = (e: Event): void => {
+      const detail = (e as CustomEvent<UPPageWindowState>).detail;
+      setWinState({
+        visible: Boolean(detail.visible),
+        minimized: Boolean(detail.minimized),
+        closed: Boolean(detail.closed),
+      });
+    };
     window.addEventListener(WINDOW_STATE_EVENT, h);
     return () => window.removeEventListener(WINDOW_STATE_EVENT, h);
   }, []);
 
-  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 560);
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 560,
+  );
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 560px)");
-    const h = (e) => setNarrow(e.matches);
+    const h = (e: MediaQueryListEvent | MediaQueryList): void => setNarrow(e.matches);
     h(mq);
     mq.addEventListener("change", h);
     return () => { mq.removeEventListener("change", h); };
@@ -63,12 +90,15 @@ function TopPanel({ pageTitle }) {
 
   useEffect(() => {
     if (!openMenu) return;
-    const handler = (e) => {
-      if (e.target.closest && e.target.closest("[data-panel-trigger]")) return;
-      if (e.target.closest && e.target.closest("[data-flyout-keepopen]")) return;
+    const handler = (e: MouseEvent): void => {
+      const target = e.target as Element | null;
+      if (target?.closest("[data-panel-trigger]")) return;
+      if (target?.closest("[data-flyout-keepopen]")) return;
       setOpenMenu(null);
     };
-    const esc = (e) => e.key === "Escape" && setOpenMenu(null);
+    const esc = (e: KeyboardEvent): void => {
+      if (e.key === "Escape") setOpenMenu(null);
+    };
     window.addEventListener("click", handler);
     window.addEventListener("keydown", esc);
     return () => {
@@ -81,12 +111,12 @@ function TopPanel({ pageTitle }) {
   const date = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
   const longDate = now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  const toggle = (k) => setOpenMenu((cur) => cur === k ? null : k);
+  const toggle = (k: OpenKey): void => setOpenMenu((cur) => cur === k ? null : k);
 
-  const uiDialog = window.uiDialog || (() => Promise.resolve(null));
-  const site = SITE();
+  const uiDialog = window.uiDialog ?? (() => Promise.resolve<string | null>(null));
+  const site = getSite();
 
-  const MENUS = {
+  const MENUS: Record<MenuKey, MenuEntry[]> = {
     file: [
       { label: "Open about",   onClick: () => navigate("about") },
       { label: "Open blog",    onClick: () => navigate("blog") },
@@ -103,7 +133,7 @@ function TopPanel({ pageTitle }) {
       { label: "Copy",  sc: "Ctrl+C", disabled: true },
       { label: "Paste", sc: "Ctrl+V", disabled: true },
       { sep: true },
-      { label: "Preferences…", onClick: () => uiDialog({
+      { label: "Preferences…", onClick: () => void uiDialog({
         icon: "info",
         title: "Preferences",
         body: "This site doesn't ship a settings panel.",
@@ -111,9 +141,9 @@ function TopPanel({ pageTitle }) {
     ],
     view: [
       { label: "Reload", sc: "Ctrl+R", onClick: () => window.location.reload() },
-      { label: "Toggle full window", onClick: () => document.documentElement.requestFullscreen?.().catch(() => {}) },
+      { label: "Toggle full window", onClick: () => void document.documentElement.requestFullscreen?.().catch(() => {}) },
       { sep: true },
-      { label: "Show launcher", check: true, onClick: () => uiDialog({
+      { label: "Show launcher", check: true, onClick: () => void uiDialog({
         icon: "info",
         title: "Launcher is always shown",
         body: "The launcher is part of the shell.",
@@ -122,7 +152,7 @@ function TopPanel({ pageTitle }) {
     ],
     help: [
       { label: "About this site", onClick: () => navigate("about") },
-      { label: "Keyboard shortcuts", onClick: () => uiDialog({
+      { label: "Keyboard shortcuts", onClick: () => void uiDialog({
         icon: "info",
         title: "Keyboard shortcuts",
         body: "A few shortcuts work across the desktop:",
@@ -130,7 +160,7 @@ function TopPanel({ pageTitle }) {
       }) },
       { sep: true },
       { label: "Get in touch", onClick: () => navigate("contact") },
-      { label: "View source on github", onClick: () => uiDialog({
+      { label: "View source on github", onClick: () => void uiDialog({
         icon: "info",
         title: "Source",
         body: site.github
@@ -148,7 +178,6 @@ function TopPanel({ pageTitle }) {
         "linear-gradient(180deg, rgba(63,61,58,.96) 0%, rgba(37,36,35,.96) 100%)",
       borderBottom: "1px solid rgba(0,0,0,.5)",
       display: "flex", alignItems: "center",
-      padding: "0 0 0 0",
       color: "#E8E5E2", fontSize: 12, zIndex: 50,
       backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
     }}>
@@ -163,9 +192,9 @@ function TopPanel({ pageTitle }) {
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{focusedTitle}</span>
       </div>
-      {!narrow && ["file", "edit", "view", "help"].map((m) => (
+      {!narrow && (["file", "edit", "view", "help"] as MenuKey[]).map((m) => (
         <PanelItem key={m} open={openMenu === m} onClick={() => toggle(m)}>
-          {m[0].toUpperCase() + m.slice(1)}
+          {m[0]!.toUpperCase() + m.slice(1)}
           {openMenu === m && (
             <Dropdown align="left">
               <MenuList items={MENUS[m]} onClose={() => setOpenMenu(null)} />
@@ -185,7 +214,7 @@ function TopPanel({ pageTitle }) {
               <div style={{ color: "rgba(255,255,255,.6)", fontSize: 12 }}>No new messages.</div>
               <div style={{ marginTop: 10, display: "flex", gap: 6 }}>
                 <DropBtn onClick={() => { setOpenMenu(null); navigate("contact"); }}>Compose</DropBtn>
-                <DropBtn ghost onClick={() => { setOpenMenu(null); uiDialog({
+                <DropBtn ghost onClick={() => { setOpenMenu(null); void uiDialog({
                   icon: "success", title: "Subscribed",
                   body: site.rss
                     ? "Pretend-subscribed to " + site.rss + ". Drop the URL into your reader of choice."
@@ -208,11 +237,11 @@ function TopPanel({ pageTitle }) {
               <NetRow name="ngrok-tunnel" mono />
               <NetRow name="(hidden)" muted />
               <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", margin: "6px 0" }} />
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "warning", title: "No wired connection",
                 body: "No ethernet cable detected. Plug one in to use a wired network.",
               }); }}>Wired connection</DropRow>
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "question", title: "Enable Wi-Fi hotspot?",
                 body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
                 buttons: [
@@ -269,11 +298,11 @@ function TopPanel({ pageTitle }) {
               <div style={{ height: 8, background: "rgba(255,255,255,.12)", borderRadius: 2, marginTop: 10, overflow: "hidden" }}>
                 <div style={{ width: "76%", height: "100%", background: "linear-gradient(90deg,#DD4814,#E95420)" }} />
               </div>
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "success", title: "Power saver enabled",
                 body: "Screen will dim after 1 minute. Background tasks throttled.",
               }); }}>Enable power saver</DropRow>
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "info", title: "Power settings",
                 body: "The System Settings panel isn't wired up in this build. The raw data lives in /sys/class/power_supply/BAT0/uevent.",
               }); }}>Power settings…</DropRow>
@@ -289,11 +318,11 @@ function TopPanel({ pageTitle }) {
             <DropHeader>{longDate}</DropHeader>
             <DropBody>
               <MiniCalendar now={now} />
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "info", title: "Calendar",
                 body: "No events today. The next thing on the calendar is a haircut next Tuesday.",
               }); }}>Open calendar</DropRow>
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "info", title: "Time & date",
                 body: "Time zone: Europe/Lisbon (WEST, UTC+1). Synced via NTP.",
               }); }}>Time settings…</DropRow>
@@ -306,12 +335,12 @@ function TopPanel({ pageTitle }) {
         <Glyph kind="user" />
         {openMenu === "user" && (
           <Dropdown align="right" stayOpen>
-            <DropHeader>{site.handle || ""}</DropHeader>
+            <DropHeader>{site.handle}</DropHeader>
             <DropBody>
               <DropRow onClick={() => { setOpenMenu(null); navigate("about"); }}>About me</DropRow>
               <DropRow onClick={() => { setOpenMenu(null); navigate("contact"); }}>Get in touch</DropRow>
               <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", margin: "6px 0" }} />
-              <DropRow onClick={() => { setOpenMenu(null); uiDialog({
+              <DropRow onClick={() => { setOpenMenu(null); void uiDialog({
                 icon: "info", title: "Lock screen",
                 body: "Just kidding — there's nothing to lock. This is a website.",
               }); }}>Lock screen</DropRow>
@@ -336,15 +365,26 @@ function TopPanel({ pageTitle }) {
   );
 }
 
-function PanelItem({ children, onClick, open, strong, padded }) {
+interface PanelItemProps {
+  children?: ReactNode;
+  onClick?: () => void;
+  open?: boolean;
+  strong?: boolean;
+  padded?: boolean;
+}
+
+function PanelItem({ children, onClick, open, strong, padded }: PanelItemProps): JSX.Element {
   const [hover, setHover] = useState(false);
-  const interactive = !!onClick;
+  const interactive = Boolean(onClick);
   const arr = React.Children.toArray(children);
-  const triggerKids = [];
-  const dropdownKids = [];
+  const triggerKids: ReactNode[] = [];
+  const dropdownKids: ReactNode[] = [];
   arr.forEach((c) => {
-    if (c && c.type === Dropdown) dropdownKids.push(c);
-    else triggerKids.push(c);
+    if (React.isValidElement(c) && c.type === Dropdown) {
+      dropdownKids.push(c);
+    } else {
+      triggerKids.push(c);
+    }
   });
   return (
     <div style={{ position: "relative", display: "inline-flex", alignItems: "center", height: 24 }}>
@@ -370,8 +410,15 @@ function PanelItem({ children, onClick, open, strong, padded }) {
   );
 }
 
-function Dropdown({ align, wide, stayOpen, children }) {
-  const stickyAttr = stayOpen ? { "data-flyout-keepopen": "" } : {};
+interface DropdownProps {
+  align: "left" | "right";
+  wide?: boolean;
+  stayOpen?: boolean;
+  children?: ReactNode;
+}
+
+function Dropdown({ align, wide, stayOpen, children }: DropdownProps): JSX.Element {
+  const stickyAttr: Record<string, string> = stayOpen ? { "data-flyout-keepopen": "" } : {};
   return (
     <div {...stickyAttr} style={{
       position: "absolute", top: 24,
@@ -392,7 +439,7 @@ function Dropdown({ align, wide, stayOpen, children }) {
   );
 }
 
-function DropHeader({ children }) {
+function DropHeader({ children }: { children?: ReactNode }): JSX.Element {
   return (
     <div style={{
       padding: "8px 12px", fontSize: 11, fontWeight: 700,
@@ -403,11 +450,17 @@ function DropHeader({ children }) {
   );
 }
 
-function DropBody({ children }) {
+function DropBody({ children }: { children?: ReactNode }): JSX.Element {
   return <div style={{ padding: "6px 0" }}>{children}</div>;
 }
 
-function DropRow({ children, onClick, danger }) {
+interface DropRowProps {
+  children?: ReactNode;
+  onClick?: () => void;
+  danger?: boolean;
+}
+
+function DropRow({ children, onClick, danger }: DropRowProps): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -423,7 +476,13 @@ function DropRow({ children, onClick, danger }) {
   );
 }
 
-function DropBtn({ children, onClick, ghost }) {
+interface DropBtnProps {
+  children?: ReactNode;
+  onClick?: () => void;
+  ghost?: boolean;
+}
+
+function DropBtn({ children, onClick, ghost }: DropBtnProps): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <button onClick={onClick} style={{
@@ -436,25 +495,38 @@ function DropBtn({ children, onClick, ghost }) {
   );
 }
 
-function NetRow({ name, on, strong, mono, muted }) {
-  const uiDialog = window.uiDialog || (() => Promise.resolve(null));
+interface NetRowProps {
+  name: string;
+  on?: boolean;
+  strong?: boolean;
+  mono?: boolean;
+  muted?: boolean;
+}
+
+function NetRow({ name, on, strong, mono, muted }: NetRowProps): JSX.Element {
+  const uiDialog = window.uiDialog ?? (() => Promise.resolve<string | null>(null));
   return (
-    <DropRow onClick={async () => {
-      if (on) return uiDialog({ icon: "info", title: "Already connected", body: "You're connected to " + name + "." });
-      const r = await uiDialog({
-        icon: "question", title: "Connect to " + name + "?",
-        body: "This will disconnect you from café-do-bairro. Continue?",
-        buttons: [
-          { id: "cancel", label: "Cancel" },
-          { id: "connect", label: "Connect", primary: true },
-        ],
-      });
-      if (r === "connect") {
-        uiDialog({
-          icon: "warning", title: "Couldn't connect",
-          body: "Authentication failed for " + name + ". Check the password and try again.",
+    <DropRow onClick={() => {
+      void (async () => {
+        if (on) {
+          await uiDialog({ icon: "info", title: "Already connected", body: "You're connected to " + name + "." });
+          return;
+        }
+        const r = await uiDialog({
+          icon: "question", title: "Connect to " + name + "?",
+          body: "This will disconnect you from café-do-bairro. Continue?",
+          buttons: [
+            { id: "cancel", label: "Cancel" },
+            { id: "connect", label: "Connect", primary: true },
+          ],
         });
-      }
+        if (r === "connect") {
+          await uiDialog({
+            icon: "warning", title: "Couldn't connect",
+            body: "Authentication failed for " + name + ". Check the password and try again.",
+          });
+        }
+      })();
     }}>
       <span style={{
         display: "inline-block", width: 14,
@@ -469,7 +541,12 @@ function NetRow({ name, on, strong, mono, muted }) {
   );
 }
 
-function MenuList({ items, onClose }) {
+interface MenuListProps {
+  items: MenuEntry[];
+  onClose?: () => void;
+}
+
+function MenuList({ items, onClose }: MenuListProps): JSX.Element {
   return (
     <div style={{ padding: "4px 0" }}>
       {items.map((it, i) => it.sep ? (
@@ -481,14 +558,18 @@ function MenuList({ items, onClose }) {
   );
 }
 
-function MenuItem({ label, sc, check, disabled, onClick, onClose }) {
+interface MenuItemProps extends MenuItemDef {
+  onClose?: () => void;
+}
+
+function MenuItem({ label, sc, check, disabled, onClick, onClose }: MenuItemProps): JSX.Element {
   const [hover, setHover] = useState(false);
   const enabled = !disabled;
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => { if (enabled) { onClick && onClick(); onClose && onClose(); } }}
+      onClick={() => { if (enabled) { onClick?.(); onClose?.(); } }}
       style={{
         display: "flex", alignItems: "center", gap: 10,
         padding: "4px 14px 4px 26px",
@@ -506,11 +587,11 @@ function MenuItem({ label, sc, check, disabled, onClick, onClose }) {
   );
 }
 
-function MiniCalendar({ now }) {
+function MiniCalendar({ now }: { now: Date }): JSX.Element {
   const y = now.getFullYear(), m = now.getMonth();
   const firstDow = (new Date(y, m, 1).getDay() + 6) % 7;
   const dim = new Date(y, m + 1, 0).getDate();
-  const cells = [];
+  const cells: (number | null)[] = [];
   for (let i = 0; i < firstDow; i++) cells.push(null);
   for (let d = 1; d <= dim; d++) cells.push(d);
   while (cells.length % 7) cells.push(null);
@@ -531,14 +612,16 @@ function MiniCalendar({ now }) {
             fontSize: 11, color: c == null ? "transparent" : "rgba(255,255,255,.85)",
             background: c === today ? "var(--orange-light)" : "transparent",
             borderRadius: 2, fontWeight: c === today ? 600 : 400,
-          }}>{c || "·"}</div>
+          }}>{c ?? "·"}</div>
         ))}
       </div>
     </div>
   );
 }
 
-function Glyph({ kind, muted }) {
+type GlyphKind = "env" | "net" | "vol" | "bat" | "user";
+
+function Glyph({ kind, muted }: { kind: GlyphKind; muted?: boolean }): JSX.Element | null {
   if (kind === "env") return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1">
       <rect x="1" y="3" width="12" height="8" rx="1"/>
@@ -576,7 +659,7 @@ function Glyph({ kind, muted }) {
   return null;
 }
 
-export function mountTopPanel() {
+export function mountTopPanel(): void {
   const root = document.getElementById("root");
   if (!root) {
     console.warn("ubuntu-unity: #root not found; top panel not mounted");
@@ -585,7 +668,7 @@ export function mountTopPanel() {
   const host = document.createElement("div");
   host.id = "up-top-panel-host";
   root.insertBefore(host, root.firstChild);
-  const titleFromSSR = document.querySelector(".up-top-panel[data-ssr] .up-panel-title");
-  const pageTitle = (titleFromSSR?.textContent || document.title || "").trim();
+  const titleFromSSR = document.querySelector<HTMLElement>(".up-top-panel[data-ssr] .up-panel-title");
+  const pageTitle = (titleFromSSR?.textContent ?? document.title ?? "").trim();
   createRoot(host).render(<TopPanel pageTitle={pageTitle} />);
 }

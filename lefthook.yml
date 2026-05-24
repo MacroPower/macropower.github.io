@@ -5,5 +5,5 @@ pre-commit:
   parallel: true
   commands:
     typecheck:
-      glob: "{tsconfig.json,types/**/*,themes/ubuntu-unity/assets/js/**/*.{ts,tsx}}"
+      glob: "{tsconfig.json,themes/ubuntu-unity/assets/js/**/*.{ts,tsx}}"
       run: npx --no-install tsc --noEmit

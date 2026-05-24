@@ -40,7 +40,7 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "rss" $rss) | jsonif
         "react-dom" "js/shims/react-dom.js"
         "react-dom/client" "js/shims/react-dom-client.js")
   }}
-  {{ $js := resources.Get "js/app.jsx" | js.Build $jsOpts | resources.Fingerprint }}
+  {{ $js := resources.Get "js/app.tsx" | js.Build $jsOpts | resources.Fingerprint }}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 
   {{ $blogOpts := dict
