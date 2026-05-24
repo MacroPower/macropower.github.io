@@ -874,6 +874,24 @@ body.up-react-ready .up-top-panel[data-ssr]{display:none}
 }
 
 /* =========================================================================
+   CV PDF: visible fallback link so the page is useful even before/without
+   the iframe loading.
+   ========================================================================= */
+.up-cv-pdf-fallback{
+  display:inline-flex;align-items:center;gap:6px;
+  margin:0 0 12px;padding:5px 12px;
+  font-size:12.5px;color:#3A3733;text-decoration:none;
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+.up-cv-pdf-fallback:hover{
+  background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+  border-color:#A8A39E;color:#1F1D1A;
+}
+.up-cv-pdf-fallback svg{flex-shrink:0;color:#A02B12}
+
+/* =========================================================================
    responsive: narrower launcher on phones, gentler window padding
    ========================================================================= */
 @media (max-width:560px){

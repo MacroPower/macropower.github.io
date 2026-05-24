@@ -2,6 +2,7 @@
 title = "CV"
 date = "2021-08-26"
 aliases = ["resume"]
+pdf = "/files/ColvinJacobCV.pdf"
 +++
 
 [Source code](https://github.com/MacroPower/CV) (LaTeX)
