@@ -841,6 +841,39 @@ body.up-react-ready .up-top-panel[data-ssr]{display:none}
 #up-trash-host > *{ pointer-events:auto; }
 
 /* =========================================================================
+   accessibility: focus rings on interactive surfaces (kept subtle so they
+   don't break the Unity chrome aesthetic)
+   ========================================================================= */
+.up-launcher-tile:focus-visible{
+  outline:2px solid var(--orange-light);
+  outline-offset:-2px;
+  border-radius:4px;
+}
+.up-panel-menu:focus-visible,
+.up-indicator:focus-visible{
+  outline:1px solid rgba(255,255,255,.55);
+  outline-offset:-1px;
+}
+.up-tl:focus-visible{
+  outline:2px solid var(--orange-light);
+  outline-offset:1px;
+}
+.up-naut-item:focus-visible,
+.up-post-row:focus-visible{
+  outline:2px solid var(--orange-light);
+  outline-offset:-2px;
+}
+.up-pathbar-pill:focus-visible,
+.up-pathbar-arrow:focus-visible,
+.up-pathbar-icon-btn:focus-visible,
+.up-pathbar-search-input:focus-visible,
+.up-reader-up:focus-visible,
+.up-code-copy:focus-visible{
+  outline:2px solid var(--orange-light);
+  outline-offset:1px;
+}
+
+/* =========================================================================
    responsive: narrower launcher on phones, gentler window padding
    ========================================================================= */
 @media (max-width:560px){
