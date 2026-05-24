@@ -11,6 +11,7 @@ A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top 
 - `assets/css/main.scss` (~1200 lines) — every Unity-styled selector lives here, all prefixed `up-` (Ubuntu/Unity). One file by design; do not split it.
 - `assets/js/app.ts` — entry point. Calls `initDialogs`, `initTopPanel`, `initTrash`, `installPageWindow`, then tags `<body>` with `up-ready`.
 - `assets/js/blog.ts` — IIFE module. Drives the post list's filter/sort/search and the focused single-post reader. Manipulates server-rendered DOM directly (`data-up-post-row`, `data-up-search-*`, etc.).
+- `assets/js/projects.ts` — IIFE module. Drives the `/projects/` page's tile selection, Places/Languages sidebar filtering, and search. Reads project metadata from each tile's `data-*` attributes and builds the right-pane preview entirely client-side. Gated on `[data-projects-kind]` so it no-ops everywhere else.
 - `assets/js/dialogs.ts` — clones `<template id="up-dialog-template">` once per `window.uiDialog(opts)` call, fills slots, stacks modal dialogs, handles Esc/Enter, backdrop-shake, and titlebar drag via CSS custom properties `--ox` / `--oy` so the shake keyframe respects per-dialog drag offset.
 - `assets/js/drag.ts` — `installTitlebarDrag(el, opts)` shared by page-window and trash. `spring: true` reproduces the page-window rubber-band; `spring: false` (trash) freezes the chrome at release. Optional `yMin` clamps the final viewport-y, optional `gate` predicate suppresses drag based on outer state (maximized, transitioning).
 - `assets/js/focus.ts` — tiny pub/sub for whether the trash window currently has focus. `page-window.ts`, `trash.ts`, and `top-panel.ts` all subscribe so only one window/title looks focused at a time.
@@ -24,6 +25,7 @@ A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top 
 - `layouts/_default/baseof.html` is the only base template. It renders the chrome partials (`top-panel`, `launcher`, `window-frame-open`, `{{ block "main" }}`, `window-frame-close`, `dialog-host`, `trash-window`) in that order. The `window-frame-open`/`window-frame-close` pair sandwich the content — `window-frame-open.html` opens `<div.up-window-stage> > <section.up-window-chrome data-page-window> > <div.up-titlebar> + <div.up-window-body>`, and `window-frame-close.html` closes them. Any layout's `{{ define "main" }}` body must emit inner content only; no extra outer wrapper, no overriding the titlebar.
 - `layouts/_default/single.html` checks `.File.BaseFileName` against a `{"about","cv"}` allowlist and dispatches to `partials/page/<name>.html` for those pages; everything else falls through to a generic `<article.up-page>` wrapper. To add a bespoke top-level page (e.g. `now.md`), add `now` to the allowlist and create `partials/page/now.html`.
 - `layouts/posts/{list,single}.html` are the blog index and post pages. They share `partials/page/post-pathbar.html` (the Nautilus-style breadcrumb), `post-list.html`, `post-reader.html`, `post-sidebar.html`, and `post-list-empty-reader.html`.
+- `layouts/projects/list.html` is the `/projects/` index. It reuses `partials/page/post-pathbar.html` and pulls project metadata from `site.Data.projects` (sourced from `data/projects.yaml` in the parent site). The middle column is an icon-view grid (`partials/page/projects-grid.html`) rather than a row list; tiles share `partials/page/icons/folder-emblem.html` for the folder + language emblem.
 
 ## DOM contracts JS depends on
 
@@ -40,6 +42,8 @@ The Hugo partials must keep emitting these. Rename any and the corresponding TS 
 - `#up-dialog-host` (empty container) and `#up-dialog-template` (the dialog shell) — `dialogs.ts` clones the template per `uiDialog()` call into the host.
 - `[data-blog-kind]` — root for `blog.ts`; on absence, the script no-ops and returns immediately.
 - `[data-up-post-list]`, `[data-up-post-list-body]`, `[data-up-post-row]`, `[data-up-post-empty]`, `[data-up-search-toggle]`, `[data-up-search-bar]`, `[data-up-search-input]`, `[data-up-search-count]`, `[data-up-search-close]`, `[data-up-sort]` — filter/sort/search surface.
+- `[data-projects-kind]` — root for `projects.ts`; on absence, the script no-ops and returns immediately.
+- `[data-up-project-grid]`, `[data-up-project-tile]`, `[data-up-project-empty]`, `[data-up-project-preview]`, `[data-projects-filter]` — selection / filter / search surface for the projects page. Each `[data-up-project-tile]` carries `data-name`, `data-language`, `data-updated`, `data-topics`, `data-description`, `data-url`, and (when present in the source YAML) `data-stars`, `data-forks`, `data-license`. The preview pane is rebuilt from these attributes on every selection; the empty-state SSR shape is also `[data-up-project-preview]` so the JS can swap it in place.
 
 ## Site-provided globals
 
@@ -47,6 +51,6 @@ The Hugo partials must keep emitting these. Rename any and the corresponding TS 
 
 ## Editing notes
 
-- `hugo.IsProduction` controls esbuild minification of the app and blog bundles; the CSS pipeline is `css.Sass | resources.Minify | resources.Fingerprint`, with `outputStyle: expanded` passed to Dart Sass so Hugo's minifier remains the size-reducing step. SRI integrity attributes are emitted for every fingerprinted asset.
+- `hugo.IsProduction` controls esbuild minification of the app, blog, and projects bundles; the CSS pipeline is `css.Sass | resources.Minify | resources.Fingerprint`, with `outputStyle: expanded` passed to Dart Sass so Hugo's minifier remains the size-reducing step. SRI integrity attributes are emitted for every fingerprinted asset.
 - Fonts are split: Ubuntu / Ubuntu Mono come from Google Fonts (preconnected in `head.html`), while Fira Code is self-hosted by the parent site under `static/`.
 - New dropdown content goes in `partials/top-panel.html` as a `[data-dropdown-for=<key>]` sibling of the matching trigger; new actionable rows just need `data-action`. Add a case to `dispatchAction()` in `top-panel.ts` if the action key is new.

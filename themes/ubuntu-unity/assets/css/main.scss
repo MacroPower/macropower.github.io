@@ -867,10 +867,289 @@ body{
   }
 }
 
+/* ---------- Projects page ---------- */
+.up-projects{padding:0;display:flex;flex-direction:column;min-height:0;flex:1}
+.up-projects-grid{
+  display:grid;grid-template-columns:168px 1fr 300px;
+  min-height:0;flex:1;height:100%;
+  > *{min-width:0;min-height:0}
+}
+
+/* sidebar — Nautilus Places list, scoped so blog sidebar is untouched */
+.up-projects-sidebar{
+  background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
+  border-right:1px solid #C9C4BB;
+  padding:8px 0 14px;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
+  font-family:"Ubuntu",sans-serif;
+}
+.up-projects-sidebar .up-naut-section{padding:0}
+.up-projects-sidebar .up-naut-section + .up-naut-section{
+  margin-top:10px;padding-top:8px;
+  border-top:1px solid rgba(0,0,0,.06);
+  box-shadow:0 -1px 0 rgba(255,255,255,.55);
+}
+.up-projects-sidebar .up-naut-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#8A8175;padding:4px 14px 4px;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+.up-projects-sidebar .up-naut-item{
+  /* reset button user-agent chrome (these are <button>s, not <a>s, to avoid
+     polluting browser history when clicked) */
+  appearance:none;background:transparent;border:0;font:inherit;
+  /* layout */
+  display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:9px;
+  width:100%;padding:5px 14px 5px 11px;
+  color:#2E2B28;font-size:13px;text-align:left;text-decoration:none;
+  border-left:3px solid transparent;
+  cursor:pointer;outline:none;
+  transition:background-color .08s linear, color .08s linear;
+}
+.up-projects-sidebar .up-naut-item:hover{
+  background:rgba(0,0,0,.045);
+}
+.up-projects-sidebar .up-naut-item:focus-visible{
+  outline:1px dotted rgba(221,72,20,.7);outline-offset:-3px;
+}
+.up-projects-sidebar .up-naut-item.is-active{
+  background:linear-gradient(180deg, rgba(233,84,32,.95) 0%, rgba(221,72,20,1) 100%);
+  color:#fff;
+  border-left-color:#7C2410;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
+  text-shadow:0 1px 0 rgba(0,0,0,.25);
+}
+.up-projects-sidebar .up-naut-item-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;color:#6B6660;
+}
+.up-projects-sidebar .up-naut-item-icon svg{display:block}
+.up-projects-sidebar .up-naut-item.is-active .up-naut-item-icon{color:#fff}
+.up-projects-sidebar .up-naut-item.is-active .up-naut-item-icon svg{color:#fff}
+.up-projects-sidebar .up-naut-item-label{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  line-height:1.4;
+}
+.up-projects-sidebar .up-naut-item-count{
+  font-size:11px;font-variant-numeric:tabular-nums;
+  color:#9A938D;
+  padding:1px 7px;border-radius:9999px;
+  background:rgba(0,0,0,.06);
+  min-width:20px;text-align:center;
+}
+.up-projects-sidebar .up-naut-item.is-active .up-naut-item-count{
+  color:#fff;background:rgba(0,0,0,.22);
+}
+
+.up-lang-icon svg{display:block}
+.up-projects-sidebar .up-naut-item.is-active .up-lang-icon svg{
+  filter:drop-shadow(0 0 .8px rgba(255,255,255,.95)) drop-shadow(0 1px 0 rgba(0,0,0,.2));
+}
+
+.up-project-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(108px,1fr));
+  gap:6px;padding:18px 20px 24px;
+  overflow:auto;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(90,58,13,.07) 1px, transparent 1.5px),
+    linear-gradient(180deg,#FBFAF7 0%,#F4F0E8 100%);
+  background-size:18px 18px, 100% 100%;
+  align-content:start;
+  border-right:1px solid #D4CFC5;
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.6);
+}
+
+.up-project-tile{
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  gap:8px;padding:10px 6px 8px;
+  background:transparent;border:1px solid transparent;border-radius:5px;
+  color:#3A3733;cursor:pointer;font:inherit;text-align:center;
+  outline:none;
+  transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
+  &[hidden]{display:none}
+  &:hover{
+    background:rgba(221,72,20,.07);
+    border-color:rgba(221,72,20,.18);
+  }
+  &.is-focused{
+    background:rgba(221,72,20,.12);
+    border-color:rgba(221,72,20,.55);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px rgba(221,72,20,.12);
+  }
+  &.is-active{
+    background:linear-gradient(180deg, rgba(233,84,32,.92) 0%, rgba(221,72,20,.95) 100%);
+    color:#fff;border-color:#8C2410;
+    box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
+  }
+  &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
+}
+
+.up-project-folder{
+  position:relative;display:inline-block;width:54px;height:54px;line-height:0;
+}
+.up-project-folder-lg{width:84px;height:84px}
+.up-project-folder-svg{display:block;width:100%;height:100%}
+
+/* emblem — monochrome ink stamp of the brand mark, centered on the front face.
+   SVG element box is wider than tall: that lets the (wide-short) Go
+   letterforms render at near-full width while every other Simple Icons mark —
+   which fills its 24x24 viewBox tightly — is height-limited to a smaller,
+   consistent visual footprint. */
+.up-project-folder-emblem{
+  position:absolute;
+  left:50%;top:64%;transform:translate(-50%,-50%);
+  display:inline-flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  svg{
+    width:42px;height:18px;display:block;
+    /* brightness(0) flattens every brand color in the Simple Icons paths to
+       solid black; opacity softens it to dark ink against the yellow folder. */
+    filter:
+      brightness(0)
+      opacity(.72)
+      drop-shadow(0 1px 0 rgba(255,255,255,.4));
+  }
+}
+.up-project-folder-lg .up-project-folder-emblem{
+  svg{width:70px;height:30px}
+}
+.up-project-tile.is-active .up-project-folder-emblem svg{
+  /* on the orange selected tile, ink the emblem white instead so it still
+     reads against the brand color */
+  filter:
+    brightness(0) invert(1) opacity(.92)
+    drop-shadow(0 1px 0 rgba(0,0,0,.3));
+}
+
+.up-project-tile-label{
+  font:12.5px "Ubuntu",sans-serif;line-height:1.25;text-align:center;
+  max-width:100%;letter-spacing:.005em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;word-break:break-word;
+  padding:1px 3px;border-radius:2px;
+}
+.up-project-tile.is-active .up-project-tile-label{
+  text-shadow:0 1px 0 rgba(0,0,0,.22);
+}
+.up-project-grid-empty{
+  grid-column:1/-1;padding:28px 14px;
+  color:var(--content-muted);font-size:13px;text-align:center;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+}
+
+.up-project-preview{
+  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+  border-left:1px solid #CFC9BE;
+  padding:0;overflow:auto;
+  display:flex;flex-direction:column;
+  font-size:13px;color:#2E2B28;
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.5);
+}
+.up-project-preview-header{
+  display:grid;grid-template-columns:84px 1fr;
+  gap:14px;align-items:center;
+  padding:20px 18px 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.5) 0%, transparent 100%);
+  border-bottom:1px solid #DCD5C7;
+}
+.up-project-preview-header-text{min-width:0}
+.up-project-preview-title{
+  font-size:17px;font-weight:500;margin:0 0 4px;letter-spacing:-.005em;
+  line-height:1.2;color:#1F1D1A;
+  word-break:break-word;font-family:"Ubuntu",sans-serif;
+}
+.up-project-preview-lang{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:2px 9px 2px 7px;border-radius:9999px;
+  background:rgba(255,255,255,.75);border:1px solid #D4CCBC;
+  font-size:11.5px;color:#3A3733;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+  svg{display:block}
+}
+
+.up-project-preview-body{
+  padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px;
+}
+.up-project-preview-desc{
+  margin:0;padding:0 0 10px;
+  color:#3A3733;font-size:13px;line-height:1.55;
+  border-bottom:1px dashed #D4CCBC;
+  font-style:italic;
+}
+.up-project-preview-stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px 14px;
+  padding:2px 0 4px;
+}
+.up-project-preview-stat{
+  display:flex;align-items:center;gap:7px;min-width:0;
+  font-size:12.5px;color:#2E2B28;font-variant-numeric:tabular-nums;
+  svg{color:#8A7E60;flex-shrink:0}
+  > span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  &.up-project-preview-stat-wide{grid-column:1 / -1}
+}
+.up-project-preview-section-label{
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:#8A7E60;
+  margin:4px 0 -2px;
+}
+.up-project-preview-topics{
+  display:flex;flex-wrap:wrap;gap:5px;
+}
+.up-project-chip{
+  display:inline-flex;align-items:center;padding:2px 8px;border-radius:9999px;
+  background:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
+  border:1px solid #D4CCBC;color:#5A5550;
+  font-size:11px;line-height:1.4;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+.up-project-preview-open{
+  margin-top:8px;align-self:flex-start;
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  color:#2E2B28;font-size:12.5px;font-weight:500;text-decoration:none;
+  border:1px solid #A8A39E;border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#8A8580;
+  }
+  &:active{
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.16);
+  }
+  svg{color:#3A3733}
+}
+
+.up-project-preview-empty{
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 22px;
+  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+  text-align:center;
+}
+.up-project-preview-empty-inner{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:#9A938D;
+}
+.up-project-preview-empty-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.up-project-preview-empty-hint{
+  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
+  letter-spacing:.005em;
+}
+.up-project-preview-empty-tagline{
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+  padding:2px 8px;border-radius:2px;
+  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
+}
+
 /* ---------- Responsive collapse ---------- */
 @media (max-width:980px){
   .up-blog-grid{grid-template-columns:1fr;height:auto}
   .up-cv-grid{grid-template-columns:1fr}
+  .up-projects-grid{grid-template-columns:1fr;height:auto}
   .up-naut-sidebar{
     border-right:0;border-bottom:1px solid #D4D0CD;
     display:flex;flex-wrap:wrap;padding:6px 8px;

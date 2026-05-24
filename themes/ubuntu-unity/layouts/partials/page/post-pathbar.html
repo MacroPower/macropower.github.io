@@ -4,6 +4,8 @@
 {{- $prevTitle := .prevTitle -}}
 {{- $nextTitle := .nextTitle -}}
 {{- $search := .search -}}
+{{- $searchNoun := .searchNoun | default "posts" -}}
+{{- $searchPlaceholder := .searchPlaceholder | default "Filter posts by name or tag…" -}}
 <div class="up-pathbar-wrap">
   <nav class="up-pathbar" aria-label="Path">
     <div class="up-pathbar-nav" role="group" aria-label="History">
@@ -37,7 +39,7 @@
     </div>
     {{- if $search }}
       <button type="button" class="up-pathbar-icon-btn" data-up-search-toggle
-              title="Search posts (Ctrl+F)" aria-label="Search posts" aria-expanded="false">
+              title="Search {{ $searchNoun }} (Ctrl+F)" aria-label="Search {{ $searchNoun }}" aria-expanded="false">
         <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
           <circle cx="5.4" cy="5.4" r="3.3" fill="none" stroke="currentColor" stroke-width="1.5"/>
           <path d="M7.9 7.9 11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -54,8 +56,8 @@
         </svg>
       </span>
       <input type="search" class="up-pathbar-search-input" data-up-search-input
-             placeholder="Filter posts by name or tag…" autocomplete="off"
-             aria-label="Filter posts">
+             placeholder="{{ $searchPlaceholder }}" autocomplete="off"
+             aria-label="Filter {{ $searchNoun }}">
       <span class="up-pathbar-search-count" data-up-search-count aria-live="polite"></span>
       <button type="button" class="up-pathbar-search-close" data-up-search-close
               title="Close search (Esc)" aria-label="Close search">×</button>

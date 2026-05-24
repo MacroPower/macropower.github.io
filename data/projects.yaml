@@ -1,0 +1,196 @@
+- name: MacroPower
+  description: Profile with dynamic realtime coding stats.
+  language: Shell
+  stars: 213
+  forks: 331
+  updated: "2026-05-23"
+  topics: []
+  url: https://github.com/MacroPower/MacroPower
+- name: kat
+  description: TUI and rule-based rendering engine for Kubernetes manifests
+  language: Go
+  stars: 163
+  forks: 1
+  updated: "2026-04-17"
+  topics:
+    - devops
+    - helm
+    - kubernetes
+    - kustomize
+  url: https://github.com/MacroPower/kat
+- name: wakatime_exporter
+  description: Exports Prometheus metrics from Wakatime.
+  language: Go
+  stars: 123
+  forks: 10
+  updated: "2026-05-21"
+  topics:
+    - prometheus-exporter
+    - wakatime
+    - prometheus
+    - wakatime-api
+    - go
+    - golang
+    - metrics
+    - statistics
+    - exported-metrics
+  url: https://github.com/MacroPower/wakatime_exporter
+- name: prometheus_video_renderer
+  description: Render videos using Prometheus and Grafana, e.g. Bad Apple.
+  language: Go
+  stars: 111
+  forks: 6
+  updated: "2026-04-03"
+  topics:
+    - prometheus
+    - bad-apple
+    - grafana
+    - grafana-dashboard
+  url: https://github.com/MacroPower/prometheus_video_renderer
+- name: kclipper
+  description: KCL + Helm = kclipper
+  language: Go
+  stars: 38
+  forks: 2
+  updated: "2026-05-20"
+  topics:
+    - argocd
+    - kcl
+    - kcl-module
+    - helm
+    - kubernetes
+  url: https://github.com/MacroPower/kclipper
+- name: macropower-analytics-panel
+  description: It's like Google Analytics, but for Grafana dashboards!
+  language: Go
+  stars: 30
+  forks: 11
+  updated: "2026-03-25"
+  topics:
+    - grafana
+    - grafana-plugin
+    - prometheus-metrics
+    - prometheus-exporter
+    - prometheus
+    - logstash
+    - fluentd
+    - logging
+    - hacktoberfest
+    - hacktoberfest2021
+  url: https://github.com/MacroPower/macropower-analytics-panel
+- name: grafana-image-renderer-sdk-go
+  description: Go bindings & CLI for Grafana Image Renderer
+  language: Go
+  stars: 10
+  forks: 0
+  updated: "2023-03-02"
+  topics:
+    - grafana
+    - grafana-image-renderer
+  url: https://github.com/MacroPower/grafana-image-renderer-sdk-go
+- name: prometheus_ascii
+  description: Experimental Prometheus client that outputs ASCII graphs.
+  language: Go
+  stars: 8
+  forks: 2
+  updated: "2024-06-07"
+  topics:
+    - prometheus
+    - prometheus-client
+    - prometheus-metrics
+    - ascii
+    - ascii-graphics
+    - ascii-art
+  url: https://github.com/MacroPower/prometheus_ascii
+- name: twitch_predictions_recorder
+  description: Records twitch prediction data for analysis
+  language: C
+  stars: 5
+  forks: 0
+  updated: "2026-03-10"
+  topics:
+    - twitch
+  url: https://github.com/MacroPower/twitch_predictions_recorder
+- name: provider-authentik
+  description: Crossplane provider to manage Authentik resources.
+  language: Go
+  stars: 3
+  forks: 4
+  updated: "2025-03-21"
+  topics: []
+  url: https://github.com/MacroPower/provider-authentik
+- name: docker-vcsim
+  description: Simulates either a vCenter server or an ESXi server
+  language: Shell
+  stars: 1
+  forks: 1
+  updated: "2025-01-24"
+  topics:
+    - esxi-server
+    - vcenter-server
+    - simulator
+    - docker
+    - vmware-vsphere
+    - vmware-vcenter
+    - vcenter
+    - vsphere
+    - vsphere-sdk
+    - vcenter-api
+    - vmware-esxi
+  url: https://github.com/MacroPower/docker-vcsim
+- name: go_template
+  description: A template for my Go projects.
+  language: Go
+  stars: 1
+  forks: 0
+  updated: "2026-02-09"
+  topics: []
+  url: https://github.com/MacroPower/go_template
+- name: kube-autotuner
+  description: Benchmark-driven kernel parameter tuning for Kubernetes nodes.
+  language: Python
+  stars: 0
+  forks: 0
+  updated: "2026-05-11"
+  topics: []
+  url: https://github.com/MacroPower/kube-autotuner
+- name: marshal-bench-go
+  description: Collection of Go (un)marshalling benchmarks
+  language: Go
+  stars: 0
+  forks: 0
+  updated: "2021-05-02"
+  topics: []
+  url: https://github.com/MacroPower/marshal-bench-go
+- name: niceyaml
+  description: Combine the powers of go-yaml and bubbletea
+  language: Go
+  stars: 0
+  forks: 0
+  updated: "2026-02-22"
+  topics: []
+  url: https://github.com/MacroPower/niceyaml
+- name: osrs_ge_exporter
+  description: Exports the current Grand Exchange prices in OpenMetrics format.
+  language: Go
+  stars: 0
+  forks: 0
+  updated: "2023-09-10"
+  topics: []
+  url: https://github.com/MacroPower/osrs_ge_exporter
+- name: terrarium
+  description: Policy-driven boundaries for untrusted code and autonomous agents
+  language: Go
+  stars: 0
+  forks: 0
+  updated: "2026-05-10"
+  topics: []
+  url: https://github.com/MacroPower/terrarium
+- name: x
+  description: Experimental packages.
+  language: Go
+  stars: 0
+  forks: 0
+  updated: "2026-02-21"
+  topics: []
+  url: https://github.com/MacroPower/x

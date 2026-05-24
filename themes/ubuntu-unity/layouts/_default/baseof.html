@@ -43,5 +43,13 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "rss" $rss) | jsonif
   }}
   {{ $blog := resources.Get "js/blog.ts" | js.Build $blogOpts | resources.Fingerprint }}
   <script defer src="{{ $blog.RelPermalink }}" integrity="{{ $blog.Data.Integrity }}"></script>
+
+  {{ $projectsOpts := dict
+      "targetPath" "js/projects.js"
+      "minify" hugo.IsProduction
+      "format" "iife"
+  }}
+  {{ $projects := resources.Get "js/projects.ts" | js.Build $projectsOpts | resources.Fingerprint }}
+  <script defer src="{{ $projects.RelPermalink }}" integrity="{{ $projects.Data.Integrity }}"></script>
 </body>
 </html>

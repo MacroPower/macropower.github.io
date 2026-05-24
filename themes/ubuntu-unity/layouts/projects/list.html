@@ -1,0 +1,16 @@
+{{ define "main" }}
+  <article class="up-projects selectable" data-projects-kind="section">
+    {{ partial "page/post-pathbar.html" (dict
+        "segments" (slice
+          (dict "label" "Home" "url" "/")
+          (dict "label" "Projects" "url" .RelPermalink))
+        "search" true
+        "searchNoun" "projects"
+        "searchPlaceholder" "Filter projects by name or topic…") }}
+    <div class="up-projects-grid">
+      {{ partial "page/projects-sidebar.html" (dict "projects" site.Data.projects) }}
+      {{ partial "page/projects-grid.html" (dict "projects" site.Data.projects) }}
+      {{ partial "page/projects-preview-empty.html" . }}
+    </div>
+  </article>
+{{ end }}
