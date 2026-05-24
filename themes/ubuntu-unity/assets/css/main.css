@@ -839,6 +839,392 @@ body.up-react-ready .up-top-panel[data-ssr]{display:none}
 }
 #up-trash-host > *{ pointer-events:auto; }
 
+/* ---- top-panel dropdowns ------------------------------------------------ */
+
+.up-dropdown{
+  position:absolute; top:24px;
+  min-width:220px; max-width:320px;
+  background:linear-gradient(180deg,
+    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
+  border:1px solid rgba(0,0,0,.6);
+  box-shadow:0 12px 32px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  border-radius:0 0 4px 4px;
+  color:#E8E5E2;
+  font-size:12.5px;
+  z-index:200;
+  padding:0;
+  overflow:hidden;
+}
+.up-dropdown[hidden]{display:none}
+.up-dropdown[data-align="left"]{left:0}
+.up-dropdown[data-align="right"]{right:0}
+.up-dropdown.up-dropdown-wide{min-width:280px}
+.up-dropdown-header{
+  padding:8px 12px; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.08em;
+  color:rgba(255,255,255,.55);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.up-dropdown-body{padding:6px 0}
+.up-dropdown-row{
+  padding:5px 14px;
+  cursor:default;
+  color:rgba(255,255,255,.86);
+}
+.up-dropdown-row:hover{
+  background:rgba(221,72,20,.65);
+  color:#fff;
+}
+.up-dropdown-row.is-danger{color:#F0B0A0}
+.up-dropdown-row.is-danger:hover{background:rgba(221,72,20,.5);color:#fff}
+.up-dropdown-sep{
+  height:1px;
+  background:rgba(255,255,255,.1);
+  margin:6px 0;
+}
+.up-dropdown-btn{
+  padding:5px 10px; border:0; border-radius:3px;
+  background:var(--orange);
+  color:#fff; font-size:12px; font-family:"Ubuntu",sans-serif;
+  cursor:default;
+}
+.up-dropdown-btn:hover{background:var(--orange-light)}
+.up-dropdown-btn.is-ghost{background:transparent}
+.up-dropdown-btn.is-ghost:hover{background:rgba(255,255,255,.1)}
+.up-dropdown-row-flex{
+  display:flex; align-items:center; gap:10px;
+}
+.up-dropdown-row-buttons{
+  margin-top:10px; display:flex; gap:6px;
+}
+.up-dropdown-empty{color:rgba(255,255,255,.6); font-size:12px}
+.up-dropdown-meta{
+  margin-top:8px; font-size:11px;
+  color:rgba(255,255,255,.5);
+}
+.up-dropdown-meta-strong{color:rgba(255,255,255,.85)}
+.up-dropdown-meta-em{color:rgba(255,255,255,.55)}
+.up-dropdown-meta-em i{color:rgba(255,255,255,.85)}
+
+/* ---- menu items (File/Edit/View/Help) ---------------------------------- */
+
+.up-menu-item{
+  display:flex; align-items:center; gap:10px;
+  padding:4px 14px 4px 26px;
+  position:relative;
+  background:transparent;
+  color:rgba(255,255,255,.92);
+  cursor:default;
+}
+.up-menu-item:hover{
+  background:var(--orange-light);
+  color:#fff;
+}
+.up-menu-item.is-disabled{
+  color:rgba(255,255,255,.35);
+}
+.up-menu-item.is-disabled:hover{
+  background:transparent;
+  color:rgba(255,255,255,.35);
+}
+.up-menu-item-label{flex:1}
+.up-menu-item.has-check::before{
+  content:"\2713";
+  position:absolute; left:12px;
+  color:rgba(255,255,255,.6);
+}
+.up-menu-item.has-shortcut .up-menu-item-shortcut{
+  font-size:11px;
+  color:rgba(255,255,255,.4);
+}
+.up-menu-item:hover.has-shortcut .up-menu-item-shortcut{
+  color:rgba(255,255,255,.85);
+}
+.up-menu-item.is-disabled.has-shortcut .up-menu-item-shortcut{
+  color:rgba(255,255,255,.3);
+}
+
+/* ---- network rows ------------------------------------------------------- */
+
+.up-net-row-dot{
+  display:inline-block; width:14px;
+  color:rgba(255,255,255,.4);
+}
+.up-net-row.is-on .up-net-row-dot{color:var(--orange-light)}
+.up-net-row-name{color:inherit}
+.up-net-row.is-muted .up-net-row-name{color:rgba(255,255,255,.4)}
+.up-net-row.is-mono .up-net-row-name{font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace}
+.up-net-row.is-strong .up-net-row-name{font-weight:600}
+
+/* ---- volume slider ----------------------------------------------------- */
+
+.up-vol-slider{
+  flex:1; accent-color:var(--orange);
+}
+.up-vol-toggle{
+  width:24px; height:24px; padding:0; border:0;
+  background:transparent; color:#fff; cursor:default;
+}
+.up-vol-readout{
+  width:28px; text-align:right;
+  color:rgba(255,255,255,.7); font-size:11px;
+}
+
+/* ---- battery bar ------------------------------------------------------- */
+
+.up-bat-headline{font-size:13px;color:rgba(255,255,255,.9)}
+.up-bat-detail{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+.up-bat-bar{
+  height:8px; background:rgba(255,255,255,.12);
+  border-radius:2px; margin-top:10px; overflow:hidden;
+}
+.up-bat-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,#DD4814,#E95420);
+}
+
+/* ---- mini calendar ----------------------------------------------------- */
+
+.up-calendar{margin-bottom:8px}
+.up-cal-row{
+  display:grid; grid-template-columns:repeat(7, 1fr); gap:2px;
+}
+.up-cal-head{
+  font-size:10px; color:rgba(255,255,255,.45);
+  text-align:center; margin-bottom:4px;
+}
+.up-cal-cell{
+  aspect-ratio:1.4;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:rgba(255,255,255,.85);
+  background:transparent; border-radius:2px;
+}
+.up-cal-cell.is-empty{color:transparent}
+.up-cal-cell.is-today{
+  background:var(--orange-light);
+  font-weight:600;
+}
+
+/* ---- dialogs ----------------------------------------------------------- */
+
+.up-dialog-stage{
+  position:absolute; inset:0;
+  z-index:1000;
+  pointer-events:auto;
+}
+.up-dlg-backdrop{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.32);
+  opacity:0;
+  transition:opacity .15s ease;
+}
+.up-dlg-backdrop.is-appear{opacity:1}
+.up-dialog{
+  position:absolute; left:50%; top:50%;
+  width:440px; max-width:calc(100% - 64px);
+  background:#EFEDEB;
+  color:#2E2B28;
+  border:1px solid rgba(0,0,0,.6);
+  border-radius:6px;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.55),
+    0 6px 18px rgba(0,0,0,.4);
+  opacity:0;
+  transform:translate(calc(-50% + var(--ox,0px)),
+                      calc(-50% + var(--oy,0px))) scale(.96);
+  transition:opacity .15s ease,
+    transform .18s cubic-bezier(.2,.8,.3,1);
+  font-family:"Ubuntu",sans-serif;
+  font-size:13.5px;
+  overflow:hidden;
+}
+.up-dialog.is-appear{
+  opacity:1;
+  transform:translate(calc(-50% + var(--ox,0px)),
+                      calc(-50% + var(--oy,0px))) scale(1);
+}
+.up-dialog.is-dragging{transition:none}
+.up-dialog.is-shaking{animation:dlgShake .38s}
+@keyframes dlgShake{
+  0%,100%{transform:translate(calc(-50% + var(--ox,0px)),
+                              calc(-50% + var(--oy,0px))) scale(1)}
+  15%,55%{transform:translate(calc(-50% + var(--ox,0px) - 6px),
+                              calc(-50% + var(--oy,0px))) scale(1)}
+  35%,75%{transform:translate(calc(-50% + var(--ox,0px) + 6px),
+                              calc(-50% + var(--oy,0px))) scale(1)}
+}
+.up-dlg-titlebar{
+  height:26px; padding:0 10px 0 8px;
+  background:linear-gradient(180deg,#3F3D3A 0%,#2A2825 100%);
+  border-bottom:1px solid rgba(0,0,0,.4);
+  display:flex; align-items:center;
+  cursor:grab;
+  user-select:none;
+}
+.up-dialog.is-dragging .up-dlg-titlebar{cursor:grabbing}
+.up-dlg-close{
+  width:14px; height:14px; border-radius:7px;
+  padding:0; border:0; cursor:default;
+  background:radial-gradient(circle at 38% 32%,
+    #F0664A 0%, #C7391E 70%, #8C2410 100%);
+  box-shadow:
+    inset 0 .5px 0 rgba(255,255,255,.35),
+    inset 0 -.5px 0 rgba(0,0,0,.55),
+    0 1px 1px rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center;
+}
+.up-dlg-close:hover{
+  background:radial-gradient(circle at 38% 32%,
+    #FF8060 0%, #DC4824 70%, #A02B12 100%);
+}
+.up-dlg-title{
+  flex:1; text-align:center;
+  color:#F4F0EC;
+  font-size:12px; font-weight:500;
+  margin-right:18px;
+}
+.up-dlg-body{
+  padding:22px 22px 16px;
+  display:flex; gap:18px; align-items:flex-start;
+}
+.up-dlg-icon{
+  width:48px; height:48px; border-radius:24px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:30px; font-weight:700; line-height:1;
+  font-family:"Ubuntu",sans-serif;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 1px 2px rgba(0,0,0,.25);
+  flex-shrink:0;
+}
+.up-dlg-icon-glyph{transform:translateY(-1px)}
+.up-dlg-icon-info{
+  background:radial-gradient(circle at 35% 28%, #3F87C9 0%, #2A5F94 80%);
+}
+.up-dlg-icon-question{
+  background:radial-gradient(circle at 35% 28%, #7A6FB0 0%, #564E87 80%);
+}
+.up-dlg-icon-warning{
+  background:radial-gradient(circle at 35% 28%, #E5A93C 0%, #A87815 80%);
+  color:#3A2A0A;
+}
+.up-dlg-icon-error{
+  background:radial-gradient(circle at 35% 28%, #C7391E 0%, #8C2410 80%);
+}
+.up-dlg-icon-success{
+  background:radial-gradient(circle at 35% 28%, #5C8A3A 0%, #3F5F25 80%);
+}
+.up-dlg-content{flex:1; min-width:0}
+.up-dlg-content-title{
+  font-size:15px; font-weight:500; line-height:1.3;
+  color:#2E2B28;
+}
+.up-dlg-content-title.has-body{margin-bottom:8px}
+.up-dlg-content-body{
+  color:#3A3733; line-height:1.5; white-space:pre-wrap;
+}
+.up-dlg-content-details{
+  margin-top:12px; padding:10px 12px;
+  background:#FBFAF9; border:1px solid #DCD7D2;
+  border-radius:3px;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:12px; color:#3A3733;
+  white-space:pre-wrap;
+  max-height:220px; overflow:auto;
+}
+.up-dlg-footer{
+  padding:10px 14px 14px;
+  background:#E8E5E2;
+  border-top:1px solid #D4D0CD;
+  display:flex; justify-content:flex-end; gap:8px;
+}
+.up-dlg-btn{
+  min-width:84px;
+  padding:5px 14px;
+  background:linear-gradient(180deg,#FBFAF9 0%,#E5E2DF 100%);
+  color:#2E2B28;
+  border:1px solid #B5AFAA;
+  border-radius:3px;
+  font-size:13px; font-weight:400;
+  font-family:"Ubuntu",sans-serif;
+  cursor:default;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    0 1px 1px rgba(0,0,0,.08);
+  outline:none;
+}
+.up-dlg-btn:hover{
+  background:linear-gradient(180deg,#FFFFFF 0%,#E5E2DF 100%);
+}
+.up-dlg-btn:active{
+  background:linear-gradient(180deg,#D8D5D2 0%,#C5C1BD 100%);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
+}
+.up-dlg-btn.is-primary{
+  background:linear-gradient(180deg,var(--orange) 0%,#B23B11 100%);
+  color:#fff;
+  border-color:rgba(0,0,0,.35);
+  font-weight:500;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 1px 1px rgba(0,0,0,.15);
+}
+.up-dlg-btn.is-primary:hover{
+  background:linear-gradient(180deg,var(--orange-light) 0%,#B23B11 100%);
+}
+.up-dlg-btn.is-primary:active{
+  background:linear-gradient(180deg,#BD3D11 0%,#922F0C 100%);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
+}
+.up-dlg-btn.is-danger{
+  color:#A02B12;
+}
+.up-dlg-btn.is-danger:active{
+  background:linear-gradient(180deg,#8C2410 0%,#8C2410 100%);
+  color:#fff;
+}
+
+/* ---- trash window ------------------------------------------------------ */
+
+.up-trash-stage{
+  position:fixed;
+  inset:0;
+  z-index:30;
+  pointer-events:none;
+}
+.up-trash-stage > *{pointer-events:auto}
+.up-trash-stage[hidden]{display:none}
+.up-trash-empty{
+  flex:1;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+  color:#8A8580;
+}
+.up-trash-empty-headline{font-size:16px; color:#5A5550}
+.up-trash-empty-detail{
+  font-size:12.5px; max-width:280px;
+  text-align:center; line-height:1.5;
+}
+.up-trash-empty-btn{
+  margin-top:6px; padding:6px 14px;
+  background:linear-gradient(180deg,#FBFAF9,#E5E2DF);
+  border:1px solid #C9C5C1; border-radius:3px;
+  font-size:12.5px; color:#3A3733; cursor:default;
+}
+.up-trash-empty-btn:hover{
+  background:linear-gradient(180deg,#FFFFFF,#E5E2DF);
+  border-color:#A8A39E;
+}
+
+/* ---- narrow-mode indicator collapse ------------------------------------ */
+
+@media (max-width:560px){
+  .up-indicator[data-indicator="inbox"],
+  .up-indicator[data-indicator="net"],
+  .up-indicator[data-indicator="bat"]{display:none}
+}
+
 /* =========================================================================
    accessibility: focus rings on interactive surfaces (kept subtle so they
    don't break the Unity chrome aesthetic)
