@@ -8,8 +8,8 @@
   ],
   "shell": {
     "init_hook": [
-      "test -d node_modules || npm install --silent",
-      "lefthook install -f >/dev/null"
+      "[ ! -f package.json ] || [ -d node_modules ] || npm install --silent",
+      "[ ! -d .git ] || lefthook install -f >/dev/null"
     ],
     "scripts": {
       "build":     ["hugo --minify"],
