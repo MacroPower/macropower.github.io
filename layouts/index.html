@@ -1,0 +1,82 @@
+{{ define "main" }}
+{{- $user := "me" -}}
+{{- $host := "jacobcolvin.com" -}}
+{{- $headerLine := printf "%s@%s" $user $host -}}
+{{- $birth := time.AsTime (printf "%sT00:00:00Z" .Site.Params.author.born) -}}
+{{- $tnow := now -}}
+{{- $bdThis := time.AsTime (printf "%04d-10-03T00:00:00Z" $tnow.Year) -}}
+{{- $years := sub $tnow.Year $birth.Year -}}
+{{- $bdLast := $bdThis -}}
+{{- if lt $tnow.Unix $bdThis.Unix -}}
+  {{- $years = sub $years 1 -}}
+  {{- $bdLast = time.AsTime (printf "%04d-10-03T00:00:00Z" (sub $tnow.Year 1)) -}}
+{{- end -}}
+{{- $days := div (sub $tnow.Unix $bdLast.Unix) 86400 -}}
+{{- $uptime := printf "%d years, %d days" $years $days -}}
+<section class="up-neofetch selectable" aria-label="Profile">
+  {{- /* Mask codes (O Y G B P C R M, space = no color) → .aod-X in main.scss. */ -}}
+  {{- $ascii  := readFile "layouts/partials/page/home-ascii.txt" -}}
+  {{- $colors := readFile "layouts/partials/page/home-colors.txt" -}}
+  {{- $artLines := split (trim $ascii  "\n") "\n" -}}
+  {{- $clrLines := split (trim $colors "\n") "\n" -}}
+  <pre class="up-neofetch-ascii" aria-hidden="true">
+  {{- range $r, $line := $artLines -}}
+    {{- if ne $r 0 }}{{ "\n" }}{{ end -}}
+    {{- $mask := index $clrLines $r -}}
+    {{- $runColor := "" -}}{{- $runText := "" -}}
+    {{- range $col, $cc := split $line "" -}}
+      {{- $m := substr $mask $col 1 -}}
+      {{- $color := cond (or (eq $m " ") (eq $m "")) "" $m -}}
+      {{- if eq $color $runColor -}}
+        {{- $runText = printf "%s%s" $runText $cc -}}
+      {{- else -}}
+        {{- if eq $runColor "" -}}{{ $runText -}}
+        {{- else -}}<span class="aod-{{ $runColor }}">{{ $runText }}</span>{{- end -}}
+        {{- $runColor = $color -}}{{- $runText = $cc -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if eq $runColor "" -}}{{ $runText -}}
+    {{- else -}}<span class="aod-{{ $runColor }}">{{ $runText }}</span>{{- end -}}
+  {{- end -}}
+  </pre>
+  <div class="up-neofetch-info">
+    <div class="up-neofetch-header">
+      <span class="up-nf-user">{{ $user }}</span>@<span class="up-nf-host">{{ $host }}</span>
+    </div>
+    <div class="up-neofetch-rule" style="width:{{ len $headerLine }}ch" aria-hidden="true">{{ strings.Repeat (len $headerLine) "-" }}</div>
+    <dl class="up-neofetch-rows">
+      <div class="up-nf-row"><dt>Name</dt><dd>{{ .Site.Params.author.name }}</dd></div>
+      <div class="up-nf-row"><dt>Title</dt><dd>{{ .Site.Params.homeSubtitle }}</dd></div>
+      <div class="up-nf-row"><dt>Uptime</dt><dd>{{ $uptime }}</dd></div>
+      <div class="up-nf-row up-nf-row-sep"><dt></dt><dd></dd></div>
+      {{- range .Site.Params.social }}
+        {{- $label := .short | default .name -}}
+        {{- $display := .url | strings.TrimPrefix "http://" | strings.TrimPrefix "https://" | strings.TrimPrefix "www." -}}
+        <div class="up-nf-row"><dt>{{ $label }}</dt><dd><a href="{{ .url }}" rel="me noopener">{{ $display }}</a></dd></div>
+      {{- end }}
+    </dl>
+    <div class="up-neofetch-palette" aria-hidden="true">
+      <div class="up-nf-palette-row">
+        <span style="background:#282C34"></span>
+        <span style="background:#E06C75"></span>
+        <span style="background:#98C379"></span>
+        <span style="background:#E5C07B"></span>
+        <span style="background:#61AFEF"></span>
+        <span style="background:#C678DD"></span>
+        <span style="background:#56B6C2"></span>
+        <span style="background:#ABB2BF"></span>
+      </div>
+      <div class="up-nf-palette-row">
+        <span style="background:#5C6370"></span>
+        <span style="background:#BE5046"></span>
+        <span style="background:#7A9F60"></span>
+        <span style="background:#D19A66"></span>
+        <span style="background:#4D89C8"></span>
+        <span style="background:#A557C2"></span>
+        <span style="background:#4F9DA6"></span>
+        <span style="background:#DCDFE4"></span>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

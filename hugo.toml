@@ -85,6 +85,7 @@ disable404     = false
 
   [params.author]
     name = "Jacob Colvin"
+    born = "1996-10-03"
 
   # Override the default footer.
   [params.footer]
@@ -154,12 +155,14 @@ disable404     = false
     url  = "https://www.youtube.com/channel/UCZeubjnoztTC_RP_c4YOuYw"
 
   [[params.social]]
-    name = "stackoverflow"
-    url  = "https://stackoverflow.com/users/4868262/jacob-colvin"
+    name  = "stackoverflow"
+    short = "so"
+    url   = "https://stackoverflow.com/users/4868262/jacob-colvin"
 
   [[params.social]]
-    name = "hackthebox"
-    url  = "https://app.hackthebox.eu/users/427511"
+    name  = "hackthebox"
+    short = "htb"
+    url   = "https://app.hackthebox.eu/users/427511"
 
   [[params.social]]
     name = "steam"
@@ -196,11 +199,6 @@ disable404     = false
     name       = "Blog"
     url        = "posts/"
     weight     = 3
-  [[menu.main]]
-    identifier = "contact"
-    name       = "Contact"
-    url        = "contact/"
-    weight     = 4
 
 [server]
   [[server.headers]]

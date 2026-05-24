@@ -22,7 +22,7 @@ A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top 
 ## Layout contracts
 
 - `layouts/_default/baseof.html` is the only base template. It renders the chrome partials (`top-panel`, `launcher`, `window-frame-open`, `{{ block "main" }}`, `window-frame-close`, `dialog-host`, `trash-window`) in that order. The `window-frame-open`/`window-frame-close` pair sandwich the content — `window-frame-open.html` opens `<div.up-window-stage> > <section.up-window-chrome data-page-window> > <div.up-titlebar> + <div.up-window-body>`, and `window-frame-close.html` closes them. Any layout's `{{ define "main" }}` body must emit inner content only; no extra outer wrapper, no overriding the titlebar.
-- `layouts/_default/single.html` checks `.File.BaseFileName` against a `{"about","cv","contact"}` allowlist and dispatches to `partials/page/<name>.html` for those three pages; everything else falls through to a generic `<article.up-page>` wrapper. To add a bespoke top-level page (e.g. `now.md`), add `now` to the allowlist and create `partials/page/now.html`.
+- `layouts/_default/single.html` checks `.File.BaseFileName` against a `{"about","cv"}` allowlist and dispatches to `partials/page/<name>.html` for those pages; everything else falls through to a generic `<article.up-page>` wrapper. To add a bespoke top-level page (e.g. `now.md`), add `now` to the allowlist and create `partials/page/now.html`.
 - `layouts/posts/{list,single}.html` are the blog index and post pages. They share `partials/page/post-pathbar.html` (the Nautilus-style breadcrumb), `post-list.html`, `post-reader.html`, `post-sidebar.html`, and `post-list-empty-reader.html`.
 
 ## DOM contracts JS depends on

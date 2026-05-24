@@ -348,12 +348,11 @@ body{
   pointer-events:none;
 }
 /* =========================================================================
-   content: typography, blog three-pane, contact rows, CV embed
+   content: typography, blog three-pane, CV embed
    ========================================================================= */
 
 .up-about-page,
 .up-cv-page,
-.up-contact-page,
 .up-blog{
   display:block;width:100%;height:100%;
   background:var(--content-bg);color:var(--content-fg);
@@ -371,13 +370,11 @@ body{
 .up-about-meta a.up-about-meta-item,
 .up-about-bio a,
 .up-cv-main a,
-.up-contact-value,
 .up-reader-body a{color:#2B4E8E;text-decoration:none}
 .up-page-children a:hover,
 .up-about-meta a.up-about-meta-item:hover,
 .up-about-bio a:hover,
 .up-cv-main a:hover,
-.up-contact-value:hover,
 .up-reader-body a:hover{color:var(--orange-light);text-decoration:underline}
 .up-page-header h1{font-size:24px;font-weight:500;letter-spacing:-.01em;margin:0 0 16px}
 .up-page-body{font-size:14.5px;line-height:1.65}
@@ -473,28 +470,87 @@ body{
   }
 }
 
-/* ---------- Contact ---------- */
-.up-contact-page{padding:28px 36px}
-.up-contact-header{margin-bottom:18px}
-.up-contact-title{font-size:22px;font-weight:500;margin:0 0 8px;letter-spacing:-.01em}
-.up-contact-intro{
-  color:var(--content-muted);font-size:14px;line-height:1.6;max-width:560px;
-  p{margin:0 0 8px}
+/* ---------- Neofetch (home) ---------- */
+/* Scoped via :has so only the home page drops the opaque window body;
+   other pages keep it. The panel's own alpha lets the wallpaper through. */
+.up-window-body:has(> .up-neofetch){ background:transparent; }
+.up-neofetch{
+  --aod-fg:#ABB2BF;
+  --aod-muted:#5C6370;
+  --aod-red:#E06C75;
+  --aod-orange:#D19A66;
+  --aod-yellow:#E5C07B;
+  --aod-green:#98C379;
+  --aod-blue:#61AFEF;
+  --aod-purple:#C678DD;
+  --aod-cyan:#56B6C2;
+
+  flex:1; min-height:0;
+  display:grid; grid-template-columns:auto 1fr;
+  gap:48px; align-items:start;
+  padding:24px 22px 20px;
+  background:color-mix(in srgb, var(--hud) 82%, transparent);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  color:var(--aod-fg);
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:12pt; font-weight:400; line-height:1.2;
+  overflow:auto;
 }
-.up-contact-grid{display:flex;flex-direction:column;max-width:680px}
-.up-contact-row{
-  display:grid;grid-template-columns:120px 1fr;gap:14px;
-  padding:9px 0;border-bottom:1px dashed #DCD7D2;
-  align-items:baseline;
+.up-neofetch-ascii{
+  margin:0;
+  font-family:inherit; font-size:inherit; font-weight:700; line-height:inherit;
+  white-space:pre;
+  color:var(--aod-fg);
+  .aod-R{ color:var(--aod-red); }
+  .aod-O{ color:var(--aod-orange); }
+  .aod-Y{ color:var(--aod-yellow); }
+  .aod-G{ color:var(--aod-green); }
+  .aod-B{ color:var(--aod-blue); }
+  .aod-P{ color:var(--aod-purple); }
+  .aod-C{ color:var(--aod-cyan); }
+  .aod-M{ color:var(--aod-muted); }
 }
-.up-contact-label{
-  color:#9A938D;font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;
+.up-neofetch-info{
+  min-width:0; max-width:62ch;
+  display:flex; flex-direction:column;
 }
-.up-contact-value{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;font-size:13px;
-  word-break:break-all;
+.up-neofetch-header{
+  align-self:flex-start;
+  font-weight:700;
+  .up-nf-user{ color:var(--aod-red); }
+  .up-nf-host{ color:var(--aod-blue); }
 }
+.up-neofetch-rule{
+  position:relative;
+  height:1.2em;
+  color:transparent;
+  &::before{
+    content:""; position:absolute; inset:0;
+    margin:auto 0; height:1px;
+    background:var(--aod-muted);
+    pointer-events:none;
+  }
+}
+.up-neofetch-rows{
+  margin:0; padding:0;
+  display:grid; grid-template-columns:9ch 1fr;
+  row-gap:2px; column-gap:14px;
+}
+.up-nf-row{ display:contents; }
+.up-nf-row > dt{
+  color:var(--aod-red); font-weight:700;
+  text-transform:lowercase; margin:0;
+}
+.up-nf-row > dd{ color:var(--aod-fg); font-weight:400; margin:0; word-break:break-word; }
+.up-nf-row a{
+  color:var(--aod-blue); text-decoration:none;
+  &:hover{ color:var(--aod-cyan); text-decoration:underline; }
+}
+.up-nf-row-sep > dt, .up-nf-row-sep > dd{ min-height:1.2em; }
+.up-neofetch-palette{ margin-top:1.2em; display:flex; flex-direction:column; gap:0; }
+.up-nf-palette-row{ display:flex; gap:0; }
+.up-nf-palette-row > span{ display:block; width:3ch; height:1.2em; margin:0; padding:0; }
 
 /* ---------- Pathbar (Nautilus breadcrumb) ---------- */
 .up-pathbar-wrap{
@@ -825,15 +881,19 @@ body{
   .up-post-list{border-right:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
   .up-about-header{padding:20px 22px;flex-wrap:wrap}
   .up-about-bio{padding:18px 22px 28px}
-  .up-contact-page{padding:20px 22px}
-  .up-contact-row{grid-template-columns:90px 1fr;gap:8px}
   .up-pathbar-pill{max-width:180px}
   .up-pathbar-search-input{font-size:16px}
+  .up-neofetch{grid-template-columns:1fr;padding:22px 24px;gap:18px}
+  .up-neofetch-ascii{align-self:center}
 }
 @media (max-width:560px){
   .up-pathbar{padding:5px 8px 5px 4px;gap:4px}
   .up-pathbar-pill{max-width:120px;font-size:11.5px}
   .up-reader-inner{padding:24px 18px 40px}
+  .up-neofetch{padding:16px;font-size:12pt}
+  .up-neofetch-ascii{display:none}
+  .up-neofetch-rows{grid-template-columns:8ch 1fr;column-gap:10px}
+  .up-nf-palette-row > span{width:3ch;height:1.2em}
 }
 
 /* ---- top-panel dropdowns ------------------------------------------------ */

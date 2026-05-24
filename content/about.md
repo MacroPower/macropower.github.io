@@ -1,7 +1,7 @@
 +++
 title   = "About Me"
 date    = "2021-09-27"
-aliases = ["about-me", "me", "contact"]
+aliases = ["about-me", "me"]
 +++
 
 I love open source. I make most of the stuff I do in my free time public on GitHub. There's a lot more detail about my current goals and projects on my [profile](https://github.com/MacroPower).
