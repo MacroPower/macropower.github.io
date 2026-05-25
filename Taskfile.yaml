@@ -1,5 +1,7 @@
 version: "3"
 
+set: [pipefail]
+
 tasks:
   default:
     cmds:
@@ -34,3 +36,51 @@ tasks:
     desc: Install git hooks
     cmds:
       - lefthook install
+
+  populate-projects:
+    desc: Fetch repo metadata from GitHub and rewrite data/projects.yaml
+    vars:
+      GITHUB_USER: '{{.GITHUB_USER | default "MacroPower"}}'
+      REPO_LIMIT: '{{.REPO_LIMIT | default "200"}}'
+      MIN_STARS: '{{.MIN_STARS | default "0"}}'
+      # Keep in sync with themes/ubuntu-unity/layouts/projects/list.html ($known).
+      LANG_ALLOW: '["Go","Python","TypeScript","JavaScript","Rust","Shell","C","HTML","Ruby","Lua"]'
+    preconditions:
+      - sh: command -v gh >/dev/null
+        msg: 'gh CLI not found on PATH (run inside `devbox shell`).'
+      - sh: command -v jq >/dev/null
+        msg: 'jq not found on PATH (run inside `devbox shell`).'
+      - sh: command -v yq >/dev/null
+        msg: 'yq not found on PATH (run inside `devbox shell`).'
+    cmds:
+      - defer: rm -f data/projects.json.tmp data/projects.yaml.tmp
+      - >-
+        gh repo list {{.GITHUB_USER}}
+        --visibility public
+        --source
+        --no-archived
+        --limit {{.REPO_LIMIT}}
+        --json name,description,primaryLanguage,stargazerCount,forkCount,updatedAt,repositoryTopics,url,licenseInfo
+        | jq --argjson min_stars {{.MIN_STARS}} --argjson allow '{{.LANG_ALLOW}}' '
+            [ .[]
+              | select(.description != null and .description != "")
+              | select(.stargazerCount >= $min_stars)
+              | select(.primaryLanguage.name as $l | $allow | index($l))
+              | {
+                  name,
+                  description,
+                  language: .primaryLanguage.name,
+                  stars: .stargazerCount,
+                  forks: .forkCount,
+                  updated: (.updatedAt | sub("T.*"; "")),
+                  topics: [(.repositoryTopics // [])[].name],
+                  url,
+                  license: (.licenseInfo.spdxId // null)
+                }
+              | with_entries(select(.value != null))
+            ]
+            | sort_by(-.stars, .name)
+          ' > data/projects.json.tmp
+      - jq -e 'length > 0' data/projects.json.tmp > /dev/null
+      - yq -p json -o yaml '.' data/projects.json.tmp > data/projects.yaml.tmp
+      - mv data/projects.yaml.tmp data/projects.yaml

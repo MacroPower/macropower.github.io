@@ -4,7 +4,10 @@
     "hugo@0.161.1",
     "dart-sass@1.99.0",
     "nodejs@22",
-    "lefthook@latest"
+    "lefthook@latest",
+    "gh@latest",
+    "jq@latest",
+    "yq@latest"
   ],
   "shell": {
     "init_hook": [
