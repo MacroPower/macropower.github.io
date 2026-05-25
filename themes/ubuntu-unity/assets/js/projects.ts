@@ -60,13 +60,15 @@ import { installFilterNav } from "./filter-nav";
 
   const folderTpl = document.querySelector<HTMLTemplateElement>("#up-project-folder-tpl");
 
-  const ICONS = {
-    star: '<svg viewBox="0 0 14 14" width="13" height="13" aria-hidden="true"><path d="M7 1.4 L8.6 5 L12.4 5.4 L9.5 8 L10.4 12 L7 9.9 L3.6 12 L4.5 8 L1.6 5.4 L5.4 5 Z" fill="#E5A526" stroke="#A06F0E" stroke-width=".5" stroke-linejoin="round"/></svg>',
-    fork: '<svg viewBox="0 0 14 14" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3 V6 Q4 7.4 5.4 8 L7 8.6 L8.6 8 Q10 7.4 10 6 V3"/><path d="M7 8.6 V12"/><circle cx="4" cy="2.8" r="1.2" fill="currentColor"/><circle cx="10" cy="2.8" r="1.2" fill="currentColor"/><circle cx="7" cy="12" r="1.2" fill="currentColor"/></svg>',
-    license: '<svg viewBox="0 0 14 14" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><rect x="3" y="1.6" width="8" height="10.8" rx=".5"/><line x1="4.6" y1="4.4" x2="9.4" y2="4.4"/><line x1="4.6" y1="6.4" x2="9.4" y2="6.4"/><line x1="4.6" y1="8.4" x2="8" y2="8.4"/></svg>',
-    clock: '<svg viewBox="0 0 14 14" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><circle cx="7" cy="7" r="5.4"/><path d="M7 4 V7 L9 8.4"/></svg>',
-    github: '<svg viewBox="0 0 14 14" width="12" height="12" aria-hidden="true"><path d="M7 1.3 C3.9 1.3 1.4 3.8 1.4 6.9 C1.4 9.4 3 11.5 5.3 12.2 C5.6 12.3 5.7 12.1 5.7 11.9 V11 C4.1 11.3 3.8 10.4 3.8 10.4 C3.6 9.8 3.2 9.7 3.2 9.7 C2.7 9.4 3.3 9.4 3.3 9.4 C3.8 9.5 4.1 10 4.1 10 C4.6 10.8 5.4 10.6 5.7 10.4 C5.8 10.1 5.9 9.8 6.1 9.7 C4.9 9.6 3.6 9.1 3.6 6.8 C3.6 6.1 3.8 5.6 4.1 5.2 C4.1 5 3.9 4.4 4.2 3.6 C4.2 3.6 4.7 3.5 5.7 4.2 C6.1 4.1 6.6 4 7 4 C7.4 4 7.9 4.1 8.3 4.2 C9.3 3.5 9.8 3.6 9.8 3.6 C10.1 4.4 9.9 5 9.9 5.2 C10.2 5.6 10.4 6.1 10.4 6.8 C10.4 9.1 9.1 9.6 7.9 9.7 C8.1 9.9 8.3 10.2 8.3 10.7 V11.9 C8.3 12.1 8.4 12.3 8.7 12.2 C11 11.5 12.6 9.4 12.6 6.9 C12.6 3.8 10.1 1.3 7 1.3 Z" fill="currentColor"/></svg>',
-  } as const;
+  const iconsTpl = document.querySelector<HTMLTemplateElement>("#up-project-icons");
+  const ICONS = new Map<string, string>();
+  if (iconsTpl) {
+    for (const el of iconsTpl.content.querySelectorAll<HTMLElement>("[data-icon]")) {
+      const key = el.dataset.icon;
+      if (key) ICONS.set(key, el.innerHTML);
+    }
+  }
+  const iconHTML = (key: string): string => ICONS.get(key) ?? "";
 
   function fmtNum(n: string): string {
     const num = Number(n);
@@ -76,7 +78,7 @@ import { installFilterNav } from "./filter-nav";
   }
 
   function buildStat(
-    iconKey: keyof typeof ICONS,
+    iconKey: string,
     ariaLabel: string,
     value: string,
     wide = false,
@@ -84,7 +86,7 @@ import { installFilterNav } from "./filter-nav";
     const el = document.createElement("div");
     el.className = "up-project-preview-stat" + (wide ? " up-project-preview-stat-wide" : "");
     el.setAttribute("aria-label", `${ariaLabel}: ${value}`);
-    el.innerHTML = ICONS[iconKey];
+    el.innerHTML = iconHTML(iconKey);
     const valEl = document.createElement("span");
     valEl.textContent = value;
     el.appendChild(valEl);
@@ -184,7 +186,7 @@ import { installFilterNav } from "./filter-nav";
       a.href = url;
       a.target = "_blank";
       a.rel = "noopener";
-      a.innerHTML = `${ICONS.github}<span>Open on GitHub</span>`;
+      a.innerHTML = `${iconHTML("github")}<span>Open on GitHub</span>`;
       body.appendChild(a);
     }
 

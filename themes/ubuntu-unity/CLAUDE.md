@@ -19,6 +19,7 @@ A Hugo theme that styles a personal site as the Ubuntu 14.04 Unity desktop: top 
 - `assets/js/top-panel.ts` — enhances `partials/top-panel.html`. Toggles the SSR `[data-dropdown-for]` siblings via the `hidden` attribute, ticks the clock every 30 s, rebuilds `[data-calendar]` on each clock open, runs the volume slider, dispatches `[data-action]` clicks (`nav:<key>`, `dlg:<key>`, `reload`, `fullscreen`, `vol-toggle`).
 - `assets/js/trash.ts` — owns the trash window's open/minimize/close state machine, launcher-tile cycle, focus sync, and titlebar drag via `drag.ts`.
 - `assets/js/types.ts` — shared types for the modules above and a `declare global { interface Window {...} }` block typing the runtime surface assigned to `window` (`UP_SITE`, `UP_PAGE_WINDOW_STATE`, `uiDialog`).
+- `assets/icons/` — every static icon lives here, split into `launcher/` (full-tile launcher artwork, gradient-heavy), `flat/` (larger flat-color illustrations like the wallpaper mark, trash-empty drawing, and empty-pane file/folder shapes), and `glyphs/` (small monochrome UI icons — titlebar dots, sidebar pills, panel indicators, pathbar arrows, stat icons, folder, language-symbol defs). Templates inline a `.svg` file by calling `{{ partial "icon.html" "<subdir>/<name>" }}`; the partial reads the file through Hugo's asset pipeline and emits its body as `safeHTML`. Capturing the call (`{{ $x := partial "icon.html" "glyphs/sidebar-all" }}`) preserves the safeHTML type, which is how sidebar dict-string icons are built.
 
 ## Layout contracts
 
@@ -44,6 +45,7 @@ The Hugo partials must keep emitting these. Rename any and the corresponding TS 
 - `[data-up-post-list]`, `[data-up-post-list-body]`, `[data-up-post-row]`, `[data-up-post-empty]`, `[data-up-search-toggle]`, `[data-up-search-bar]`, `[data-up-search-input]`, `[data-up-search-count]`, `[data-up-search-close]`, `[data-up-sort]` — filter/sort/search surface.
 - `[data-projects-kind]` — root for `projects.ts`; on absence, the script no-ops and returns immediately.
 - `[data-up-project-grid]`, `[data-up-project-tile]`, `[data-up-project-empty]`, `[data-up-project-preview]`, `[data-projects-filter]` — selection / filter / search surface for the projects page. Each `[data-up-project-tile]` carries `data-name`, `data-language`, `data-updated`, `data-topics`, `data-description`, `data-url`, and (when present in the source YAML) `data-stars`, `data-forks`, `data-license`. The preview pane is rebuilt from these attributes on every selection; the empty-state SSR shape is also `[data-up-project-preview]` so the JS can swap it in place.
+- `#up-project-icons` — hidden `<template>` emitted by `projects/list.html` next to the `lang-symbols` include. Its children are `<div data-icon="<key>">...</div>` entries for `star`, `fork`, `license`, `clock`, `github`; `projects.ts` reads them into a `Map<string,string>` so the preview pane can paint stat pills without keeping inline SVG strings in the bundle.
 
 ## Site-provided globals
 

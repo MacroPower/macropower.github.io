@@ -1,0 +1,27 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ic-home-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F0DEB8"/>
+      <stop offset="100%" stop-color="#B08F4A"/>
+    </linearGradient>
+    <linearGradient id="ic-home-roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#B8612E"/>
+      <stop offset="100%" stop-color="#6E2E10"/>
+    </linearGradient>
+    <linearGradient id="ic-home-door" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5A3A1E"/>
+      <stop offset="100%" stop-color="#2A1808"/>
+    </linearGradient>
+    <linearGradient id="ic-home-window" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFE08A"/>
+      <stop offset="100%" stop-color="#E59C2A"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="22" width="32" height="22" fill="url(#ic-home-body)" stroke="#3A1F08" stroke-width=".9"/>
+  <path d="M4 23 L24 7 L44 23 Z" fill="url(#ic-home-roof)" stroke="#1A0F04" stroke-width=".9" stroke-linejoin="round"/>
+  <rect x="14" y="28" width="9" height="7" fill="url(#ic-home-window)" stroke="#1A0F04" stroke-width=".7"/>
+  <line x1="18.5" y1="28.3" x2="18.5" y2="34.7" stroke="#1A0F04" stroke-width=".4"/>
+  <line x1="14.3" y1="31.5" x2="22.7" y2="31.5" stroke="#1A0F04" stroke-width=".4"/>
+  <rect x="28" y="32" width="6" height="12" fill="url(#ic-home-door)" stroke="#1A0F04" stroke-width=".7"/>
+  <circle cx="29.4" cy="38" r=".6" fill="#E7C067"/>
+</svg>

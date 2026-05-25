@@ -13,17 +13,13 @@
          href="{{ with $prevURL }}{{ . }}{{ else }}#{{ end }}"
          {{- with $prevTitle }} title="Previous: {{ . }}" aria-label="Previous: {{ . }}"{{ else }} title="Back" aria-label="Back"{{ end -}}
          {{- if not $prevURL }} aria-disabled="true" tabindex="-1"{{ end }}>
-        <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
-          <path d="M7.2 1.6 3 5.5l4.2 3.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/pathbar-back" }}
       </a>
       <a class="up-pathbar-arrow{{ if not $nextURL }} is-disabled{{ end }}"
          href="{{ with $nextURL }}{{ . }}{{ else }}#{{ end }}"
          {{- with $nextTitle }} title="Next: {{ . }}" aria-label="Next: {{ . }}"{{ else }} title="Forward" aria-label="Forward"{{ end -}}
          {{- if not $nextURL }} aria-disabled="true" tabindex="-1"{{ end }}>
-        <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
-          <path d="M3.8 1.6 8 5.5 3.8 9.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/pathbar-forward" }}
       </a>
     </div>
     <div class="up-pathbar-crumbs">
@@ -40,20 +36,14 @@
     {{- if $search }}
       <button type="button" class="up-pathbar-icon-btn" data-up-search-toggle
               title="Search {{ $searchNoun }} (Ctrl+F)" aria-label="Search {{ $searchNoun }}" aria-expanded="false">
-        <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
-          <circle cx="5.4" cy="5.4" r="3.3" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M7.9 7.9 11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/pathbar-search" }}
       </button>
     {{- end }}
   </nav>
   {{- if $search }}
     <div class="up-pathbar-search" data-up-search-bar hidden>
       <span class="up-pathbar-search-icon" aria-hidden="true">
-        <svg width="12" height="12" viewBox="0 0 13 13">
-          <circle cx="5.4" cy="5.4" r="3.3" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M7.9 7.9 11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/pathbar-search" }}
       </span>
       <input type="search" class="up-pathbar-search-input" data-up-search-input
              placeholder="{{ $searchPlaceholder }}" autocomplete="off"

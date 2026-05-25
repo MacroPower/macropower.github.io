@@ -8,6 +8,13 @@
   {{- end -}}
   <article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
     {{ partial "page/icons/lang-symbols.html" . }}
+    <template id="up-project-icons">
+      <div data-icon="star">{{ partial "icon.html" "glyphs/stat-star" }}</div>
+      <div data-icon="fork">{{ partial "icon.html" "glyphs/stat-fork" }}</div>
+      <div data-icon="license">{{ partial "icon.html" "glyphs/stat-license" }}</div>
+      <div data-icon="clock">{{ partial "icon.html" "glyphs/stat-clock" }}</div>
+      <div data-icon="github">{{ partial "icon.html" "glyphs/stat-github" }}</div>
+    </template>
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
           (dict "label" "Home" "url" "/")
@@ -22,7 +29,7 @@
           "class" "up-project-preview"
           "ariaLabel" "Project preview"
           "attrs" (dict "data-up-project-preview" "")
-          "icon" `<svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8"/><path d="M4 18 H44 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8"/><line x1="4.6" y1="18.4" x2="43.4" y2="18.4" stroke="rgba(255,255,255,.8)" stroke-width=".7"/></svg>`
+          "icon" (partial "icon.html" "flat/empty-folder")
           "hint" "No item selected"
           "tagline" "jacob@unity:~/projects$ ls | head") }}
     </div>

@@ -1,0 +1,16 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ic-proj-back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#F0BD56"/>
+      <stop offset="100%" stop-color="#B0801A"/>
+    </linearGradient>
+    <linearGradient id="ic-proj-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#F5CD6B"/>
+      <stop offset="100%" stop-color="#9C6F17"/>
+    </linearGradient>
+  </defs>
+  <path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ic-proj-back)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M5 16 H43 V18 H5 Z" fill="rgba(0,0,0,.18)"/>
+  <path d="M4 18 H44 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ic-proj-front)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
+  <line x1="4.6" y1="18.6" x2="43.4" y2="18.6" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+</svg>

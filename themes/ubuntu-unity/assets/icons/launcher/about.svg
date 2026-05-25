@@ -1,0 +1,14 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <radialGradient id="ic-user-bg" cx=".42" cy=".34" r=".72">
+      <stop offset="0%"   stop-color="#D89460"/>
+      <stop offset="60%"  stop-color="#9C5A23"/>
+      <stop offset="100%" stop-color="#5A2F0D"/>
+    </radialGradient>
+  </defs>
+  <circle cx="24" cy="24" r="22" fill="url(#ic-user-bg)" stroke="rgba(0,0,0,.45)" stroke-width=".9"/>
+  <circle cx="24" cy="24" r="20.5" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".7"/>
+  <circle cx="24" cy="19.5" r="6.4" fill="#FBEED4"/>
+  <clipPath id="ic-user-clip"><circle cx="24" cy="24" r="20"/></clipPath>
+  <path d="M9 48 c0-9 6.5-14.5 15-14.5 s15 5.5 15 14.5 z" fill="#FBEED4" clip-path="url(#ic-user-clip)"/>
+</svg>

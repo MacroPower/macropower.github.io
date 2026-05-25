@@ -14,33 +14,7 @@
      href="{{ $home }}" data-launcher="home" aria-label="Home"
      {{ if $homeActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <linearGradient id="ic-home-body" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#F0DEB8"/>
-            <stop offset="100%" stop-color="#B08F4A"/>
-          </linearGradient>
-          <linearGradient id="ic-home-roof" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#B8612E"/>
-            <stop offset="100%" stop-color="#6E2E10"/>
-          </linearGradient>
-          <linearGradient id="ic-home-door" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#5A3A1E"/>
-            <stop offset="100%" stop-color="#2A1808"/>
-          </linearGradient>
-          <linearGradient id="ic-home-window" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#FFE08A"/>
-            <stop offset="100%" stop-color="#E59C2A"/>
-          </linearGradient>
-        </defs>
-        <rect x="8" y="22" width="32" height="22" fill="url(#ic-home-body)" stroke="#3A1F08" stroke-width=".9"/>
-        <path d="M4 23 L24 7 L44 23 Z" fill="url(#ic-home-roof)" stroke="#1A0F04" stroke-width=".9" stroke-linejoin="round"/>
-        <rect x="14" y="28" width="9" height="7" fill="url(#ic-home-window)" stroke="#1A0F04" stroke-width=".7"/>
-        <line x1="18.5" y1="28.3" x2="18.5" y2="34.7" stroke="#1A0F04" stroke-width=".4"/>
-        <line x1="14.3" y1="31.5" x2="22.7" y2="31.5" stroke="#1A0F04" stroke-width=".4"/>
-        <rect x="28" y="32" width="6" height="12" fill="url(#ic-home-door)" stroke="#1A0F04" stroke-width=".7"/>
-        <circle cx="29.4" cy="38" r=".6" fill="#E7C067"/>
-      </svg>
+      {{ partial "icon.html" "launcher/home" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
@@ -51,20 +25,7 @@
      href="{{ $about }}" data-launcher="about" aria-label="About"
      {{ if $aboutActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <radialGradient id="ic-user-bg" cx=".42" cy=".34" r=".72">
-            <stop offset="0%"   stop-color="#D89460"/>
-            <stop offset="60%"  stop-color="#9C5A23"/>
-            <stop offset="100%" stop-color="#5A2F0D"/>
-          </radialGradient>
-        </defs>
-        <circle cx="24" cy="24" r="22" fill="url(#ic-user-bg)" stroke="rgba(0,0,0,.45)" stroke-width=".9"/>
-        <circle cx="24" cy="24" r="20.5" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".7"/>
-        <circle cx="24" cy="19.5" r="6.4" fill="#FBEED4"/>
-        <clipPath id="ic-user-clip"><circle cx="24" cy="24" r="20"/></clipPath>
-        <path d="M9 48 c0-9 6.5-14.5 15-14.5 s15 5.5 15 14.5 z" fill="#FBEED4" clip-path="url(#ic-user-clip)"/>
-      </svg>
+      {{ partial "icon.html" "launcher/about" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
@@ -75,21 +36,7 @@
      href="{{ $cv }}" data-launcher="cv" aria-label="CV"
      {{ if $cvActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <linearGradient id="ic-cv-medal" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#FBE57E"/>
-            <stop offset="55%" stop-color="#E7AE1F"/>
-            <stop offset="100%" stop-color="#8A580A"/>
-          </linearGradient>
-        </defs>
-        <path d="M10.5 15 L15 46.5 L24 40.5 L33 46.5 L37.5 15 Z" fill="#C84518" stroke="#5A1F08" stroke-width="1" stroke-linejoin="round"/>
-        <path d="M15 46.5 L19.5 24 L24 40.5 Z" fill="rgba(0,0,0,.28)"/>
-        <path d="M33 46.5 L28.5 24 L24 40.5 Z" fill="rgba(255,255,255,.16)"/>
-        <circle cx="24" cy="19.5" r="16.2" fill="url(#ic-cv-medal)" stroke="#5A3A08" stroke-width="1"/>
-        <circle cx="24" cy="19.5" r="12.15" fill="none" stroke="rgba(90,55,10,.7)" stroke-width=".8"/>
-        <path d="M24 11.4 L26.7 17 L32.3 17.7 L28 21.3 L29.2 26.9 L24 24.2 L18.8 26.9 L20 21.3 L15.7 17.7 L21.3 17 Z" fill="#5A3A08"/>
-      </svg>
+      {{ partial "icon.html" "launcher/cv" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
@@ -100,22 +47,7 @@
      href="{{ $projects }}" data-launcher="projects" aria-label="Projects"
      {{ if $projectsActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <linearGradient id="ic-proj-back" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#F0BD56"/>
-            <stop offset="100%" stop-color="#B0801A"/>
-          </linearGradient>
-          <linearGradient id="ic-proj-front" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#F5CD6B"/>
-            <stop offset="100%" stop-color="#9C6F17"/>
-          </linearGradient>
-        </defs>
-        <path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ic-proj-back)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
-        <path d="M5 16 H43 V18 H5 Z" fill="rgba(0,0,0,.18)"/>
-        <path d="M4 18 H44 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ic-proj-front)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
-        <line x1="4.6" y1="18.6" x2="43.4" y2="18.6" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
-      </svg>
+      {{ partial "icon.html" "launcher/projects" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
@@ -126,34 +58,7 @@
      href="{{ $blog }}" data-launcher="blog" aria-label="Blog"
      {{ if $blogActive }}data-page-current="1"{{ end }}>
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <linearGradient id="ic-page" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#FFFFFF"/>
-            <stop offset="100%" stop-color="#D9D4CC"/>
-          </linearGradient>
-          <linearGradient id="ic-pencil" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#F8D55F"/>
-            <stop offset="50%" stop-color="#E7A91A"/>
-            <stop offset="100%" stop-color="#A3700F"/>
-          </linearGradient>
-        </defs>
-        <path d="M8 4 H30 L40 14 V44 H8 Z" fill="url(#ic-page)" stroke="#6A6560" stroke-width=".7" stroke-linejoin="round"/>
-        <path d="M30 4 V14 H40 L30 4 Z" fill="#E0DCD4" stroke="#6A6560" stroke-width=".7" stroke-linejoin="round"/>
-        <path d="M30 4 V12 H38" fill="none" stroke="#fff" stroke-width=".5" opacity=".7"/>
-        <line x1="12" y1="20" x2="35" y2="20" stroke="#7A7570" stroke-width=".9"/>
-        <line x1="12" y1="24" x2="36" y2="24" stroke="#9A938D" stroke-width=".7"/>
-        <line x1="12" y1="28" x2="36" y2="28" stroke="#9A938D" stroke-width=".7"/>
-        <line x1="12" y1="32" x2="30" y2="32" stroke="#9A938D" stroke-width=".7"/>
-        <g transform="rotate(-32 24 30)">
-          <rect x="10" y="29" width="22" height="4" fill="url(#ic-pencil)" stroke="#5A3F08" stroke-width=".5"/>
-          <rect x="32" y="29" width="3" height="4" fill="#B8B5B0" stroke="#3A3733" stroke-width=".4"/>
-          <rect x="35" y="29" width="3" height="4" fill="#D85060" stroke="#7A2030" stroke-width=".4"/>
-          <path d="M10 29 L4 31 L10 33 Z" fill="#F4DDB0" stroke="#5A3F08" stroke-width=".5"/>
-          <path d="M4 31 L7 31 L4 32 Z" fill="#2A2A28"/>
-          <line x1="11" y1="30.2" x2="34" y2="30.2" stroke="rgba(255,255,255,.6)" stroke-width=".4"/>
-        </g>
-      </svg>
+      {{ partial "icon.html" "launcher/blog" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
@@ -164,55 +69,7 @@
 
   <button class="up-launcher-tile" data-launcher="trash" data-launcher-trash aria-label="Trash" type="button">
     <span class="up-launcher-icon">
-      <svg viewBox="0 0 48 48" width="100%" height="100%">
-        <defs>
-          <linearGradient id="ic-bin-body" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#FBF1D8"/>
-            <stop offset="55%"  stop-color="#E2C988"/>
-            <stop offset="100%" stop-color="#8E6A1F"/>
-          </linearGradient>
-          <linearGradient id="ic-bin-side" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-color="rgba(70,45,10,.5)"/>
-            <stop offset="14%"  stop-color="rgba(70,45,10,0)"/>
-            <stop offset="86%"  stop-color="rgba(70,45,10,0)"/>
-            <stop offset="100%" stop-color="rgba(70,45,10,.5)"/>
-          </linearGradient>
-          <radialGradient id="ic-bin-mouth" cx=".5" cy=".5" r=".55">
-            <stop offset="0%"   stop-color="#1A1206"/>
-            <stop offset="100%" stop-color="#3A2A0E"/>
-          </radialGradient>
-          <linearGradient id="ic-bin-rim" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#FFF7E0"/>
-            <stop offset="100%" stop-color="#C9A858"/>
-          </linearGradient>
-          <clipPath id="ic-bin-clip">
-            <path d="M9 14 L12 42 Q12.2 44.4 24 44.4 Q35.8 44.4 36 42 L39 14 Z"/>
-          </clipPath>
-        </defs>
-        <path d="M7.5 11 L11.5 42 Q11.8 44.8 24 44.8 Q36.2 44.8 36.5 42 L40.5 11 Z" fill="url(#ic-bin-body)" stroke="#3F2E0F" stroke-width=".9" stroke-linejoin="round"/>
-        <path d="M7.5 11 L11.5 42 Q11.8 44.8 24 44.8 Q36.2 44.8 36.5 42 L40.5 11 Z" fill="url(#ic-bin-side)"/>
-        <ellipse cx="24" cy="11.5" rx="16" ry="3.6" fill="url(#ic-bin-mouth)" stroke="#3F2E0F" stroke-width=".9"/>
-        <path d="M7.7 11.5 Q7.7 14 12.2 15.2 L36 15.2 Q40.3 14 40.3 11.5" fill="url(#ic-bin-rim)" stroke="#3F2E0F" stroke-width=".7" stroke-linejoin="round"/>
-        <path d="M11 13.4 Q24 16 37 13.4" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".6"/>
-        <g stroke="rgba(50,30,5,.55)" stroke-width=".7" fill="none" clip-path="url(#ic-bin-clip)">
-          <path d="M13 17 L34.4 42"/>
-          <path d="M16.5 17 L37 41"/>
-          <path d="M20 17 L39 39.5"/>
-          <path d="M9.6 17 L31 42"/>
-          <path d="M35 17 L13.6 42"/>
-          <path d="M31.5 17 L11 41"/>
-          <path d="M28 17 L9 39.5"/>
-          <path d="M38.4 17 L17 42"/>
-        </g>
-        <g stroke="rgba(255,250,220,.35)" stroke-width=".5" fill="none" clip-path="url(#ic-bin-clip)">
-          <path d="M13.5 17.5 L34.9 42"/>
-          <path d="M34.5 17.5 L13.1 42"/>
-          <path d="M20.5 17.5 L39 39"/>
-          <path d="M27.5 17.5 L9.4 39"/>
-        </g>
-        <path d="M11.7 42 Q24 45.6 36.3 42" fill="none" stroke="rgba(60,40,10,.55)" stroke-width=".7"/>
-        <path d="M10 13.5 L13 39" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".8" stroke-linecap="round"/>
-      </svg>
+      {{ partial "icon.html" "launcher/trash" }}
     </span>
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>

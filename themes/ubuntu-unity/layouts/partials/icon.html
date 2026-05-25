@@ -1,0 +1,5 @@
+{{- with resources.Get (printf "icons/%s.svg" .) -}}
+  {{- .Content | safeHTML -}}
+{{- else -}}
+  {{- errorf "icon.html: icons/%s.svg not found" . -}}
+{{- end -}}
