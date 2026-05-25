@@ -469,8 +469,7 @@ body{
   width:20px;height:20px;color:#6B6660;
 }
 .up-naut-item-icon svg{display:block}
-.up-naut-item.is-active .up-naut-item-icon,
-.up-naut-item.is-active .up-naut-item-icon svg{color:#fff}
+.up-naut-item.is-active .up-naut-item-icon{color:#fff}
 .up-naut-item-label{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   line-height:1.4;
@@ -485,7 +484,6 @@ body{
 .up-naut-item.is-active .up-naut-item-count{
   color:#fff;background:rgba(0,0,0,.22);
 }
-.up-lang-icon svg{display:block}
 .up-naut-item.is-active .up-lang-icon svg{
   filter:drop-shadow(0 0 .8px rgba(255,255,255,.95)) drop-shadow(0 1px 0 rgba(0,0,0,.2));
 }
@@ -813,28 +811,6 @@ body{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12px;color:#9A938D;
 }
-/* ---------- Empty right-column pane (shared by posts list + projects) ---------- */
-.up-empty-pane{
-  display:flex;align-items:center;justify-content:center;
-  padding:28px 22px;text-align:center;
-  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
-}
-.up-empty-pane-inner{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:#9A938D;
-}
-.up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
-.up-empty-pane-hint{
-  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
-  letter-spacing:.005em;
-}
-.up-empty-pane-tagline{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
-  padding:2px 8px;border-radius:2px;
-  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
-}
-
 /* ---------- Markdown prose inside reader ---------- */
 .up-reader-body{
   p,
@@ -1099,6 +1075,31 @@ body{
     box-shadow:inset 0 1px 2px rgba(0,0,0,.16);
   }
   svg{color:#3A3733}
+}
+
+/* ---------- Empty right-column pane ----------
+   Declared after .up-project-preview so .up-empty-pane's padding wins on the
+   projects empty state (the wrapper carries both classes; JS strips
+   .up-empty-pane when a tile is selected, leaving the populated chrome). */
+.up-empty-pane{
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 22px;text-align:center;
+  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+}
+.up-empty-pane-inner{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:#9A938D;
+}
+.up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.up-empty-pane-hint{
+  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
+  letter-spacing:.005em;
+}
+.up-empty-pane-tagline{
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+  padding:2px 8px;border-radius:2px;
+  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
 
 /* ---------- Responsive collapse ---------- */
