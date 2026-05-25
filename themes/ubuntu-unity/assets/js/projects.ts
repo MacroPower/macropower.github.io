@@ -202,6 +202,7 @@ import { installFilterNav } from "./filter-nav";
     searchClose: root.querySelector<HTMLElement>("[data-up-search-close]"),
     searchMatch,
     prefilter: filterMatches,
+    axis: "both",
   });
 
   for (const btn of filterBtns) {

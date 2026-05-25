@@ -19,17 +19,19 @@ export interface FilterNavOptions {
 
   // Fires on Enter from the focused item. Defaults to item.click().
   onActivate?: (item: HTMLElement) => void;
+
+  // Which arrow/vim keys participate in nav. "vertical" (default) restricts
+  // movement to ↑/↓/j/k; "both" also accepts ←/→/h/l for grid layouts.
+  axis?: "vertical" | "both";
+
+  // Fires at the end of every applyFilters() pass. Used by callers that need
+  // to reconcile selection state with the post-filter visibility set.
+  onAfterFilter?: () => void;
 }
 
 export interface FilterNav {
   applyFilters: () => void;
 }
-
-const NAV_KEYS = new Set([
-  "ArrowDown", "ArrowRight", "j", "l",
-  "ArrowUp", "ArrowLeft", "k", "h",
-  "Home", "End", "Enter",
-]);
 
 export function installFilterNav(opts: FilterNavOptions): FilterNav {
   const {
@@ -44,7 +46,21 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     searchMatch,
     prefilter = (): boolean => true,
     onActivate = (item): void => { item.click(); },
+    axis = "vertical",
+    onAfterFilter,
   } = opts;
+
+  const NAV_KEYS = axis === "both"
+    ? new Set([
+        "ArrowDown", "ArrowRight", "j", "l",
+        "ArrowUp", "ArrowLeft", "k", "h",
+        "Home", "End", "Enter",
+      ])
+    : new Set([
+        "ArrowDown", "j",
+        "ArrowUp", "k",
+        "Home", "End", "Enter",
+      ]);
 
   let currentQuery = "";
   let searchOpen = false;
@@ -65,6 +81,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
         ? `${visible} / ${items.length}`
         : "";
     }
+    onAfterFilter?.();
   }
 
   function setSearchOpen(open: boolean): void {
