@@ -1,0 +1,36 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task: typecheck
+      - task: build
+
+  serve:
+    desc: Run the Hugo dev server with drafts enabled and live reload
+    cmds:
+      - hugo server -D --disableFastRender
+
+  build:
+    desc: Build the production site into public/ (matches CI)
+    cmds:
+      - hugo --minify
+
+  typecheck:
+    desc: Type-check the theme's TypeScript sources
+    cmds:
+      - npx --no-install tsc --noEmit
+
+  pre-commit:
+    desc: Run all pre-commit checks
+    deps: [typecheck]
+
+  clean:
+    desc: Remove Hugo build outputs
+    cmds:
+      - rm -rf public resources .hugo_build.lock
+
+  install-hooks:
+    desc: Install git hooks
+    cmds:
+      - lefthook install
