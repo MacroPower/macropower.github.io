@@ -16,15 +16,9 @@ import { installFilterNav } from "./filter-nav";
     root.querySelectorAll<HTMLElement>("[data-projects-filter]"),
   );
 
-  // Cutoff for "Recent" must match the Hugo sidebar predicate exactly so the
-  // count and the visible tiles can't drift. Hugo uses `now.AddDate 0 -6 0`
-  // (calendar-month subtraction) with strict `gt`; mirror both here by
-  // subtracting six calendar months and comparing the ISO date strings with `>`.
-  const recentCutoffISO = ((): string => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - 6);
-    return d.toISOString().slice(0, 10);
-  })();
+  // Hugo emits the Recent cutoff on the root so build-time and runtime see
+  // the same ISO date (see data-projects-recent-cutoff in projects/list.html).
+  const recentCutoffISO = root.dataset.projectsRecentCutoff ?? "";
 
   let currentFilter = "all";
 

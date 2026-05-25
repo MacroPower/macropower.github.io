@@ -1,5 +1,6 @@
 {{ define "main" }}
-  <article class="up-projects selectable" data-projects-kind="section">
+  {{- $cutoff := (now.AddDate 0 -6 0).Format "2006-01-02" -}}
+  <article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
           (dict "label" "Home" "url" "/")
@@ -8,7 +9,7 @@
         "searchNoun" "projects"
         "searchPlaceholder" "Filter projects by name or topic…") }}
     <div class="up-projects-grid">
-      {{ partial "page/projects-sidebar.html" (dict "projects" site.Data.projects) }}
+      {{ partial "page/projects-sidebar.html" (dict "projects" site.Data.projects "cutoff" $cutoff) }}
       {{ partial "page/projects-grid.html" (dict "projects" site.Data.projects) }}
       {{ partial "page/empty-pane.html" (dict
           "class" "up-project-preview"

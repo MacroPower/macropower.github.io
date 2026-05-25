@@ -1,5 +1,5 @@
 {{- $projects := .projects -}}
-{{- $cutoff := (now.AddDate 0 -6 0).Format "2006-01-02" -}}
+{{- $cutoff := .cutoff -}}
 {{- $starred := where $projects "stars" "ge" 100 -}}
 {{- $recent := where $projects "updated" "gt" $cutoff -}}
 {{- $forks := where $projects "forks" "gt" 5 -}}
