@@ -1,5 +1,11 @@
 {{ define "main" }}
   {{- $cutoff := (now.AddDate 0 -6 0).Format "2006-01-02" -}}
+  {{- $known := slice "Go" "Python" "TypeScript" "JavaScript" "Rust" "Shell" "C" "HTML" "Ruby" "Lua" -}}
+  {{- range site.Data.projects -}}
+    {{- if not (in $known .language) -}}
+      {{ errorf "projects.yaml: unknown language %q in project %q (allowed: %v)" .language .name $known }}
+    {{- end -}}
+  {{- end -}}
   <article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
