@@ -74,7 +74,10 @@ import { installFilterNav } from "./filter-nav";
     const el = document.createElement("div");
     el.className = "up-project-preview-stat" + (wide ? " up-project-preview-stat-wide" : "");
     el.setAttribute("aria-label", `${ariaLabel}: ${value}`);
-    el.innerHTML = ICONS[iconKey] + `<span>${value}</span>`;
+    el.innerHTML = ICONS[iconKey];
+    const valEl = document.createElement("span");
+    valEl.textContent = value;
+    el.appendChild(valEl);
     return el;
   }
 
@@ -116,8 +119,16 @@ import { installFilterNav } from "./filter-nav";
     if (lang) {
       const pill = document.createElement("span");
       pill.className = "up-project-preview-lang";
-      pill.innerHTML =
-        `<svg viewBox="0 0 24 24" width="12" height="12"><use href="#lang-${lang}"/></svg>${lang}`;
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "12");
+      svg.setAttribute("height", "12");
+      const use = document.createElementNS(SVG_NS, "use");
+      use.setAttribute("href", `#lang-${lang}`);
+      svg.appendChild(use);
+      pill.appendChild(svg);
+      pill.appendChild(document.createTextNode(lang));
       headText.appendChild(pill);
     }
     header.appendChild(headText);
