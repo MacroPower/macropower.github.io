@@ -30,7 +30,7 @@
 
 {{- $extra := "" -}}
 {{- range $name, $value := $attrs -}}
-  {{- $extra = printf "%s %s=%q" $extra $name $value -}}
+  {{- $extra = printf `%s %s="%s"` $extra $name (htmlEscape $value) -}}
 {{- end -}}
 
 {{ printf `<%s class=%q%s%s>` $tag $classAttr $ariaAttr $extra | safeHTML }}

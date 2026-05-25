@@ -43,7 +43,7 @@
         {{- $attrs := .attrs -}}
         {{- if eq $tag "button" -}}
           <button type="button" class="up-naut-item{{ if $active }} is-active{{ end }}"
-            {{- range $name, $value := $attrs }} {{ printf "%s=%q" $name $value | safeHTMLAttr }}{{ end -}}
+            {{- range $name, $value := $attrs }} {{ printf `%s="%s"` $name (htmlEscape $value) | safeHTMLAttr }}{{ end -}}
           >
             {{- with $icon }}<span class="up-naut-item-icon{{ with $iconClass }} {{ . }}{{ end }}" aria-hidden="true">{{ . | safeHTML }}</span>{{ end -}}
             <span class="up-naut-item-label">{{ .label }}</span>
@@ -51,7 +51,7 @@
           </button>
         {{- else -}}
           <a class="up-naut-item{{ if $active }} is-active{{ end }}" href="{{ .url }}"
-            {{- range $name, $value := $attrs }} {{ printf "%s=%q" $name $value | safeHTMLAttr }}{{ end -}}
+            {{- range $name, $value := $attrs }} {{ printf `%s="%s"` $name (htmlEscape $value) | safeHTMLAttr }}{{ end -}}
           >
             {{- with $icon }}<span class="up-naut-item-icon{{ with $iconClass }} {{ . }}{{ end }}" aria-hidden="true">{{ . | safeHTML }}</span>{{ end -}}
             <span class="up-naut-item-label">{{ .label }}</span>
