@@ -1082,6 +1082,7 @@ body{
    projects empty state (the wrapper carries both classes; JS strips
    .up-empty-pane when a tile is selected, leaving the populated chrome). */
 .up-empty-pane{
+  position:relative;
   display:flex;align-items:center;justify-content:center;
   padding:28px 22px;text-align:center;
   background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
