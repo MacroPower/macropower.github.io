@@ -1,3 +1,5 @@
+import { installFilterNav } from "./filter-nav";
+
 type SortKey = "name" | "date";
 type SortDir = "asc" | "desc";
 
@@ -17,12 +19,23 @@ interface SortState {
     ? Array.from(listBody.querySelectorAll<HTMLElement>("[data-up-post-row]"))
     : [];
   const emptyEl = root.querySelector<HTMLElement>("[data-up-post-empty]");
-  const searchToggle = root.querySelector<HTMLElement>("[data-up-search-toggle]");
-  const searchBar = root.querySelector<HTMLElement>("[data-up-search-bar]");
-  const searchInput = root.querySelector<HTMLInputElement>("[data-up-search-input]");
-  const searchCount = root.querySelector<HTMLElement>("[data-up-search-count]");
-  const searchClose = root.querySelector<HTMLElement>("[data-up-search-close]");
   const sortBtns = root.querySelectorAll<HTMLElement>("[data-up-sort]");
+
+  const controller = installFilterNav({
+    root,
+    items: allRows,
+    emptyEl,
+    searchToggle: root.querySelector<HTMLElement>("[data-up-search-toggle]"),
+    searchBar: root.querySelector<HTMLElement>("[data-up-search-bar]"),
+    searchInput: root.querySelector<HTMLInputElement>("[data-up-search-input]"),
+    searchCount: root.querySelector<HTMLElement>("[data-up-search-count]"),
+    searchClose: root.querySelector<HTMLElement>("[data-up-search-close]"),
+    searchMatch: (row, query) => {
+      const title = row.getAttribute("data-title") ?? "";
+      const tags = row.getAttribute("data-tags") ?? "";
+      return title.includes(query) || tags.includes(query);
+    },
+  });
 
   /* ----- Sortable columns -------------------------------------------------- */
   const sortState: SortState = { key: "date", dir: "desc" };
@@ -60,6 +73,8 @@ interface SortState {
         if (caret) caret.textContent = "";
       }
     });
+
+    controller.applyFilters();
   }
 
   sortBtns.forEach((btn) => {
@@ -74,114 +89,6 @@ interface SortState {
       }
       applySort();
     });
-  });
-
-  /* ----- Filter / search --------------------------------------------------- */
-  let searchOpen = false;
-
-  function applyFilter(q: string): void {
-    const query = q.trim().toLowerCase();
-    let visible = 0;
-    allRows.forEach((row) => {
-      if (!query) { row.hidden = false; visible++; return; }
-      const title = row.getAttribute("data-title") ?? "";
-      const tags = row.getAttribute("data-tags") ?? "";
-      const match = title.includes(query) || tags.includes(query);
-      row.hidden = !match;
-      if (match) visible++;
-    });
-    if (emptyEl) emptyEl.hidden = visible !== 0;
-    if (searchCount) {
-      searchCount.textContent = query ? `${visible} / ${allRows.length}` : "";
-    }
-  }
-
-  function setSearchOpen(open: boolean): void {
-    if (!searchBar || !searchToggle) return;
-    searchOpen = Boolean(open);
-    searchBar.hidden = !searchOpen;
-    searchToggle.setAttribute("aria-expanded", searchOpen ? "true" : "false");
-    searchToggle.classList.toggle("is-active", searchOpen);
-    if (searchOpen) {
-      requestAnimationFrame(() => { searchInput?.focus(); });
-    } else {
-      if (searchInput) { searchInput.value = ""; }
-      applyFilter("");
-    }
-  }
-
-  searchToggle?.addEventListener("click", () => { setSearchOpen(!searchOpen); });
-  searchClose?.addEventListener("click", () => { setSearchOpen(false); });
-  if (searchInput) {
-    searchInput.addEventListener("input", () => { applyFilter(searchInput.value); });
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { e.preventDefault(); setSearchOpen(false); }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const firstVisible = allRows.find((r) => !r.hidden);
-        firstVisible?.click();
-      }
-    });
-  }
-
-  /* ----- Keyboard nav for list --------------------------------------------- */
-  function visibleRows(): HTMLElement[] {
-    return allRows.filter((r) => !r.hidden);
-  }
-
-  function focusedIndex(rows: HTMLElement[]): number {
-    const active = listBody?.querySelector<HTMLElement>(
-      ".up-post-row.is-active, .up-post-row.is-focused",
-    );
-    if (!active) return -1;
-    return rows.indexOf(active);
-  }
-
-  function focusRow(row: HTMLElement | null): void {
-    allRows.forEach((r) => { r.classList.remove("is-focused"); });
-    if (!row) return;
-    row.classList.add("is-focused");
-    row.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.defaultPrevented) return;
-    const target = e.target as HTMLElement | null;
-    const tag = target?.tagName ?? "";
-    const typing = tag === "INPUT" || tag === "TEXTAREA" || Boolean(target?.isContentEditable);
-
-    if ((e.key === "/" || (e.key === "f" && (e.ctrlKey || e.metaKey))) && !typing && searchToggle) {
-      e.preventDefault();
-      setSearchOpen(true);
-      return;
-    }
-    if (typing) return;
-
-    const rows = visibleRows();
-    if (!rows.length) return;
-    const idx = focusedIndex(rows);
-    let next: HTMLElement | null = null;
-
-    if (e.key === "ArrowDown" || e.key === "j") {
-      e.preventDefault();
-      next = rows[Math.min(rows.length - 1, idx + 1)] ?? rows[0] ?? null;
-    } else if (e.key === "ArrowUp" || e.key === "k") {
-      e.preventDefault();
-      next = rows[Math.max(0, idx - 1)] ?? rows[0] ?? null;
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      next = rows[0] ?? null;
-    } else if (e.key === "End") {
-      e.preventDefault();
-      next = rows[rows.length - 1] ?? null;
-    } else if (e.key === "Enter") {
-      const focused = rows[idx];
-      if (focused) { e.preventDefault(); focused.click(); }
-      return;
-    } else {
-      return;
-    }
-    focusRow(next);
   });
 
   /* ----- Reading progress bar (single-post only) --------------------------- */
@@ -238,7 +145,7 @@ interface SortState {
       btn.textContent = "Copy";
       btn.addEventListener("click", () => {
         const code = pre.querySelector("code") ?? pre;
-        const text = (code as HTMLElement).innerText.replace(/ /g, " ");
+        const text = (code as HTMLElement).innerText.replace(/ /g, " ");
         const done = (ok: boolean): void => {
           btn.textContent = ok ? "Copied" : "Failed";
           btn.classList.toggle("is-copied", ok);

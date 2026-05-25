@@ -781,10 +781,25 @@ body{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12px;color:#9A938D;
 }
-.up-reader-empty{display:flex;align-items:center;justify-content:center}
-.up-reader-empty-inner{text-align:center;color:#9A938D;font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace}
-.up-reader-empty-hint{font-size:18px;color:#7A7570;margin-bottom:8px}
-.up-reader-empty-tagline{font-size:12px}
+/* shape + centering shared by every right-column empty state. Page-specific
+   wrappers (.up-reader-empty, .up-project-preview-empty) layer their own
+   decoration (padding, gradient, border, pill, larger hint) on top. */
+.up-empty-pane{display:flex;align-items:center;justify-content:center}
+.up-empty-pane-inner{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  text-align:center;color:#9A938D;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+}
+.up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.up-empty-pane-hint{
+  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
+  letter-spacing:.005em;
+}
+.up-empty-pane-tagline{
+  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+}
+/* posts pane keeps a larger, warmer hint */
+.up-reader-empty .up-empty-pane-hint{font-size:18px;color:#7A7570;margin-bottom:8px}
 
 /* ---------- Markdown prose inside reader ---------- */
 .up-reader-body{
@@ -1124,23 +1139,11 @@ body{
 }
 
 .up-project-preview-empty{
-  display:flex;align-items:center;justify-content:center;
   padding:28px 22px;
   background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
   text-align:center;
 }
-.up-project-preview-empty-inner{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:#9A938D;
-}
-.up-project-preview-empty-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
-.up-project-preview-empty-hint{
-  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
-  letter-spacing:.005em;
-}
-.up-project-preview-empty-tagline{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+.up-project-preview-empty .up-empty-pane-tagline{
   padding:2px 8px;border-radius:2px;
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }

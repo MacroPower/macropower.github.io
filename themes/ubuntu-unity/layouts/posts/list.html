@@ -1,6 +1,6 @@
 {{ define "main" }}
   <article class="up-blog selectable" data-blog-kind="section">
-    {{ partial "page/post-pathbar.html" (dict
+    {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
           (dict "label" "Home" "url" "/")
           (dict "label" "Posts" "url" .RelPermalink))
@@ -10,7 +10,11 @@
       {{ partial "page/post-list.html" (dict
           "pages" .RegularPages
           "here" "") }}
-      {{ partial "page/post-list-empty-reader.html" . }}
+      {{ partial "page/empty-pane.html" (dict
+          "tag" "div"
+          "class" "up-reader up-reader-empty"
+          "hint" "Select a post →"
+          "tagline" "jacob@unity:~/blog$ ls posts/ | less") }}
     </div>
   </article>
 {{ end }}

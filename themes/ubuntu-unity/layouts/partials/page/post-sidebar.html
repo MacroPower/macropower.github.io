@@ -5,45 +5,43 @@
   {{- $rssURL = .RelPermalink -}}
 {{- end -}}
 
-<aside class="up-naut-sidebar" aria-label="Filters">
-  <div class="up-naut-section">
-    <div class="up-naut-section-label">Places</div>
-    {{- with $postsPage }}
-      <a class="up-naut-item{{ if eq $here .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">
-        <span class="up-naut-item-icon" aria-hidden="true">▤</span>
-        <span class="up-naut-item-label">All</span>
-        <span class="up-naut-item-count">{{ len .RegularPages }}</span>
-      </a>
-    {{- end }}
-    {{- range site.Taxonomies.categories.Alphabetical }}
-      <a class="up-naut-item{{ if eq $here .Page.RelPermalink }} is-active{{ end }}" href="{{ .Page.RelPermalink }}">
-        <span class="up-naut-item-icon" aria-hidden="true">⊞</span>
-        <span class="up-naut-item-label">{{ .Page.Title }}</span>
-        <span class="up-naut-item-count">{{ .Count }}</span>
-      </a>
-    {{- end }}
-  </div>
+{{- $places := slice -}}
+{{- with $postsPage -}}
+  {{- $places = $places | append (dict
+      "label" "All"
+      "url" .RelPermalink
+      "icon" "▤"
+      "count" (len .RegularPages)
+      "active" (eq $here .RelPermalink)) -}}
+{{- end -}}
+{{- range site.Taxonomies.categories.Alphabetical -}}
+  {{- $places = $places | append (dict
+      "label" .Page.Title
+      "url" .Page.RelPermalink
+      "icon" "⊞"
+      "count" .Count
+      "active" (eq $here .Page.RelPermalink)) -}}
+{{- end -}}
 
-  {{- with site.Taxonomies.series.Alphabetical }}
-    <div class="up-naut-section">
-      <div class="up-naut-section-label">Series</div>
-      {{- range . }}
-        <a class="up-naut-item{{ if eq $here .Page.RelPermalink }} is-active{{ end }}" href="{{ .Page.RelPermalink }}">
-          <span class="up-naut-item-icon" aria-hidden="true">⌘</span>
-          <span class="up-naut-item-label">{{ .Page.Title }}</span>
-          <span class="up-naut-item-count">{{ .Count }}</span>
-        </a>
-      {{- end }}
-    </div>
-  {{- end }}
+{{- $sections := slice (dict "label" "Places" "items" $places) -}}
 
-  {{- with $rssURL }}
-    <div class="up-naut-section">
-      <div class="up-naut-section-label">Feeds</div>
-      <a class="up-naut-item" href="{{ . }}">
-        <span class="up-naut-item-icon" aria-hidden="true">⟿</span>
-        <span class="up-naut-item-label">RSS</span>
-      </a>
-    </div>
-  {{- end }}
-</aside>
+{{- with site.Taxonomies.series.Alphabetical -}}
+  {{- $items := slice -}}
+  {{- range . -}}
+    {{- $items = $items | append (dict
+        "label" .Page.Title
+        "url" .Page.RelPermalink
+        "icon" "⌘"
+        "count" .Count
+        "active" (eq $here .Page.RelPermalink)) -}}
+  {{- end -}}
+  {{- $sections = $sections | append (dict "label" "Series" "items" $items) -}}
+{{- end -}}
+
+{{- with $rssURL -}}
+  {{- $sections = $sections | append (dict
+      "label" "Feeds"
+      "items" (slice (dict "label" "RSS" "url" . "icon" "⟿"))) -}}
+{{- end -}}
+
+{{ partial "page/naut-sidebar.html" (dict "sections" $sections) }}

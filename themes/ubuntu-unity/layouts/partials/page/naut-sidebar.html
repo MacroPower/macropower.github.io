@@ -1,0 +1,64 @@
+{{- /*
+  Nautilus-style sidebar shell. Renders <aside.up-naut-sidebar> containing
+  zero or more <div.up-naut-section> blocks, each holding a label and a list
+  of <a> or <button> items with optional icon + count chip.
+
+  Caller params:
+    class      string           extra classes appended after "up-naut-sidebar"
+    ariaLabel  string           aria-label on the <aside> (default: "Filters")
+    sections   []dict           ordered list of sections to render
+
+  Each section dict:
+    label  string               section header text
+    items  []dict               ordered slice of items (NOT a map — Hugo
+                                iterates maps in non-deterministic order)
+
+  Each item dict:
+    tag    "a" | "button"       default "a"
+    label  string               visible text
+    count  any                  optional; renders the right-side count chip
+    icon   string               optional; passed through safeHTML (plain
+                                glyphs like "▤" pass through unchanged)
+    iconClass string            optional; extra class on the icon span
+                                (alongside up-naut-item-icon)
+    url    string               required when tag="a"
+    active bool                 toggles the is-active class
+    attrs  dict                 optional extra HTML attributes. Iteration
+                                order is non-deterministic; only safe for
+                                attribute sets where order doesn't matter.
+*/ -}}
+{{- $class := .class -}}
+{{- $ariaLabel := .ariaLabel | default "Filters" -}}
+{{- $sections := .sections -}}
+<aside class="up-naut-sidebar{{ with $class }} {{ . }}{{ end }}" aria-label="{{ $ariaLabel }}">
+  {{- range $sections }}
+    <div class="up-naut-section">
+      {{- with .label }}<div class="up-naut-section-label">{{ . }}</div>{{ end }}
+      {{- range .items }}
+        {{- $tag := .tag | default "a" -}}
+        {{- $active := .active -}}
+        {{- $icon := .icon -}}
+        {{- $iconClass := .iconClass -}}
+        {{- $count := .count -}}
+        {{- $attrs := .attrs -}}
+        {{- if eq $tag "button" -}}
+          <button type="button" class="up-naut-item{{ if $active }} is-active{{ end }}"
+            {{- range $name, $value := $attrs }} {{ printf "%s=%q" $name $value | safeHTMLAttr }}{{ end -}}
+          >
+            {{- with $icon }}<span class="up-naut-item-icon{{ with $iconClass }} {{ . }}{{ end }}" aria-hidden="true">{{ . | safeHTML }}</span>{{ end -}}
+            <span class="up-naut-item-label">{{ .label }}</span>
+            {{- with $count }}<span class="up-naut-item-count">{{ . }}</span>{{ end -}}
+          </button>
+        {{- else -}}
+          <a class="up-naut-item{{ if $active }} is-active{{ end }}" href="{{ .url }}"
+            {{- range $name, $value := $attrs }} {{ printf "%s=%q" $name $value | safeHTMLAttr }}{{ end -}}
+          >
+            {{- with $icon }}<span class="up-naut-item-icon{{ with $iconClass }} {{ . }}{{ end }}" aria-hidden="true">{{ . | safeHTML }}</span>{{ end -}}
+            <span class="up-naut-item-label">{{ .label }}</span>
+            {{- with $count }}<span class="up-naut-item-count">{{ . }}</span>{{ end -}}
+          </a>
+        {{- end -}}
+      {{- end }}
+    </div>
+  {{- end }}
+</aside>

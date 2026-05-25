@@ -1,23 +1,12 @@
-{{- $sidebar := slice
-    (dict "label" "CV" "url" .RelPermalink "active" true)
--}}
-
 <article class="up-cv-page selectable">
-  {{ partial "page/post-pathbar.html" (dict "segments" (slice
+  {{ partial "page/nav-pathbar.html" (dict "segments" (slice
       (dict "label" "Home" "url" "/")
       (dict "label" "CV" "url" .RelPermalink))) }}
   <div class="up-cv-grid">
-    <aside class="up-naut-sidebar">
-      <div class="up-naut-section">
-        <div class="up-naut-section-label">Places</div>
-        {{ range $sidebar }}
-          <a class="up-naut-item{{ if .active }} is-active{{ end }}" href="{{ .url }}">
-            <span class="up-naut-item-icon" aria-hidden="true">▤</span>
-            <span class="up-naut-item-label">{{ .label }}</span>
-          </a>
-        {{ end }}
-      </div>
-    </aside>
+    {{ partial "page/naut-sidebar.html" (dict
+        "sections" (slice
+          (dict "label" "Places" "items" (slice
+            (dict "label" "CV" "url" .RelPermalink "icon" "▤" "active" true))))) }}
     <section class="up-cv-main">
       {{- with .Params.pdf }}
         <a class="up-cv-pdf-fallback" href="{{ . }}" target="_blank" rel="noopener" aria-label="Open PDF in a new tab">
