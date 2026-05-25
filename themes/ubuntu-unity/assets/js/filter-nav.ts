@@ -123,7 +123,8 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
 
     const list = items.filter((i) => !i.hidden);
     if (!list.length) return;
-    const idx = list.findIndex((i) => i.matches(".is-active, .is-focused"));
+    let idx = list.findIndex((i) => i.classList.contains("is-focused"));
+    if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-active"));
 
     if (e.key === "Enter") {
       const focused = list[idx];
