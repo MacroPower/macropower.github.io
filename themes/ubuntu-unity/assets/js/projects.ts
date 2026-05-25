@@ -20,6 +20,22 @@ import { installFilterNav } from "./filter-nav";
   // the same ISO date (see data-projects-recent-cutoff in projects/list.html).
   const recentCutoffISO = root.dataset.projectsRecentCutoff ?? "";
 
+  const initialPreviewHTML = preview?.innerHTML ?? "";
+  const initialPreviewClass = preview?.className ?? "";
+  function resetPreview(): void {
+    if (!preview) return;
+    preview.className = initialPreviewClass;
+    preview.innerHTML = initialPreviewHTML;
+  }
+
+  function syncActiveTile(): void {
+    const active = tiles.find((t) => t.classList.contains("is-active"));
+    if (active && active.hidden) {
+      active.classList.remove("is-active");
+      resetPreview();
+    }
+  }
+
   let currentFilter = "all";
 
   const PREDICATES: Record<string, (t: HTMLElement) => boolean> = {
@@ -197,6 +213,7 @@ import { installFilterNav } from "./filter-nav";
     searchMatch,
     prefilter: filterMatches,
     axis: "both",
+    onAfterFilter: syncActiveTile,
   });
 
   for (const btn of filterBtns) {
