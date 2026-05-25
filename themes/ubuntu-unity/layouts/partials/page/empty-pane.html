@@ -37,6 +37,6 @@
   <div class="up-empty-pane-inner">
     {{- with $icon }}<span class="up-empty-pane-icon" aria-hidden="true">{{ . | safeHTML }}</span>{{ end }}
     {{- with $hint }}<div class="up-empty-pane-hint">{{ . }}</div>{{ end }}
-    {{- with $tagline }}<div class="up-empty-pane-tagline">{{ . }}</div>{{ end }}
+    {{- with $tagline }}<div class="up-empty-pane-tagline" aria-hidden="true">{{ . }}</div>{{ end }}
   </div>
 {{ printf `</%s>` $tag | safeHTML }}
