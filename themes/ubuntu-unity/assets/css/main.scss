@@ -426,36 +426,68 @@ body{
   }
 }
 
-/* ---------- Nautilus sidebar (shared by CV, Blog) ---------- */
+/* ---------- Nautilus sidebar (shared chrome) ---------- */
 .up-naut-sidebar{
-  background:#EFEDEB;border-right:1px solid #D4D0CD;
-  padding:12px 0;min-width:0;overflow:auto;
+  background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
+  border-right:1px solid #C9C4BB;
+  padding:8px 0 14px;min-width:0;overflow:auto;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
+  font-family:"Ubuntu",sans-serif;
 }
-.up-naut-section + .up-naut-section{margin-top:14px}
+.up-naut-section{padding:0}
+.up-naut-section + .up-naut-section{
+  margin-top:10px;padding-top:8px;
+  border-top:1px solid rgba(0,0,0,.06);
+  box-shadow:0 -1px 0 rgba(255,255,255,.55);
+}
 .up-naut-section-label{
-  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:#8A8580;padding:0 14px 6px;
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#8A8175;padding:4px 14px 4px;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
 .up-naut-item{
-  display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:8px;
-  padding:5px 14px;color:#3A3733;font-size:13px;text-decoration:none;
+  /* both <a> and <button> reach this rule; reset the button user-agent chrome */
+  appearance:none;background:transparent;border:0;font:inherit;
+  display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:9px;
+  width:100%;padding:5px 14px 5px 11px;
+  color:#2E2B28;font-size:13px;text-align:left;text-decoration:none;
   border-left:3px solid transparent;
-  &:hover{background:rgba(0,0,0,.05)}
+  cursor:pointer;outline:none;
+  transition:background-color .08s linear, color .08s linear;
+  &:hover{background:rgba(0,0,0,.045)}
+  &:focus-visible{outline:1px dotted rgba(221,72,20,.7);outline-offset:-3px}
   &.is-active{
-    background:var(--orange-light);color:#fff;
-    border-left-color:var(--orange);
-    .up-naut-item-count{color:rgba(255,255,255,.85)}
-    .up-naut-item-icon{color:#fff}
+    background:linear-gradient(180deg, rgba(233,84,32,.95) 0%, rgba(221,72,20,1) 100%);
+    color:#fff;
+    border-left-color:#7C2410;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
+    text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
 }
 .up-naut-item-icon{
-  display:inline-flex;justify-content:center;color:#8A8580;font-size:13px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;color:#6B6660;
 }
+.up-naut-item-icon svg{display:block}
+.up-naut-item.is-active .up-naut-item-icon,
+.up-naut-item.is-active .up-naut-item-icon svg{color:#fff}
 .up-naut-item-label{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  line-height:1.4;
 }
 .up-naut-item-count{
-  font-size:11px;color:#8A8580;font-variant-numeric:tabular-nums;
+  font-size:11px;font-variant-numeric:tabular-nums;
+  color:#9A938D;
+  padding:1px 7px;border-radius:9999px;
+  background:rgba(0,0,0,.06);
+  min-width:20px;text-align:center;
+}
+.up-naut-item.is-active .up-naut-item-count{
+  color:#fff;background:rgba(0,0,0,.22);
+}
+.up-lang-icon svg{display:block}
+.up-naut-item.is-active .up-lang-icon svg{
+  filter:drop-shadow(0 0 .8px rgba(255,255,255,.95)) drop-shadow(0 1px 0 rgba(0,0,0,.2));
 }
 
 /* ---------- CV ---------- */
@@ -781,14 +813,15 @@ body{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12px;color:#9A938D;
 }
-/* shape + centering shared by every right-column empty state. Page-specific
-   wrappers (.up-reader-empty, .up-project-preview-empty) layer their own
-   decoration (padding, gradient, border, pill, larger hint) on top. */
-.up-empty-pane{display:flex;align-items:center;justify-content:center}
+/* ---------- Empty right-column pane (shared by posts list + projects) ---------- */
+.up-empty-pane{
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 22px;text-align:center;
+  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
-  text-align:center;color:#9A938D;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  color:#9A938D;
 }
 .up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
 .up-empty-pane-hint{
@@ -796,10 +829,11 @@ body{
   letter-spacing:.005em;
 }
 .up-empty-pane-tagline{
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+  padding:2px 8px;border-radius:2px;
+  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
-/* posts pane keeps a larger, warmer hint */
-.up-reader-empty .up-empty-pane-hint{font-size:18px;color:#7A7570;margin-bottom:8px}
 
 /* ---------- Markdown prose inside reader ---------- */
 .up-reader-body{
@@ -888,77 +922,6 @@ body{
   display:grid;grid-template-columns:168px 1fr 300px;
   min-height:0;flex:1;height:100%;
   > *{min-width:0;min-height:0}
-}
-
-/* sidebar — Nautilus Places list, scoped so blog sidebar is untouched */
-.up-projects-sidebar{
-  background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
-  border-right:1px solid #C9C4BB;
-  padding:8px 0 14px;
-  box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
-  font-family:"Ubuntu",sans-serif;
-}
-.up-projects-sidebar .up-naut-section{padding:0}
-.up-projects-sidebar .up-naut-section + .up-naut-section{
-  margin-top:10px;padding-top:8px;
-  border-top:1px solid rgba(0,0,0,.06);
-  box-shadow:0 -1px 0 rgba(255,255,255,.55);
-}
-.up-projects-sidebar .up-naut-section-label{
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#8A8175;padding:4px 14px 4px;
-  text-shadow:0 1px 0 rgba(255,255,255,.6);
-}
-.up-projects-sidebar .up-naut-item{
-  /* reset button user-agent chrome (these are <button>s, not <a>s, to avoid
-     polluting browser history when clicked) */
-  appearance:none;background:transparent;border:0;font:inherit;
-  /* layout */
-  display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:9px;
-  width:100%;padding:5px 14px 5px 11px;
-  color:#2E2B28;font-size:13px;text-align:left;text-decoration:none;
-  border-left:3px solid transparent;
-  cursor:pointer;outline:none;
-  transition:background-color .08s linear, color .08s linear;
-}
-.up-projects-sidebar .up-naut-item:hover{
-  background:rgba(0,0,0,.045);
-}
-.up-projects-sidebar .up-naut-item:focus-visible{
-  outline:1px dotted rgba(221,72,20,.7);outline-offset:-3px;
-}
-.up-projects-sidebar .up-naut-item.is-active{
-  background:linear-gradient(180deg, rgba(233,84,32,.95) 0%, rgba(221,72,20,1) 100%);
-  color:#fff;
-  border-left-color:#7C2410;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
-  text-shadow:0 1px 0 rgba(0,0,0,.25);
-}
-.up-projects-sidebar .up-naut-item-icon{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:20px;height:20px;color:#6B6660;
-}
-.up-projects-sidebar .up-naut-item-icon svg{display:block}
-.up-projects-sidebar .up-naut-item.is-active .up-naut-item-icon{color:#fff}
-.up-projects-sidebar .up-naut-item.is-active .up-naut-item-icon svg{color:#fff}
-.up-projects-sidebar .up-naut-item-label{
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  line-height:1.4;
-}
-.up-projects-sidebar .up-naut-item-count{
-  font-size:11px;font-variant-numeric:tabular-nums;
-  color:#9A938D;
-  padding:1px 7px;border-radius:9999px;
-  background:rgba(0,0,0,.06);
-  min-width:20px;text-align:center;
-}
-.up-projects-sidebar .up-naut-item.is-active .up-naut-item-count{
-  color:#fff;background:rgba(0,0,0,.22);
-}
-
-.up-lang-icon svg{display:block}
-.up-projects-sidebar .up-naut-item.is-active .up-lang-icon svg{
-  filter:drop-shadow(0 0 .8px rgba(255,255,255,.95)) drop-shadow(0 1px 0 rgba(0,0,0,.2));
 }
 
 .up-project-grid{
@@ -1136,16 +1099,6 @@ body{
     box-shadow:inset 0 1px 2px rgba(0,0,0,.16);
   }
   svg{color:#3A3733}
-}
-
-.up-project-preview-empty{
-  padding:28px 22px;
-  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
-  text-align:center;
-}
-.up-project-preview-empty .up-empty-pane-tagline{
-  padding:2px 8px;border-radius:2px;
-  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
 
 /* ---------- Responsive collapse ---------- */

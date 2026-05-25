@@ -5,12 +5,17 @@
   {{- $rssURL = .RelPermalink -}}
 {{- end -}}
 
+{{- $iconAll := `<svg viewBox="0 0 14 14" width="14" height="14"><path d="M2 4 H6 L7 5 H12 V11 H2 Z" fill="currentColor" opacity=".85"/><path d="M2 4 H6 L7 5 H12" fill="none" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/></svg>` -}}
+{{- $iconCategory := `<svg viewBox="0 0 14 14" width="14" height="14"><rect x="2" y="2" width="4" height="4" rx=".5" fill="currentColor" opacity=".85"/><rect x="8" y="2" width="4" height="4" rx=".5" fill="currentColor" opacity=".85"/><rect x="2" y="8" width="4" height="4" rx=".5" fill="currentColor" opacity=".85"/><rect x="8" y="8" width="4" height="4" rx=".5" fill="currentColor" opacity=".85"/></svg>` -}}
+{{- $iconSeries := `<svg viewBox="0 0 14 14" width="14" height="14"><path d="M2 4 L7 6 L12 4 L7 2 Z" fill="currentColor" opacity=".85"/><path d="M2 7 L7 9 L12 7" fill="none" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/><path d="M2 10 L7 12 L12 10" fill="none" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/></svg>` -}}
+{{- $iconRss := `<svg viewBox="0 0 14 14" width="14" height="14"><circle cx="3.5" cy="10.5" r="1.2" fill="currentColor"/><path d="M2.5 7 A4.5 4.5 0 0 1 7 11.5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M2.5 3 A8.5 8.5 0 0 1 11 11.5" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>` -}}
+
 {{- $places := slice -}}
 {{- with $postsPage -}}
   {{- $places = $places | append (dict
       "label" "All"
       "url" .RelPermalink
-      "icon" "▤"
+      "icon" $iconAll
       "count" (len .RegularPages)
       "active" (eq $here .RelPermalink)) -}}
 {{- end -}}
@@ -18,7 +23,7 @@
   {{- $places = $places | append (dict
       "label" .Page.Title
       "url" .Page.RelPermalink
-      "icon" "⊞"
+      "icon" $iconCategory
       "count" .Count
       "active" (eq $here .Page.RelPermalink)) -}}
 {{- end -}}
@@ -31,7 +36,7 @@
     {{- $items = $items | append (dict
         "label" .Page.Title
         "url" .Page.RelPermalink
-        "icon" "⌘"
+        "icon" $iconSeries
         "count" .Count
         "active" (eq $here .Page.RelPermalink)) -}}
   {{- end -}}
@@ -41,7 +46,7 @@
 {{- with $rssURL -}}
   {{- $sections = $sections | append (dict
       "label" "Feeds"
-      "items" (slice (dict "label" "RSS" "url" . "icon" "⟿"))) -}}
+      "items" (slice (dict "label" "RSS" "url" . "icon" $iconRss))) -}}
 {{- end -}}
 
 {{ partial "page/naut-sidebar.html" (dict "sections" $sections) }}

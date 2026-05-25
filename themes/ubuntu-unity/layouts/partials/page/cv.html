@@ -3,10 +3,11 @@
       (dict "label" "Home" "url" "/")
       (dict "label" "CV" "url" .RelPermalink))) }}
   <div class="up-cv-grid">
+    {{- $iconCv := `<svg viewBox="0 0 14 14" width="14" height="14"><path d="M3 2 H9 L11 4 V12 H3 Z" fill="currentColor" opacity=".85"/><path d="M3 2 H9 L11 4 V12 H3 Z" fill="none" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/><line x1="4.5" y1="6" x2="9.5" y2="6" stroke="rgba(255,255,255,.85)" stroke-width=".7"/><line x1="4.5" y1="8" x2="9.5" y2="8" stroke="rgba(255,255,255,.85)" stroke-width=".7"/><line x1="4.5" y1="10" x2="8" y2="10" stroke="rgba(255,255,255,.85)" stroke-width=".7"/></svg>` -}}
     {{ partial "page/naut-sidebar.html" (dict
         "sections" (slice
           (dict "label" "Places" "items" (slice
-            (dict "label" "CV" "url" .RelPermalink "icon" "▤" "active" true))))) }}
+            (dict "label" "CV" "url" .RelPermalink "icon" $iconCv "active" true))))) }}
     <section class="up-cv-main">
       {{- with .Params.pdf }}
         <a class="up-cv-pdf-fallback" href="{{ . }}" target="_blank" rel="noopener" aria-label="Open PDF in a new tab">

@@ -11,7 +11,7 @@
       {{ partial "page/projects-sidebar.html" (dict "projects" site.Data.projects) }}
       {{ partial "page/projects-grid.html" (dict "projects" site.Data.projects) }}
       {{ partial "page/empty-pane.html" (dict
-          "class" "up-project-preview up-project-preview-empty"
+          "class" "up-project-preview"
           "ariaLabel" "Project preview"
           "attrs" (dict "data-up-project-preview" "")
           "icon" `<svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8"/><path d="M4 18 H44 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8"/><line x1="4.6" y1="18.4" x2="43.4" y2="18.4" stroke="rgba(255,255,255,.8)" stroke-width=".7"/></svg>`

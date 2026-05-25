@@ -100,7 +100,7 @@ import { installFilterNav } from "./filter-nav";
     const topics = (d.topics ?? "").split(/\s+/).filter(Boolean);
     const url = d.url ?? "";
 
-    preview.classList.remove("up-empty-pane", "up-project-preview-empty");
+    preview.classList.remove("up-empty-pane");
     preview.replaceChildren();
 
     const header = document.createElement("div");
