@@ -5,7 +5,7 @@
 
   Caller params:
     class      string           extra classes appended after "up-naut-sidebar"
-    ariaLabel  string           aria-label on the <aside> (default: "Filters")
+    ariaLabel  string           aria-label on the <aside> (default: "Navigation")
     sections   []dict           ordered list of sections to render
 
   Each section dict:
@@ -28,7 +28,7 @@
                                 attribute sets where order doesn't matter.
 */ -}}
 {{- $class := .class -}}
-{{- $ariaLabel := .ariaLabel | default "Filters" -}}
+{{- $ariaLabel := .ariaLabel | default "Navigation" -}}
 {{- $sections := .sections -}}
 <aside class="up-naut-sidebar{{ with $class }} {{ . }}{{ end }}" aria-label="{{ $ariaLabel }}">
   {{- range $sections }}
