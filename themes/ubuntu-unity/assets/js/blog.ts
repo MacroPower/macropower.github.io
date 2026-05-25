@@ -145,7 +145,7 @@ interface SortState {
       btn.textContent = "Copy";
       btn.addEventListener("click", () => {
         const code = pre.querySelector("code") ?? pre;
-        const text = (code as HTMLElement).innerText.replace(/ /g, " ");
+        const text = (code as HTMLElement).innerText.replace(/ /g, " ");
         const done = (ok: boolean): void => {
           btn.textContent = ok ? "Copied" : "Failed";
           btn.classList.toggle("is-copied", ok);
