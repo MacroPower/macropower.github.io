@@ -9,10 +9,10 @@
 {{- end -}}
 
 {{- $iconAll := partial "icon.html" "glyphs/sidebar-all" -}}
-{{- $iconStarred := partial "icon.html" "glyphs/sidebar-starred" -}}
-{{- $iconRecent := partial "icon.html" "glyphs/sidebar-recent" -}}
-{{- $iconForks := partial "icon.html" "glyphs/sidebar-forks" -}}
-{{- $iconGithub := partial "icon.html" "glyphs/sidebar-github" -}}
+{{- $iconStarred := partial "icon.html" "glyphs/star" -}}
+{{- $iconRecent := partial "icon.html" "glyphs/clock" -}}
+{{- $iconForks := partial "icon.html" "glyphs/fork" -}}
+{{- $iconGithub := partial "icon.html" "glyphs/github" -}}
 
 {{- $places := slice
     (dict "tag" "button" "label" "All"     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))

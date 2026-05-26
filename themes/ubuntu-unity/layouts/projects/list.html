@@ -9,11 +9,11 @@
   <article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
     {{ partial "page/icons/lang-symbols.html" . }}
     <template id="up-project-icons">
-      <div data-icon="star">{{ partial "icon.html" "glyphs/stat-star" }}</div>
-      <div data-icon="fork">{{ partial "icon.html" "glyphs/stat-fork" }}</div>
+      <div data-icon="star">{{ partial "icon.html" "glyphs/star" }}</div>
+      <div data-icon="fork">{{ partial "icon.html" "glyphs/fork" }}</div>
       <div data-icon="license">{{ partial "icon.html" "glyphs/stat-license" }}</div>
-      <div data-icon="clock">{{ partial "icon.html" "glyphs/stat-clock" }}</div>
-      <div data-icon="github">{{ partial "icon.html" "glyphs/stat-github" }}</div>
+      <div data-icon="clock">{{ partial "icon.html" "glyphs/clock" }}</div>
+      <div data-icon="github">{{ partial "icon.html" "glyphs/github" }}</div>
     </template>
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
