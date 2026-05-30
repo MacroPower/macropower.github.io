@@ -1,0 +1,37 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-alarm-clock-bell" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="50%" stop-color="#D4B575"/><stop offset="100%" stop-color="#6A4A12"/></linearGradient>
+    <radialGradient id="f-alarm-clock-body" cx=".38" cy=".32" r=".82"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="52%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></radialGradient>
+    <radialGradient id="f-alarm-clock-face" cx=".4" cy=".36" r=".75"><stop offset="0%" stop-color="#5E2750"/><stop offset="62%" stop-color="#2C001E"/><stop offset="100%" stop-color="#1A0512"/></radialGradient>
+    <linearGradient id="f-alarm-clock-foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4B575"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="13" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <path d="M13 38 L10 44 L16 44 L17 39 Z" fill="url(#f-alarm-clock-foot)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M35 38 L38 44 L32 44 L31 39 Z" fill="url(#f-alarm-clock-foot)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M8 13 A7 7 0 0 1 19 9 L16 13 Z" fill="url(#f-alarm-clock-bell)" stroke="#3F2A0A" stroke-width=".85" stroke-linejoin="round"/>
+  <path d="M40 13 A7 7 0 0 0 29 9 L32 13 Z" fill="url(#f-alarm-clock-bell)" stroke="#3F2A0A" stroke-width=".85" stroke-linejoin="round"/>
+  <path d="M9.5 11.5 A5.5 5 0 0 1 17 8.6" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".6" stroke-linecap="round"/>
+  <path d="M38.5 11.5 A5.5 5 0 0 0 31 8.6" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".6" stroke-linecap="round"/>
+  <line x1="24" y1="5" x2="24" y2="9" stroke="#3F2A0A" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="24" cy="4.4" r="1.8" fill="url(#f-alarm-clock-bell)" stroke="#3F2A0A" stroke-width=".8"/>
+  <rect x="9" y="12.6" width="30" height="2.2" rx="1" fill="#5A3F08" stroke="#3F2A0A" stroke-width=".6"/>
+  <circle cx="24" cy="26" r="13.5" fill="url(#f-alarm-clock-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M14.5 17 A13.5 13.5 0 0 1 33.5 17" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".7" stroke-linecap="round"/>
+  <circle cx="24" cy="26" r="10" fill="url(#f-alarm-clock-face)" stroke="#0A0306" stroke-width=".7"/>
+  <circle cx="24" cy="26" r="10" fill="none" stroke="rgba(255,247,228,.18)" stroke-width=".5"/>
+  <g stroke="#F8D670" stroke-width="1" stroke-linecap="round">
+    <line x1="24" y1="17.6" x2="24" y2="19.4"/>
+    <line x1="24" y1="32.6" x2="24" y2="34.4"/>
+    <line x1="15.6" y1="26" x2="17.4" y2="26"/>
+    <line x1="30.6" y1="26" x2="32.4" y2="26"/>
+  </g>
+  <g stroke="#DD6E1C" stroke-width=".6" stroke-linecap="round">
+    <line x1="30" y1="18.8" x2="29" y2="20"/>
+    <line x1="18" y1="18.8" x2="19" y2="20"/>
+    <line x1="30" y1="33.2" x2="29" y2="32"/>
+    <line x1="18" y1="33.2" x2="19" y2="32"/>
+  </g>
+  <line x1="24" y1="26" x2="24" y2="19.5" stroke="#FCFBF4" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="24" y1="26" x2="29.5" y2="28.5" stroke="#E95420" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="24" cy="26" r="1.5" fill="#F8D670" stroke="#5A1A04" stroke-width=".4"/>
+</svg>

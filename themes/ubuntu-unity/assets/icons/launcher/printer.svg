@@ -1,0 +1,23 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-pr-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="100%" stop-color="#8E6A1F"/>
+  </linearGradient>
+  </defs>
+  <rect x="11" y="5" width="26" height="4" rx=".5" fill="#D4B575" stroke="#3F2A0A" stroke-width=".6"/>
+  <rect x="14" y="3" width="20" height="3" fill="#FFFFFF" stroke="#5A3F08" stroke-width=".5"/>
+  <rect x="5" y="9" width="38" height="14" rx="1.5" fill="url(#ai-pr-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M6 10 H42" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <rect x="9" y="14" width="10" height="4" rx=".5" fill="#1A0F04"/>
+  <circle cx="37" cy="16" r="1.4" fill="#DD4814" stroke="#5A1A04" stroke-width=".4"/>
+  <circle cx="32" cy="16" r="1.1" fill="#A8E668" stroke="#3F5A18" stroke-width=".3"/>
+  <rect x="6" y="22.5" width="36" height="2.5" fill="#1A0F04"/>
+  <rect x="11" y="25" width="26" height="18" fill="#FFFFFF" stroke="#5A3F08" stroke-width=".7"/>
+  <g stroke="#9A8870" stroke-width=".5">
+  <line x1="14" y1="30" x2="34" y2="30"/>
+  <line x1="14" y1="33" x2="30" y2="33"/>
+  <line x1="14" y1="36" x2="32" y2="36"/>
+  <line x1="14" y1="39" x2="26" y2="39"/>
+  </g>
+  </svg>

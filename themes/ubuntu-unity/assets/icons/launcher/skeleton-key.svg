@@ -1,0 +1,59 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <radialGradient id="f-skeleton-key-bow" cx=".4" cy=".34" r=".75">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="52%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <linearGradient id="f-skeleton-key-shaft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5A3F08"/>
+      <stop offset="22%" stop-color="#C9892D"/>
+      <stop offset="48%" stop-color="#FBF1D8"/>
+      <stop offset="72%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-skeleton-key-bit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <radialGradient id="f-skeleton-key-jewel" cx=".38" cy=".35" r=".7">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="55%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="11" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="21.7" y="17.5" width="4.6" height="22" rx="1.6" fill="url(#f-skeleton-key-shaft)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M23 18 V39" stroke="rgba(255,255,255,.55)" stroke-width=".6"/>
+  <path d="M16.4 8.6
+           C 13.8 6.8 10.2 7.6 9.4 10.4
+           C 8.7 12.8 10.6 15 13.4 14.8
+           C 12.6 16.8 13.6 18.6 15.6 18.6
+           C 16.2 16.8 17.6 15.6 19.2 15
+           Z"
+        fill="url(#f-skeleton-key-bow)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M31.6 8.6
+           C 34.2 6.8 37.8 7.6 38.6 10.4
+           C 39.3 12.8 37.4 15 34.6 14.8
+           C 35.4 16.8 34.4 18.6 32.4 18.6
+           C 31.8 16.8 30.4 15.6 28.8 15
+           Z"
+        fill="url(#f-skeleton-key-bow)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M11 10.2 C 10.4 11.4 11 12.8 12.4 13.2" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+  <circle cx="24" cy="11.6" r="7.6" fill="url(#f-skeleton-key-bow)" stroke="#3F2A0A" stroke-width=".9"/>
+  <circle cx="24" cy="11.6" r="7.6" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+  <circle cx="24" cy="11.6" r="5.6" fill="none" stroke="#5A3F08" stroke-width=".6"/>
+  <circle cx="24" cy="11.6" r="4.4" fill="url(#f-skeleton-key-jewel)" stroke="#1A0F04" stroke-width=".6"/>
+  <circle cx="22.3" cy="9.9" r="1.1" fill="rgba(255,247,228,.7)"/>
+  <circle cx="24" cy="11.6" r="1.2" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  <rect x="19.8" y="22.8" width="8.4" height="2.8" rx="1.4" fill="url(#f-skeleton-key-bit)" stroke="#3F2A0A" stroke-width=".7"/>
+  <path d="M20.6 23.5 H27.4" stroke="rgba(255,255,255,.6)" stroke-width=".45"/>
+  <path d="M26.3 28
+           H32 V31.5 H29 V34 H32 V37 H29 V40 H33.5 V43.4
+           H21.7 V28 Z"
+        fill="url(#f-skeleton-key-bit)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M22.8 29 H26 M22.8 29 V42.4" stroke="rgba(255,255,255,.5)" stroke-width=".5" fill="none"/>
+  <circle cx="24" cy="40.4" r="1.7" fill="#E95420" stroke="#5A1A04" stroke-width=".4"/>
+  <circle cx="23.3" cy="39.7" r=".5" fill="rgba(255,247,228,.7)"/>
+</svg>

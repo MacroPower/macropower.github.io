@@ -1,0 +1,30 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-satchel-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#4A2F08"/>
+    </linearGradient>
+    <linearGradient id="f-satchel-flap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-satchel-buckle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8D670"/>
+      <stop offset="100%" stop-color="#7A4810"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="16" ry=".8" fill="rgba(0,0,0,.35)"/>
+  <path d="M10 9 C 16 5 32 5 38 9" fill="none" stroke="#3F2A0A" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M11 8 C 17 4.5 31 4.5 37 8" fill="none" stroke="rgba(255,247,228,.45)" stroke-width=".5"/>
+  <rect x="7" y="18" width="34" height="24" rx="3" fill="url(#f-satchel-body)" stroke="#1F0F04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M9 19 H39" stroke="rgba(255,247,228,.4)" stroke-width=".4"/>
+  <path d="M7 14 H41 V24 C 41 28 34 31 24 31 C 14 31 7 28 7 24 Z" fill="url(#f-satchel-flap)" stroke="#1F0F04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M9 15 H39" stroke="rgba(255,255,255,.6)" stroke-width=".6"/>
+  <path d="M8 16 H40 V23 C 40 26 33 29 24 29 C 15 29 8 26 8 23 Z" fill="none" stroke="#F8D670" stroke-width=".4" stroke-dasharray="1.2 .8"/>
+  <rect x="20" y="24" width="8" height="9" rx="1" fill="url(#f-satchel-buckle)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="20" y="24" width="8" height="1" fill="rgba(255,255,255,.55)"/>
+  <rect x="22.5" y="27" width="3" height="3.5" rx=".4" fill="#3F2A0A"/>
+  <line x1="24" y1="33" x2="24" y2="36" stroke="#3F2A0A" stroke-width="1.4"/>
+  <circle cx="13" cy="37" r="1.2" fill="#DD4814" stroke="#5A1A04" stroke-width=".3"/>
+</svg>

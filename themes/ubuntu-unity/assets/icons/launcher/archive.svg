@@ -1,0 +1,38 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-arch-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F0BD56"/>
+  <stop offset="100%" stop-color="#8C5F12"/>
+  </linearGradient>
+  </defs>
+  <path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ai-arch-body)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <g fill="#3F2A0A">
+  <rect x="21" y="17.5" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="18.6" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="19.7" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="20.8" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="21.9" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="23" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="24.1" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="25.200000000000003" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="26.3" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="27.400000000000002" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="28.5" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="29.6" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="30.700000000000003" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="31.800000000000004" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="32.900000000000006" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="34" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="35.1" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="36.2" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="37.3" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="38.400000000000006" width="3" height="1.5" rx=".3"/>
+  <rect x="21" y="39.5" width="3" height="1.5" rx=".3"/>
+  <rect x="24" y="40.6" width="3" height="1.5" rx=".3"/>
+  </g>
+  <line x1="24" y1="14" x2="24" y2="42" stroke="rgba(63,42,10,.4)" stroke-width=".5"/>
+  <path d="M20.5 15.5 L24 11.5 L27.5 15.5 L24 18 Z" fill="#C9892D" stroke="#3F2A0A" stroke-width=".5" stroke-linejoin="round"/>
+  <rect x="23.3" y="18" width="1.4" height="3.5" rx=".4" fill="#3F2A0A"/>
+  <path d="M21.5 16 L24 13 L26.5 16" stroke="rgba(255,247,228,.5)" stroke-width=".4" fill="none"/>
+  <path d="M5 10 H18 L20.5 12.5 H42" stroke="rgba(255,255,255,.55)" stroke-width=".6" fill="none"/>
+  </svg>

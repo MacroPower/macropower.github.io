@@ -1,0 +1,42 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-rs-paper" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF"/>
+  <stop offset="100%" stop-color="#D4CCB8"/>
+  </linearGradient>
+  <linearGradient id="ai-rs-banner" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#E95420"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  <linearGradient id="ai-rs-clip" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8D670"/>
+  <stop offset="100%" stop-color="#7A4810"/>
+  </linearGradient>
+  </defs>
+  <path d="M8 7 H40 V45 H8 Z" fill="#C4B89A" stroke="#5A3F08" stroke-width=".6"/>
+  <path d="M6 4 H38 V42 H6 Z" fill="url(#ai-rs-paper)" stroke="#5A3F08" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M7 5 V41" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <path d="M7 5 H37" stroke="rgba(255,255,255,.5)" stroke-width=".4"/>
+  <rect x="9" y="9" width="9" height="11" rx=".5" fill="#FBF1D8" stroke="#5A3F08" stroke-width=".6"/>
+  <rect x="10" y="10" width="7" height="9" fill="#D89460" stroke="#5A2F0D" stroke-width=".3"/>
+  <circle cx="13.5" cy="13.5" r="1.8" fill="#FBEED4" stroke="#5A2F0D" stroke-width=".3"/>
+  <path d="M11 19 C 11 17 12 16.2 13.5 16.2 C 15 16.2 16 17 16 19 Z" fill="#FBEED4" stroke="#5A2F0D" stroke-width=".3"/>
+  <rect x="20" y="9" width="16" height="3.4" rx=".3" fill="url(#ai-rs-banner)" stroke="#5A1A04" stroke-width=".4"/>
+  <rect x="20" y="9" width="16" height=".7" fill="rgba(255,255,255,.4)"/>
+  <line x1="20" y1="14.5" x2="34" y2="14.5" stroke="#9A8870" stroke-width=".6"/>
+  <line x1="20" y1="16.5" x2="30" y2="16.5" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="9" y="23" width="10" height="1.6" fill="#DD4814" rx=".2"/>
+  <g stroke="#5A3F08" stroke-width=".6" stroke-linecap="round">
+  <line x1="9" y1="27" x2="34" y2="27"/>
+  <line x1="9" y1="29.5" x2="32" y2="29.5"/>
+  <line x1="9" y1="32" x2="33" y2="32"/>
+  </g>
+  <rect x="9" y="34.5" width="8" height="1.4" fill="#DD4814" rx=".2"/>
+  <g stroke="#5A3F08" stroke-width=".6" stroke-linecap="round">
+  <line x1="9" y1="38" x2="34" y2="38"/>
+  <line x1="9" y1="40.5" x2="28" y2="40.5"/>
+  </g>
+  <path d="M27 2 L27 13 Q27 15 29 15 L31 15 Q33 15 33 13 L33 6 Q33 5 32 5 L32 12 Q32 13.5 30.5 13.5 Q29 13.5 29 12 L29 2" fill="none" stroke="url(#ai-rs-clip)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M27 2 L27 13 Q27 15 29 15 L31 15 Q33 15 33 13 L33 6 Q33 5 32 5 L32 12 Q32 13.5 30.5 13.5 Q29 13.5 29 12 L29 2" fill="none" stroke="#3F2A0A" stroke-width=".4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M26.4 4 L26.4 13" stroke="rgba(255,247,228,.55)" stroke-width=".4" fill="none"/>
+  </svg>

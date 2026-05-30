@@ -1,0 +1,34 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-workstation-bezel" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="55%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+    <radialGradient id="f-workstation-screen" cx=".38" cy=".32" r=".85"><stop offset="0%" stop-color="#3D0B2C"/><stop offset="60%" stop-color="#2C001E"/><stop offset="100%" stop-color="#0A0008"/></radialGradient>
+    <linearGradient id="f-workstation-stand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F8E0A0"/><stop offset="55%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+    <linearGradient id="f-workstation-key" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="55%" stop-color="#D4B575"/><stop offset="100%" stop-color="#6A4A12"/></linearGradient>
+    <linearGradient id="f-workstation-bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E95420"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44.6" rx="17" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <rect x="5" y="4" width="38" height="26" rx="3.4" fill="url(#f-workstation-bezel)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M7.4 6 H40.6" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+  <rect x="7.8" y="6.6" width="32.4" height="19" rx="1.8" fill="url(#f-workstation-screen)" stroke="#0A0306" stroke-width=".8"/>
+  <rect x="7.8" y="6.6" width="32.4" height="19" rx="1.8" fill="none" stroke="rgba(255,247,228,.18)" stroke-width=".5"/>
+  <rect x="9.6" y="8.4" width="28.8" height="3.4" rx=".9" fill="url(#f-workstation-bar)" stroke="#5A1A04" stroke-width=".4"/>
+  <path d="M10.4 9.5 H37.6" stroke="rgba(255,247,228,.45)" stroke-width=".4"/>
+  <g stroke="#77216F" stroke-width="1.2" stroke-linecap="round">
+    <path d="M10.6 15 H33.4"/>
+    <path d="M10.6 18.2 H37"/>
+    <path d="M10.6 21.4 H28"/>
+  </g>
+  <circle cx="36.4" cy="21.4" r="1.2" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  <rect x="22.1" y="30" width="3.8" height="3.6" fill="url(#f-workstation-stand)" stroke="#3F2A0A" stroke-width=".6"/>
+  <path d="M15.6 36.4 L32.4 36.4 L30.2 33.2 L17.8 33.2 Z" fill="url(#f-workstation-stand)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M18.4 33.8 H29.6" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+  <path d="M8.6 37.6 L39.4 37.6 L42.8 43.4 L5.2 43.4 Z" fill="url(#f-workstation-key)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M9.8 38.6 L38.2 38.6" stroke="rgba(255,255,255,.6)" stroke-width=".6"/>
+  <g stroke="#6A4A12" stroke-width="1.1" stroke-linecap="round">
+    <path d="M11.2 39.8 H36.8"/>
+  </g>
+  <g stroke="#5A3F08" stroke-width=".5" stroke-linecap="round">
+    <path d="M14.8 39 V40.6"/><path d="M18.6 39 V40.6"/><path d="M22.4 39 V40.6"/><path d="M26.2 39 V40.6"/><path d="M30 39 V40.6"/><path d="M33.8 39 V40.6"/>
+  </g>
+  <rect x="16.4" y="41.5" width="15.2" height="1.5" rx=".75" fill="#3D0B2C" stroke="#1F0F04" stroke-width=".3"/>
+</svg>

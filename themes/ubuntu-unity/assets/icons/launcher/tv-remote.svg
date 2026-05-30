@@ -1,0 +1,46 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-tv-remote-body" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.18" stop-color="#F8D670"/>
+<stop offset="0.55" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-tv-remote-edge" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="1" stop-color="#6A4A12"/>
+</linearGradient>
+<radialGradient id="f-tv-remote-glass" cx="0.38" cy="0.35" r="0.7">
+<stop offset="0" stop-color="#77216F"/>
+<stop offset="0.55" stop-color="#2C001E"/>
+<stop offset="1" stop-color="#0A0008"/>
+</radialGradient>
+<radialGradient id="f-tv-remote-pwr" cx="0.4" cy="0.35" r="0.75">
+<stop offset="0" stop-color="#E95420"/>
+<stop offset="0.7" stop-color="#DD4814"/>
+<stop offset="1" stop-color="#5A1A04"/>
+</radialGradient>
+<radialGradient id="f-tv-remote-btn" cx="0.4" cy="0.35" r="0.8">
+<stop offset="0" stop-color="#5E2750"/>
+<stop offset="1" stop-color="#1F0518"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="11" ry="1" fill="rgba(0,0,0,.4)"/>
+<rect x="14.5" y="3" width="19" height="42" rx="5" fill="url(#f-tv-remote-edge)" stroke="#1F0F04" stroke-width="1" stroke-linejoin="round"/>
+<rect x="15.5" y="4" width="17" height="40" rx="4" fill="url(#f-tv-remote-body)" stroke="#3F2A0A" stroke-width="0.8" stroke-linejoin="round"/>
+<rect x="16.6" y="4.9" width="14.8" height="3" rx="1.5" fill="rgba(255,255,255,.55)"/>
+<rect x="17.5" y="7.5" width="13" height="8.5" rx="2" fill="url(#f-tv-remote-glass)" stroke="#1A0512" stroke-width="0.9" stroke-linejoin="round"/>
+<circle cx="20.5" cy="10.3" r="1.1" fill="rgba(255,247,228,.45)"/>
+<circle cx="24" cy="21.5" r="3.6" fill="url(#f-tv-remote-pwr)" stroke="#5A1A04" stroke-width="1.4" stroke-linejoin="round"/>
+<rect x="23.4" y="18.8" width="1.2" height="2.8" rx="0.6" fill="#FBE57E"/>
+<path d="M21.6 19.6 A2.6 2.6 0 1 0 26.4 19.6" fill="none" stroke="#FBE57E" stroke-width="1.1" stroke-linecap="round"/>
+<circle cx="19.3" cy="28.5" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="24" cy="28.5" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="28.7" cy="28.5" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="19.3" cy="33.7" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="24" cy="33.7" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="28.7" cy="33.7" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="19.3" cy="38.9" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="24" cy="38.9" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+<circle cx="28.7" cy="38.9" r="1.9" fill="url(#f-tv-remote-btn)" stroke="#1A0512" stroke-width="0.8"/>
+</svg>

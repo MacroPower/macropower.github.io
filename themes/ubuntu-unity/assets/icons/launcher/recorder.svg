@@ -1,0 +1,47 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-rec-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  </defs>
+  <rect x="12" y="3" width="24" height="42" rx="3" fill="url(#ai-rec-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M13 4 H35" stroke="rgba(255,255,255,.65)" stroke-width=".5"/>
+  <rect x="15" y="6" width="18" height="6" rx="1" fill="#3D2A0A" stroke="#1A0F04" stroke-width=".4"/>
+  <g fill="#1A0F04">
+  <circle cx="16.5" cy="7.5" r=".4"/>
+  <circle cx="19.5" cy="7.5" r=".4"/>
+  <circle cx="22.5" cy="7.5" r=".4"/>
+  <circle cx="25.5" cy="7.5" r=".4"/>
+  <circle cx="28.5" cy="7.5" r=".4"/>
+  <circle cx="31.5" cy="7.5" r=".4"/>
+  <circle cx="16.5" cy="9.1" r=".4"/>
+  <circle cx="19.5" cy="9.1" r=".4"/>
+  <circle cx="22.5" cy="9.1" r=".4"/>
+  <circle cx="25.5" cy="9.1" r=".4"/>
+  <circle cx="28.5" cy="9.1" r=".4"/>
+  <circle cx="31.5" cy="9.1" r=".4"/>
+  <circle cx="16.5" cy="10.7" r=".4"/>
+  <circle cx="19.5" cy="10.7" r=".4"/>
+  <circle cx="22.5" cy="10.7" r=".4"/>
+  <circle cx="25.5" cy="10.7" r=".4"/>
+  <circle cx="28.5" cy="10.7" r=".4"/>
+  <circle cx="31.5" cy="10.7" r=".4"/>
+  </g>
+  <rect x="15" y="14" width="18" height="8" rx=".4" fill="#A8C268" stroke="#3F5A18" stroke-width=".5"/>
+  <rect x="15" y="14" width="18" height="1" fill="rgba(255,255,255,.4)"/>
+  <text x="32" y="20" text-anchor="end" font-family="Ubuntu Mono, monospace" font-weight="700" font-size="4.2" fill="#1A2A04">00:14</text>
+  <circle cx="17" cy="17.5" r=".7" fill="#DD4814"/>
+  <circle cx="19" cy="29" r="3" fill="#DD4814" stroke="#5A1A04" stroke-width=".5"/>
+  <circle cx="18.4" cy="28.4" r=".7" fill="rgba(255,247,228,.55)"/>
+  <text x="19" y="35.5" text-anchor="middle" font-family="Ubuntu Mono, monospace" font-weight="700" font-size="2.8" fill="#3F2A0A">REC</text>
+  <circle cx="29" cy="29" r="3" fill="#3F2A0A" stroke="#1A0F04" stroke-width=".5"/>
+  <rect x="27.5" y="27.5" width="3" height="3" fill="#FBF1D8"/>
+  <text x="29" y="35.5" text-anchor="middle" font-family="Ubuntu Mono, monospace" font-weight="700" font-size="2.8" fill="#3F2A0A">STOP</text>
+  <rect x="15" y="38" width="18" height="4" rx="1" fill="#3D2A0A" stroke="#1A0F04" stroke-width=".4"/>
+  <g fill="#FBF1D8">
+  <path d="M18 39 L21 40 L18 41 Z"/>
+  <path d="M27 39 L30 40 L27 41 Z" transform="rotate(180 28.5 40)"/>
+  </g>
+  </svg>

@@ -1,0 +1,58 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-verified-seal-ribbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8DA78"/>
+      <stop offset="40%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#5A1A04"/>
+    </linearGradient>
+    <radialGradient id="f-verified-seal-scallop" cx=".4" cy=".32" r=".85">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </radialGradient>
+    <radialGradient id="f-verified-seal-rim" cx=".4" cy=".3" r=".9">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="52%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <radialGradient id="f-verified-seal-glass" cx=".38" cy=".35" r=".72">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="55%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <linearGradient id="f-verified-seal-check" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFBEF"/>
+      <stop offset="55%" stop-color="#F8D670"/>
+      <stop offset="100%" stop-color="#C9892D"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="45" rx="11" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <path d="M18 28 L14.5 45 L19 41.5 L22 45 L24 31 Z" fill="url(#f-verified-seal-ribbon)" stroke="#5A1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M30 28 L33.5 45 L29 41.5 L26 45 L24 31 Z" fill="url(#f-verified-seal-ribbon)" stroke="#5A1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M18.4 29 L23 31.5" fill="none" stroke="rgba(255,247,228,.4)" stroke-width=".5"/>
+  <path d="M29.6 29 L25 31.5" fill="none" stroke="rgba(0,0,0,.25)" stroke-width=".5"/>
+  <g stroke="#3F2A0A" stroke-width=".55" stroke-linejoin="round" fill="url(#f-verified-seal-scallop)">
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(0 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(30 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(60 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(90 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(120 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(150 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(180 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(210 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(240 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(270 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(300 24 21)"/>
+    <path d="M24 2.5 L26.4 7.4 L24 12.3 L21.6 7.4 Z" transform="rotate(330 24 21)"/>
+  </g>
+  <circle cx="24" cy="21" r="16" fill="url(#f-verified-seal-rim)" stroke="#3F2A0A" stroke-width="1"/>
+  <circle cx="24" cy="21" r="16" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <circle cx="24" cy="21" r="13.4" fill="none" stroke="#5A3F08" stroke-width=".6"/>
+  <circle cx="24" cy="21" r="12.4" fill="url(#f-verified-seal-glass)" stroke="#0A0008" stroke-width=".8"/>
+  <circle cx="24" cy="21" r="12.4" fill="none" stroke="rgba(255,247,228,.22)" stroke-width=".45"/>
+  <path d="M15 13.5 C18 10 30 10 33 13.5" fill="none" stroke="rgba(255,247,228,.4)" stroke-width=".7"/>
+  <ellipse cx="19.5" cy="15.5" rx="2.6" ry="1.6" fill="rgba(255,247,228,.28)" transform="rotate(-30 19.5 15.5)"/>
+  <path d="M17 22 L21.8 27 L31.4 15.2 L33.7 17.3 L22.2 31.4 L15 24 Z" fill="url(#f-verified-seal-check)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M17.6 21.9 L21.7 26.2 L31.3 16.6" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".6" stroke-linecap="round"/>
+  <circle cx="9.5" cy="14.5" r="1.4" fill="rgba(255,247,228,.5)"/>
+</svg>

@@ -1,0 +1,43 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-article-back" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F8E0A0"/>
+<stop offset="55%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-article-mid" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBEED4"/>
+<stop offset="55%" stop-color="#E9D7A8"/>
+<stop offset="100%" stop-color="#B89A52"/>
+</linearGradient>
+<linearGradient id="f-article-front" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FCFBF4"/>
+<stop offset="60%" stop-color="#FBF1D8"/>
+<stop offset="100%" stop-color="#D9C189"/>
+</linearGradient>
+<linearGradient id="f-article-band" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F98060"/>
+<stop offset="50%" stop-color="#E95420"/>
+<stop offset="100%" stop-color="#C53A0E"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44.4" rx="14" ry=".9" fill="rgba(0,0,0,.4)"/>
+<rect x="10.4" y="11.6" width="27.2" height="31.2" rx="2.4" fill="url(#f-article-back)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+<rect x="9" y="9.4" width="27.6" height="31.4" rx="2.4" fill="url(#f-article-mid)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+<path d="M10.4 10.4 L34.6 10.4" stroke="rgba(255,255,255,.55)" stroke-width=".55" stroke-linecap="round"/>
+<rect x="7.4" y="7" width="28.2" height="31.6" rx="2.6" fill="url(#f-article-front)" stroke="#3F2A0A" stroke-width=".95" stroke-linejoin="round"/>
+<path d="M8.8 8.1 L33.8 8.1" stroke="rgba(255,255,255,.7)" stroke-width=".6" stroke-linecap="round"/>
+<rect x="9.8" y="9.6" width="23.4" height="6.2" rx="1.4" fill="url(#f-article-band)" stroke="#5A1A04" stroke-width=".75" stroke-linejoin="round"/>
+<path d="M10.8 10.6 H32" stroke="rgba(255,255,255,.4)" stroke-width=".5" stroke-linecap="round"/>
+<rect x="11.6" y="11" width="16.4" height="1.7" rx=".85" fill="#F8D670"/>
+<rect x="11.6" y="13.2" width="11" height="1.4" rx=".7" fill="#FCFBF4" opacity=".82"/>
+<g stroke="#5E2750" stroke-width="1.05" stroke-linecap="round" opacity=".82">
+<path d="M11 20 H31.8"/>
+<path d="M11 23.2 H31.8"/>
+<path d="M11 26.4 H31.8"/>
+<path d="M11 29.6 H31.8"/>
+<path d="M11 32.8 H28.4"/>
+</g>
+<rect x="11" y="35.4" width="9.2" height="1.7" rx=".85" fill="#C9892D" stroke="#5A3F08" stroke-width=".4"/>
+<path d="M8.4 8 L8.4 37.4" stroke="rgba(255,255,255,.32)" stroke-width=".5"/>
+</svg>

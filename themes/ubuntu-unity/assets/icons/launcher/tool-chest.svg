@@ -1,0 +1,25 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-tool-chest-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="50%" stop-color="#D4B575"/><stop offset="100%" stop-color="#6A4A12"/></linearGradient>
+    <linearGradient id="f-tool-chest-top" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F8E0A0"/><stop offset="100%" stop-color="#C9892D"/></linearGradient>
+    <linearGradient id="f-tool-chest-drawer" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3D0B2C"/><stop offset="100%" stop-color="#1A0512"/></linearGradient>
+    <linearGradient id="f-tool-chest-latch" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E95420"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="45" rx="15" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <rect x="6" y="9" width="36" height="34" rx="3" fill="url(#f-tool-chest-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <rect x="6" y="9" width="36" height="7" rx="3" fill="url(#f-tool-chest-top)" stroke="#3F2A0A" stroke-width=".8"/>
+  <path d="M8 11 H40" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <path d="M20 9 V7 a4 2.2 0 0 1 8 0 V9" fill="none" stroke="#3F2A0A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="9" y="18" width="30" height="6.4" rx="1.4" fill="url(#f-tool-chest-drawer)" stroke="#0A0306" stroke-width=".7"/>
+  <path d="M10 19.3 H38" stroke="rgba(255,247,228,.22)" stroke-width=".4"/>
+  <rect x="20" y="20.4" width="8" height="1.8" rx=".9" fill="url(#f-tool-chest-body)" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="9" y="26" width="30" height="6.4" rx="1.4" fill="url(#f-tool-chest-drawer)" stroke="#0A0306" stroke-width=".7"/>
+  <path d="M10 27.3 H38" stroke="rgba(255,247,228,.22)" stroke-width=".4"/>
+  <rect x="20" y="28.4" width="8" height="1.8" rx=".9" fill="url(#f-tool-chest-body)" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="9" y="34" width="30" height="6.4" rx="1.4" fill="url(#f-tool-chest-drawer)" stroke="#0A0306" stroke-width=".7"/>
+  <path d="M10 35.3 H38" stroke="rgba(255,247,228,.22)" stroke-width=".4"/>
+  <rect x="20" y="36.4" width="8" height="1.8" rx=".9" fill="url(#f-tool-chest-body)" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="38.4" y="22" width="4.4" height="8" rx="1.2" fill="url(#f-tool-chest-latch)" stroke="#5A1A04" stroke-width=".8"/>
+  <path d="M39 23 V29" stroke="rgba(255,247,228,.4)" stroke-width=".4"/>
+  <circle cx="40.6" cy="26" r="1" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+</svg>

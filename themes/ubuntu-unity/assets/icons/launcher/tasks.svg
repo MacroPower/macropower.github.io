@@ -1,0 +1,31 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-tk-paper" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FCFBF4"/>
+  <stop offset="100%" stop-color="#C4BA9C"/>
+  </linearGradient>
+  </defs>
+  <rect x="5" y="5" width="32" height="38" rx="1.2" fill="url(#ai-tk-paper)" stroke="#5A3F08" stroke-width=".9"/>
+  <path d="M6 6 H36" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <rect x="9" y="9" width="20" height="2" rx=".4" fill="#DD4814"/>
+  <line x1="9" y1="13" x2="33" y2="13" stroke="#9A8870" stroke-width=".4"/>
+  <rect x="9" y="17" width="4" height="4" rx=".4" fill="#DD4814" stroke="#5A1A04" stroke-width=".4"/>
+  <path d="M9.8 19 L11 20.4 L12.4 17.5" stroke="#FBF1D8" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="15" y1="19" x2="32" y2="19" stroke="#5A3F08" stroke-width=".7"/>
+  <line x1="15" y1="20.5" x2="29" y2="20.5" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="9" y="24" width="4" height="4" rx=".4" fill="#DD4814" stroke="#5A1A04" stroke-width=".4"/>
+  <path d="M9.8 26 L11 27.4 L12.4 24.5" stroke="#FBF1D8" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="15" y1="26" x2="30" y2="26" stroke="#5A3F08" stroke-width=".7"/>
+  <line x1="15" y1="27.5" x2="27" y2="27.5" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="9" y="31" width="4" height="4" rx=".4" fill="#FCFBF4" stroke="#5A3F08" stroke-width=".5"/>
+  <line x1="15" y1="33" x2="32" y2="33" stroke="#5A3F08" stroke-width=".7"/>
+  <line x1="15" y1="34.5" x2="26" y2="34.5" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="9" y="38" width="4" height="4" rx=".4" fill="#FCFBF4" stroke="#5A3F08" stroke-width=".5"/>
+  <line x1="15" y1="40" x2="28" y2="40" stroke="#5A3F08" stroke-width=".7"/>
+  <g transform="rotate(20 40 26)">
+  <rect x="36" y="4" width="3" height="32" fill="#F8D670" stroke="#3F2A0A" stroke-width=".5"/>
+  <path d="M36 36 L37.5 40 L39 36 Z" fill="#FCFBF4" stroke="#3F2A0A" stroke-width=".4" stroke-linejoin="round"/>
+  <path d="M37.2 38.5 L37.5 40 L37.8 38.5 Z" fill="#1A0F04"/>
+  <rect x="36" y="2" width="3" height="2" fill="#DD4814" stroke="#5A1A04" stroke-width=".4"/>
+  </g>
+  </svg>

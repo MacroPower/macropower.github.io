@@ -1,0 +1,61 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-pinned-note-frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="50%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </linearGradient>
+    <radialGradient id="f-pinned-note-cork" cx=".4" cy=".34" r=".85">
+      <stop offset="0%" stop-color="#E0B23C"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </radialGradient>
+    <linearGradient id="f-pinned-note-paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FCFBF4"/>
+      <stop offset="100%" stop-color="#FBEED4"/>
+    </linearGradient>
+    <radialGradient id="f-pinned-note-tack" cx=".36" cy=".32" r=".75">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="35%" stop-color="#F8D670"/>
+      <stop offset="72%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <clipPath id="f-pinned-note-corkclip">
+      <rect x="6.6" y="6.6" width="34.8" height="34.8" rx="2.4"/>
+    </clipPath>
+  </defs>
+  <ellipse cx="24" cy="44.6" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="4.4" y="4.4" width="39.2" height="39.2" rx="4" fill="#3F2A0A"/>
+  <rect x="4" y="4" width="39" height="39" rx="4" fill="url(#f-pinned-note-frame)" stroke="#1F0F04" stroke-width=".85" stroke-linejoin="round"/>
+  <rect x="5.4" y="5.4" width="36.2" height="36.2" rx="3" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".7"/>
+  <rect x="6.6" y="6.6" width="34.8" height="34.8" rx="2.4" fill="url(#f-pinned-note-cork)" stroke="#3F2A0A" stroke-width=".8"/>
+  <g clip-path="url(#f-pinned-note-corkclip)" fill="#5A3F08" opacity=".5">
+    <circle cx="11" cy="13" r=".7"/>
+    <circle cx="16" cy="36" r=".7"/>
+    <circle cx="36" cy="11" r=".7"/>
+    <circle cx="38" cy="33" r=".7"/>
+    <circle cx="9" cy="27" r=".7"/>
+    <circle cx="33" cy="38" r=".7"/>
+    <circle cx="25" cy="9" r=".7"/>
+    <circle cx="13" cy="22" r=".7"/>
+  </g>
+  <g transform="rotate(-4 24 25)">
+    <rect x="13.4" y="14.4" width="21" height="24" rx="1" fill="rgba(0,0,0,.28)"/>
+    <rect x="13" y="14" width="21" height="24" rx="1" fill="url(#f-pinned-note-paper)" stroke="#3F2A0A" stroke-width=".85" stroke-linejoin="round"/>
+    <path d="M14 15 H33" stroke="rgba(255,255,255,.7)" stroke-width=".5"/>
+    <path d="M34 14 L34 18 L30 14 Z" fill="#E95420" stroke="#5A1A04" stroke-width=".6" stroke-linejoin="round"/>
+    <path d="M31.3 14.7 L33.3 16.7" stroke="rgba(255,247,228,.4)" stroke-width=".4"/>
+    <g stroke="#5E2750" stroke-width=".9" stroke-linecap="round" opacity=".8">
+      <path d="M16.5 22 H30"/>
+      <path d="M16.5 26 H30.5"/>
+      <path d="M16.5 30 H27"/>
+      <path d="M16.5 34 H29"/>
+    </g>
+    <path d="M16.6 19 q1.4 -1.5 2.4 0 t2.4 0 t2.4 0" fill="none" stroke="#2C001E" stroke-width=".8" stroke-linecap="round"/>
+  </g>
+  <g>
+    <ellipse cx="24" cy="15.6" rx="3.4" ry="1.1" fill="rgba(0,0,0,.3)"/>
+    <circle cx="23.6" cy="13.6" r="3.6" fill="url(#f-pinned-note-tack)" stroke="#3F2A0A" stroke-width=".85"/>
+    <circle cx="22.3" cy="12.2" r="1.2" fill="rgba(255,247,228,.7)"/>
+  </g>
+</svg>

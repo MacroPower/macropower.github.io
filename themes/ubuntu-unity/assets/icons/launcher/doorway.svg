@@ -1,0 +1,52 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-doorway-arch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </linearGradient>
+    <linearGradient id="f-doorway-door" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5E2750"/>
+      <stop offset="55%" stop-color="#3D0B2C"/>
+      <stop offset="100%" stop-color="#1A0512"/>
+    </linearGradient>
+    <radialGradient id="f-doorway-knob" cx=".38" cy=".35" r=".8">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <linearGradient id="f-doorway-mat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBEED4"/>
+      <stop offset="100%" stop-color="#D9D0B8"/>
+    </linearGradient>
+    <linearGradient id="f-doorway-step" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="100%" stop-color="#C9892D"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="45.2" rx="15" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <path d="M7 44 V20 C7 10 14.5 4 24 4 C33.5 4 41 10 41 20 V44 Z"
+        fill="url(#f-doorway-arch)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M9 21 C9.5 12.5 16 6 24 6 C32 6 38.5 12.5 39 21"
+        fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M11 44 V20.5 C11 12.5 17 7.5 24 7.5 C31 7.5 37 12.5 37 20.5 V44 Z"
+        fill="#2C001E" stroke="#1A0F04" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M13 40 V21 C13 14 18 10 24 10 C30 10 35 14 35 21 V40 Z"
+        fill="url(#f-doorway-door)" stroke="#0A0008" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M14.6 39 V21.2 C14.6 15 18.8 11.5 24 11.5"
+        fill="none" stroke="rgba(255,247,228,.2)" stroke-width=".5" stroke-linejoin="round"/>
+  <rect x="16.5" y="23.6" width="6.2" height="7.2" rx="1" fill="none" stroke="#1A0512" stroke-width=".5"/>
+  <rect x="25.3" y="23.6" width="6.2" height="7.2" rx="1" fill="none" stroke="#1A0512" stroke-width=".5"/>
+  <rect x="16.5" y="32.8" width="6.2" height="6.2" rx="1" fill="none" stroke="#1A0512" stroke-width=".5"/>
+  <rect x="25.3" y="32.8" width="6.2" height="6.2" rx="1" fill="none" stroke="#1A0512" stroke-width=".5"/>
+  <path d="M17.2 24.3 H22" stroke="rgba(255,247,228,.18)" stroke-width=".4"/>
+  <path d="M26 24.3 H30.8" stroke="rgba(255,247,228,.18)" stroke-width=".4"/>
+  <path d="M22 14.4 H26 L25 18 H23 Z" fill="url(#f-doorway-step)" stroke="#3F2A0A" stroke-width=".4" stroke-linejoin="round"/>
+  <circle cx="30.2" cy="32" r="1.8" fill="url(#f-doorway-knob)" stroke="#3F2A0A" stroke-width=".5"/>
+  <circle cx="29.6" cy="31.4" r=".5" fill="rgba(255,247,228,.75)"/>
+  <rect x="11" y="39.4" width="26" height="2.6" rx=".6" fill="url(#f-doorway-step)" stroke="#3F2A0A" stroke-width=".6"/>
+  <path d="M13.5 42 L34.5 42 L37 45.6 L11 45.6 Z" fill="url(#f-doorway-mat)" stroke="#5A3F08" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M15.6 42.7 L32.4 42.7 L34.4 45 L13.6 45 Z" fill="none" stroke="#C9892D" stroke-width=".5" stroke-linejoin="round"/>
+  <path d="M14.6 43.7 L33.4 43.7 L34.7 44.6 L13.3 44.6 Z" fill="none" stroke="#E95420" stroke-width=".7" stroke-linejoin="round"/>
+  <circle cx="24" cy="44" r="1" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+</svg>

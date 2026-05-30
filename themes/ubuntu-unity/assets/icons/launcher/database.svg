@@ -1,0 +1,42 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-database-body" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.18" stop-color="#E9C566"/>
+<stop offset="0.55" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-database-side" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#D4B575"/>
+<stop offset="0.5" stop-color="#A06D1E"/>
+<stop offset="1" stop-color="#3F2A0A"/>
+</linearGradient>
+<radialGradient id="f-database-top" cx="0.42" cy="0.4" r="0.75">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.5" stop-color="#E9C566"/>
+<stop offset="1" stop-color="#C9892D"/>
+</radialGradient>
+<radialGradient id="f-database-toprim" cx="0.42" cy="0.4" r="0.78">
+<stop offset="0" stop-color="#5A3F08"/>
+<stop offset="0.78" stop-color="#5A3F08"/>
+<stop offset="0.86" stop-color="#3F2A0A"/>
+<stop offset="1" stop-color="#3F2A0A"/>
+</radialGradient>
+<linearGradient id="f-database-band" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F07A45"/>
+<stop offset="0.45" stop-color="#E95420"/>
+<stop offset="1" stop-color="#7A1F08"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44.6" rx="13" ry="1.1" fill="rgba(0,0,0,.4)"/>
+<path d="M6 11 a18 6 0 0 0 36 0 V37 a18 6 0 0 1 -36 0 Z" fill="url(#f-database-side)" stroke="#1F0F04" stroke-width="1" stroke-linejoin="round"/>
+<path d="M6 25 a18 6 0 0 0 36 0" fill="none" stroke="#1F0F04" stroke-width="1"/>
+<path d="M6 25 a18 6 0 0 0 36 0 V31.5 a18 6 0 0 1 -36 0 Z" fill="url(#f-database-band)" stroke="#5A1A04" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M7 24.4 a17 5.4 0 0 0 34 0" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="0.9"/>
+<path d="M6 18 a18 6 0 0 0 36 0" fill="none" stroke="#1F0F04" stroke-width="1"/>
+<path d="M7 17.4 a17 5.4 0 0 0 34 0" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="0.9"/>
+<ellipse cx="24" cy="11" rx="18" ry="6" fill="url(#f-database-toprim)" stroke="#1F0F04" stroke-width="1"/>
+<ellipse cx="24" cy="10.4" rx="15.2" ry="4.9" fill="url(#f-database-top)"/>
+<ellipse cx="24" cy="10.4" rx="15.2" ry="4.9" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="0.8"/>
+<ellipse cx="19.5" cy="8.6" rx="6" ry="2.1" fill="rgba(255,247,228,.45)"/>
+</svg>

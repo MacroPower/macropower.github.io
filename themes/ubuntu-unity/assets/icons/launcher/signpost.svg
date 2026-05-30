@@ -1,0 +1,31 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-signpost-post" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="45%" stop-color="#D4B575"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+    <linearGradient id="f-signpost-cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F8E0A0"/><stop offset="55%" stop-color="#C9892D"/><stop offset="100%" stop-color="#3F2A0A"/></linearGradient>
+    <linearGradient id="f-signpost-board" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E95420"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+    <linearGradient id="f-signpost-boardlo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#DD6E1C"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+    <linearGradient id="f-signpost-base" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5E2750"/><stop offset="100%" stop-color="#1F0518"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <path d="M16 40 H32 L34 43.4 H14 Z" fill="url(#f-signpost-base)" stroke="#1A0F04" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M16.6 40.6 H31.4" stroke="rgba(255,247,228,.25)" stroke-width=".5"/>
+  <rect x="22" y="5" width="4" height="36" rx="1.6" fill="url(#f-signpost-post)" stroke="#3F2A0A" stroke-width=".85"/>
+  <path d="M23 6 V40" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <circle cx="24" cy="5" r="2.6" fill="url(#f-signpost-cap)" stroke="#3F2A0A" stroke-width=".8"/>
+  <circle cx="23.2" cy="4.2" r=".8" fill="rgba(255,247,228,.6)"/>
+  <path d="M22 9.5 H37 L42 13.5 L37 17.5 H22 Z" fill="url(#f-signpost-board)" stroke="#5A1A04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M23 10.4 H37" stroke="rgba(255,247,228,.45)" stroke-width=".5"/>
+  <path d="M25 13.5 H34" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M32.5 11.8 L35 13.5 L32.5 15.2" fill="none" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M26 22 H11 L6 26 L11 30 H26 Z" fill="url(#f-signpost-boardlo)" stroke="#5A1A04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M11 22.9 H25" stroke="rgba(255,247,228,.45)" stroke-width=".5"/>
+  <path d="M14 26 H23" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M15.5 24.3 L13 26 L15.5 27.7" fill="none" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 34 H35 L40 38 L35 42 H22 Z" fill="url(#f-signpost-board)" stroke="#5A1A04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M23 34.9 H35" stroke="rgba(255,247,228,.45)" stroke-width=".5"/>
+  <path d="M25 38 H32" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M30.5 36.3 L33 38 L30.5 39.7" fill="none" stroke="#FCFBF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="24" cy="13.5" r="1" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  <circle cx="24" cy="26" r=".9" fill="#3F2A0A"/>
+  <circle cx="24" cy="38" r=".9" fill="#3F2A0A"/>
+</svg>

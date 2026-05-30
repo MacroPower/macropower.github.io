@@ -1,0 +1,66 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-qr-code-brass" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.45" stop-color="#D4B575"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-qr-code-bezel" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.5" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#3F2A0A"/>
+</linearGradient>
+<radialGradient id="f-qr-code-paper" cx="0.4" cy="0.32" r="0.85">
+<stop offset="0" stop-color="#FCFBF4"/>
+<stop offset="1" stop-color="#FBEED4"/>
+</radialGradient>
+<linearGradient id="f-qr-code-beam" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#E95420" stop-opacity="0"/>
+<stop offset="0.5" stop-color="#E95420" stop-opacity="1"/>
+<stop offset="1" stop-color="#E95420" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44.6" rx="13" ry="1" fill="rgba(0,0,0,.4)"/>
+<rect x="3.5" y="3.5" width="41" height="41" rx="5" fill="url(#f-qr-code-bezel)" stroke="#1F0F04" stroke-width="1"/>
+<rect x="4.7" y="4.7" width="38.6" height="38.6" rx="4" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/>
+<rect x="7.5" y="7.5" width="33" height="33" rx="2" fill="url(#f-qr-code-paper)" stroke="#5A3F08" stroke-width="1"/>
+<g fill="#2C001E">
+<rect x="9.5" y="9.5" width="9" height="9" rx="1"/>
+<rect x="29.5" y="9.5" width="9" height="9" rx="1"/>
+<rect x="9.5" y="29.5" width="9" height="9" rx="1"/>
+</g>
+<g fill="url(#f-qr-code-paper)">
+<rect x="11.5" y="11.5" width="5" height="5" rx="0.6"/>
+<rect x="31.5" y="11.5" width="5" height="5" rx="0.6"/>
+<rect x="11.5" y="31.5" width="5" height="5" rx="0.6"/>
+</g>
+<g fill="#2C001E">
+<rect x="12.7" y="12.7" width="2.6" height="2.6"/>
+<rect x="32.7" y="12.7" width="2.6" height="2.6"/>
+<rect x="12.7" y="32.7" width="2.6" height="2.6"/>
+</g>
+<g fill="#2C001E">
+<rect x="21.5" y="9.5" width="2.6" height="2.6"/>
+<rect x="25.5" y="9.5" width="2.6" height="2.6"/>
+<rect x="21.5" y="13.5" width="2.6" height="2.6"/>
+<rect x="9.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="13.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="9.5" y="25.5" width="2.6" height="2.6"/>
+<rect x="29.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="33.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="29.5" y="25.5" width="2.6" height="2.6"/>
+<rect x="35.5" y="25.5" width="2.6" height="2.6"/>
+<rect x="33.5" y="29.5" width="2.6" height="2.6"/>
+<rect x="29.5" y="33.5" width="2.6" height="2.6"/>
+<rect x="35.5" y="33.5" width="2.6" height="2.6"/>
+<rect x="21.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="25.5" y="21.5" width="2.6" height="2.6"/>
+<rect x="21.5" y="25.5" width="2.6" height="2.6"/>
+<rect x="25.5" y="25.5" width="2.6" height="2.6"/>
+<rect x="21.5" y="29.5" width="2.6" height="2.6"/>
+<rect x="25.5" y="33.5" width="2.6" height="2.6"/>
+</g>
+<rect x="6.5" y="21.4" width="35" height="5.2" fill="url(#f-qr-code-beam)" opacity="0.55"/>
+<rect x="6.5" y="22.9" width="35" height="2.2" rx="1.1" fill="#E95420" stroke="#7A1F08" stroke-width="0.5"/>
+<rect x="6.5" y="23.4" width="35" height="0.9" rx="0.4" fill="#FBE57E"/>
+</svg>

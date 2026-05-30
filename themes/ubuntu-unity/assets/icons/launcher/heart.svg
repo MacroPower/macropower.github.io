@@ -1,0 +1,16 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-ht-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#E0A848"/>
+  <stop offset="45%" stop-color="#DD4814"/>
+  <stop offset="100%" stop-color="#8A2A0A"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44.5" rx="13" ry=".9" fill="rgba(0,0,0,.3)"/>
+  <path d="M24 42 C 24 42 5 30 5 17 C 5 11 11 7 16 7 C 20 7 23 9 24 11 C 25 9 28 7 32 7 C 37 7 43 11 43 17 C 43 30 24 42 24 42 Z" fill="url(#ai-ht-body)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M8 14 C 9.5 10.5 13 8.5 17 8.5" fill="none" stroke="rgba(255,247,228,.7)" stroke-width="1" stroke-linecap="round"/>
+  <path d="M31 8.5 C 35 8.5 38.5 10.5 40 14" fill="none" stroke="rgba(255,247,228,.6)" stroke-width="1" stroke-linecap="round"/>
+  <ellipse cx="13.5" cy="12.5" rx="2.2" ry="1" fill="rgba(255,247,228,.6)" transform="rotate(-32 13.5 12.5)"/>
+  <circle cx="16" cy="14.5" r=".6" fill="rgba(255,255,255,.6)"/>
+  <path d="M11 25 C 14 32 19 37 24 40" fill="none" stroke="rgba(31,15,4,.3)" stroke-width=".7" stroke-linecap="round"/>
+  </svg>

@@ -1,0 +1,58 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-fingerprint-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <radialGradient id="f-fingerprint-glass" cx=".38" cy=".35" r=".82">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="55%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <linearGradient id="f-fingerprint-scan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(233,84,32,0)"/>
+      <stop offset="50%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="rgba(221,72,20,0)"/>
+    </linearGradient>
+    <radialGradient id="f-fingerprint-glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0%" stop-color="rgba(248,214,112,.55)"/>
+      <stop offset="100%" stop-color="rgba(248,214,112,0)"/>
+    </radialGradient>
+    <clipPath id="f-fingerprint-clip">
+      <rect x="11" y="8.5" width="26" height="31" rx="7"/>
+    </clipPath>
+  </defs>
+  <ellipse cx="24" cy="44.4" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="6.5" y="4" width="35" height="40" rx="6" fill="url(#f-fingerprint-body)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+  <rect x="8.2" y="5.4" width="31.6" height="2" rx="1" fill="rgba(255,255,255,.65)"/>
+  <rect x="8" y="6" width="32" height="36" rx="4.6" fill="none" stroke="rgba(90,63,8,.5)" stroke-width=".7"/>
+  <rect x="9.6" y="7.1" width="28.8" height="33.8" rx="8.4" fill="#1A0512" stroke="#0A0306" stroke-width=".7"/>
+  <rect x="11" y="8.5" width="26" height="31" rx="7" fill="url(#f-fingerprint-glass)" stroke="#1F0F04" stroke-width=".8"/>
+  <rect x="11" y="8.5" width="26" height="31" rx="7" fill="none" stroke="rgba(255,255,255,.18)" stroke-width=".5"/>
+  <g clip-path="url(#f-fingerprint-clip)" fill="none" stroke="rgba(31,15,4,.55)" stroke-width="2.2" stroke-linecap="round">
+    <path d="M14.8 25 C 14.8 19.6 18.8 15.6 24 15.6 C 29.2 15.6 33.2 19.6 33.2 25"/>
+    <path d="M17.2 26.4 C 17 21.8 20 18.6 24 18.6 C 28 18.6 31 21.8 30.8 26.4"/>
+    <path d="M19.6 27.2 C 19.6 23.6 21.4 21.4 24 21.4 C 26.6 21.4 28.4 23.6 28.4 27.2"/>
+  </g>
+  <g clip-path="url(#f-fingerprint-clip)" fill="none" stroke="#F8E0A0" stroke-width="1.4" stroke-linecap="round">
+    <path d="M14.4 26 C 14.4 20.2 18.6 15 24 15 C 29.4 15 33.6 20.2 33.6 26"/>
+    <path d="M16.8 27 C 16.6 22 19.8 18 24 18 C 28.2 18 31.4 22 31.2 27"/>
+    <path d="M19.2 27.6 C 19.2 23.6 21.2 20.8 24 20.8 C 26.8 20.8 28.8 23.6 28.8 27.6"/>
+    <path d="M21.6 28 C 21.6 25.4 22.6 23.6 24 23.6 C 25.4 23.6 26.4 25.4 26.4 28"/>
+    <path d="M24 26.6 C 24.7 26.6 24.9 27.4 24.9 28.4 L 24.9 32.6"/>
+    <path d="M18.2 30.4 C 18.6 31.4 19.2 32.2 20 32.9"/>
+    <path d="M29.8 30.4 C 29.4 31.4 28.8 32.2 28 32.9"/>
+    <path d="M21.4 31 C 21.6 31.8 21.8 32.4 22.2 33"/>
+    <path d="M26.6 31 C 26.4 31.8 26.2 32.4 25.8 33"/>
+  </g>
+  <g clip-path="url(#f-fingerprint-clip)">
+    <rect x="10" y="22.2" width="28" height="4" fill="url(#f-fingerprint-glow)" opacity=".5"/>
+    <rect x="10" y="23.4" width="28" height="1.6" rx=".8" fill="url(#f-fingerprint-scan)"/>
+    <rect x="10" y="23.8" width="28" height=".6" rx=".3" fill="rgba(255,247,228,.55)"/>
+  </g>
+  <circle cx="24" cy="36.6" r="3.4" fill="url(#f-fingerprint-glow)"/>
+  <circle cx="24" cy="36.6" r="1.7" fill="#F8D670" stroke="#5A3F08" stroke-width=".5"/>
+  <circle cx="23.4" cy="36" r=".6" fill="rgba(255,255,255,.8)"/>
+  <ellipse cx="16.5" cy="13.5" rx="3" ry="1.8" fill="rgba(255,247,228,.22)"/>
+</svg>

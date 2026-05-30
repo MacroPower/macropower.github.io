@@ -1,0 +1,51 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-handbook-cover" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="45%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-handbook-pageL" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FFFFFF"/>
+<stop offset="55%" stop-color="#FBF1D8"/>
+<stop offset="100%" stop-color="#CFC6A8"/>
+</linearGradient>
+<linearGradient id="f-handbook-pageR" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FCFBF4"/>
+<stop offset="55%" stop-color="#F3E9CC"/>
+<stop offset="100%" stop-color="#C6BD9E"/>
+</linearGradient>
+<linearGradient id="f-handbook-spine" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#5E2750"/>
+<stop offset="55%" stop-color="#2C001E"/>
+<stop offset="100%" stop-color="#1A0512"/>
+</linearGradient>
+<linearGradient id="f-handbook-qmark" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F8763E"/>
+<stop offset="50%" stop-color="#E95420"/>
+<stop offset="100%" stop-color="#7A1F08"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="16" ry="1" fill="rgba(0,0,0,.4)"/>
+<path d="M24 10.5 C18 7.6 11 7.4 5 9 V40 C11 38.4 18 38.6 24 41.5 C30 38.6 37 38.4 43 40 V9 C37 7.4 30 7.6 24 10.5 Z" fill="url(#f-handbook-cover)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<path d="M6.5 9.6 C11.8 8.4 17.8 8.6 23 10.8" fill="none" stroke="rgba(255,255,255,.65)" stroke-width=".8" stroke-linecap="round"/>
+<path d="M41.5 9.6 C36.2 8.4 30.2 8.6 25 10.8" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".8" stroke-linecap="round"/>
+<path d="M23 12 C18 9.7 12 9.4 7 10.6 V38.3 C12 37.1 18 37.4 23 39.6 Z" fill="url(#f-handbook-pageL)" stroke="#5A3F08" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M25 12 C30 9.7 36 9.4 41 10.6 V38.3 C36 37.1 30 37.4 25 39.6 Z" fill="url(#f-handbook-pageR)" stroke="#5A3F08" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M24 11.4 V40.4" fill="none" stroke="url(#f-handbook-spine)" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M24 11.4 V40.4" fill="none" stroke="rgba(255,255,255,.18)" stroke-width=".5"/>
+<path d="M10.5 17 H20.5" stroke="#B7A877" stroke-width="1" stroke-linecap="round" opacity=".8"/>
+<path d="M10 20.6 H20" stroke="#C2B488" stroke-width=".85" stroke-linecap="round" opacity=".62"/>
+<path d="M9.7 24.2 H19.4" stroke="#C2B488" stroke-width=".85" stroke-linecap="round" opacity=".62"/>
+<path d="M9.4 27.8 H18.8" stroke="#C2B488" stroke-width=".85" stroke-linecap="round" opacity=".62"/>
+<path d="M9.1 31.4 H18.2" stroke="#C2B488" stroke-width=".85" stroke-linecap="round" opacity=".62"/>
+<path d="M9 35 H15" stroke="#C2B488" stroke-width=".85" stroke-linecap="round" opacity=".5"/>
+<path d="M29.8 19.2 C29.8 14.6 39.4 14.6 39.4 20 C39.4 24 34.4 24.6 34.4 28.2 V30.6" fill="none" stroke="#5A1A04" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="34.4" cy="35.4" r="3.3" fill="#5A1A04"/>
+<path d="M29.8 19.2 C29.8 14.6 39.4 14.6 39.4 20 C39.4 24 34.4 24.6 34.4 28.2 V30.6" fill="none" stroke="url(#f-handbook-qmark)" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="34.4" cy="35.4" r="2.4" fill="url(#f-handbook-qmark)"/>
+<path d="M30.9 17.6 C32.2 15.8 36.8 15.8 38.1 17.6" fill="none" stroke="rgba(255,247,228,.6)" stroke-width=".9" stroke-linecap="round"/>
+<circle cx="33.4" cy="34.5" r=".85" fill="rgba(255,247,228,.65)"/>
+<path d="M20.4 11 V20.8 L22.4 18.8 L24.4 20.8 V11.2 Z" fill="#F8D670" stroke="#9A7012" stroke-width=".6" stroke-linejoin="round"/>
+<path d="M20.9 11.4 V18.6" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+</svg>

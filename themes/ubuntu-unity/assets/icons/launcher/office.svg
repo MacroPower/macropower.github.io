@@ -1,0 +1,112 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-of-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-of-glass" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#5E2750"/>
+  <stop offset="100%" stop-color="#1A0010"/>
+  </linearGradient>
+  <linearGradient id="ai-of-lit" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8DA78"/>
+  <stop offset="100%" stop-color="#A8651C"/>
+  </linearGradient>
+  <linearGradient id="ai-of-door" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8DA78"/>
+  <stop offset="100%" stop-color="#A8651C"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="17" ry="1" fill="rgba(0,0,0,.35)"/>
+  <rect x="6" y="4" width="36" height="3" fill="#5A3F08" stroke="#1F0F04" stroke-width=".6"/>
+  <rect x="6.5" y="4" width="35" height=".8" fill="rgba(255,255,255,.55)"/>
+  <rect x="20" y="1.5" width="8" height="3" fill="#3F2A0A" stroke="#1F0F04" stroke-width=".5"/>
+  <rect x="20.4" y="1.8" width="7.2" height=".6" fill="rgba(255,255,255,.4)"/>
+  <path d="M6 7 H42 V43 H6 Z" fill="url(#ai-of-body)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M7 8 H41" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <path d="M7 9 V42" stroke="rgba(255,255,255,.35)" stroke-width=".4"/>
+  <g stroke="rgba(31,15,4,.4)" stroke-width=".4">
+  <line x1="6" y1="15" x2="42" y2="15"/>
+  <line x1="6" y1="22" x2="42" y2="22"/>
+  <line x1="6" y1="29" x2="42" y2="29"/>
+  </g>
+  <g>
+  <g>
+  <rect x="10" y="10" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="10.4" y="10.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="12.75" y1="10" x2="12.75" y2="14.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="18" y="10" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="18.4" y="10.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="20.75" y1="10" x2="20.75" y2="14.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="26" y="10" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="26.4" y="10.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="28.75" y1="10" x2="28.75" y2="14.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="34" y="10" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="34.4" y="10.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="36.75" y1="10" x2="36.75" y2="14.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="10" y="17" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="10.4" y="17.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="12.75" y1="17" x2="12.75" y2="21.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="18" y="17" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="18.4" y="17.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="20.75" y1="17" x2="20.75" y2="21.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="26" y="17" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-glass)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="26.4" y="17.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="28.75" y1="17" x2="28.75" y2="21.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="34" y="17" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="34.4" y="17.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="36.75" y1="17" x2="36.75" y2="21.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="10" y="24" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="10.4" y="24.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="12.75" y1="24" x2="12.75" y2="28.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="18" y="24" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-glass)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="18.4" y="24.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="20.75" y1="24" x2="20.75" y2="28.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="26" y="24" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="26.4" y="24.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="28.75" y1="24" x2="28.75" y2="28.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <g>
+  <rect x="34" y="24" width="5.5" height="4.5" rx=".3" fill="url(#ai-of-lit)" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="34.4" y="24.4" width="4.7" height=".7" fill="rgba(255,255,255,.45)"/>
+  <line x1="36.75" y1="24" x2="36.75" y2="28.5" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  </g>
+  <path d="M17 32 H31 L33 34 H15 Z" fill="#DD4814" stroke="#5A1A04" stroke-width=".6" stroke-linejoin="round"/>
+  <g stroke="rgba(255,255,255,.45)" stroke-width=".4">
+  <line x1="20" y1="32.4" x2="19" y2="33.8"/>
+  <line x1="24" y1="32.4" x2="24" y2="33.8"/>
+  <line x1="28" y1="32.4" x2="29" y2="33.8"/>
+  </g>
+  <path d="M19 43 V36 Q19 34 21 34 H27 Q29 34 29 36 V43 Z" fill="url(#ai-of-door)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <line x1="24" y1="34.4" x2="24" y2="43" stroke="#3F2A0A" stroke-width=".5"/>
+  <path d="M20 35.5 V42.5" stroke="rgba(255,255,255,.5)" stroke-width=".4"/>
+  <circle cx="23.2" cy="39" r=".5" fill="#3F2A0A"/>
+  <circle cx="24.8" cy="39" r=".5" fill="#3F2A0A"/>
+  <rect x="6" y="42" width="36" height="2" fill="#C9892D" stroke="#3F2A0A" stroke-width=".5"/>
+  <rect x="6.5" y="42" width="35" height=".5" fill="rgba(255,255,255,.55)"/>
+  <rect x="10" y="36" width="5" height="3" rx=".3" fill="#F8D670" stroke="#3F2A0A" stroke-width=".4"/>
+  <line x1="11" y1="37" x2="14" y2="37" stroke="#3F2A0A" stroke-width=".3"/>
+  <line x1="11" y1="38" x2="13" y2="38" stroke="#3F2A0A" stroke-width=".3"/>
+  </svg>

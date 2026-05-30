@@ -1,0 +1,26 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="f-monitor-graph-bezel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#D4B575"/>
+  <stop offset="100%" stop-color="#6A4A12"/>
+  </linearGradient>
+  <linearGradient id="f-monitor-graph-screen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#3D0B2C"/>
+  <stop offset="100%" stop-color="#1A0512"/>
+  </linearGradient>
+  </defs>
+  <rect x="4" y="8" width="40" height="32" rx="3" fill="url(#f-monitor-graph-bezel)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M6 10 H42" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <rect x="8" y="12" width="32" height="24" rx="1.4" fill="url(#f-monitor-graph-screen)" stroke="#0A0306" stroke-width=".7"/>
+  <rect x="8.5" y="12.5" width="31" height=".8" fill="rgba(255,247,228,.12)"/>
+  <g stroke="rgba(248,214,112,.22)" stroke-width=".3">
+  <line x1="10" y1="18" x2="38" y2="18"/>
+  <line x1="10" y1="24" x2="38" y2="24"/>
+  <line x1="10" y1="30" x2="38" y2="30"/>
+  </g>
+  <path d="M10 30 L14 24 L17 27 L21 18 L25 26 L29 15 L33 22 L38 16" fill="none" stroke="#E95420" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 32 L25 28.5 L28 31 L31 26 L34 30 L36 28 L38 30 V34 H22 Z" fill="rgba(248,214,112,.28)"/>
+  <circle cx="29" cy="15" r="1.1" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  <rect x="14" y="42" width="20" height="2.4" rx="1" fill="url(#f-monitor-graph-bezel)" stroke="#3F2A0A" stroke-width=".6"/>
+  </svg>

@@ -1,0 +1,25 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-um-canopy" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8A040"/>
+  <stop offset="45%" stop-color="#DD4814"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="11" ry=".7" fill="rgba(0,0,0,.35)"/>
+  <path d="M5 25 C 5 13 13 5 24 5 C 35 5 43 13 43 25 Z" fill="url(#ai-um-canopy)" stroke="#3F1A04" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M5 25 Q9.5 21 14 25 Q18.5 21 24 25 Q29.5 21 34 25 Q38.5 21 43 25" fill="url(#ai-um-canopy)" stroke="#3F1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <g stroke="rgba(63,26,4,.45)" stroke-width=".6" fill="none">
+  <path d="M24 6 V24"/>
+  <path d="M24 6 Q15 8 9.5 23"/>
+  <path d="M24 6 Q33 8 38.5 23"/>
+  <path d="M24 6 Q19 7 14 24"/>
+  <path d="M24 6 Q29 7 34 24"/>
+  </g>
+  <path d="M12 14 C 16 9 21 7 26 7" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".9" stroke-linecap="round"/>
+  <rect x="23" y="2.5" width="2" height="4" rx="1" fill="#C9892D" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="23" y="25" width="2" height="13" fill="#5A3F08"/>
+  <rect x="23" y="25" width=".8" height="13" fill="rgba(255,247,228,.3)"/>
+  <path d="M24 38 Q24 42.5 19.5 42.5 Q16 42.5 16 38.5" fill="none" stroke="#C9892D" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M24 38 Q24 42.5 19.5 42.5 Q16 42.5 16 38.5" fill="none" stroke="#3F2A0A" stroke-width=".5" stroke-linecap="round"/>
+  </svg>

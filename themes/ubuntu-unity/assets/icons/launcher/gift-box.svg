@@ -1,0 +1,29 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-gift-box-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F8E0A0"/><stop offset="50%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+    <linearGradient id="f-gift-box-lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="55%" stop-color="#D4B575"/><stop offset="100%" stop-color="#9A6A1E"/></linearGradient>
+    <linearGradient id="f-gift-box-ribbon" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F07A3C"/><stop offset="50%" stop-color="#E95420"/><stop offset="100%" stop-color="#5A1A04"/></linearGradient>
+    <linearGradient id="f-gift-box-ribbon-top" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#DD4814"/><stop offset="45%" stop-color="#F07A3C"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+    <radialGradient id="f-gift-box-knot" cx=".4" cy=".34" r=".75"><stop offset="0%" stop-color="#F8D670"/><stop offset="55%" stop-color="#F0A03C"/><stop offset="100%" stop-color="#C9892D"/></radialGradient>
+    <linearGradient id="f-gift-box-loop" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F07A3C"/><stop offset="100%" stop-color="#C03A12"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="45" rx="14" ry="1" fill="rgba(0,0,0,.4)"/>
+  <rect x="9" y="20" width="30" height="22" rx="2" fill="url(#f-gift-box-front)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+  <rect x="7.5" y="14.5" width="33" height="7.5" rx="2" fill="url(#f-gift-box-lid)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M9.5 16 H38.5" stroke="rgba(255,255,255,.7)" stroke-width=".7"/>
+  <path d="M10.5 21 H37.5" stroke="rgba(0,0,0,.18)" stroke-width=".6"/>
+  <rect x="20" y="20" width="8" height="22" fill="url(#f-gift-box-ribbon)" stroke="#5A1A04" stroke-width=".5"/>
+  <path d="M21.4 20 V42" stroke="rgba(255,247,228,.4)" stroke-width=".6"/>
+  <rect x="9" y="28" width="30" height="6.5" fill="url(#f-gift-box-ribbon)" stroke="#5A1A04" stroke-width=".5"/>
+  <path d="M9 29.4 H39" stroke="rgba(255,247,228,.4)" stroke-width=".6"/>
+  <rect x="20" y="14.5" width="8" height="7.5" fill="url(#f-gift-box-ribbon-top)" stroke="#5A1A04" stroke-width=".5"/>
+  <path d="M21.4 15 V21.6" stroke="rgba(255,247,228,.45)" stroke-width=".6"/>
+  <path d="M24 13 L19 21 L22 20.6 L24 14.5 Z" fill="url(#f-gift-box-ribbon)" stroke="#5A1A04" stroke-width=".55" stroke-linejoin="round"/>
+  <path d="M24 13 L29 21 L26 20.6 L24 14.5 Z" fill="url(#f-gift-box-ribbon)" stroke="#5A1A04" stroke-width=".55" stroke-linejoin="round"/>
+  <path d="M24 13.5 C24 9.5 18.5 6.2 14 8 C10.6 9.4 11.2 13.6 15.2 14.6 C18.4 15.4 21.8 14.8 24 13.5 Z" fill="url(#f-gift-box-loop)" stroke="#5A1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M24 13.5 C24 9.5 29.5 6.2 34 8 C37.4 9.4 36.8 13.6 32.8 14.6 C29.6 15.4 26.2 14.8 24 13.5 Z" fill="url(#f-gift-box-loop)" stroke="#5A1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M15.5 9 C12.8 9.6 12.6 12.2 15 13.4" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".7" stroke-linecap="round"/>
+  <path d="M32.5 9 C35.2 9.6 35.4 12.2 33 13.4" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".7" stroke-linecap="round"/>
+  <circle cx="24" cy="12.8" r="3.2" fill="url(#f-gift-box-knot)" stroke="#5A1A04" stroke-width=".7"/>
+  <circle cx="22.8" cy="11.7" r="1.1" fill="rgba(255,247,228,.75)"/>
+</svg>

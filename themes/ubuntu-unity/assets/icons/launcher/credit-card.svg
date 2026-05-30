@@ -1,0 +1,33 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-credit-card-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-credit-card-stripe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#7A1F08"/>
+    </linearGradient>
+    <radialGradient id="f-credit-card-chip" cx=".4" cy=".35" r=".85">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="17" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <g transform="rotate(-6 24 24)">
+    <rect x="3" y="11" width="42" height="26" rx="3.5" fill="url(#f-credit-card-card)" stroke="#3F2A0A" stroke-width="1"/>
+    <rect x="4" y="12" width="40" height="3.4" rx="2.4" fill="rgba(255,255,255,.6)"/>
+    <rect x="3" y="29" width="42" height="6.6" fill="url(#f-credit-card-stripe)"/>
+    <rect x="3" y="29" width="42" height="1.5" fill="rgba(255,247,228,.45)"/>
+    <rect x="3" y="34.2" width="42" height="1" fill="rgba(0,0,0,.4)"/>
+    <rect x="7.5" y="17" width="12" height="9.5" rx="2.2" fill="url(#f-credit-card-chip)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+    <rect x="8.2" y="17.7" width="10.6" height="1.4" rx=".7" fill="rgba(255,255,255,.6)"/>
+    <path d="M13.5 17 V26.5 M7.5 21.7 H19.5" stroke="#3F2A0A" stroke-width=".8"/>
+    <g stroke="#3F2A0A" stroke-width="2.2" stroke-linecap="round" fill="none">
+      <path d="M24.5 18.5 a5 5 0 0 1 0 7"/>
+      <path d="M28.5 16 a8.5 8.5 0 0 1 0 12"/>
+    </g>
+  </g>
+</svg>

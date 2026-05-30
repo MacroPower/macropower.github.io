@@ -1,0 +1,53 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-townhouse-facade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-townhouse-cornice" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </linearGradient>
+    <radialGradient id="f-townhouse-window" cx=".38" cy=".35" r=".85">
+      <stop offset="0%" stop-color="#F8D670"/>
+      <stop offset="55%" stop-color="#FBE57E"/>
+      <stop offset="100%" stop-color="#C9892D"/>
+    </radialGradient>
+    <linearGradient id="f-townhouse-door" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E95420"/>
+      <stop offset="55%" stop-color="#DD4814"/>
+      <stop offset="100%" stop-color="#7A1F08"/>
+    </linearGradient>
+    <linearGradient id="f-townhouse-step" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="100%" stop-color="#C9892D"/>
+    </linearGradient>
+    <radialGradient id="f-townhouse-knob" cx=".38" cy=".35" r=".8">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="45.4" rx="15" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <rect x="9" y="11" width="30" height="34" rx="2.5" fill="url(#f-townhouse-facade)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M10.6 12.5 H37.4" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+  <path d="M9 8 H39 L40.5 11 H7.5 Z" fill="url(#f-townhouse-cornice)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M9 8.9 H39" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <rect x="13.2" y="14.5" width="9" height="9" rx="1" fill="url(#f-townhouse-window)" stroke="#3F2A0A" stroke-width=".8"/>
+  <path d="M17.7 14.5 V23.5 M13.2 19 H22.2" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="25.8" y="14.5" width="9" height="9" rx="1" fill="url(#f-townhouse-window)" stroke="#3F2A0A" stroke-width=".8"/>
+  <path d="M30.3 14.5 V23.5 M25.8 19 H34.8" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="13.2" y="26.5" width="9" height="9" rx="1" fill="url(#f-townhouse-window)" stroke="#3F2A0A" stroke-width=".8"/>
+  <path d="M17.7 26.5 V35.5 M13.2 31 H22.2" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="25.8" y="26.5" width="9" height="9" rx="1" fill="url(#f-townhouse-window)" stroke="#3F2A0A" stroke-width=".8"/>
+  <path d="M30.3 26.5 V35.5 M25.8 31 H34.8" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="19" y="32.5" width="10" height="12" rx="1.6" fill="url(#f-townhouse-door)" stroke="#5A1A04" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M21 33.8 V44 M27 33.8 V44" stroke="#7A1F08" stroke-width=".5"/>
+  <rect x="20.4" y="34.4" width="3" height="3.4" rx=".4" fill="#2C001E" stroke="#5A1A04" stroke-width=".4"/>
+  <rect x="24.6" y="34.4" width="3" height="3.4" rx=".4" fill="#2C001E" stroke="#5A1A04" stroke-width=".4"/>
+  <circle cx="26.8" cy="40.4" r="1" fill="url(#f-townhouse-knob)" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="16" y="44" width="16" height="2.4" rx=".6" fill="url(#f-townhouse-step)" stroke="#3F2A0A" stroke-width=".7"/>
+  <circle cx="24" cy="45.2" r=".95" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+</svg>

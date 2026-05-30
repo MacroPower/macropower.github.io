@@ -7,6 +7,7 @@ const LAUNCHER_URLS: Record<string, string> = {
   cv: "/cv/",
   blog: "/posts/",
   projects: "/projects/",
+  icons: "/icons/",
 };
 
 const EMPTY_SITE: UPSite = { handle: "", github: "", rss: "" };

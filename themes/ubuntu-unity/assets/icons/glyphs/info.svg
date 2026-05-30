@@ -1,0 +1,5 @@
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="8" cy="8" r="6.3"/>
+  <circle cx="8" cy="4.8" r="0.6" fill="currentColor" stroke="none"/>
+  <path d="M8 7 V11.5"/>
+  </svg>

@@ -1,0 +1,36 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-lightning-bolt-bolt" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="36%" stop-color="#F8D670"/>
+<stop offset="66%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-lightning-bolt-bevel" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="50%" stop-color="#D4B575"/>
+<stop offset="100%" stop-color="#6A4A12"/>
+</linearGradient>
+<radialGradient id="f-lightning-bolt-glow" cx=".5" cy=".44" r=".6">
+<stop offset="0%" stop-color="#F8D670" stop-opacity=".85"/>
+<stop offset="52%" stop-color="#E95420" stop-opacity=".32"/>
+<stop offset="100%" stop-color="#E95420" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="f-lightning-bolt-spark" cx=".42" cy=".34" r=".75">
+<stop offset="0%" stop-color="#FFFDF2"/>
+<stop offset="45%" stop-color="#F8D670"/>
+<stop offset="100%" stop-color="#E95420"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+<ellipse cx="24" cy="25" rx="17" ry="20" fill="url(#f-lightning-bolt-glow)"/>
+<path d="M28 4 L13 26 L21 26.5 L17.5 44 L35 20 L27 19.5 L32.5 4.5 Z" fill="url(#f-lightning-bolt-bevel)" stroke="#3F2A0A" stroke-width="1.7" stroke-linejoin="round"/>
+<path d="M27.6 7 L15.6 25 L22.5 25.5 L20 39 L33 21 L25.4 20.5 L30.6 7.4 Z" fill="url(#f-lightning-bolt-bolt)" stroke="#3F2A0A" stroke-width=".6" stroke-linejoin="round"/>
+<path d="M27 8.5 L17.4 23 L22.8 23.4" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M29.6 9 L26 17.8 L31.5 18.2" fill="none" stroke="rgba(255,247,228,.4)" stroke-width=".7" stroke-linejoin="round"/>
+<path d="M25.2 26.5 L21 37" fill="none" stroke="rgba(90,63,8,.42)" stroke-width=".8" stroke-linecap="round"/>
+<circle cx="24" cy="23.5" r="2.4" fill="url(#f-lightning-bolt-spark)" stroke="#5A1A04" stroke-width=".7"/>
+<circle cx="23.2" cy="22.7" r=".8" fill="#FFFDF2"/>
+<circle cx="34" cy="6.5" r="1.1" fill="#FBE57E" stroke="#5A3F08" stroke-width=".35"/>
+<circle cx="17" cy="42" r=".9" fill="#FBE57E" stroke="#5A3F08" stroke-width=".3"/>
+</svg>

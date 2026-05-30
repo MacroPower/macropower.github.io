@@ -1,0 +1,44 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-ufo-disc" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.4" stop-color="#D4B575"/>
+<stop offset="0.72" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<radialGradient id="f-ufo-dome" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.55" stop-color="#D4B575"/>
+<stop offset="1" stop-color="#C9892D"/>
+</radialGradient>
+<radialGradient id="f-ufo-glass" cx="0.38" cy="0.35" r="0.7">
+<stop offset="0" stop-color="#77216F"/>
+<stop offset="55%" stop-color="#2C001E"/>
+<stop offset="100%" stop-color="#0A0008"/>
+</radialGradient>
+<linearGradient id="f-ufo-beam" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8D670"/>
+<stop offset="0.25" stop-color="#E95420"/>
+<stop offset="1" stop-color="#E95420" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+<path d="M14.5 26 L33.5 26 L30 45 L18 45 Z" fill="url(#f-ufo-beam)" opacity="0.9"/>
+<ellipse cx="24" cy="44" rx="6.2" ry="1.4" fill="#F8D670" opacity="0.55"/>
+<path d="M13 18 A11 11 0 0 1 35 18 Z" fill="url(#f-ufo-dome)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+<path d="M15 18 A9 9 0 0 1 33 18 Z" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6" stroke-linejoin="round"/>
+<ellipse cx="20" cy="13.5" rx="3.4" ry="1.7" fill="rgba(255,255,255,.5)" transform="rotate(-26 20 13.5)"/>
+<ellipse cx="24" cy="22" rx="21" ry="8" fill="url(#f-ufo-disc)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<ellipse cx="24" cy="20.6" rx="19" ry="6.2" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/>
+<ellipse cx="9.5" cy="22" rx="2.7" ry="2.5" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6"/>
+<ellipse cx="16.7" cy="24.4" rx="2.7" ry="2.7" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6"/>
+<ellipse cx="24" cy="25.2" rx="2.7" ry="2.7" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6"/>
+<ellipse cx="31.3" cy="24.4" rx="2.7" ry="2.7" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6"/>
+<ellipse cx="38.5" cy="22" rx="2.7" ry="2.5" fill="url(#f-ufo-glass)" stroke="#1A0F04" stroke-width=".6"/>
+<circle cx="8.9" cy="21.2" r=".75" fill="#FBE57E"/>
+<circle cx="16.1" cy="23.5" r=".75" fill="#FBE57E"/>
+<circle cx="23.4" cy="24.2" r=".75" fill="#FBE57E"/>
+<circle cx="30.7" cy="23.5" r=".75" fill="#FBE57E"/>
+<circle cx="37.9" cy="21.2" r=".75" fill="#FBE57E"/>
+<ellipse cx="24" cy="27.5" rx="10" ry="1.5" fill="#5A3F08" opacity=".5"/>
+</svg>

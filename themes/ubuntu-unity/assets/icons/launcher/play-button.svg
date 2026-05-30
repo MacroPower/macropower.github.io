@@ -1,0 +1,35 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <radialGradient id="f-play-button-body" cx=".38" cy=".32" r=".85">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="48%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <linearGradient id="f-play-button-ring" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </linearGradient>
+    <radialGradient id="f-play-button-glass" cx=".38" cy=".35" r=".7">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="58%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <linearGradient id="f-play-button-play" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8A060"/>
+      <stop offset="45%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#7A1F08"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <circle cx="24" cy="23" r="20.5" fill="url(#f-play-button-ring)" stroke="#3F2A0A" stroke-width="1"/>
+  <circle cx="24" cy="23" r="19.5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".7"/>
+  <circle cx="24" cy="23" r="18.5" fill="url(#f-play-button-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M9.5 12 A18.5 18.5 0 0 1 38.5 12" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".8" stroke-linecap="round"/>
+  <circle cx="24" cy="23" r="14.5" fill="url(#f-play-button-glass)" stroke="#0A0306" stroke-width=".9"/>
+  <circle cx="24" cy="23" r="14.5" fill="none" stroke="rgba(255,247,228,.22)" stroke-width=".5"/>
+  <path d="M11.5 16.5 A14.5 14.5 0 0 1 24 9.2" fill="none" stroke="rgba(255,247,228,.4)" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M18.5 14.5 L34 23 L18.5 31.5 Z" fill="url(#f-play-button-play)" stroke="#5A1A04" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M19.8 16.8 L31 23" fill="none" stroke="rgba(255,247,228,.55)" stroke-width=".9" stroke-linecap="round"/>
+  <circle cx="17" cy="15" r="1.5" fill="#FFF7E4" opacity=".5"/>
+</svg>

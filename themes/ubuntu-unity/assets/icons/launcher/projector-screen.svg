@@ -1,0 +1,62 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-projector-screen-roller" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="22%" stop-color="#F8D670"/>
+<stop offset="58%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-projector-screen-cap" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F8E0A0"/>
+<stop offset="100%" stop-color="#6A4A12"/>
+</linearGradient>
+<radialGradient id="f-projector-screen-screen" cx=".4" cy=".3" r="1">
+<stop offset="0%" stop-color="#3D0B2C"/>
+<stop offset="58%" stop-color="#2C001E"/>
+<stop offset="100%" stop-color="#0A0008"/>
+</radialGradient>
+<linearGradient id="f-projector-screen-bar-o" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F09A5A"/>
+<stop offset="45%" stop-color="#E95420"/>
+<stop offset="100%" stop-color="#7A1F08"/>
+</linearGradient>
+<linearGradient id="f-projector-screen-bar-y" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="50%" stop-color="#F8D670"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+<radialGradient id="f-projector-screen-pull" cx=".4" cy=".35" r=".85">
+<stop offset="0%" stop-color="#F8E0A0"/>
+<stop offset="55%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="45" rx="11" ry=".8" fill="rgba(0,0,0,.4)"/>
+<rect x="7" y="5.4" width="34" height="4.4" rx="2.2" fill="url(#f-projector-screen-roller)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<rect x="8" y="6.1" width="32" height="1.1" rx=".55" fill="rgba(255,255,255,.65)"/>
+<rect x="4.4" y="5.8" width="3.6" height="3.6" rx="1.5" fill="url(#f-projector-screen-cap)" stroke="#3F2A0A" stroke-width=".8"/>
+<rect x="40" y="5.8" width="3.6" height="3.6" rx="1.5" fill="url(#f-projector-screen-cap)" stroke="#3F2A0A" stroke-width=".8"/>
+<rect x="20.5" y="8.4" width="7" height="2.6" rx=".8" fill="url(#f-projector-screen-cap)" stroke="#3F2A0A" stroke-width=".6"/>
+<rect x="9" y="9.8" width="30" height="29" rx="1.4" fill="url(#f-projector-screen-screen)" stroke="#1A0512" stroke-width="1.1" stroke-linejoin="round"/>
+<rect x="9" y="9.8" width="30" height="29" rx="1.4" fill="none" stroke="rgba(255,247,228,.16)" stroke-width=".6"/>
+<rect x="10" y="10.4" width="28" height="1" rx=".5" fill="rgba(255,247,228,.18)"/>
+<circle cx="14.5" cy="14.5" r="3" fill="rgba(255,247,228,.06)"/>
+<g stroke="rgba(248,214,112,.2)" stroke-width=".4">
+<line x1="11.5" y1="18" x2="36.5" y2="18"/>
+<line x1="11.5" y1="24" x2="36.5" y2="24"/>
+<line x1="11.5" y1="30" x2="36.5" y2="30"/>
+</g>
+<g stroke="#0A0306" stroke-width=".7" stroke-linejoin="round">
+<rect x="13" y="26" width="5.2" height="9.4" rx=".8" fill="url(#f-projector-screen-bar-o)"/>
+<rect x="20" y="20.5" width="5.2" height="14.9" rx=".8" fill="url(#f-projector-screen-bar-y)"/>
+<rect x="27" y="14.5" width="5.2" height="20.9" rx=".8" fill="url(#f-projector-screen-bar-o)"/>
+</g>
+<rect x="13.4" y="26.4" width="1" height="8.4" rx=".5" fill="rgba(255,247,228,.4)"/>
+<rect x="20.4" y="20.9" width="1" height="13.9" rx=".5" fill="rgba(255,247,228,.45)"/>
+<rect x="27.4" y="14.9" width="1" height="19.9" rx=".5" fill="rgba(255,247,228,.4)"/>
+<path d="M11 36 H37" stroke="#F8D670" stroke-width="1.1" stroke-linecap="round"/>
+<circle cx="29.6" cy="11.6" r="1.5" fill="#F8D670" stroke="#5A1A04" stroke-width=".4"/>
+<rect x="22.7" y="38.6" width="2.6" height="2.4" rx=".5" fill="url(#f-projector-screen-cap)" stroke="#3F2A0A" stroke-width=".6"/>
+<circle cx="24" cy="42.4" r="2" fill="none" stroke="url(#f-projector-screen-pull)" stroke-width="1.4"/>
+<path d="M22.6 41.4 A2 2 0 0 1 24 41" fill="none" stroke="rgba(255,247,228,.6)" stroke-width=".5" stroke-linecap="round"/>
+</svg>

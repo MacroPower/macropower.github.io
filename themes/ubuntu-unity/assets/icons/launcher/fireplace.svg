@@ -1,0 +1,68 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-fireplace-surround" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-fireplace-mantel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="55%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </linearGradient>
+    <linearGradient id="f-fireplace-brick" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E07840"/>
+      <stop offset="55%" stop-color="#B0521C"/>
+      <stop offset="100%" stop-color="#5A1A04"/>
+    </linearGradient>
+    <radialGradient id="f-fireplace-box" cx=".5" cy=".25" r=".95">
+      <stop offset="0%" stop-color="#3D0B2C"/>
+      <stop offset="60%" stop-color="#1A0512"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <radialGradient id="f-fireplace-glow" cx=".5" cy=".9" r=".85">
+      <stop offset="0%" stop-color="#F8D670" stop-opacity=".9"/>
+      <stop offset="45%" stop-color="#E95420" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#E95420" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="f-fireplace-flame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBE57E"/>
+      <stop offset="45%" stop-color="#F8D670"/>
+      <stop offset="100%" stop-color="#E95420"/>
+    </linearGradient>
+    <linearGradient id="f-fireplace-flame2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8D670"/>
+      <stop offset="55%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#DD4814"/>
+    </linearGradient>
+    <linearGradient id="f-fireplace-log" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8A5A20"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="45.4" rx="16" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <rect x="6" y="9" width="36" height="36" rx="2.4" fill="url(#f-fireplace-surround)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M7.6 10.6 H40.4" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+  <rect x="9" y="12" width="30" height="33" rx="1.4" fill="url(#f-fireplace-brick)" stroke="#5A1A04" stroke-width=".7" stroke-linejoin="round"/>
+  <g stroke="#5A1A04" stroke-width=".55" opacity=".9">
+    <path d="M9 19 H39 M9 26 H39 M9 33 H39 M9 40 H39"/>
+    <path d="M16.5 12 V19 M24 12 V19 M31.5 12 V19"/>
+    <path d="M12.7 19 V26 M20.2 19 V26 M27.7 19 V26 M35.2 19 V26"/>
+    <path d="M16.5 26 V33 M24 26 V33 M31.5 26 V33"/>
+    <path d="M12.7 33 V40 M35.2 33 V40"/>
+    <path d="M16.5 40 V45 M31.5 40 V45"/>
+  </g>
+  <path d="M9 13.4 H39" stroke="rgba(255,247,228,.22)" stroke-width=".4"/>
+  <path d="M14.4 26.5 Q14.4 21.5 24 21.5 Q33.6 21.5 33.6 26.5 V44 H14.4 Z" fill="url(#f-fireplace-box)" stroke="#0A0008" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M15.9 26.5 Q15.9 23 24 23 Q32.1 23 32.1 26.5" fill="none" stroke="rgba(255,247,228,.18)" stroke-width=".5"/>
+  <ellipse cx="24" cy="43" rx="9" ry="7.2" fill="url(#f-fireplace-glow)"/>
+  <path d="M17 43.5 L18 40.5 L23 39.8 L31 42 L30.5 43.5 Z" fill="url(#f-fireplace-log)" stroke="#1F0F04" stroke-width=".55" stroke-linejoin="round"/>
+  <path d="M19 41.5 L29.5 42.6" stroke="rgba(255,247,228,.3)" stroke-width=".4"/>
+  <path d="M24 28.5 C26.8 31 26.4 33.4 25 35 C27.6 34.6 28.6 32 28 29.8 C30.2 32 31 35.2 29.4 38 C27.8 40.7 24 41.4 22.2 41.2 C19 41 16.8 38.6 17 35.4 C17.1 33.6 18.2 32.4 19 32 C18.7 33.6 19.4 34.8 20.4 35 C19.6 32.4 20.6 28.8 24 26.6 C23.4 27.6 23.4 28.2 24 28.5 Z" fill="url(#f-fireplace-flame)" stroke="#5A1A04" stroke-width=".5" stroke-linejoin="round"/>
+  <path d="M24 32 C25.6 33.6 25.4 35.4 24.4 36.6 C26 36 26.4 34 25.6 32.4 C27.4 34 27 37.4 25 39.2 C23.4 40.6 21 40.6 19.8 39 C18.8 37.6 19.2 36 20 35.2 C20 36.4 20.6 37 21.4 37 C20.6 35 21.6 32.6 24 31 C23.6 31.6 23.6 31.8 24 32 Z" fill="url(#f-fireplace-flame2)" stroke="#7A1F08" stroke-width=".4" stroke-linejoin="round"/>
+  <ellipse cx="22.6" cy="36.4" rx="1.2" ry="1.8" fill="#FBE57E"/>
+  <rect x="5" y="3.5" width="38" height="6.5" rx="1.6" fill="url(#f-fireplace-mantel)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M6.4 5 H41.6" stroke="rgba(255,255,255,.7)" stroke-width=".8"/>
+  <path d="M6 9.6 H42" stroke="#6A4A12" stroke-width=".5"/>
+  <circle cx="24" cy="6.7" r="1.1" fill="#F8D670" stroke="#5A1A04" stroke-width=".35"/>
+</svg>

@@ -1,0 +1,48 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-pkg-top" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F0BD56"/>
+  <stop offset="100%" stop-color="#A87815"/>
+  </linearGradient>
+  <linearGradient id="ai-pkg-front" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-pkg-tape" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8E0A8"/>
+  <stop offset="100%" stop-color="#C9A85A"/>
+  </linearGradient>
+  </defs>
+  <path d="M10 7 H38 L42 17 H6 Z" fill="url(#ai-pkg-top)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M11 8 H37" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <line x1="24" y1="7" x2="24" y2="17" stroke="#3F2A0A" stroke-width=".6" opacity=".7"/>
+  <path d="M6 17 H42 V42 H6 Z" fill="url(#ai-pkg-front)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M8.8 10 H39.2 L40.8 14 H7.2 Z" fill="url(#ai-pkg-tape)" stroke="#7A5818" stroke-width=".5" stroke-linejoin="round"/>
+  <path d="M9.1 10.5 H38.9" stroke="rgba(255,255,255,.7)" stroke-width=".5"/>
+  <g stroke="rgba(63,42,10,.32)" stroke-width=".3">
+  <line x1="14" y1="10" x2="12" y2="14"/>
+  <line x1="19" y1="10" x2="18" y2="14"/>
+  <line x1="24" y1="10" x2="24" y2="14"/>
+  <line x1="29" y1="10" x2="30" y2="14"/>
+  <line x1="34" y1="10" x2="36" y2="14"/>
+  </g>
+  <rect x="11" y="22" width="26" height="15" fill="#FFFFFF" stroke="#5A3F08" stroke-width=".5"/>
+  <line x1="14" y1="26" x2="34" y2="26" stroke="#3F2A0A" stroke-width=".7"/>
+  <line x1="14" y1="29" x2="30" y2="29" stroke="#9A8870" stroke-width=".5"/>
+  <line x1="14" y1="31.5" x2="32" y2="31.5" stroke="#9A8870" stroke-width=".5"/>
+  <g stroke="#3F2A0A" stroke-width=".4">
+  <line x1="14" y1="33.5" x2="14" y2="35.5"/>
+  <line x1="15" y1="33.5" x2="15" y2="35.5"/>
+  <line x1="16.5" y1="33.5" x2="16.5" y2="35.5"/>
+  <line x1="18" y1="33.5" x2="18" y2="35.5"/>
+  <line x1="19" y1="33.5" x2="19" y2="35.5"/>
+  <line x1="20.5" y1="33.5" x2="20.5" y2="35.5"/>
+  <line x1="22" y1="33.5" x2="22" y2="35.5"/>
+  <line x1="23" y1="33.5" x2="23" y2="35.5"/>
+  <line x1="24.5" y1="33.5" x2="24.5" y2="35.5"/>
+  <line x1="26" y1="33.5" x2="26" y2="35.5"/>
+  <line x1="27" y1="33.5" x2="27" y2="35.5"/>
+  <line x1="28.5" y1="33.5" x2="28.5" y2="35.5"/>
+  </g>
+  <path d="M7 18 V41" stroke="rgba(255,255,255,.45)" stroke-width=".4"/>
+  </svg>

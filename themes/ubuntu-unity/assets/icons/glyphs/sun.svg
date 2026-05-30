@@ -1,0 +1,11 @@
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="8" cy="8" r="3"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(0 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(45 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(90 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(135 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(180 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(225 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(270 8 8)"/>
+  <line x1="8" y1="2" x2="8" y2="4" transform="rotate(315 8 8)"/>
+  </svg>

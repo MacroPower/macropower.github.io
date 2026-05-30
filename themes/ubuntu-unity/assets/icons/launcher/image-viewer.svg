@@ -1,0 +1,21 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-iv-paper" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FCFBF4"/>
+  <stop offset="100%" stop-color="#C4BA9C"/>
+  </linearGradient>
+  <linearGradient id="ai-iv-sky" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8DA78"/>
+  <stop offset="55%" stop-color="#E95420"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  </defs>
+  <g transform="rotate(-6 24 24)">
+  <rect x="6" y="5" width="36" height="38" rx="1.4" fill="url(#ai-iv-paper)" stroke="#5A4F38" stroke-width=".8"/>
+  <rect x="9" y="8" width="30" height="23" fill="url(#ai-iv-sky)" stroke="#5A2F0D" stroke-width=".5"/>
+  <circle cx="32" cy="15" r="3.4" fill="#FFF7CC" stroke="rgba(122,31,8,.4)" stroke-width=".4"/>
+  <path d="M9 31 L17 22 L23 26 L31 18 L39 31 Z" fill="#3D0B2C" stroke="#1F0518" stroke-width=".5" stroke-linejoin="round"/>
+  <path d="M9 29 L39 29 V31 H9 Z" fill="rgba(45,12,38,.5)"/>
+  <path d="M7 6 V42" stroke="rgba(255,255,255,.55)" stroke-width=".5"/>
+  </g>
+  </svg>

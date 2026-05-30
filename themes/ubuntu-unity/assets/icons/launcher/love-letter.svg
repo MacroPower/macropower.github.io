@@ -1,0 +1,34 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-love-letter-paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FCFBF4"/>
+      <stop offset="55%" stop-color="#F3E6C4"/>
+      <stop offset="100%" stop-color="#D9C394"/>
+    </linearGradient>
+    <linearGradient id="f-love-letter-flap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#E8D29A"/>
+      <stop offset="100%" stop-color="#C9A961"/>
+    </linearGradient>
+    <linearGradient id="f-love-letter-side" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1E2BA"/>
+      <stop offset="100%" stop-color="#CFB783"/>
+    </linearGradient>
+    <radialGradient id="f-love-letter-wax" cx=".38" cy=".32" r=".85">
+      <stop offset="0%" stop-color="#F88A4E"/>
+      <stop offset="38%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#5A1A04"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44.4" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="4.5" y="11.5" width="39" height="29" rx="3" fill="url(#f-love-letter-paper)" stroke="#5A3F08" stroke-width=".9" stroke-linejoin="round"/>
+  <rect x="5.4" y="12.4" width="37.2" height="27.2" rx="2.2" fill="none" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <path d="M5.2 39.6 L20 26.5 L24 30 L28 26.5 L42.8 39.6 Z" fill="url(#f-love-letter-side)" stroke="#5A3F08" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M5.2 12.2 L24 28 L42.8 12.2" fill="none" stroke="#B89A55" stroke-width=".6" stroke-linejoin="round" opacity=".85"/>
+  <path d="M4.7 11.9 L24 28.8 L43.3 11.9 Z" fill="url(#f-love-letter-flap)" stroke="#5A3F08" stroke-width=".85" stroke-linejoin="round"/>
+  <path d="M6.2 12 L24 27.6 L41.8 12" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".55" stroke-linejoin="round"/>
+  <path d="M24 22.3 C 20 18.4 14.2 21.4 17.1 26.4 C 18.5 28.8 22 30.6 24 32.6 C 26 30.6 29.5 28.8 30.9 26.4 C 33.8 21.4 28 18.4 24 22.3 Z" fill="url(#f-love-letter-wax)" stroke="#3F0E02" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M24 24 C 21.6 21.7 18.4 23.1 19.4 26" fill="none" stroke="rgba(255,247,228,.55)" stroke-width=".9" stroke-linecap="round"/>
+  <ellipse cx="20.4" cy="24.6" rx="1.5" ry="1" fill="#FBD9A0" opacity=".75" transform="rotate(-28 20.4 24.6)"/>
+  <path d="M24 25.5 q-1.4 1.2 0 2.6 q1.4 -1.4 0 -2.6 Z" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+</svg>

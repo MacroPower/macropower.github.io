@@ -1,0 +1,38 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="f-lanyard-badge-card" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF"/>
+  <stop offset="100%" stop-color="#D4CCB8"/>
+  </linearGradient>
+  <linearGradient id="f-lanyard-badge-banner" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#E95420"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  <linearGradient id="f-lanyard-badge-clip" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8E0A0"/>
+  <stop offset="50%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#3F2A0A"/>
+  </linearGradient>
+  <linearGradient id="f-lanyard-badge-lanyard" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#5E2750"/>
+  <stop offset="100%" stop-color="#2C001E"/>
+  </linearGradient>
+  </defs>
+  <path d="M16 4 L24 17 L32 4" fill="none" stroke="url(#f-lanyard-badge-lanyard)" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M16 4 L24 16" fill="none" stroke="rgba(255,247,228,.3)" stroke-width=".5"/>
+  <path d="M21 14 H27 V18 H21 Z" fill="url(#f-lanyard-badge-clip)" stroke="#3F2A0A" stroke-width=".7" stroke-linejoin="round"/>
+  <path d="M11 17 H37 V44 H11 Z" fill="url(#f-lanyard-badge-card)" stroke="#5A3F08" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M12 18 H36" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <path d="M12 18 V43" stroke="rgba(255,255,255,.5)" stroke-width=".4"/>
+  <rect x="14" y="21" width="10" height="12" rx=".5" fill="#FBF1D8" stroke="#5A3F08" stroke-width=".6"/>
+  <rect x="15" y="22" width="8" height="10" fill="#D89460" stroke="#5A2F0D" stroke-width=".3"/>
+  <circle cx="19" cy="25.5" r="2" fill="#FBEED4" stroke="#5A2F0D" stroke-width=".3"/>
+  <path d="M16 31.5 C 16 29 17.4 28 19 28 C 20.6 28 22 29 22 31.5 Z" fill="#FBEED4" stroke="#5A2F0D" stroke-width=".3"/>
+  <rect x="26" y="21" width="9" height="3" rx=".3" fill="url(#f-lanyard-badge-banner)" stroke="#5A1A04" stroke-width=".4"/>
+  <rect x="26" y="21" width="9" height=".6" fill="rgba(255,255,255,.4)"/>
+  <line x1="26" y1="26" x2="35" y2="26" stroke="#9A8870" stroke-width=".6"/>
+  <line x1="26" y1="28" x2="33" y2="28" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="14" y="36" width="20" height="1.5" rx=".2" fill="#DD4814"/>
+  <line x1="14" y1="40" x2="34" y2="40" stroke="#5A3F08" stroke-width=".6" stroke-linecap="round"/>
+  <line x1="14" y1="42" x2="29" y2="42" stroke="#5A3F08" stroke-width=".6" stroke-linecap="round"/>
+</svg>

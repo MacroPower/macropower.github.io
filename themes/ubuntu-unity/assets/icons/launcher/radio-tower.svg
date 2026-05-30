@@ -1,0 +1,59 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-radio-tower-leg" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.45" stop-color="#D4B575"/>
+<stop offset="0.75" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-radio-tower-brace" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.5" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#6A4A12"/>
+</linearGradient>
+<linearGradient id="f-radio-tower-mast" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.5" stop-color="#D4B575"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-radio-tower-base" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.55" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#3F2A0A"/>
+</linearGradient>
+<radialGradient id="f-radio-tower-beacon" cx="0.38" cy="0.35" r="0.75">
+<stop offset="0" stop-color="#FBE57E"/>
+<stop offset="0.6" stop-color="#F8D670"/>
+<stop offset="1" stop-color="#C9892D"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="44.6" rx="13" ry="0.9" fill="rgba(0,0,0,.4)"/>
+<g fill="none" stroke="#E95420" stroke-width="2.6" stroke-linecap="round">
+<path d="M30.5 8.2 A7 7 0 0 1 30.5 19.8"/>
+<path d="M35 4.6 A12 12 0 0 1 35 23.4" opacity="0.78"/>
+</g>
+<g fill="none" stroke="#DD4814" stroke-width="2.6" stroke-linecap="round">
+<path d="M17.5 8.2 A7 7 0 0 0 17.5 19.8"/>
+<path d="M13 4.6 A12 12 0 0 0 13 23.4" opacity="0.78"/>
+</g>
+<rect x="22.9" y="3" width="2.2" height="11" rx="1.1" fill="url(#f-radio-tower-mast)" stroke="#3F2A0A" stroke-width="0.7" stroke-linejoin="round"/>
+<g stroke="url(#f-radio-tower-brace)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M19 21 L29 25 M29 21 L19 25"/>
+<path d="M17.5 27 L30.5 31 M30.5 27 L17.5 31"/>
+<path d="M15.8 33.5 L32.2 37.5 M32.2 33.5 L15.8 37.5"/>
+</g>
+<g fill="none" stroke="#1A0F04" stroke-width="0.35" stroke-linecap="round">
+<path d="M19 21 L29 25 M29 21 L19 25"/>
+<path d="M17.5 27 L30.5 31 M30.5 27 L17.5 31"/>
+<path d="M15.8 33.5 L32.2 37.5 M32.2 33.5 L15.8 37.5"/>
+</g>
+<path d="M24 13 L30.5 21 L32.2 33.5 L34.5 39.5" fill="none" stroke="url(#f-radio-tower-leg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M24 13 L17.5 21 L15.8 33.5 L13.5 39.5" fill="none" stroke="url(#f-radio-tower-leg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M24 13 L29.9 20.4 L31.5 32.5" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="0.5" stroke-linecap="round"/>
+<path d="M19.5 21 H28.5 M18 27 H30 M16.5 33.5 H31.5" stroke="url(#f-radio-tower-brace)" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M19.5 21 H28.5 M18 27 H30 M16.5 33.5 H31.5" stroke="#1A0F04" stroke-width="0.3" stroke-linecap="round"/>
+<rect x="10.5" y="38.5" width="27" height="4.5" rx="1.6" fill="url(#f-radio-tower-base)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<rect x="11.5" y="39.3" width="25" height="1.2" rx="0.6" fill="rgba(255,255,255,.6)"/>
+<circle cx="24" cy="11.4" r="3.1" fill="url(#f-radio-tower-beacon)" stroke="#5A3F08" stroke-width="1.2"/>
+<circle cx="22.9" cy="10.3" r="0.9" fill="rgba(255,255,255,.7)"/>
+</svg>

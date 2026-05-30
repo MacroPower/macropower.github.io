@@ -1,0 +1,29 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-fp-front" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8D670"/>
+  <stop offset="100%" stop-color="#8E6A1F"/>
+  </linearGradient>
+  <linearGradient id="ai-fp-mid" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#E95420"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  </defs>
+  <rect x="10" y="5" width="33" height="33" rx=".8" fill="#3D0B2C" stroke="#0A0008" stroke-width=".7"/>
+  <rect x="15" y="5" width="22" height="3" fill="#5A3F08" stroke="#1F1408" stroke-width=".3"/>
+  <rect x="7" y="9" width="33" height="33" rx=".8" fill="url(#ai-fp-mid)" stroke="#3F1A04" stroke-width=".8"/>
+  <rect x="12" y="9" width="22" height="4" fill="#C9892D" stroke="#3F2A0A" stroke-width=".4"/>
+  <rect x="12" y="9" width="22" height="1" fill="rgba(255,255,255,.4)"/>
+  <path d="M4 13 H32 L36 17 V44 H4 Z" fill="url(#ai-fp-front)" stroke="#5A3F08" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M5 14 H31" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+  <rect x="9" y="13" width="22" height="11" fill="#C9892D" stroke="#3F2A0A" stroke-width=".6"/>
+  <rect x="9" y="13" width="22" height="1.2" fill="rgba(255,255,255,.55)"/>
+  <rect x="16" y="16" width="8" height="5" fill="#3D0B2C" stroke="#0A0008" stroke-width=".3"/>
+  <rect x="12" y="22.5" width="16" height=".7" fill="#3F2A0A"/>
+  <rect x="7" y="28" width="26" height="13" fill="#FBF1D8" stroke="#5A3F08" stroke-width=".5"/>
+  <line x1="10" y1="32" x2="30" y2="32" stroke="#7A5818" stroke-width=".8"/>
+  <line x1="10" y1="35" x2="27" y2="35" stroke="#9A8870" stroke-width=".5"/>
+  <line x1="10" y1="38" x2="28" y2="38" stroke="#9A8870" stroke-width=".5"/>
+  <rect x="3" y="18" width="2" height="3" fill="#3F2A0A"/>
+  <path d="M32 13 L36 17" stroke="rgba(255,255,255,.4)" stroke-width=".4"/>
+  </svg>

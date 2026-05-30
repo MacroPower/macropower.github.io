@@ -1,0 +1,60 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-abacus-frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#6A4A12"/>
+    </linearGradient>
+    <linearGradient id="f-abacus-well" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3D0B2C"/>
+      <stop offset="100%" stop-color="#1A0512"/>
+    </linearGradient>
+    <linearGradient id="f-abacus-rail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="50%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <radialGradient id="f-abacus-bead-au" cx=".38" cy=".35" r=".75">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="60%" stop-color="#3D0B2C"/>
+      <stop offset="100%" stop-color="#1A0512"/>
+    </radialGradient>
+    <radialGradient id="f-abacus-bead-or" cx=".38" cy=".35" r=".75">
+      <stop offset="0%" stop-color="#F09A5A"/>
+      <stop offset="55%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#7A1F08"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44.5" rx="18" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <rect x="4" y="6" width="40" height="36" rx="4" fill="url(#f-abacus-frame)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M6 8 H42" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <rect x="9" y="10" width="30" height="28" rx="2" fill="url(#f-abacus-well)" stroke="#0A0306" stroke-width=".7"/>
+  <g stroke="#3F2A0A" stroke-width=".3">
+    <rect x="9" y="13.3" width="30" height="1.4" fill="url(#f-abacus-rail)"/>
+    <rect x="9" y="19.3" width="30" height="1.4" fill="url(#f-abacus-rail)"/>
+    <rect x="9" y="25.3" width="30" height="1.4" fill="url(#f-abacus-rail)"/>
+    <rect x="9" y="31.3" width="30" height="1.4" fill="url(#f-abacus-rail)"/>
+  </g>
+  <g stroke="#1A0F04" stroke-width=".4">
+    <ellipse cx="13" cy="14" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="18.2" cy="14" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="35" cy="14" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-or)" stroke="#5A1A04"/>
+    <ellipse cx="13" cy="20" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="29.8" cy="20" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="35" cy="20" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="13" cy="26" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="18.2" cy="26" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="23.4" cy="26" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="35" cy="26" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="13" cy="32" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-or)" stroke="#5A1A04"/>
+    <ellipse cx="29.8" cy="32" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+    <ellipse cx="35" cy="32" rx="2.4" ry="2.7" fill="url(#f-abacus-bead-au)"/>
+  </g>
+  <g fill="rgba(255,247,228,.6)">
+    <circle cx="12.2" cy="13.1" r=".7"/>
+    <circle cx="34.2" cy="13.1" r=".7"/>
+    <circle cx="12.2" cy="31.1" r=".7"/>
+    <circle cx="22.6" cy="25.1" r=".7"/>
+  </g>
+  <rect x="9" y="10" width="30" height="28" rx="2" fill="none" stroke="rgba(255,247,228,.18)" stroke-width=".5"/>
+</svg>

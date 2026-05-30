@@ -1,0 +1,22 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<radialGradient id="f-cloud-server-cloud" cx=".38" cy=".32" r=".85">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset=".5" stop-color="#D4B575"/>
+<stop offset="1" stop-color="#C9892D"/>
+</radialGradient>
+<linearGradient id="f-cloud-server-arrU" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#E95420"/>
+<stop offset="1" stop-color="#DD4814"/>
+</linearGradient>
+<linearGradient id="f-cloud-server-arrD" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#E95420"/>
+<stop offset="1" stop-color="#DD4814"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+<path d="M14 33 C8 33 5 29 5 25 C5 21 8 18 12 18 C13 13 17 10 22 10 C27 10 31 13 32 17 C36 16 40 19 41 23 C44 24 45 27 45 30 C45 32 43 33 40 33 Z" fill="url(#f-cloud-server-cloud)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<path d="M14 31 C9 31 7 28 7 25 C7 22 10 20 13 20.5 C14 15 18 12.5 22 12.5 C26 12.5 29 15 30 18.5 C34 17 38 19.5 39 23" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.5 37 L15.5 27 L11.5 27 L18 18.5 L24.5 27 L20.5 27 L20.5 37 Z" fill="url(#f-cloud-server-arrU)" stroke="#5A1A04" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M27.5 18.5 L27.5 28.5 L23.5 28.5 L30 37 L36.5 28.5 L32.5 28.5 L32.5 18.5 Z" fill="url(#f-cloud-server-arrD)" stroke="#5A1A04" stroke-width="1.4" stroke-linejoin="round"/>
+</svg>

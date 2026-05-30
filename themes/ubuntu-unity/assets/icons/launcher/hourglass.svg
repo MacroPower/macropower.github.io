@@ -1,0 +1,37 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="f-hourglass-frame" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="f-hourglass-post" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#5A3F08"/>
+  <stop offset="40%" stop-color="#D4B575"/>
+  <stop offset="100%" stop-color="#6A4A12"/>
+  </linearGradient>
+  <radialGradient id="f-hourglass-glass" cx=".38" cy=".35" r=".8">
+  <stop offset="0%" stop-color="#5E2750"/>
+  <stop offset="55%" stop-color="#2C001E"/>
+  <stop offset="100%" stop-color="#0A0008"/>
+  </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="8" y="5" width="32" height="4" rx="1.8" fill="url(#f-hourglass-frame)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M10 6 H38" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <rect x="8" y="39" width="32" height="4" rx="1.8" fill="url(#f-hourglass-frame)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M10 40 H38" stroke="rgba(255,255,255,.5)" stroke-width=".5"/>
+  <rect x="11" y="8.5" width="2.4" height="31" rx="1" fill="url(#f-hourglass-post)" stroke="#3F2A0A" stroke-width=".6"/>
+  <rect x="34.6" y="8.5" width="2.4" height="31" rx="1" fill="url(#f-hourglass-post)" stroke="#3F2A0A" stroke-width=".6"/>
+  <path d="M16 9.5 H32 C32 17 27 21 24 23.5 C21 21 16 17 16 9.5 Z" fill="url(#f-hourglass-glass)" stroke="#1F0F04" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M16 38.5 H32 C32 31 27 27 24 24.5 C21 27 16 31 16 38.5 Z" fill="url(#f-hourglass-glass)" stroke="#1F0F04" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M19 11 C19.5 15 21.5 18 23 20" fill="none" stroke="rgba(255,247,228,.5)" stroke-width=".8" stroke-linecap="round"/>
+  <path d="M18.5 37 C19 33 21 30 22.5 28.5" fill="none" stroke="rgba(255,247,228,.35)" stroke-width=".7" stroke-linecap="round"/>
+  <path d="M17.4 13 H30.6 C30 18 26.5 21 24 23 C21.5 21 18 18 17.4 13 Z" fill="#E95420" stroke="#5A1A04" stroke-width=".4" stroke-linejoin="round"/>
+  <path d="M18.6 14.4 H29.4" stroke="#F8D670" stroke-width=".6" stroke-linecap="round" opacity=".7"/>
+  <path d="M24 22.5 L24 30" stroke="#DD6E1C" stroke-width=".9" stroke-linecap="round"/>
+  <circle cx="24" cy="26" r=".5" fill="#F8D670"/>
+  <path d="M17.6 37.6 C19.5 33.5 22 31.5 24 30.5 C26 31.5 28.5 33.5 30.4 37.6 Z" fill="#E95420" stroke="#5A1A04" stroke-width=".4" stroke-linejoin="round"/>
+  <path d="M20 36.6 C21.8 34.6 26.2 34.6 28 36.6" fill="none" stroke="#F8D670" stroke-width=".6" stroke-linecap="round" opacity=".7"/>
+  <circle cx="24" cy="7" r="1.2" fill="#F8D670" stroke="#5A3F08" stroke-width=".3"/>
+</svg>

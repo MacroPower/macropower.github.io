@@ -1,0 +1,28 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-photo-stack-paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#D9D0B8"/></linearGradient>
+    <linearGradient id="f-photo-stack-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FCFBF4"/><stop offset="100%" stop-color="#E6DCC2"/></linearGradient>
+    <linearGradient id="f-photo-stack-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5E2750"/><stop offset="100%" stop-color="#2C001E"/></linearGradient>
+    <radialGradient id="f-photo-stack-sun" cx=".5" cy=".5" r=".6"><stop offset="0%" stop-color="#FBE57E"/><stop offset="100%" stop-color="#F8D55F"/></radialGradient>
+    <linearGradient id="f-photo-stack-corner" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E95420"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="14" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <g transform="rotate(-15 24 28)">
+    <rect x="9" y="14" width="28" height="26" rx="1.6" fill="url(#f-photo-stack-gloss)" stroke="#3F2A0A" stroke-width=".8"/>
+    <rect x="11" y="16" width="24" height="18" rx=".6" fill="#3D0B2C" stroke="#0A0306" stroke-width=".5"/>
+  </g>
+  <g transform="rotate(14 24 28)">
+    <rect x="11" y="13" width="28" height="26" rx="1.6" fill="url(#f-photo-stack-paper)" stroke="#3F2A0A" stroke-width=".8"/>
+    <rect x="13" y="15" width="24" height="18" rx=".6" fill="#1A0512" stroke="#0A0306" stroke-width=".5"/>
+  </g>
+  <g transform="rotate(-3 24 27)">
+    <rect x="9" y="11" width="30" height="28" rx="1.8" fill="url(#f-photo-stack-gloss)" stroke="#3F2A0A" stroke-width=".9"/>
+    <path d="M10 12 H38" stroke="rgba(255,255,255,.7)" stroke-width=".6"/>
+    <rect x="11.5" y="13.5" width="25" height="19" rx=".7" fill="url(#f-photo-stack-sky)" stroke="#0A0306" stroke-width=".6"/>
+    <circle cx="30" cy="19" r="3.2" fill="url(#f-photo-stack-sun)" stroke="#5A1A04" stroke-width=".4"/>
+    <path d="M11.5 27 C16 23 21 28 26 25 C30 22.5 33 25.5 36.5 24 V32.5 H11.5 Z" fill="#77216F" stroke="#1A0512" stroke-width=".5" stroke-linejoin="round"/>
+    <path d="M11.5 30 C15 27.5 19 30.5 24 29 C29 27.5 33 30 36.5 28.5 V32.5 H11.5 Z" fill="#5E2750" stroke="#1A0512" stroke-width=".4" stroke-linejoin="round"/>
+    <path d="M39 39 L39 33 L32 39 Z" fill="url(#f-photo-stack-corner)" stroke="#5A1A04" stroke-width=".5" stroke-linejoin="round"/>
+    <path d="M39 33 L34.5 37.4" stroke="#FBE57E" stroke-width=".4" opacity=".7"/>
+  </g>
+</svg>

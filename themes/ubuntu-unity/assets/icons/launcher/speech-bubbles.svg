@@ -1,0 +1,30 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-speech-bubbles-back" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#5E2750"/>
+<stop offset="55%" stop-color="#3D0B2C"/>
+<stop offset="100%" stop-color="#1A0512"/>
+</linearGradient>
+<radialGradient id="f-speech-bubbles-front" cx=".38" cy=".32" r=".85">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="55%" stop-color="#C9892D"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+<path d="M22 5 H43 Q45.5 5 45.5 7.5 V19 Q45.5 21.5 43 21.5 H40.5 L40.5 26.5 L35 21.5 H22 Q19.5 21.5 19.5 19 V7.5 Q19.5 5 22 5 Z" fill="url(#f-speech-bubbles-back)" stroke="#1A0512" stroke-width="1" stroke-linejoin="round"/>
+<path d="M22.5 6.6 H42.6" stroke="rgba(255,255,255,.25)" stroke-width=".6"/>
+<circle cx="28" cy="13.2" r="1.7" fill="#F8D670" stroke="#5A3F08" stroke-width=".35"/>
+<circle cx="34" cy="13.2" r="1.7" fill="#F8E0A0" stroke="#5A3F08" stroke-width=".35"/>
+<circle cx="40" cy="13.2" r="1.7" fill="#F8D670" stroke="#5A3F08" stroke-width=".35"/>
+<circle cx="27.4" cy="12.6" r=".5" fill="rgba(255,255,255,.6)"/>
+<path d="M5 18.5 H26 Q28.5 18.5 28.5 21 V35.5 Q28.5 38 26 38 H13 L7 44.5 L8.8 38 H5 Q2.5 38 2.5 35.5 V21 Q2.5 18.5 5 18.5 Z" fill="url(#f-speech-bubbles-front)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<path d="M5.3 20.2 Q4.3 20.2 4.3 21.2 M5.3 20.2 H25.5" fill="none" stroke="rgba(255,255,255,.7)" stroke-width=".8" stroke-linecap="round"/>
+<circle cx="10" cy="28.2" r="2.2" fill="#3D0B2C" stroke="#1A0512" stroke-width=".4"/>
+<circle cx="15.5" cy="28.2" r="2.2" fill="#E95420" stroke="#5A1A04" stroke-width=".5"/>
+<circle cx="21" cy="28.2" r="2.2" fill="#3D0B2C" stroke="#1A0512" stroke-width=".4"/>
+<circle cx="14.8" cy="27.5" r=".6" fill="rgba(255,247,228,.55)"/>
+<g fill="#F8D670" stroke="#5A3F08" stroke-width=".3">
+<path d="M44 33 l.8 2.1 2.1.2 -1.7 1.4 .5 2.1 -1.7-1.1 -1.7 1.1 .5-2.1 -1.7-1.4 2.1-.2 Z"/>
+</g>
+</svg>

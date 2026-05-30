@@ -1,0 +1,35 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-dc-cream" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FCFBF4"/>
+  <stop offset="100%" stop-color="#A89D80"/>
+  </linearGradient>
+  <linearGradient id="ai-dc-orange" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F26836"/>
+  <stop offset="100%" stop-color="#7A1F08"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="17" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <g transform="rotate(-10 30 22)">
+  <rect x="20" y="10" width="20" height="20" rx="2.5" fill="url(#ai-dc-orange)" stroke="#3F1A04" stroke-width=".9"/>
+  <path d="M21 11 H39" stroke="rgba(255,255,255,.55)" stroke-width=".5"/>
+  <path d="M21 11 V29" stroke="rgba(255,255,255,.35)" stroke-width=".4"/>
+  <g fill="#FBF1D8">
+  <circle cx="24" cy="14" r="1.4"/>
+  <circle cx="36" cy="14" r="1.4"/>
+  <circle cx="30" cy="20" r="1.4"/>
+  <circle cx="24" cy="26" r="1.4"/>
+  <circle cx="36" cy="26" r="1.4"/>
+  </g>
+  </g>
+  <g transform="rotate(10 18 32)">
+  <rect x="8" y="22" width="20" height="20" rx="2.5" fill="url(#ai-dc-cream)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M9 23 H27" stroke="rgba(255,255,255,.65)" stroke-width=".5"/>
+  <path d="M9 23 V41" stroke="rgba(255,255,255,.5)" stroke-width=".4"/>
+  <g fill="#3F2A0A">
+  <circle cx="12" cy="26" r="1.5"/>
+  <circle cx="18" cy="32" r="1.5"/>
+  <circle cx="24" cy="38" r="1.5"/>
+  </g>
+  </g>
+  </svg>

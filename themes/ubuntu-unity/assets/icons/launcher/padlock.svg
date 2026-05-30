@@ -1,0 +1,21 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-pl-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8E0A0"/>
+  <stop offset="50%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-pl-shackle" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#E0D8C0"/>
+  <stop offset="100%" stop-color="#8A8070"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="13" ry=".7" fill="rgba(0,0,0,.4)"/>
+  <path d="M15 25 V17 A9 9 0 0 1 33 17 V25" fill="none" stroke="url(#ai-pl-shackle)" stroke-width="4.2"/>
+  <path d="M16 25 V17 A8 8 0 0 1 32 17 V25" fill="none" stroke="rgba(255,255,255,.4)" stroke-width=".7"/>
+  <rect x="9" y="23" width="30" height="20" rx="3.5" fill="url(#ai-pl-body)" stroke="#3F2A0A" stroke-width=".9"/>
+  <rect x="10" y="24" width="28" height="1.4" rx=".7" fill="rgba(255,255,255,.6)"/>
+  <path d="M10.5 25 V42" stroke="rgba(255,255,255,.4)" stroke-width=".4"/>
+  <circle cx="24" cy="31" r="2.6" fill="#3D0B2C" stroke="#1A0512" stroke-width=".5"/>
+  <path d="M24 31 L22 39 H26 Z" fill="#3D0B2C" stroke="#1A0512" stroke-width=".5" stroke-linejoin="round"/>
+  </svg>

@@ -1,0 +1,73 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-slot-machine-body" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="14%" stop-color="#F8E0A0"/>
+<stop offset="52%" stop-color="#D4B575"/>
+<stop offset="100%" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-slot-machine-top" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="55%" stop-color="#D4B575"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+<radialGradient id="f-slot-machine-glass" cx=".38" cy=".35" r=".82">
+<stop offset="0%" stop-color="#77216F"/>
+<stop offset="55%" stop-color="#2C001E"/>
+<stop offset="100%" stop-color="#0A0008"/>
+</radialGradient>
+<linearGradient id="f-slot-machine-reel" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#5E2750"/>
+<stop offset="50%" stop-color="#3D0B2C"/>
+<stop offset="100%" stop-color="#1A0512"/>
+</linearGradient>
+<radialGradient id="f-slot-machine-knob" cx=".36" cy=".3" r=".85">
+<stop offset="0%" stop-color="#F8843A"/>
+<stop offset="55%" stop-color="#E95420"/>
+<stop offset="100%" stop-color="#5A1A04"/>
+</radialGradient>
+<linearGradient id="f-slot-machine-rod" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#FBF1D8"/>
+<stop offset="50%" stop-color="#D4B575"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+<radialGradient id="f-slot-machine-pop" cx=".4" cy=".32" r=".8">
+<stop offset="0%" stop-color="#FFFFFF"/>
+<stop offset="45%" stop-color="#F8D670"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</radialGradient>
+<linearGradient id="f-slot-machine-seven" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FFFFFF"/>
+<stop offset="40%" stop-color="#F8D670"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+</defs>
+<ellipse cx="22" cy="44.4" rx="13" ry="1" fill="rgba(0,0,0,.4)"/>
+<rect x="36.6" y="16" width="2.6" height="19" rx="1.3" fill="url(#f-slot-machine-rod)" stroke="#3F2A0A" stroke-width=".7"/>
+<rect x="37.4" y="16.6" width=".7" height="17.5" rx=".35" fill="rgba(255,255,255,.55)"/>
+<circle cx="37.9" cy="12.6" r="3.8" fill="url(#f-slot-machine-knob)" stroke="#5A1A04" stroke-width=".8"/>
+<circle cx="36.7" cy="11.4" r="1.15" fill="rgba(255,255,255,.85)"/>
+<rect x="4" y="9" width="30" height="34" rx="4" fill="url(#f-slot-machine-body)" stroke="#3F2A0A" stroke-width="1"/>
+<rect x="5.4" y="10.4" width="27.2" height="31.2" rx="3" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".8"/>
+<circle cx="19" cy="14.6" r="3.8" fill="url(#f-slot-machine-pop)" stroke="#C9892D" stroke-width=".7"/>
+<circle cx="17.8" cy="13.4" r="1.15" fill="rgba(255,255,255,.9)"/>
+<rect x="7.5" y="20" width="23" height="13" rx="2.4" fill="url(#f-slot-machine-top)" stroke="#3F2A0A" stroke-width=".9"/>
+<rect x="9" y="21.5" width="20" height="10" rx="1.6" fill="url(#f-slot-machine-glass)" stroke="#0A0008" stroke-width=".8"/>
+<g stroke="#0A0008" stroke-width=".5">
+<rect x="9.7" y="22.2" width="5.7" height="8.6" rx="1" fill="url(#f-slot-machine-reel)"/>
+<rect x="16.2" y="22.2" width="5.7" height="8.6" rx="1" fill="url(#f-slot-machine-reel)"/>
+<rect x="22.7" y="22.2" width="5.7" height="8.6" rx="1" fill="url(#f-slot-machine-reel)"/>
+</g>
+<g stroke="rgba(255,255,255,.18)" stroke-width=".5" fill="none">
+<rect x="9.7" y="22.2" width="5.7" height="8.6" rx="1"/>
+<rect x="16.2" y="22.2" width="5.7" height="8.6" rx="1"/>
+<rect x="22.7" y="22.2" width="5.7" height="8.6" rx="1"/>
+</g>
+<g fill="url(#f-slot-machine-seven)" stroke="#5A1A04" stroke-width=".45" stroke-linejoin="round">
+<path d="M10.5 23.9 L14.6 23.9 L14.6 25.3 L12.7 29.3 L11.1 29.3 L13 25.3 L10.5 25.3 Z"/>
+<path d="M17 23.9 L21.1 23.9 L21.1 25.3 L19.2 29.3 L17.6 29.3 L19.5 25.3 L17 25.3 Z"/>
+<path d="M23.5 23.9 L27.6 23.9 L27.6 25.3 L25.7 29.3 L24.1 29.3 L26 25.3 L23.5 25.3 Z"/>
+</g>
+<rect x="14.5" y="37" width="13" height="2.2" rx="1.1" fill="url(#f-slot-machine-glass)" stroke="#0A0008" stroke-width=".5"/>
+<rect x="18" y="37.6" width="6" height="1" rx=".5" fill="#F8D670"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-document-suite-paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#D9D0B8"/></linearGradient>
+    <linearGradient id="f-document-suite-sheet" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3D0B2C"/><stop offset="100%" stop-color="#1A0512"/></linearGradient>
+    <linearGradient id="f-document-suite-bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F8E0A0"/><stop offset="55%" stop-color="#C9892D"/><stop offset="100%" stop-color="#6A4A12"/></linearGradient>
+    <linearGradient id="f-document-suite-cell" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E95420"/><stop offset="100%" stop-color="#DD4814"/></linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="17" ry=".9" fill="rgba(0,0,0,.4)"/>
+  <g transform="rotate(-11 17 27)">
+    <rect x="6" y="9" width="22" height="30" rx="2" fill="url(#f-document-suite-paper)" stroke="#3F2A0A" stroke-width=".8"/>
+    <path d="M7.2 10.6 H26.8" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+    <path d="M9 14 H21" stroke="#E95420" stroke-width="1.6" stroke-linecap="round"/>
+    <g stroke="#5E2750" stroke-width=".7" stroke-linecap="round">
+      <path d="M9 18.5 H25"/><path d="M9 21.5 H25"/><path d="M9 24.5 H25"/>
+      <path d="M9 27.5 H25"/><path d="M9 30.5 H22"/>
+      <path d="M9 33.5 H25"/><path d="M9 36 H18"/>
+    </g>
+  </g>
+  <g transform="rotate(9 31 26)">
+    <rect x="22" y="8" width="22" height="30" rx="2" fill="url(#f-document-suite-sheet)" stroke="#1F0F04" stroke-width=".8"/>
+    <path d="M23.2 9.6 H42.8" stroke="rgba(255,247,228,.22)" stroke-width=".5"/>
+    <rect x="23" y="9.4" width="20" height="4.6" rx="1" fill="url(#f-document-suite-bar)" stroke="#5A3F08" stroke-width=".6"/>
+    <path d="M23.8 10.4 H42.2" stroke="rgba(255,247,228,.5)" stroke-width=".4"/>
+    <rect x="24" y="16" width="8" height="4.2" rx=".6" fill="url(#f-document-suite-cell)" stroke="#5A1A04" stroke-width=".5"/>
+    <rect x="33.5" y="25.2" width="8" height="4.2" rx=".6" fill="url(#f-document-suite-cell)" stroke="#5A1A04" stroke-width=".5"/>
+    <g stroke="#77216F" stroke-width=".5" stroke-linecap="round">
+      <path d="M23 16 H43"/><path d="M23 20.3 H43"/><path d="M23 24.6 H43"/><path d="M23 28.9 H43"/><path d="M23 33.2 H43"/>
+      <path d="M28 14.2 V37"/><path d="M33 14.2 V37"/><path d="M38 14.2 V37"/>
+    </g>
+    <circle cx="38" cy="18" r="1.1" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  </g>
+</svg>

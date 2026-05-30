@@ -1,0 +1,24 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="f-music-player-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="f-music-player-screen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#3D0B2C"/>
+  <stop offset="100%" stop-color="#1A0512"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="10" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="13" y="4" width="22" height="40" rx="5" fill="url(#f-music-player-body)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M15 6 H33" stroke="rgba(255,255,255,.7)" stroke-width=".6"/>
+  <rect x="16" y="8" width="16" height="18" rx="2" fill="url(#f-music-player-screen)" stroke="#0A0306" stroke-width=".7"/>
+  <path d="M22 22 V12 L28 13.5 V21" fill="none" stroke="#F8D670" stroke-width="1.4" stroke-linejoin="round"/>
+  <ellipse cx="20.8" cy="22" rx="1.8" ry="1.4" fill="#F8D670"/>
+  <ellipse cx="26.8" cy="21" rx="1.8" ry="1.4" fill="#F8D670"/>
+  <circle cx="24" cy="35" r="5.5" fill="url(#f-music-player-body)" stroke="#3F2A0A" stroke-width=".7"/>
+  <circle cx="24" cy="35" r="5.5" fill="none" stroke="rgba(255,255,255,.4)" stroke-width=".4"/>
+  <path d="M22 32.5 L27 35 L22 37.5 Z" fill="#E95420" stroke="#5A1A04" stroke-width=".4" stroke-linejoin="round"/>
+  <circle cx="24" cy="35" r="1.6" fill="#1A0512"/>
+  </svg>

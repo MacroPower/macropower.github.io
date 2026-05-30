@@ -1,0 +1,55 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-cassette-tape-shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="50%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <linearGradient id="f-cassette-tape-label" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F09A5A"/>
+      <stop offset="45%" stop-color="#E95420"/>
+      <stop offset="100%" stop-color="#7A1F08"/>
+    </linearGradient>
+    <radialGradient id="f-cassette-tape-window" cx=".38" cy=".35" r=".75">
+      <stop offset="0%" stop-color="#77216F"/>
+      <stop offset="55%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <radialGradient id="f-cassette-tape-reel" cx=".4" cy=".36" r=".72">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="48%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44" rx="17" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <rect x="4" y="9" width="40" height="30" rx="4" fill="url(#f-cassette-tape-shell)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+  <rect x="6" y="10.4" width="36" height="2" rx="1" fill="rgba(255,255,255,.65)"/>
+  <rect x="6.6" y="37" width="34.8" height="1.3" rx=".6" fill="rgba(0,0,0,.22)"/>
+  <rect x="6" y="11.5" width="36" height="9" rx="2" fill="url(#f-cassette-tape-label)" stroke="#5A1A04" stroke-width=".9" stroke-linejoin="round"/>
+  <rect x="7.4" y="12.4" width="33" height="1.4" rx=".7" fill="rgba(255,247,228,.4)"/>
+  <g fill="rgba(255,247,228,.85)">
+    <rect x="9" y="15.4" width="22" height="1.5" rx=".7"/>
+    <rect x="9" y="18" width="15" height="1.2" rx=".6"/>
+  </g>
+  <circle cx="36.5" cy="16.5" r="2.4" fill="#FBE57E" stroke="#5A3F08" stroke-width=".5"/>
+  <circle cx="35.7" cy="15.7" r=".7" fill="rgba(255,255,255,.8)"/>
+  <rect x="6" y="22" width="36" height="14.5" rx="2.4" fill="url(#f-cassette-tape-window)" stroke="#0A0008" stroke-width=".8"/>
+  <rect x="7" y="22.8" width="34" height="1.4" rx=".7" fill="rgba(255,247,228,.2)"/>
+  <g stroke="#1A0F04" stroke-width=".5">
+    <circle cx="16" cy="29.2" r="6" fill="url(#f-cassette-tape-reel)"/>
+    <circle cx="32" cy="29.2" r="6" fill="url(#f-cassette-tape-reel)"/>
+  </g>
+  <g fill="#2C001E">
+    <circle cx="16" cy="29.2" r="2.5"/>
+    <circle cx="32" cy="29.2" r="2.5"/>
+  </g>
+  <g stroke="#5A3F08" stroke-width="1.1" stroke-linecap="round">
+    <path d="M16 24.7 V26 M20.5 29.2 H19.2 M16 33.7 V32.4 M11.5 29.2 H12.8 M19.2 26 L18.3 26.9 M19.2 32.4 L18.3 31.5 M12.8 26 L13.7 26.9 M12.8 32.4 L13.7 31.5"/>
+    <path d="M32 24.7 V26 M36.5 29.2 H35.2 M32 33.7 V32.4 M27.5 29.2 H28.8 M35.2 26 L34.3 26.9 M35.2 32.4 L34.3 31.5 M28.8 26 L29.7 26.9 M28.8 32.4 L29.7 31.5"/>
+  </g>
+  <g fill="rgba(255,247,228,.55)">
+    <circle cx="14.2" cy="27.4" r=".9"/>
+    <circle cx="30.2" cy="27.4" r=".9"/>
+  </g>
+  <path d="M21.6 29.6 a6.8 4.2 0 0 1 4.8 0" fill="none" stroke="#FBEED4" stroke-width="1.3"/>
+</svg>

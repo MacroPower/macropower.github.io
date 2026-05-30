@@ -1,0 +1,23 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-pres-board" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF"/>
+  <stop offset="100%" stop-color="#D9D0B8"/>
+  </linearGradient>
+  </defs>
+  <rect x="5" y="4" width="38" height="32" rx="1" fill="url(#ai-pres-board)" stroke="#5A3F08" stroke-width=".9"/>
+  <path d="M6 5 H42" stroke="rgba(255,255,255,.65)" stroke-width=".5"/>
+  <rect x="9" y="8" width="22" height="3" fill="#DD4814" rx=".5"/>
+  <rect x="9" y="13" width="16" height="1.5" fill="#9A8870" rx=".5"/>
+  <g stroke="#5A1A04" stroke-width=".4">
+  <rect x="11" y="26" width="4" height="6" rx=".3" fill="#DD4814"/>
+  <rect x="17" y="22" width="4" height="10" rx=".3" fill="#E95420"/>
+  <rect x="23" y="18" width="4" height="14" rx=".3" fill="#F8D670"/>
+  <rect x="29" y="24" width="4" height="8" rx=".3" fill="#E95420"/>
+  <rect x="35" y="20" width="4" height="12" rx=".3" fill="#DD4814"/>
+  </g>
+  <line x1="9" y1="32" x2="41" y2="32" stroke="#3F2A0A" stroke-width=".7"/>
+  <path d="M14 36 L10 45" stroke="#5A3F08" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M34 36 L38 45" stroke="#5A3F08" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M13 40 L35 40" stroke="#5A3F08" stroke-width=".9"/>
+  </svg>

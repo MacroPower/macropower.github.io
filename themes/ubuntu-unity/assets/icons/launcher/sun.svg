@@ -1,0 +1,34 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<radialGradient id="f-sun-core" cx=".4" cy=".35" r=".75">
+<stop offset="0" stop-color="#FFFDF2"/>
+<stop offset=".3" stop-color="#F8E0A0"/>
+<stop offset=".62" stop-color="#F8D670"/>
+<stop offset=".85" stop-color="#E95420"/>
+<stop offset="1" stop-color="#7A1F08"/>
+</radialGradient>
+<radialGradient id="f-sun-glow" cx=".5" cy=".5" r=".5">
+<stop offset=".55" stop-color="#F8D670" stop-opacity=".55"/>
+<stop offset="1" stop-color="#F8D670" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="f-sun-ray" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset=".5" stop-color="#F8D670"/>
+<stop offset="1" stop-color="#E95420"/>
+</linearGradient>
+</defs>
+<g fill="url(#f-sun-ray)" stroke="#5A3F08" stroke-width=".8" stroke-linejoin="round">
+<path d="M24 1.5 L26.6 9.2 L21.4 9.2 Z"/>
+<path d="M24 46.5 L21.4 38.8 L26.6 38.8 Z"/>
+<path d="M1.5 24 L9.2 21.4 L9.2 26.6 Z"/>
+<path d="M46.5 24 L38.8 26.6 L38.8 21.4 Z"/>
+<path d="M8.1 8.1 L14 11.5 L11.5 14 Z"/>
+<path d="M39.9 39.9 L34 36.5 L36.5 34 Z"/>
+<path d="M39.9 8.1 L36.5 14 L34 11.5 Z"/>
+<path d="M8.1 39.9 L11.5 34 L14 36.5 Z"/>
+</g>
+<circle cx="24" cy="24" r="15.5" fill="url(#f-sun-glow)"/>
+<circle cx="24" cy="24" r="13" fill="url(#f-sun-core)" stroke="#5A3F08" stroke-width="1"/>
+<path d="M16 17 A12 12 0 0 1 33 16" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.4" stroke-linecap="round"/>
+<circle cx="19.5" cy="19" r="3.2" fill="#FFFDF2" opacity=".7"/>
+</svg>

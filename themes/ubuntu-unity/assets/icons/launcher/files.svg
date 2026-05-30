@@ -1,0 +1,24 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-files-back" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F0BD56"/>
+  <stop offset="100%" stop-color="#A0701A"/>
+  </linearGradient>
+  <linearGradient id="ai-files-front" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F5CD6B"/>
+  <stop offset="100%" stop-color="#8C5F12"/>
+  </linearGradient>
+  <linearGradient id="ai-files-doc" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF"/>
+  <stop offset="100%" stop-color="#D9D4CC"/>
+  </linearGradient>
+  </defs>
+  <path d="M4 11 Q4 9 6 9 H17 L20 12 H42 Q44 12 44 14 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ai-files-back)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
+  <rect x="9" y="15.5" width="30" height="20" rx=".4" fill="url(#ai-files-doc)" stroke="#6A6560" stroke-width=".6"/>
+  <line x1="13" y1="20" x2="34" y2="20" stroke="#7A7570" stroke-width=".7"/>
+  <line x1="13" y1="23" x2="34" y2="23" stroke="#9A938D" stroke-width=".6"/>
+  <line x1="13" y1="26" x2="30" y2="26" stroke="#9A938D" stroke-width=".6"/>
+  <path d="M5 21 H43 V23 H5 Z" fill="rgba(0,0,0,.22)"/>
+  <path d="M4 23 H44 V40 Q44 42 42 42 H6 Q4 42 4 40 Z" fill="url(#ai-files-front)" stroke="#5A3A0D" stroke-width=".8" stroke-linejoin="round"/>
+  <line x1="4.6" y1="23.6" x2="43.4" y2="23.6" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+  </svg>

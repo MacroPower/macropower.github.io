@@ -1,0 +1,66 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-vault-door-frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#D4B575"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <radialGradient id="f-vault-door-recess" cx=".42" cy=".38" r=".75">
+      <stop offset="0%" stop-color="#3D0B2C"/>
+      <stop offset="70%" stop-color="#1F0518"/>
+      <stop offset="100%" stop-color="#0A0008"/>
+    </radialGradient>
+    <radialGradient id="f-vault-door-door" cx=".38" cy=".34" r=".78">
+      <stop offset="0%" stop-color="#F8E0A0"/>
+      <stop offset="52%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </radialGradient>
+    <radialGradient id="f-vault-door-hub" cx=".4" cy=".35" r=".7">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#3F2A0A"/>
+    </radialGradient>
+  </defs>
+  <rect x="4" y="4" width="40" height="40" rx="4" fill="url(#f-vault-door-frame)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M6 6 H42" stroke="rgba(255,255,255,.6)" stroke-width=".6"/>
+  <circle cx="24" cy="24" r="18.5" fill="url(#f-vault-door-recess)" stroke="#1A0F04" stroke-width=".7"/>
+  <circle cx="24" cy="24" r="16.5" fill="url(#f-vault-door-door)" stroke="#3F2A0A" stroke-width=".9"/>
+  <circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(255,247,228,.4)" stroke-width=".5"/>
+  <g fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".35">
+    <circle cx="24" cy="10.6" r="1.05"/>
+    <circle cx="33.5" cy="14.5" r="1.05"/>
+    <circle cx="37.4" cy="24" r="1.05"/>
+    <circle cx="33.5" cy="33.5" r="1.05"/>
+    <circle cx="24" cy="37.4" r="1.05"/>
+    <circle cx="14.5" cy="33.5" r="1.05"/>
+    <circle cx="10.6" cy="24" r="1.05"/>
+    <circle cx="14.5" cy="14.5" r="1.05"/>
+  </g>
+  <g stroke="#3F2A0A" stroke-width="2.6" stroke-linecap="round">
+    <path d="M24 11.5 V36.5"/>
+    <path d="M11.5 24 H36.5"/>
+    <path d="M15.2 15.2 L32.8 32.8"/>
+    <path d="M32.8 15.2 L15.2 32.8"/>
+  </g>
+  <g stroke="#D4B575" stroke-width="1.5" stroke-linecap="round">
+    <path d="M24 11.5 V36.5"/>
+    <path d="M11.5 24 H36.5"/>
+    <path d="M15.2 15.2 L32.8 32.8"/>
+    <path d="M32.8 15.2 L15.2 32.8"/>
+  </g>
+  <g fill="url(#f-vault-door-hub)" stroke="#3F2A0A" stroke-width=".5">
+    <circle cx="24" cy="11.5" r="2"/>
+    <circle cx="24" cy="36.5" r="2"/>
+    <circle cx="11.5" cy="24" r="2"/>
+    <circle cx="36.5" cy="24" r="2"/>
+    <circle cx="15.2" cy="15.2" r="1.7"/>
+    <circle cx="32.8" cy="32.8" r="1.7"/>
+    <circle cx="32.8" cy="15.2" r="1.7"/>
+    <circle cx="15.2" cy="32.8" r="1.7"/>
+  </g>
+  <circle cx="24" cy="24" r="6.4" fill="url(#f-vault-door-hub)" stroke="#3F2A0A" stroke-width=".9"/>
+  <circle cx="24" cy="24" r="6.4" fill="none" stroke="rgba(255,247,228,.45)" stroke-width=".4"/>
+  <circle cx="24" cy="24" r="3.4" fill="#2C001E" stroke="#1A0F04" stroke-width=".5"/>
+  <circle cx="24" cy="24" r="1.5" fill="#F8D670" stroke="#5A1A04" stroke-width=".3"/>
+  <circle cx="22.2" cy="22.2" r=".7" fill="rgba(255,247,228,.7)"/>
+</svg>

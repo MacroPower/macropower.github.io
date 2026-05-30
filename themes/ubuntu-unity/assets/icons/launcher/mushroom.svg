@@ -1,0 +1,42 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<radialGradient id="f-mushroom-cap" cx=".38" cy=".28" r=".88">
+<stop offset="0%" stop-color="#FF9A6A"/>
+<stop offset="42%" stop-color="#E95420"/>
+<stop offset="100%" stop-color="#5A1A04"/>
+</radialGradient>
+<radialGradient id="f-mushroom-spot" cx=".35" cy=".32" r=".85">
+<stop offset="0%" stop-color="#FFFFFF"/>
+<stop offset="62%" stop-color="#FCFBF4"/>
+<stop offset="100%" stop-color="#E8D9A8"/>
+</radialGradient>
+<linearGradient id="f-mushroom-band" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#F8D670"/>
+<stop offset="50%" stop-color="#D4B575"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+<linearGradient id="f-mushroom-stem" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FCFBF4"/>
+<stop offset="52%" stop-color="#F0E4C4"/>
+<stop offset="100%" stop-color="#C9892D"/>
+</linearGradient>
+<radialGradient id="f-mushroom-eye" cx=".4" cy=".34" r=".85">
+<stop offset="0%" stop-color="#3D0B2C"/>
+<stop offset="100%" stop-color="#1A0512"/>
+</radialGradient>
+</defs>
+<ellipse cx="24" cy="44.6" rx="12.5" ry=".85" fill="rgba(0,0,0,.4)"/>
+<path d="M7.5 26.5 Q7.5 6.5 24 6.5 Q40.5 6.5 40.5 26.5 Z" fill="url(#f-mushroom-cap)" stroke="#5A1A04" stroke-width="1.1"/>
+<path d="M11 18 Q15.5 9.5 24 8.6" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.2" stroke-linecap="round"/>
+<ellipse cx="15.5" cy="15.5" rx="3.6" ry="3.1" fill="url(#f-mushroom-spot)" stroke="#5A1A04" stroke-width=".75"/>
+<ellipse cx="32.5" cy="16.5" rx="2.9" ry="2.5" fill="url(#f-mushroom-spot)" stroke="#5A1A04" stroke-width=".75"/>
+<ellipse cx="24" cy="11" rx="2.3" ry="2" fill="url(#f-mushroom-spot)" stroke="#5A1A04" stroke-width=".75"/>
+<ellipse cx="22.5" cy="22.5" rx="2" ry="1.7" fill="url(#f-mushroom-spot)" stroke="#5A1A04" stroke-width=".7"/>
+<path d="M9.5 25.8 L38.5 25.8 Q38.5 29 35 29 L13 29 Q9.5 29 9.5 25.8 Z" fill="url(#f-mushroom-band)" stroke="#5A3F08" stroke-width=".9"/>
+<path d="M13 29 L35 29 Q34.4 43 24 43 Q13.6 43 13 29 Z" fill="url(#f-mushroom-stem)" stroke="#5A3F08" stroke-width="1.1"/>
+<path d="M15.8 30.5 Q15 39.5 19.5 42" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.1" stroke-linecap="round"/>
+<ellipse cx="20" cy="34.5" rx="2.7" ry="3.4" fill="url(#f-mushroom-eye)" stroke="#5A3F08" stroke-width=".75"/>
+<ellipse cx="28" cy="34.5" rx="2.7" ry="3.4" fill="url(#f-mushroom-eye)" stroke="#5A3F08" stroke-width=".75"/>
+<circle cx="19" cy="33.3" r=".95" fill="rgba(255,255,255,.9)"/>
+<circle cx="27" cy="33.3" r=".95" fill="rgba(255,255,255,.9)"/>
+</svg>

@@ -1,0 +1,35 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-vid-strip" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F0BD56"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-vid-screen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#3D0B2C"/>
+  <stop offset="100%" stop-color="#1A0512"/>
+  </linearGradient>
+  </defs>
+  <rect x="4" y="5" width="40" height="38" rx="2.5" fill="url(#ai-vid-strip)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M5 6 H43" stroke="rgba(255,255,255,.65)" stroke-width=".6"/>
+  <g fill="#2A1F12" stroke="#0A0604" stroke-width=".3">
+  <rect x="6.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="11.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="16.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="21.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="26.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="31.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="36.5" y="8" width="3.5" height="3" rx=".5"/>
+  <rect x="6.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="11.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="16.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="21.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="26.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="31.5" y="37" width="3.5" height="3" rx=".5"/>
+  <rect x="36.5" y="37" width="3.5" height="3" rx=".5"/>
+  </g>
+  <rect x="8" y="13" width="32" height="22" rx=".5" fill="url(#ai-vid-screen)" stroke="#0A0306" stroke-width=".5"/>
+  <path d="M8.5 13.5 H39.5" stroke="rgba(255,247,228,.1)" stroke-width=".4"/>
+  <path d="M19.5 17.5 L32 24 L19.5 30.5 Z" fill="#E95420" stroke="#5A1A04" stroke-width=".6" stroke-linejoin="round"/>
+  <path d="M19.5 17.5 L31 23.6" stroke="rgba(255,247,228,.5)" stroke-width=".5" fill="none"/>
+  </svg>

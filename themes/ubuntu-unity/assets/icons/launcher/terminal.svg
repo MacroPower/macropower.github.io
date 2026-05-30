@@ -1,0 +1,20 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-term-bezel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-term-screen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#3D0B2C"/>
+  <stop offset="100%" stop-color="#1A0512"/>
+  </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="42" height="42" rx="5" fill="url(#ai-term-bezel)" stroke="#3F2A0A" stroke-width=".9"/>
+  <path d="M5 5 H43" stroke="rgba(255,255,255,.7)" stroke-width=".7"/>
+  <rect x="8" y="10" width="32" height="28" rx="2" fill="url(#ai-term-screen)" stroke="#0A0306" stroke-width=".7"/>
+  <rect x="8.5" y="10.5" width="31" height=".8" fill="rgba(255,247,228,.12)"/>
+  <path d="M13 19 L18 24 L13 29" fill="none" stroke="#E95420" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="20" y="26.5" width="13" height="2.6" fill="#F8D670"/>
+  <circle cx="40" cy="41.5" r=".9" fill="#DD4814" stroke="#5A1A04" stroke-width=".3"/>
+  </svg>

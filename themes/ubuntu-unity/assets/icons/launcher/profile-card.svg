@@ -1,0 +1,27 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+    <linearGradient id="f-profile-card-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF1D8"/>
+      <stop offset="55%" stop-color="#C9892D"/>
+      <stop offset="100%" stop-color="#5A3F08"/>
+    </linearGradient>
+    <radialGradient id="f-profile-card-photo" cx=".42" cy=".34" r=".75">
+      <stop offset="0%" stop-color="#5E2750"/>
+      <stop offset="60%" stop-color="#2C001E"/>
+      <stop offset="100%" stop-color="#1A0512"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="44.5" rx="13" ry=".8" fill="rgba(0,0,0,.35)"/>
+  <rect x="9" y="7" width="30" height="34" rx="3" fill="url(#f-profile-card-card)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M11 9 H37" stroke="rgba(255,255,255,.65)" stroke-width=".7"/>
+  <rect x="20" y="3.5" width="8" height="5" rx="1.2" fill="#E95420" stroke="#5A1A04" stroke-width=".5"/>
+  <rect x="22.5" y="4.2" width="3" height="3" rx=".6" fill="#2C001E"/>
+  <rect x="13" y="12" width="14" height="17" rx="1.5" fill="url(#f-profile-card-photo)" stroke="#0A0008" stroke-width=".6"/>
+  <circle cx="20" cy="18.5" r="3.2" fill="#FBEED4"/>
+  <path d="M14.5 29 c0-4 2.5-6.5 5.5-6.5 s5.5 2.5 5.5 6.5 z" fill="#FBEED4"/>
+  <rect x="29.5" y="13" width="6.5" height="1.8" rx=".5" fill="#3F2A0A"/>
+  <rect x="29.5" y="17" width="6.5" height="1.4" rx=".4" fill="rgba(63,42,10,.6)"/>
+  <rect x="29.5" y="20.2" width="6.5" height="1.4" rx=".4" fill="rgba(63,42,10,.6)"/>
+  <rect x="13" y="33" width="22" height="1.6" rx=".5" fill="rgba(63,42,10,.55)"/>
+  <rect x="13" y="36.4" width="15" height="1.6" rx=".5" fill="rgba(63,42,10,.55)"/>
+</svg>

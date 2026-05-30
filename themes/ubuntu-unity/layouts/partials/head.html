@@ -2,6 +2,9 @@
 {{- $title := cond .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{{- if .Params.noindex }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
 <title>{{ $title }}</title>
 {{- with $description }}
 <meta name="description" content="{{ . | plainify | truncate 200 }}">

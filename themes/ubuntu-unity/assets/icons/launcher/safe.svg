@@ -1,0 +1,48 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+<defs>
+<linearGradient id="f-safe-body" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#FBF1D8"/>
+<stop offset="0.25" stop-color="#F8D670"/>
+<stop offset="0.6" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+<linearGradient id="f-safe-feet" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#3F2A0A"/>
+</linearGradient>
+<radialGradient id="f-safe-door" cx="0.38" cy="0.32" r="0.85">
+<stop offset="0" stop-color="#77216F"/>
+<stop offset="0.45" stop-color="#3D0B2C"/>
+<stop offset="0.8" stop-color="#2C001E"/>
+<stop offset="1" stop-color="#0A0008"/>
+</radialGradient>
+<radialGradient id="f-safe-dial" cx="0.4" cy="0.34" r="0.75">
+<stop offset="0" stop-color="#FBE57E"/>
+<stop offset="0.5" stop-color="#E95420"/>
+<stop offset="1" stop-color="#5A1A04"/>
+</radialGradient>
+<linearGradient id="f-safe-handle" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#F8E0A0"/>
+<stop offset="0.5" stop-color="#C9892D"/>
+<stop offset="1" stop-color="#5A3F08"/>
+</linearGradient>
+</defs>
+<ellipse cx="24" cy="45" rx="15" ry="1.1" fill="rgba(0,0,0,.4)"/>
+<rect x="9.5" y="40" width="4.5" height="5" rx="1" fill="url(#f-safe-feet)" stroke="#1F0F04" stroke-width="0.8" stroke-linejoin="round"/>
+<rect x="34" y="40" width="4.5" height="5" rx="1" fill="url(#f-safe-feet)" stroke="#1F0F04" stroke-width="0.8" stroke-linejoin="round"/>
+<rect x="5" y="4" width="38" height="38" rx="4" fill="url(#f-safe-body)" stroke="#3F2A0A" stroke-width="1" stroke-linejoin="round"/>
+<rect x="6.2" y="5.2" width="35.6" height="35.6" rx="3" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/>
+<rect x="9" y="8" width="30" height="30" rx="3" fill="url(#f-safe-door)" stroke="#1A0512" stroke-width="1.4" stroke-linejoin="round"/>
+<rect x="10.5" y="9.5" width="27" height="27" rx="2.2" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="0.8"/>
+<rect x="29" y="20.5" width="9" height="5" rx="1.5" fill="url(#f-safe-handle)" stroke="#3F2A0A" stroke-width="0.9" stroke-linejoin="round"/>
+<rect x="29.8" y="21.2" width="7.4" height="1.4" rx="0.7" fill="rgba(255,255,255,.45)"/>
+<circle cx="21" cy="23" r="10" fill="#3F2A0A"/>
+<circle cx="21" cy="23" r="9.2" fill="url(#f-safe-handle)" stroke="#3F2A0A" stroke-width="0.8"/>
+<circle cx="21" cy="23" r="6.8" fill="url(#f-safe-dial)" stroke="#5A1A04" stroke-width="1.4"/>
+<circle cx="21" cy="23" r="2.4" fill="#FBE57E" stroke="#5A1A04" stroke-width="0.8"/>
+<rect x="20.3" y="14.4" width="1.4" height="3.4" rx="0.7" fill="#3F2A0A"/>
+<rect x="20.3" y="28.2" width="1.4" height="3.4" rx="0.7" fill="#3F2A0A"/>
+<rect x="12.4" y="22.3" width="3.4" height="1.4" rx="0.7" fill="#3F2A0A"/>
+<rect x="26.2" y="22.3" width="3.4" height="1.4" rx="0.7" fill="#3F2A0A"/>
+<circle cx="18.5" cy="20.5" r="1.7" fill="rgba(255,247,228,.5)"/>
+</svg>
