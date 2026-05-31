@@ -21,6 +21,30 @@
   {{- $display := .url | strings.TrimPrefix "http://" | strings.TrimPrefix "https://" | strings.TrimPrefix "www." -}}
   {{- $socials = $socials | append (dict "label" $label "url" .url "display" $display) -}}
 {{- end -}}
+{{- /* The shell's virtual filesystem reads these instead of hardcoding site
+      content; adding a post or page flows through automatically. Posts carry
+      only metadata (the VFS renders a card) -- their full bodies would bloat
+      this inline island -- while top-level pages carry RawContent so `cat`
+      prints the markdown. */ -}}
+{{- $posts := slice -}}
+{{- range where .Site.RegularPages "Section" "posts" -}}
+  {{- $posts = $posts | append (dict
+      "slug" .File.ContentBaseName
+      "title" .Title
+      "date" (.Date.Format "2006-01-02")
+      "categories" (.Params.categories | default slice)
+      "url" .RelPermalink
+  ) -}}
+{{- end -}}
+{{- $pages := slice -}}
+{{- range where .Site.RegularPages "Section" "" -}}
+  {{- $pages = $pages | append (dict
+      "slug" .File.ContentBaseName
+      "date" (.Date.Format "2006-01-02")
+      "url" .RelPermalink
+      "content" .RawContent
+  ) -}}
+{{- end -}}
 {{- $payload := dict
     "handle" $user
     "host" $host
@@ -28,6 +52,8 @@
     "title" .Site.Params.homeSubtitle
     "uptime" $uptime
     "socials" $socials
+    "posts" $posts
+    "pages" $pages
     "ascii" $ascii
     "colors" $colors
 -}}

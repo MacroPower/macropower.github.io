@@ -1,11 +1,33 @@
 import type { TerminalIO } from "./terminal";
 import { Readline, type CompletionContext } from "./readline";
 import { color, PALETTE } from "./ansi";
+import { buildFs, type Vfs } from "./vfs";
 
 export interface SocialLink {
   label: string;
   url: string;
   display: string;
+}
+
+// A blog post, emitted by Hugo from content/posts/ so the VFS need not
+// hardcode the list. `url` is the real permalink; `date` is "YYYY-MM-DD".
+// Posts carry only metadata (rendered as a card) -- their bodies would bloat
+// the inline data island.
+export interface PostMeta {
+  slug: string;
+  title: string;
+  date: string;
+  categories: string[];
+  url: string;
+}
+
+// A top-level content page (cv, sponsors, ...), emitted by Hugo with its raw
+// markdown body so `cat` prints the source. `slug` is the on-disk basename.
+export interface PageMeta {
+  slug: string;
+  date: string;
+  url: string;
+  content: string;
 }
 
 // Single source of truth parsed from the JSON data island in index.html.
@@ -16,6 +38,8 @@ export interface ShellData {
   title: string;
   uptime: string;
   socials: SocialLink[];
+  posts: PostMeta[];
+  pages: PageMeta[];
   ascii: string;
   colors: string;
 }
@@ -33,12 +57,17 @@ export interface CommandContext {
   commands(): Command[];
   term: TerminalIO;
   data: ShellData;
+  vfs: Vfs;
 }
 
 // Completion context handed to a command's complete(): the readline token
-// state plus the shell data island (socials etc.).
+// state plus the shell data island (socials etc.) and VFS state. The cwd/vfs
+// fields are injected by Shell, not supplied by readline -- readline stays
+// free of VFS knowledge.
 export interface CompleteContext extends CompletionContext {
   data: ShellData;
+  cwd: string;
+  vfs: Vfs;
 }
 
 export interface Command {
@@ -52,12 +81,15 @@ export interface Command {
 export class Shell {
   private readonly registry = new Map<string, Command>();
   private readonly readline: Readline;
-  private cwdPath = "~";
+  private readonly vfs: Vfs;
+  private cwdPath: string;
 
   constructor(
     private readonly term: TerminalIO,
     readonly data: ShellData,
   ) {
+    this.vfs = buildFs(data);
+    this.cwdPath = this.vfs.homePath;
     this.readline = new Readline(term, {
       onLine: (line) => { this.onLine(line); },
       complete: (ctx) => this.complete(ctx),
@@ -89,7 +121,7 @@ export class Shell {
       "@" +
       color(PALETTE.blue, host) +
       ":" +
-      color(PALETTE.cyan, this.cwdPath) +
+      color(PALETTE.cyan, this.vfs.displayPath(this.cwdPath)) +
       "$ "
     );
   }
@@ -128,6 +160,7 @@ export class Shell {
       commands: () => this.commands(),
       term: this.term,
       data: this.data,
+      vfs: this.vfs,
     };
   }
 
@@ -138,6 +171,8 @@ export class Shell {
         .map((c) => c.name);
     }
     const cmd = this.registry.get(ctx.tokens[0] ?? "");
-    return cmd?.complete ? cmd.complete({ ...ctx, data: this.data }) : [];
+    return cmd?.complete
+      ? cmd.complete({ ...ctx, data: this.data, cwd: this.cwdPath, vfs: this.vfs })
+      : [];
   }
 }
