@@ -1,27 +1,57 @@
 <svg viewBox="0 0 48 48" width="100%" height="100%">
   <defs>
-    <linearGradient id="ic-home-body" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#F0DEB8"/>
-      <stop offset="100%" stop-color="#B08F4A"/>
-    </linearGradient>
-    <linearGradient id="ic-home-roof" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#B8612E"/>
-      <stop offset="100%" stop-color="#6E2E10"/>
-    </linearGradient>
-    <linearGradient id="ic-home-door" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#5A3A1E"/>
-      <stop offset="100%" stop-color="#2A1808"/>
-    </linearGradient>
-    <linearGradient id="ic-home-window" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#FFE08A"/>
-      <stop offset="100%" stop-color="#E59C2A"/>
-    </linearGradient>
+  <linearGradient id="ai-hs-wall" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FF9D4A"/>
+  <stop offset="100%" stop-color="#B84A12"/>
+  </linearGradient>
+  <linearGradient id="ai-hs-roof" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#C07820"/>
+  <stop offset="100%" stop-color="#5A340C"/>
+  </linearGradient>
+  <linearGradient id="ai-hs-door" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F0A838"/>
+  <stop offset="100%" stop-color="#8A5E10"/>
+  </linearGradient>
+  <linearGradient id="ai-hs-glow" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFF0A8"/>
+  <stop offset="100%" stop-color="#E89838"/>
+  </linearGradient>
   </defs>
-  <rect x="8" y="22" width="32" height="22" fill="url(#ic-home-body)" stroke="#3A1F08" stroke-width=".9"/>
-  <path d="M4 23 L24 7 L44 23 Z" fill="url(#ic-home-roof)" stroke="#1A0F04" stroke-width=".9" stroke-linejoin="round"/>
-  <rect x="14" y="28" width="9" height="7" fill="url(#ic-home-window)" stroke="#1A0F04" stroke-width=".7"/>
-  <line x1="18.5" y1="28.3" x2="18.5" y2="34.7" stroke="#1A0F04" stroke-width=".4"/>
-  <line x1="14.3" y1="31.5" x2="22.7" y2="31.5" stroke="#1A0F04" stroke-width=".4"/>
-  <rect x="28" y="32" width="6" height="12" fill="url(#ic-home-door)" stroke="#1A0F04" stroke-width=".7"/>
-  <circle cx="29.4" cy="38" r=".6" fill="#E7C067"/>
+  <ellipse cx="24" cy="43.5" rx="18" ry="1.1" fill="rgba(0,0,0,.35)"/>
+  <rect x="32" y="6" width="4.5" height="12" fill="url(#ai-hs-door)" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="32" y="6" width="4.5" height="1" fill="rgba(255,255,255,.6)"/>
+  <path d="M34 5 Q36 3 34 1.5 Q33 .8 34 0" fill="none" stroke="rgba(251,241,216,.6)" stroke-width=".9" stroke-linecap="round"/>
+  <path d="M4 22 L24 7 L44 22 Z" fill="url(#ai-hs-roof)" stroke="#2A1606" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M5.5 22 L24 8.6 L42.5 22" fill="none" stroke="rgba(255,247,228,.6)" stroke-width=".5"/>
+  <g stroke="rgba(42,22,6,.5)" stroke-width=".4" fill="none">
+  <path d="M9 18.5 L39 18.5"/>
+  <path d="M13 15.5 L35 15.5"/>
+  <path d="M17 12.5 L31 12.5"/>
+  </g>
+  <path d="M3 22 H45 V24 H3 Z" fill="#6A4514" stroke="#2A1606" stroke-width=".6"/>
+  <path d="M4 22.4 H44" stroke="rgba(255,247,228,.4)" stroke-width=".4"/>
+  <path d="M6 24 H42 V42 H6 Z" fill="url(#ai-hs-wall)" stroke="#5A2408" stroke-width=".9" stroke-linejoin="round"/>
+  <g stroke="rgba(42,14,6,.3)" stroke-width=".4">
+  <line x1="6" y1="28" x2="42" y2="28"/>
+  <line x1="6" y1="33" x2="42" y2="33"/>
+  <line x1="6" y1="38" x2="42" y2="38"/>
+  <line x1="14" y1="24" x2="14" y2="28"/>
+  <line x1="24" y1="28" x2="24" y2="33"/>
+  <line x1="34" y1="24" x2="34" y2="28"/>
+  <line x1="18" y1="33" x2="18" y2="38"/>
+  <line x1="30" y1="33" x2="30" y2="38"/>
+  </g>
+  <path d="M7 25 V41" stroke="rgba(255,255,255,.4)" stroke-width=".4"/>
+  <rect x="10" y="27" width="11" height="9" rx=".4" fill="url(#ai-hs-glow)" stroke="#3F2A0A" stroke-width=".7"/>
+  <path d="M10.5 27.5 H20.5" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
+  <line x1="15.5" y1="27" x2="15.5" y2="36" stroke="#3F2A0A" stroke-width=".7"/>
+  <line x1="10" y1="31.5" x2="21" y2="31.5" stroke="#3F2A0A" stroke-width=".7"/>
+  <rect x="8.2" y="27" width="1.4" height="9" fill="#3F2A0A"/>
+  <rect x="21.4" y="27" width="1.4" height="9" fill="#3F2A0A"/>
+  <path d="M28 42 V29 Q28 27 30 27 H36 Q38 27 38 29 V42 Z" fill="url(#ai-hs-door)" stroke="#3F2A0A" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M29 28.5 V41" stroke="rgba(255,247,228,.5)" stroke-width=".4"/>
+  <rect x="30" y="30" width="6" height="4" rx=".3" fill="none" stroke="rgba(42,22,6,.5)" stroke-width=".4"/>
+  <rect x="30" y="35" width="6" height="5" rx=".3" fill="none" stroke="rgba(42,22,6,.5)" stroke-width=".4"/>
+  <circle cx="36" cy="37" r=".9" fill="#FFE07A" stroke="#3F2A0A" stroke-width=".3"/>
+  <rect x="27" y="41.5" width="12" height="1.6" fill="#3F2A0A"/>
 </svg>
