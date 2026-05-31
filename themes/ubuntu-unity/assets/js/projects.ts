@@ -182,7 +182,7 @@ import { installFilterNav } from "./filter-nav";
 
     if (url) {
       const a = document.createElement("a");
-      a.className = "up-project-preview-open";
+      a.className = "up-open-btn";
       a.href = url;
       a.target = "_blank";
       a.rel = "noopener";

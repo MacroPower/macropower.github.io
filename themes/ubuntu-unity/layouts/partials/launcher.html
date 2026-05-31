@@ -3,10 +3,12 @@
 {{ $cv       := relURL "cv/" }}
 {{ $blog     := relURL "posts/" }}
 {{ $projects := relURL "projects/" }}
+{{ $sponsors := relURL "sponsors/" }}
 {{- $homeActive     := eq $current $home -}}
 {{- $cvActive       := eq $current $cv -}}
 {{- $blogActive     := hasPrefix $current $blog -}}
 {{- $projectsActive := eq $current $projects -}}
+{{- $sponsorsActive := eq $current $sponsors -}}
 <aside class="up-launcher" aria-label="Launcher">
   <a class="up-launcher-tile{{ if $homeActive }} is-active{{ end }}"
      href="{{ $home }}" data-launcher="home" aria-label="Home"
@@ -50,6 +52,17 @@
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
     <span class="up-tooltip" aria-hidden="true">Blog</span>
+  </a>
+
+  <a class="up-launcher-tile{{ if $sponsorsActive }} is-active{{ end }}"
+     href="{{ $sponsors }}" data-launcher="sponsors" aria-label="Sponsors"
+     {{ if $sponsorsActive }}data-page-current="1"{{ end }}>
+    <span class="up-launcher-icon">
+      {{ partial "icon.html" "launcher/heart" }}
+    </span>
+    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
+    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
+    <span class="up-tooltip" aria-hidden="true">Sponsors</span>
   </a>
 
   <div class="up-launcher-spacer"></div>

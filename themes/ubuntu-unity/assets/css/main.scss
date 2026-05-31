@@ -353,6 +353,7 @@ body{
    ========================================================================= */
 
 .up-cv-page,
+.up-sponsors-page,
 .up-blog{
   display:block;width:100%;height:100%;
   background:var(--content-bg);color:var(--content-fg);
@@ -368,9 +369,11 @@ body{
 /* shared link colors across content surfaces */
 .up-page-children a,
 .up-cv-main a,
+.up-sponsors-main p a,
 .up-reader-body a{color:#2B4E8E;text-decoration:none}
 .up-page-children a:hover,
 .up-cv-main a:hover,
+.up-sponsors-main p a:hover,
 .up-reader-body a:hover{color:var(--orange-light);text-decoration:underline}
 .up-page-header h1{font-size:24px;font-weight:500;letter-spacing:-.01em;margin:0 0 16px}
 .up-page-body{font-size:14.5px;line-height:1.65}
@@ -451,6 +454,53 @@ body{
   #embed-pdf-container{
     margin:14px 0;border:1px solid var(--content-line);background:#fff;
   }
+}
+
+/* ---------- Sponsors ---------- */
+.up-sponsors-page{padding:0;display:flex;flex-direction:column}
+.up-sponsors-grid{
+  display:grid;grid-template-columns:168px 1fr;min-height:0;flex:1;
+}
+.up-sponsors-main{
+  padding:22px 26px;overflow:auto;font-size:14px;line-height:1.6;
+  p{margin:0 0 16px}
+}
+.up-sponsors-cards{
+  list-style:none;margin:18px 0 24px;padding:0;
+  display:grid;gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+}
+.up-sponsor-card{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;
+  background:#fff;border:1px solid var(--content-line);border-radius:4px;
+  color:var(--content-fg);text-decoration:none;
+  transition:border-color .1s linear, box-shadow .1s linear;
+}
+a.up-sponsor-card[href]:hover{
+  border-color:rgba(221,72,20,.55);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.up-sponsor-avatar{
+  flex:0 0 auto;width:48px;height:48px;border-radius:50%;
+  overflow:hidden;display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
+  border:1px solid #C9C4BB;
+}
+.up-sponsor-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.up-sponsor-monogram{
+  font-family:"Ubuntu",sans-serif;font-size:20px;font-weight:600;color:#8A8175;
+  line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+.up-sponsor-name{
+  font-size:14px;font-weight:500;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.up-empty-pane.up-sponsors-empty-pane{
+  min-height:240px;margin:18px 0 24px;
+  background:#F6F3EC;
+  border:1px solid var(--content-line);border-radius:4px;
+  .up-empty-pane-icon svg{width:44px;height:44px}
 }
 
 /* ---------- Neofetch (home) ---------- */
@@ -1040,8 +1090,7 @@ body{
   font-size:11px;line-height:1.4;white-space:nowrap;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
 }
-.up-project-preview-open{
-  margin-top:auto;align-self:flex-start;
+.up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
   background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
   color:#2E2B28;font-size:12.5px;font-weight:500;text-decoration:none;
@@ -1057,6 +1106,8 @@ body{
   }
   svg{color:#3A3733}
 }
+/* projects preview pins the open button to the left under the stats */
+.up-project-preview .up-open-btn{margin-top:auto;align-self:flex-start}
 
 /* ---------- Empty right-column pane ----------
    Declared after .up-project-preview so .up-empty-pane's padding wins on the
@@ -1093,6 +1144,7 @@ body{
 @media (max-width:980px){
   .up-blog-grid{grid-template-columns:1fr;height:auto}
   .up-cv-grid{grid-template-columns:1fr}
+  .up-sponsors-grid{grid-template-columns:1fr}
   .up-projects-grid{
     grid-template-columns:1fr;
     grid-template-rows:auto auto 1fr;

@@ -84,3 +84,32 @@ tasks:
       - jq -e 'length > 0' data/projects.json.tmp > /dev/null
       - yq -p json -o yaml '.' data/projects.json.tmp > data/projects.yaml.tmp
       - mv data/projects.yaml.tmp data/projects.yaml
+
+  populate-sponsors:
+    desc: Fetch GitHub Sponsors for the authenticated maintainer and rewrite data/sponsors.yaml
+    vars:
+      SPONSOR_LIMIT: '{{.SPONSOR_LIMIT | default "100"}}'
+    preconditions:
+      - sh: command -v gh >/dev/null
+        msg: 'gh CLI not found on PATH (run inside `devbox shell`).'
+      - sh: command -v jq >/dev/null
+        msg: 'jq not found on PATH (run inside `devbox shell`).'
+      - sh: command -v yq >/dev/null
+        msg: 'yq not found on PATH (run inside `devbox shell`).'
+    cmds:
+      # The list reflects whoever `gh` is authenticated as (the maintainer).
+      - defer: rm -f data/sponsors.json.tmp data/sponsors.yaml.tmp
+      - >-
+        gh api graphql -f query='query{viewer{sponsorshipsAsMaintainer(first:{{.SPONSOR_LIMIT}},includePrivate:false,orderBy:{field:CREATED_AT,direction:ASC}){nodes{sponsorEntity{__typename ... on User{login name url} ... on Organization{login name url}}}}}}'
+        | jq '
+            [ .data.viewer.sponsorshipsAsMaintainer.nodes[].sponsorEntity
+              | select(. != null)
+              | {
+                  name: (if (.name // "") == "" then .login else .name end),
+                  url: .url,
+                  avatar: ("https://github.com/" + .login + ".png")
+                }
+            ]
+          ' > data/sponsors.json.tmp
+      - yq -p json -o yaml '.' data/sponsors.json.tmp > data/sponsors.yaml.tmp
+      - mv data/sponsors.yaml.tmp data/sponsors.yaml

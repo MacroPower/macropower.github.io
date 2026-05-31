@@ -6,6 +6,7 @@ const LAUNCHER_URLS: Record<string, string> = {
   cv: "/cv/",
   blog: "/posts/",
   projects: "/projects/",
+  sponsors: "/sponsors/",
   icons: "/icons/",
 };
 

@@ -1,0 +1,43 @@
+<article class="up-sponsors-page selectable">
+  {{ partial "page/nav-pathbar.html" (dict "segments" (slice
+      (dict "label" "Home" "url" "/")
+      (dict "label" "Sponsors" "url" .RelPermalink))) }}
+  {{- $sponsors := site.Data.sponsors -}}
+  <div class="up-sponsors-grid">
+    {{- $iconHeart := partial "icon.html" "glyphs/heart" -}}
+    {{ partial "page/naut-sidebar.html" (dict
+        "sections" (slice
+          (dict "label" "Places" "items" (slice
+            (dict "label" "Sponsors" "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
+    <section class="up-sponsors-main">
+      {{- with $sponsors }}
+        {{ $.Content }}
+        <ul class="up-sponsors-cards">
+          {{- range . }}
+            <li>
+              <a class="up-sponsor-card"
+                {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }}>
+                <span class="up-sponsor-avatar" aria-hidden="true">
+                  {{- with .avatar -}}
+                    <img src="{{ . }}" alt="" loading="lazy" width="48" height="48">
+                  {{- else -}}
+                    <span class="up-sponsor-monogram">{{ substr .name 0 1 | upper }}</span>
+                  {{- end -}}
+                </span>
+                <span class="up-sponsor-name">{{ .name }}</span>
+              </a>
+            </li>
+          {{- end }}
+        </ul>
+      {{- else }}
+        {{ partial "page/empty-pane.html" (dict
+            "class" "up-sponsors-empty-pane"
+            "ariaLabel" "No sponsors yet"
+            "icon" $iconHeart
+            "hint" "No sponsors yet"
+            "tagline" "jacob@unity:~$ ls ./sponsors") }}
+      {{- end }}
+      <a class="up-open-btn" href="https://github.com/sponsors/MacroPower" target="_blank" rel="noopener">{{ $iconHeart }}<span>Become a sponsor</span></a>
+    </section>
+  </div>
+</article>

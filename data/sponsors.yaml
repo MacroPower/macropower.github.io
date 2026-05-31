@@ -1,0 +1,5 @@
+# Sponsors shown on /sponsors/. Add one entry per sponsor.
+# name is required; url and avatar are optional.
+- name: Andrew Brown
+  url: https://github.com/andrew-werdna
+  avatar: https://github.com/andrew-werdna.png
