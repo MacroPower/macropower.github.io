@@ -3,7 +3,6 @@ import { WINDOW_STATE_EVENT } from "./page-window";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
 const LAUNCHER_URLS: Record<string, string> = {
-  about: "/about/",
   cv: "/cv/",
   blog: "/posts/",
   projects: "/projects/",

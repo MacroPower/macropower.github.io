@@ -1,7 +1,7 @@
 {{ define "main" }}
   {{- $name := "" -}}
   {{- with .File }}{{ $name = .BaseFileName }}{{ end -}}
-  {{- $known := dict "about" true "cv" true -}}
+  {{- $known := dict "cv" true -}}
   {{- if index $known $name -}}
     {{ partial (printf "page/%s.html" $name) . }}
   {{- else -}}

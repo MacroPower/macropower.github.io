@@ -1,11 +1,9 @@
 {{ $current := .RelPermalink }}
 {{ $home     := relURL "" }}
-{{ $about    := relURL "about/" }}
 {{ $cv       := relURL "cv/" }}
 {{ $blog     := relURL "posts/" }}
 {{ $projects := relURL "projects/" }}
 {{- $homeActive     := eq $current $home -}}
-{{- $aboutActive    := eq $current $about -}}
 {{- $cvActive       := eq $current $cv -}}
 {{- $blogActive     := hasPrefix $current $blog -}}
 {{- $projectsActive := eq $current $projects -}}
@@ -19,17 +17,6 @@
     <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
     <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
     <span class="up-tooltip" aria-hidden="true">Home</span>
-  </a>
-
-  <a class="up-launcher-tile{{ if $aboutActive }} is-active{{ end }}"
-     href="{{ $about }}" data-launcher="about" aria-label="About"
-     {{ if $aboutActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/about" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">About</span>
   </a>
 
   <a class="up-launcher-tile{{ if $cvActive }} is-active{{ end }}"

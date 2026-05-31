@@ -1,10 +1,6 @@
 {{ define "main" }}
-  {{- with .Site.GetPage "/about" -}}
-    {{ partial "page/about.html" . }}
-  {{- else -}}
-    <article class="up-page selectable">
-      <h1>{{ .Site.Title }}</h1>
-      {{ .Content }}
-    </article>
-  {{- end -}}
+  <article class="up-page selectable">
+    <h1>{{ .Site.Title }}</h1>
+    {{ .Content }}
+  </article>
 {{ end }}
