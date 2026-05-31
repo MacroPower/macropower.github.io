@@ -1083,6 +1083,7 @@ a.up-sponsor-card[href]:hover{
 }
 
 .up-project-grid{
+  position:relative; /* positioning context for the marquee overlay */
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
   gap:20px;padding:18px 20px 24px;
@@ -1117,6 +1118,49 @@ a.up-sponsor-card[href]:hover{
     box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
   }
   &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
+}
+
+/* The preview-source tile in a multi-selection. Declared after
+   .is-active.is-focused so its box-shadow wins when a tile is anchor, active,
+   and keyboard-focused at once, rather than the two rules clobbering. */
+.up-project-tile.is-anchor.is-active{
+  box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px #8C2410, 0 1px 2px rgba(0,0,0,.2);
+}
+
+/* Drag-to-reorder: the grid suppresses text selection mid-drag. The lifted
+   tile follows the cursor and rides above the rest; .up-project-tile never
+   transitions transform, so its cursor-follow stays crisp while displaced
+   neighbors get a per-element transform transition (FLIP) from projects-desktop. */
+.up-project-grid.is-dragging{cursor:default;user-select:none}
+.up-project-tile.is-dragging{
+  will-change:transform;cursor:grabbing;opacity:.92;
+  box-shadow:0 8px 20px rgba(0,0,0,.3), 0 2px 6px rgba(0,0,0,.22);
+}
+
+/* Rubber-band marquee, positioned in grid-content space (see projects-desktop). */
+.up-marquee{
+  position:absolute;z-index:5;pointer-events:none;
+  border:1px solid rgba(221,72,20,.8);
+  background:rgba(221,72,20,.14);
+  border-radius:1px;
+  &[hidden]{display:none}
+}
+
+/* Right-click menu: mirrors the Unity dropdown tokens but is a transient,
+   position:fixed overlay parented to <body>. */
+.up-ctx-menu{
+  position:fixed;z-index:1100;min-width:170px;
+  background:linear-gradient(180deg,
+    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
+  border:1px solid rgba(0,0,0,.6);
+  box-shadow:0 12px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+  border-radius:4px;color:#E8E5E2;font-size:12.5px;
+  padding:6px 0;overflow:hidden;
+  &[hidden]{display:none}
+}
+.up-ctx-item{
+  padding:5px 16px;cursor:default;color:rgba(255,255,255,.86);white-space:nowrap;
+  &:hover{background:rgba(221,72,20,.65);color:#fff}
 }
 
 .up-project-folder{
@@ -1249,6 +1293,10 @@ a.up-sponsor-card[href]:hover{
   border:1px solid #D4CCBC;color:#5A5550;
   font-size:11px;line-height:1.4;white-space:nowrap;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+/* Multi-select summary chips wrap and scroll, unlike the single-row topic clip. */
+.up-project-preview-namelist{
+  display:flex;flex-wrap:wrap;gap:5px;overflow:auto;align-content:flex-start;
 }
 .up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;

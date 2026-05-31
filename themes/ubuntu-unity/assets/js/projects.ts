@@ -1,4 +1,5 @@
 import { installFilterNav } from "./filter-nav";
+import { installDesktop } from "./projects-desktop";
 
 (function (): void {
   "use strict";
@@ -28,12 +29,105 @@ import { installFilterNav } from "./filter-nav";
     preview.innerHTML = initialPreviewHTML;
   }
 
-  function syncActiveTile(): void {
-    const active = tiles.find((t) => t.classList.contains("is-active"));
-    if (active && active.hidden) {
-      active.classList.remove("is-active");
-      resetPreview();
+  // Explicit selection model driven by projects-desktop. `anchor` is both the
+  // range origin for Shift-click and the preview source when one tile is shown.
+  const selection = new Set<HTMLElement>();
+  let anchor: HTMLElement | null = null;
+
+  const visibleTiles = (): HTMLElement[] => tiles.filter((t) => !t.hidden);
+
+  // Last insertion-order member of a Set (the fallback anchor when the current
+  // one is removed). Avoids spreading the whole Set just to index its tail.
+  const lastOf = (set: Set<HTMLElement>): HTMLElement | null => {
+    let v: HTMLElement | null = null;
+    for (const t of set) v = t;
+    return v;
+  };
+  const sameSet = (a: Set<HTMLElement>, b: Set<HTMLElement>): boolean => {
+    if (a.size !== b.size) return false;
+    for (const x of a) if (!b.has(x)) return false;
+    return true;
+  };
+
+  function renderSelection(): void {
+    const multi = selection.size > 1;
+    for (const t of tiles) {
+      t.classList.toggle("is-active", selection.has(t));
+      // The anchor ring only distinguishes the preview source among several
+      // selected tiles; a lone selection keeps the plain active look.
+      t.classList.toggle("is-anchor", multi && t === anchor);
+      // Selection drives keyboard focus: clearing .is-focused lets filter-nav's
+      // arrow nav resume from the selected (.is-active) tile, while filter-nav
+      // re-adds the focus ring itself when navigating onto an unselected tile.
+      t.classList.remove("is-focused");
     }
+
+    const n = selection.size;
+    if (n === 0) { resetPreview(); return; }
+    if (n === 1) {
+      buildPreview(anchor && selection.has(anchor) ? anchor : selection.values().next().value!);
+      return;
+    }
+    buildMultiPreview(n);
+  }
+
+  function setSingle(tile: HTMLElement): void {
+    selection.clear();
+    selection.add(tile);
+    anchor = tile;
+    renderSelection();
+  }
+  function toggle(tile: HTMLElement): void {
+    if (selection.has(tile)) {
+      selection.delete(tile);
+      if (anchor === tile) anchor = lastOf(selection);
+    } else {
+      selection.add(tile);
+      anchor = tile;
+    }
+    renderSelection();
+  }
+  function selectRange(tile: HTMLElement): void {
+    if (!anchor) { setSingle(tile); return; }
+    const vis = visibleTiles();
+    const a = vis.indexOf(anchor);
+    const b = vis.indexOf(tile);
+    if (a === -1 || b === -1) { setSingle(tile); return; }
+    const lo = Math.min(a, b);
+    const hi = Math.max(a, b);
+    selection.clear();
+    for (let i = lo; i <= hi; i++) selection.add(vis[i]!);
+    renderSelection();
+  }
+  function setMany(many: HTMLElement[], additive: boolean): void {
+    const next = new Set<HTMLElement>(additive ? selection : undefined);
+    for (const t of many) next.add(t);
+    // Marquee calls this on every pointermove; bail before the preview rebuild
+    // when the resulting set is unchanged (pointer dithering, skimming a gap).
+    if (sameSet(next, selection)) return;
+    selection.clear();
+    for (const t of next) selection.add(t);
+    if (many.length) anchor = many[many.length - 1]!;
+    else if (anchor && !selection.has(anchor)) anchor = lastOf(selection);
+    renderSelection();
+  }
+  function clear(): void {
+    selection.clear();
+    anchor = null;
+    renderSelection();
+  }
+  function selectAllVisible(): void {
+    const vis = visibleTiles();
+    selection.clear();
+    for (const t of vis) selection.add(t);
+    anchor = vis[0] ?? null;
+    renderSelection();
+  }
+
+  function syncSelectionAfterFilter(): void {
+    for (const t of [...selection]) if (t.hidden) selection.delete(t);
+    if (anchor && anchor.hidden) anchor = lastOf(selection);
+    renderSelection();
   }
 
   let currentFilter = "all";
@@ -193,14 +287,42 @@ import { installFilterNav } from "./filter-nav";
     preview.appendChild(body);
   }
 
-  function selectTile(tile: HTMLElement): void {
-    for (const t of tiles) t.classList.remove("is-active");
-    tile.classList.add("is-active");
-    buildPreview(tile);
-  }
+  // Multi-select summary: reuses the preview header/body scaffolding with a
+  // plain folder (no language emblem) and lists selected names as chips.
+  function buildMultiPreview(n: number): void {
+    if (!preview) return;
+    preview.classList.remove("up-empty-pane");
+    preview.replaceChildren();
 
-  for (const tile of tiles) {
-    tile.addEventListener("click", () => { selectTile(tile); });
+    const header = document.createElement("div");
+    header.className = "up-project-preview-header";
+    const folder = buildFolderHeader("");
+    if (folder) header.appendChild(folder);
+    const headText = document.createElement("div");
+    headText.className = "up-project-preview-header-text";
+    const title = document.createElement("h2");
+    title.className = "up-project-preview-title";
+    title.textContent = `${n} projects selected`;
+    headText.appendChild(title);
+    header.appendChild(headText);
+    preview.appendChild(header);
+
+    const body = document.createElement("div");
+    body.className = "up-project-preview-body";
+    const label = document.createElement("div");
+    label.className = "up-project-preview-section-label";
+    label.textContent = "Selection";
+    body.appendChild(label);
+    const list = document.createElement("div");
+    list.className = "up-project-preview-namelist";
+    for (const t of selection) {
+      const chip = document.createElement("span");
+      chip.className = "up-project-chip";
+      chip.textContent = t.dataset.name ?? "";
+      list.appendChild(chip);
+    }
+    body.appendChild(list);
+    preview.appendChild(body);
   }
 
   const controller = installFilterNav({
@@ -215,7 +337,7 @@ import { installFilterNav } from "./filter-nav";
     searchMatch,
     prefilter: filterMatches,
     axis: "both",
-    onAfterFilter: syncActiveTile,
+    onAfterFilter: syncSelectionAfterFilter,
   });
 
   for (const btn of filterBtns) {
@@ -226,6 +348,21 @@ import { installFilterNav } from "./filter-nav";
       for (const other of filterBtns) other.classList.remove("is-active");
       btn.classList.add("is-active");
       controller.applyFilters();
+    });
+  }
+
+  if (grid) {
+    installDesktop({
+      grid,
+      tiles,
+      get: () => [...selection],
+      anchor: () => anchor,
+      setSingle,
+      toggle,
+      selectRange,
+      setMany,
+      clear,
+      selectAllVisible,
     });
   }
 })();
