@@ -846,11 +846,19 @@ body{
 }
 
 /* ---------- Projects page ---------- */
+/* Hold the window at its full (max) height on the projects page so filtering
+   the grid, which changes the tile count, does not shrink the window. The
+   folder grid fills the leftover space and scrolls. The maximized state's more
+   specific rule still wins and stretches the chrome to 100%. */
+.up-window-chrome:has(.up-projects){height:85vh}
 .up-projects{padding:0;display:flex;flex-direction:column;min-height:0;flex:1}
 .up-projects-grid{
   display:grid;
   grid-template-columns:168px 1fr;
-  grid-template-rows:auto 1fr;
+  /* Fixed preview row so selecting different projects (or the empty state)
+     does not resize the band and shift the folder grid below it. Content
+     taller than the row scrolls inside the preview via its own overflow. */
+  grid-template-rows:360px 1fr;
   grid-template-areas:
     "sidebar preview"
     "sidebar grid";
@@ -866,8 +874,8 @@ body{
 
 .up-project-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
-  gap:10px;padding:18px 20px 24px;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:20px;padding:18px 20px 24px;
   overflow:auto;
   background:
     radial-gradient(circle at 1px 1px, rgba(90,58,13,.07) 1px, transparent 1.5px),
@@ -955,9 +963,12 @@ body{
 }
 
 .up-project-preview{
-  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+  /* Flat fill: a 180deg gradient darkens toward the divider and clashes with
+     the folder grid's own top-light gradient directly below it, reading as a
+     seam. The flat tone matches the grid's top so the border alone divides them. */
+  background:#FBFAF7;
   border-bottom:1px solid #CFC9BE;
-  padding:0;max-height:42vh;overflow:auto;
+  padding:0;overflow:auto;
   display:flex;flex-direction:column;
   font-size:13px;color:#2E2B28;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
@@ -986,6 +997,10 @@ body{
 }
 
 .up-project-preview-body{
+  /* Fill the fixed band height so the open link can sit at the bottom while
+     the rows above it (desc, stats, topics) keep a stable, single-line height
+     no matter which project is selected. */
+  flex:1;min-width:0;min-height:0;
   padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px;
 }
 .up-project-preview-desc{
@@ -993,6 +1008,7 @@ body{
   color:#3A3733;font-size:13px;line-height:1.55;
   border-bottom:1px dashed #D4CCBC;
   font-style:italic;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .up-project-preview-stats{
   display:grid;grid-template-columns:1fr 1fr;
@@ -1012,17 +1028,20 @@ body{
   margin:4px 0 -2px;
 }
 .up-project-preview-topics{
-  display:flex;flex-wrap:wrap;gap:5px;
+  /* Single row: chips keep their size and the row clips on the right when there
+     are more topics than fit, rather than wrapping and growing the band. */
+  display:flex;flex-wrap:nowrap;gap:5px;overflow:hidden;
 }
 .up-project-chip{
+  flex:none;
   display:inline-flex;align-items:center;padding:2px 8px;border-radius:9999px;
   background:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
   border:1px solid #D4CCBC;color:#5A5550;
-  font-size:11px;line-height:1.4;
+  font-size:11px;line-height:1.4;white-space:nowrap;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
 }
 .up-project-preview-open{
-  margin-top:8px;align-self:flex-start;
+  margin-top:auto;align-self:flex-start;
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
   background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
   color:#2E2B28;font-size:12.5px;font-weight:500;text-decoration:none;
@@ -1050,9 +1069,10 @@ body{
   background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
 }
 /* The projects empty state is a top band, not a tall column, so trim the
-   vertical padding. Scoped to the projects wrapper so the blog's right-column
-   empty pane retains its taller padding. */
-.up-project-preview.up-empty-pane{padding:18px 22px}
+   vertical padding and match the flat fill of the populated preview. Scoped to
+   the projects wrapper so the blog's right-column empty pane keeps the column
+   gradient and its taller padding. */
+.up-project-preview.up-empty-pane{padding:18px 22px;background:#FBFAF7}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   color:#9A938D;
