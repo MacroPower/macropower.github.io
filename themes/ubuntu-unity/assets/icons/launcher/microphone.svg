@@ -1,28 +1,32 @@
-<svg viewBox="0 0 48 48" width="100%" height="100%">
-  <defs>
-  <linearGradient id="ai-mic-grille" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#F8E0A0"/>
-  <stop offset="55%" stop-color="#C9892D"/>
-  <stop offset="100%" stop-color="#5A3F08"/>
-  </linearGradient>
-  <linearGradient id="ai-mic-base" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#5E2750"/>
-  <stop offset="100%" stop-color="#1F0518"/>
-  </linearGradient>
-  </defs>
-  <ellipse cx="24" cy="44" rx="11" ry=".7" fill="rgba(0,0,0,.4)"/>
-  <rect x="16" y="4" width="16" height="22" rx="8" fill="url(#ai-mic-grille)" stroke="#3F2A0A" stroke-width=".9"/>
-  <g stroke="rgba(63,42,10,.5)" stroke-width=".5">
-  <line x1="17" y1="11" x2="31" y2="11"/>
-  <line x1="17" y1="14" x2="31" y2="14"/>
-  <line x1="17" y1="17" x2="31" y2="17"/>
-  </g>
-  <rect x="18" y="5.5" width="3" height="18" rx="1.5" fill="rgba(255,247,228,.4)"/>
-  <rect x="16" y="20" width="16" height="2.6" fill="#3F2A0A"/>
-  <rect x="21" y="26" width="6" height="9" fill="#3D0B2C" stroke="#0A0008" stroke-width=".6"/>
-  <rect x="22" y="26.5" width="1.6" height="8" fill="rgba(255,247,228,.25)"/>
-  <rect x="22.5" y="34" width="3" height="6" fill="#5A3F08"/>
-  <ellipse cx="24" cy="41" rx="11" ry="2.4" fill="url(#ai-mic-base)" stroke="#0A0008" stroke-width=".7"/>
-  <ellipse cx="24" cy="40.3" rx="11" ry="2.4" fill="#3D0B2C" stroke="#0A0008" stroke-width=".6"/>
-  <ellipse cx="21" cy="39.7" rx="4" ry=".9" fill="rgba(255,247,228,.18)"/>
-  </svg>
+<svg viewBox="0 0 48 48" width="100%" height="100%"><defs>
+<radialGradient id="f-broadcast-microphone-head" cx=".36" cy=".32" r=".8"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="48%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></radialGradient>
+<radialGradient id="f-broadcast-microphone-mesh" cx=".38" cy=".34" r=".78"><stop offset="0%" stop-color="#77216F"/><stop offset="55%" stop-color="#2C001E"/><stop offset="100%" stop-color="#0A0008"/></radialGradient>
+<linearGradient id="f-broadcast-microphone-neck" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#5A3F08"/><stop offset="22%" stop-color="#FBF1D8"/><stop offset="55%" stop-color="#C9892D"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+<linearGradient id="f-broadcast-microphone-base" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="40%" stop-color="#D4B575"/><stop offset="100%" stop-color="#5A3F08"/></linearGradient>
+<radialGradient id="f-broadcast-microphone-basetop" cx=".5" cy=".5" r=".5"><stop offset="0%" stop-color="#FBF1D8"/><stop offset="60%" stop-color="#C9892D"/><stop offset="100%" stop-color="#6A4A12"/></radialGradient>
+</defs>
+<ellipse cx="24" cy="44" rx="12" ry=".8" fill="rgba(0,0,0,.4)"/>
+<ellipse cx="24" cy="42.4" rx="13" ry="3.4" fill="url(#f-broadcast-microphone-base)" stroke="#3F2A0A" stroke-width=".9"/>
+<ellipse cx="24" cy="41" rx="13" ry="3.4" fill="url(#f-broadcast-microphone-basetop)" stroke="#3F2A0A" stroke-width=".9"/>
+<ellipse cx="24" cy="40.4" rx="9.6" ry="2.3" fill="none" stroke="rgba(255,255,255,.45)" stroke-width=".5"/>
+<rect x="21.6" y="27" width="4.8" height="13" rx="2.2" fill="url(#f-broadcast-microphone-neck)" stroke="#3F2A0A" stroke-width=".9"/>
+<rect x="22.7" y="27.6" width="1.1" height="12" rx=".55" fill="rgba(255,255,255,.5)"/>
+<rect x="17" y="24.2" width="14" height="3" rx="1.5" fill="#E95420" stroke="#5A1A04" stroke-width=".7"/>
+<rect x="18.2" y="24.6" width="11.6" height=".8" rx=".4" fill="rgba(255,255,255,.45)"/>
+<rect x="20" y="22.6" width="8" height="3.4" rx="1.7" fill="url(#f-broadcast-microphone-neck)" stroke="#3F2A0A" stroke-width=".9"/>
+<circle cx="24" cy="15.4" r="11.4" fill="url(#f-broadcast-microphone-head)" stroke="#3F2A0A" stroke-width=".9"/>
+<circle cx="24" cy="15.4" r="9" fill="url(#f-broadcast-microphone-mesh)" stroke="#3F2A0A" stroke-width=".7"/>
+<g stroke="rgba(255,255,255,.2)" stroke-width=".55" fill="none">
+<path d="M18.4 9.8 A 18 18 0 0 0 18.4 21"/>
+<path d="M21.2 8.1 A 22 22 0 0 0 21.2 22.7"/>
+<path d="M24 7.6 L24 23.2"/>
+<path d="M26.8 8.1 A 22 22 0 0 1 26.8 22.7"/>
+<path d="M29.6 9.8 A 18 18 0 0 1 29.6 21"/>
+<path d="M15.2 15.4 L32.8 15.4"/>
+<path d="M16.4 11.5 L31.6 11.5"/>
+<path d="M16.4 19.3 L31.6 19.3"/>
+</g>
+<ellipse cx="20.4" cy="11.4" rx="3" ry="2" fill="rgba(255,255,255,.3)"/>
+<path d="M16.2 8.7 A 11 11 0 0 1 31.8 8.7" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1" stroke-linecap="round"/>
+<circle cx="24" cy="33.4" r="1.5" fill="#F8D670" stroke="#5A3F08" stroke-width=".5"/>
+</svg>

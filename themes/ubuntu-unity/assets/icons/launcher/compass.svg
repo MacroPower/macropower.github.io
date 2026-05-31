@@ -1,33 +1,37 @@
 <svg viewBox="0 0 48 48" width="100%" height="100%">
   <defs>
-  <linearGradient id="ai-dc-leg" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#F8D670"/>
-  <stop offset="55%" stop-color="#C9892D"/>
-  <stop offset="100%" stop-color="#5A3F08"/>
+  <linearGradient id="f-navigation-compass-case" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8E0A0"/>
+  <stop offset="50%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#3F2A0A"/>
   </linearGradient>
+  <radialGradient id="f-navigation-compass-dial" cx=".4" cy=".35" r=".75">
+  <stop offset="0%" stop-color="#5E2750"/>
+  <stop offset="65%" stop-color="#2C001E"/>
+  <stop offset="100%" stop-color="#0A0008"/>
+  </radialGradient>
   </defs>
-  <rect x="4" y="32" width="40" height="11" rx=".6" fill="#FCFBF4" stroke="#5A3F08" stroke-width=".5"/>
-  <path d="M11 42 A14 14 0 0 1 37 42" fill="none" stroke="#9A8870" stroke-width=".7"/>
-  <path d="M22 4 L26 4 L27 9 L21 9 Z" fill="url(#ai-dc-leg)" stroke="#3F2A0A" stroke-width=".7" stroke-linejoin="round"/>
-  <path d="M22 4 L26 4" stroke="rgba(255,255,255,.6)" stroke-width=".5"/>
-  <circle cx="24" cy="3" r="2.2" fill="#3F2A0A" stroke="#1A0F04" stroke-width=".4"/>
-  <g stroke="rgba(255,247,228,.35)" stroke-width=".3">
-  <line x1="22" y1="3" x2="26" y2="3" transform="rotate(0 24 3)"/>
-  <line x1="22" y1="3" x2="26" y2="3" transform="rotate(45 24 3)"/>
-  <line x1="22" y1="3" x2="26" y2="3" transform="rotate(90 24 3)"/>
-  <line x1="22" y1="3" x2="26" y2="3" transform="rotate(135 24 3)"/>
+  <ellipse cx="24" cy="44" rx="13" ry=".8" fill="rgba(0,0,0,.4)"/>
+  <path d="M22 4 L26 4 L25 7.5 L23 7.5 Z" fill="url(#f-navigation-compass-case)" stroke="#3F2A0A" stroke-width=".6" stroke-linejoin="round"/>
+  <circle cx="24" cy="3.5" r="1.8" fill="url(#f-navigation-compass-case)" stroke="#3F2A0A" stroke-width=".5"/>
+  <circle cx="24" cy="25" r="20" fill="url(#f-navigation-compass-case)" stroke="#3F2A0A" stroke-width=".9"/>
+  <circle cx="24" cy="25" r="18.3" fill="none" stroke="rgba(255,247,228,.4)" stroke-width=".7"/>
+  <circle cx="24" cy="25" r="16" fill="url(#f-navigation-compass-dial)" stroke="#0A0008" stroke-width=".6"/>
+  <g stroke="rgba(255,247,228,.5)" stroke-width=".4">
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(0 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(45 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(90 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(135 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(180 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(225 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(270 24 25)"/>
+  <line x1="24" y1="10" x2="24" y2="13" transform="rotate(315 24 25)"/>
   </g>
-  <circle cx="24" cy="9" r="1.4" fill="#3F2A0A"/>
-  <circle cx="24" cy="9" r=".6" fill="#F8D670"/>
-  <path d="M24 9 L13 36" stroke="url(#ai-dc-leg)" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M24 9 L13 36" stroke="rgba(255,247,228,.45)" stroke-width=".5" stroke-linecap="round"/>
-  <path d="M12 33 L13 38 L14 33 Z" fill="#1A0F04" stroke="#0A0604" stroke-width=".3" stroke-linejoin="round"/>
-  <path d="M24 9 L33 30" stroke="url(#ai-dc-leg)" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M24 9 L33 30" stroke="rgba(255,247,228,.45)" stroke-width=".5" stroke-linecap="round"/>
-  <rect x="32" y="28" width="4" height="3" rx=".3" fill="#3F2A0A" stroke="#1A0F04" stroke-width=".3" transform="rotate(15 34 30)"/>
-  <g transform="rotate(20 35 34)">
-  <rect x="34" y="30" width="2.4" height="7" fill="#DD4814" stroke="#5A1A04" stroke-width=".4"/>
-  <path d="M34 37 L35.2 39 L36.4 37 Z" fill="#FCFBF4" stroke="#5A3F08" stroke-width=".3" stroke-linejoin="round"/>
-  <path d="M34.9 38.4 L35.2 39 L35.5 38.4 Z" fill="#1A0F04"/>
-  </g>
+  <path d="M24 12 L26.4 25 L24 25 Z" fill="#E95420" stroke="#7A1F08" stroke-width=".3" stroke-linejoin="round"/>
+  <path d="M24 12 L21.6 25 L24 25 Z" fill="#DD4814" stroke="#7A1F08" stroke-width=".3" stroke-linejoin="round"/>
+  <path d="M24 38 L26.4 25 L24 25 Z" fill="#FBF1D8" stroke="#5A3F08" stroke-width=".3" stroke-linejoin="round"/>
+  <path d="M24 38 L21.6 25 L24 25 Z" fill="#D9D0B8" stroke="#5A3F08" stroke-width=".3" stroke-linejoin="round"/>
+  <circle cx="24" cy="25" r="1.6" fill="#F8D670" stroke="#3F2A0A" stroke-width=".4"/>
+  <path d="M14 14 A16 16 0 0 1 34 13" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+  <circle cx="24" cy="10" r=".8" fill="#FBF1D8"/>
   </svg>

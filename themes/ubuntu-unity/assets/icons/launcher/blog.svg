@@ -1,28 +1,59 @@
 <svg viewBox="0 0 48 48" width="100%" height="100%">
   <defs>
-    <linearGradient id="ic-page" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"  stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#D9D4CC"/>
-    </linearGradient>
-    <linearGradient id="ic-pencil" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"  stop-color="#F8D55F"/>
-      <stop offset="50%" stop-color="#E7A91A"/>
-      <stop offset="100%" stop-color="#A3700F"/>
-    </linearGradient>
+  <linearGradient id="ai-tw-body" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBF1D8"/>
+  <stop offset="55%" stop-color="#C9892D"/>
+  <stop offset="100%" stop-color="#5A3F08"/>
+  </linearGradient>
+  <linearGradient id="ai-tw-paper" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF"/>
+  <stop offset="100%" stop-color="#D4CCB8"/>
+  </linearGradient>
   </defs>
-  <path d="M8 4 H30 L40 14 V44 H8 Z" fill="url(#ic-page)" stroke="#6A6560" stroke-width=".7" stroke-linejoin="round"/>
-  <path d="M30 4 V14 H40 L30 4 Z" fill="#E0DCD4" stroke="#6A6560" stroke-width=".7" stroke-linejoin="round"/>
-  <path d="M30 4 V12 H38" fill="none" stroke="#fff" stroke-width=".5" opacity=".7"/>
-  <line x1="12" y1="20" x2="35" y2="20" stroke="#7A7570" stroke-width=".9"/>
-  <line x1="12" y1="24" x2="36" y2="24" stroke="#9A938D" stroke-width=".7"/>
-  <line x1="12" y1="28" x2="36" y2="28" stroke="#9A938D" stroke-width=".7"/>
-  <line x1="12" y1="32" x2="30" y2="32" stroke="#9A938D" stroke-width=".7"/>
-  <g transform="rotate(-32 24 30)">
-    <rect x="10" y="29" width="22" height="4" fill="url(#ic-pencil)" stroke="#5A3F08" stroke-width=".5"/>
-    <rect x="32" y="29" width="3" height="4" fill="#B8B5B0" stroke="#3A3733" stroke-width=".4"/>
-    <rect x="35" y="29" width="3" height="4" fill="#D85060" stroke="#7A2030" stroke-width=".4"/>
-    <path d="M10 29 L4 31 L10 33 Z" fill="#F4DDB0" stroke="#5A3F08" stroke-width=".5"/>
-    <path d="M4 31 L7 31 L4 32 Z" fill="#2A2A28"/>
-    <line x1="11" y1="30.2" x2="34" y2="30.2" stroke="rgba(255,255,255,.6)" stroke-width=".4"/>
+  <path d="M14 3 H34 V16 L33 17 H15 L14 16 Z" fill="url(#ai-tw-paper)" stroke="#5A3F08" stroke-width=".6" stroke-linejoin="round"/>
+  <g stroke="#9A8870" stroke-width=".5">
+  <line x1="17" y1="7" x2="31" y2="7"/>
+  <line x1="17" y1="10" x2="29" y2="10"/>
+  <line x1="17" y1="13" x2="31" y2="13"/>
   </g>
-</svg>
+  <rect x="6" y="14" width="36" height="5" rx="2.5" fill="#3F2A0A" stroke="#1A0F04" stroke-width=".5"/>
+  <rect x="6" y="14" width="36" height="1.2" fill="rgba(255,247,228,.25)"/>
+  <circle cx="6" cy="16.5" r="2.5" fill="#C9892D" stroke="#3F2A0A" stroke-width=".5"/>
+  <circle cx="42" cy="16.5" r="2.5" fill="#C9892D" stroke="#3F2A0A" stroke-width=".5"/>
+  <circle cx="6" cy="16.5" r=".7" fill="#3F2A0A"/>
+  <circle cx="42" cy="16.5" r=".7" fill="#3F2A0A"/>
+  <g stroke="#3F2A0A" stroke-width=".5" stroke-linecap="round">
+  <line x1="20" y1="20" x2="21" y2="23"/>
+  <line x1="24" y1="20" x2="24" y2="23"/>
+  <line x1="28" y1="20" x2="27" y2="23"/>
+  </g>
+  <path d="M5 19 H43 V40 Q43 42 41 42 H7 Q5 42 5 40 Z" fill="url(#ai-tw-body)" stroke="#3F2A0A" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M6 20 H42" stroke="rgba(255,255,255,.65)" stroke-width=".5"/>
+  <rect x="8" y="25" width="32" height="14" rx="1" fill="#3D2A0A" stroke="#1A0F04" stroke-width=".4"/>
+  <rect x="8" y="25" width="32" height="1" fill="rgba(255,247,228,.18)"/>
+  <g>
+  <circle cx="11" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="15.3" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="19.6" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="23.9" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="28.2" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="32.5" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="36.8" cy="28" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="13" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="17.3" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="21.6" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="25.9" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="30.2" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="34.5" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="38.8" cy="31.3" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="11" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="15.3" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="19.6" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="23.9" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="28.2" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="32.5" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  <circle cx="36.8" cy="34.6" r="1.4" fill="#FBF1D8" stroke="#3F2A0A" stroke-width=".3"/>
+  </g>
+  <rect x="14" y="37" width="20" height="1.6" rx=".3" fill="#DD4814" stroke="#5A1A04" stroke-width=".3"/>
+  <rect x="14" y="37" width="20" height=".5" fill="rgba(255,247,228,.4)"/>
+  </svg>
