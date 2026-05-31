@@ -33,6 +33,14 @@ jobs:
           echo "$PWD/dart-sass" >> "$GITHUB_PATH"
           rm dart-sass.tar.gz
 
+      # Keep node-version in sync with devbox.json (nodejs@22). The committed
+      # package-lock.json must match package.json or npm ci hard-fails.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
       - name: Build
         run: hugo --minify
 

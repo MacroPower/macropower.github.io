@@ -24,3 +24,5 @@ Hugo static site for jacobcolvin.com, deployed to GitHub Pages from `main`. The 
 ## Deployment
 
 `gh-pages.yml` builds on every push/PR and deploys to the `gh-pages` branch only on pushes to `main` (using `peaceiris/actions-gh-pages`). PRs build but do not publish. There is no preview environment — to validate changes, run `hugo server` locally.
+
+The home page's interactive terminal depends on `@xterm/xterm` (+ `addon-fit`, `addon-web-links`), declared in `package.json` and bundled by Hugo's esbuild from `node_modules`. CI installs them with an `actions/setup-node` + `npm ci` step before `hugo --minify`; `node-version` is pinned to match `devbox.json` (`nodejs@22`). `package-lock.json` must be committed and in sync with `package.json` — `setup-node`'s `cache: npm` keys off the lockfile and `npm ci` hard-fails if it drifts. Locally, run `npm install` after editing `package.json` (the devbox `init_hook` only installs when `node_modules` is absent).
