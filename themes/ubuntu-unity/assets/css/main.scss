@@ -220,6 +220,8 @@ svg[hidden]{ display:none; }
   position:absolute;
   top:24px; left:0; right:0; bottom:0;
   z-index:20;
+  pointer-events:none;
+  > *{pointer-events:auto}
   display:flex; align-items:center; justify-content:center;
   padding:24px 16px;
   transition:opacity .18s ease, transform .25s ease;
