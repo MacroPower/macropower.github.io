@@ -1338,7 +1338,7 @@ a.up-sponsor-card[href]:hover{
 
 .up-dropdown{
   position:absolute; top:24px;
-  min-width:220px; max-width:320px;
+  min-width:248px; max-width:320px;
   background:linear-gradient(180deg,
     rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
   border:1px solid rgba(0,0,0,.6);
@@ -1356,7 +1356,7 @@ a.up-sponsor-card[href]:hover{
   &.up-dropdown-wide{min-width:280px}
 }
 .up-dropdown-header{
-  padding:8px 12px; font-size:11px; font-weight:700;
+  padding:8px 14px; font-size:11px; font-weight:700;
   text-transform:uppercase; letter-spacing:.08em;
   color:rgba(255,255,255,.55);
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -1382,6 +1382,7 @@ a.up-sponsor-card[href]:hover{
   padding:5px 10px; border:0; border-radius:3px;
   background:var(--orange);
   color:#fff; font-size:12px; font-family:"Ubuntu",sans-serif;
+  text-decoration:none;
   cursor:default;
   &:hover{background:var(--orange-light)}
   &.is-ghost{background:transparent}
@@ -1389,18 +1390,22 @@ a.up-sponsor-card[href]:hover{
 }
 .up-dropdown-row-flex{
   display:flex; align-items:center; gap:10px;
+  padding:0 14px;
 }
 .up-dropdown-row-buttons{
   margin-top:10px; display:flex; gap:6px;
+  padding:0 14px;
 }
-.up-dropdown-empty{color:rgba(255,255,255,.6); font-size:12px}
+.up-dropdown-empty{color:rgba(255,255,255,.6); font-size:12px; padding:0 14px}
 .up-dropdown-meta{
   margin-top:8px; font-size:11px;
   color:rgba(255,255,255,.5);
+  padding:0 14px;
 }
 .up-dropdown-meta-strong{color:rgba(255,255,255,.85)}
 .up-dropdown-meta-em{
   color:rgba(255,255,255,.55);
+  padding:0 14px;
   i{color:rgba(255,255,255,.85)}
 }
 
@@ -1472,11 +1477,12 @@ a.up-sponsor-card[href]:hover{
 
 /* ---- battery bar ------------------------------------------------------- */
 
-.up-bat-headline{font-size:13px;color:rgba(255,255,255,.9)}
-.up-bat-detail{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+.up-bat-headline{font-size:13px;color:rgba(255,255,255,.9);padding:0 14px}
+.up-bat-detail{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;padding:0 14px}
 .up-bat-bar{
   height:8px; background:rgba(255,255,255,.12);
-  border-radius:2px; margin-top:10px; overflow:hidden;
+  border-radius:2px; margin-top:10px; margin-bottom:10px; overflow:hidden;
+  margin-left:14px; margin-right:14px;
 }
 .up-bat-bar-fill{
   height:100%;
@@ -1485,7 +1491,7 @@ a.up-sponsor-card[href]:hover{
 
 /* ---- mini calendar ----------------------------------------------------- */
 
-.up-calendar{margin-bottom:8px}
+.up-calendar{margin-bottom:8px; padding:0 14px}
 .up-cal-row{
   display:grid; grid-template-columns:repeat(7, 1fr); gap:2px;
 }
