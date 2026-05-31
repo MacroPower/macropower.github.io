@@ -215,8 +215,73 @@ export function initTopPanel(): void {
     lastClockText = "";
     tickClock();
   };
+  // Inline SVGs ignore the UA `[hidden]` rule (it's HTML-namespaced) and lack a
+  // `.hidden` IDL property, so toggle the attribute directly. Within a paired set
+  // the glyph carrying `altAttr` shows when `altActive` is true, the other when
+  // it's false.
+  const toggleGlyphPair = (glyphs: HTMLElement[], altAttr: string, altActive: boolean): void => {
+    for (const g of glyphs) {
+      const isAlt = g.hasAttribute(altAttr);
+      g.toggleAttribute("hidden", isAlt ? !altActive : altActive);
+    }
+  };
+
+  const batGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-bat-glyph]"));
+  const batHeadline = panel.querySelector<HTMLElement>("[data-bat-headline]");
+  const batDetail = panel.querySelector<HTMLElement>("[data-bat-detail]");
+  const batFill = panel.querySelector<HTMLElement>("[data-bat-fill]");
+  const batLevelFills = Array.from(panel.querySelectorAll<SVGRectElement>("[data-bat-level-fill]"));
+
+  // Width (viewBox units) of a full glyph fill bar. It starts at x=2.5 and stops
+  // just short of the body's inner wall (~x=17.5), so a full charge reads as full
+  // without overrunning the outline.
+  const BAT_GLYPH_FILL_MAX = 14;
+
+  const fmtDuration = (mins: number): string => {
+    const h = Math.floor(mins / 60);
+    const m = Math.round(mins % 60);
+    const unit = (n: number, u: string): string => `${n} ${u}${n === 1 ? "" : "s"}`;
+    const parts: string[] = [];
+    if (h) parts.push(unit(h, "hour"));
+    if (m) parts.push(unit(m, "minute"));
+    return parts.length ? parts.join(" ") : "less than a minute";
+  };
+
+  // Easter egg: the battery "charges" overnight (22:00-06:00) and "discharges"
+  // through the day (06:00-22:00). Level and time-to-flip ramp linearly across
+  // each half-cycle, meeting at 100% by 06:00 and 20% by 22:00, so the dropdown
+  // tracks the wall clock instead of showing fixed numbers.
+  const syncBattery = (): void => {
+    const now = new Date();
+    const hour = now.getHours() + now.getMinutes() / 60;
+    const charging = hour >= 22 || hour < 6;
+
+    const [start, length] = charging ? [22, 8] : [6, 16];
+    const elapsed = (hour - start + 24) % 24; // hours into the current half-cycle
+    const pct = charging
+      ? 20 + (elapsed / length) * 80
+      : 100 - (elapsed / length) * 80;
+    const detail = `About ${fmtDuration((length - elapsed) * 60)} ${charging ? "until full" : "remaining"}`;
+    const level = Math.round(pct);
+
+    toggleGlyphPair(batGlyphs, "data-bat-glyph-charging", charging);
+    if (batHeadline) batHeadline.textContent = `${level}% — ${charging ? "charging" : "discharging"}`;
+    if (batDetail) batDetail.textContent = detail;
+    if (batFill) batFill.style.width = `${level}%`;
+
+    // Step the glyph fill in discrete 20% increments so the icon visibly drains
+    // through the day and fills back up overnight.
+    const step = Math.round(level / 20) * 20;
+    const fillWidth = ((step / 100) * BAT_GLYPH_FILL_MAX).toFixed(2);
+    for (const r of batLevelFills) r.setAttribute("width", fillWidth);
+  };
+
   syncClockMode();
-  setInterval(tickClock, 30 * 1000);
+  syncBattery();
+  setInterval(() => {
+    tickClock();
+    syncBattery();
+  }, 30 * 1000);
   narrowMQ.addEventListener("change", syncClockMode);
 
   const triggers = Array.from(
@@ -281,10 +346,7 @@ export function initTopPanel(): void {
   const volGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-vol-glyph]"));
 
   const syncVolUI = (): void => {
-    for (const g of volGlyphs) {
-      const isMuteGlyph = g.hasAttribute("data-vol-glyph-mute");
-      g.hidden = isMuteGlyph ? !vol.muted : vol.muted;
-    }
+    toggleGlyphPair(volGlyphs, "data-vol-glyph-mute", vol.muted);
     if (slider) slider.value = String(vol.muted ? 0 : vol.level);
     if (readout) readout.textContent = vol.muted ? "—" : String(vol.level);
   };

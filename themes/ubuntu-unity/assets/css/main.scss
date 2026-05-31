@@ -113,6 +113,10 @@ body{
   &:hover,
   &.is-open{ background:rgba(255,255,255,.08); }
 }
+/* The UA `[hidden]` rule is scoped to the HTML namespace, so inline `<svg hidden>`
+   stays visible. The panel's toggled glyphs (volume on/mute, battery
+   charging/discharging) rely on the `hidden` attribute, so hide SVGs explicitly. */
+svg[hidden]{ display:none; }
 .up-clock{
   font-variant-numeric:tabular-nums;
   letter-spacing:.02em;

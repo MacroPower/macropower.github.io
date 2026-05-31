@@ -1,0 +1,8 @@
+<svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1" data-bat-glyph data-bat-glyph-charging hidden>
+  <rect x="1" y="3" width="17" height="8" rx="1"/>
+  <rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/>
+  <rect x="2.5" y="4.5" width="14" height="5" fill="currentColor" stroke="none" data-bat-level-fill/>
+  <!-- bolt stroke matches the panel background (bottom of the .up-top-panel gradient
+       in main.scss) so it stays legible over the white fill; keep them in sync -->
+  <path d="M10.5 4 L7 7.6 H9 L8.5 10 L12 6.4 H10 Z" fill="currentColor" stroke="#252423" stroke-width="0.6" stroke-linejoin="round"/>
+</svg>

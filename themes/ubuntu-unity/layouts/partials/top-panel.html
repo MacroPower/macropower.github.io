@@ -131,13 +131,14 @@
   <div class="up-panel-item">
     <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery">
       {{ partial "icon.html" "glyphs/panel-battery" }}
+      {{ partial "icon.html" "glyphs/panel-battery-charging" }}
     </span>
     <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Battery</div>
       <div class="up-dropdown-body">
-        <div class="up-bat-headline">76% — discharging</div>
-        <div class="up-bat-detail">About 3 hours 14 minutes remaining</div>
-        <div class="up-bat-bar"><div class="up-bat-bar-fill" style="width:76%"></div></div>
+        <div class="up-bat-headline" data-bat-headline>76% — discharging</div>
+        <div class="up-bat-detail" data-bat-detail>About 3 hours 14 minutes remaining</div>
+        <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill style="width:76%"></div></div>
         <div class="up-dropdown-row" data-action="dlg:power-saver">Enable power saver</div>
         <div class="up-dropdown-row" data-action="dlg:power">Power settings…</div>
       </div>
