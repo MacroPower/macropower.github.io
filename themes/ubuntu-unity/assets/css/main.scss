@@ -848,28 +848,37 @@ body{
 /* ---------- Projects page ---------- */
 .up-projects{padding:0;display:flex;flex-direction:column;min-height:0;flex:1}
 .up-projects-grid{
-  display:grid;grid-template-columns:168px 1fr 300px;
+  display:grid;
+  grid-template-columns:168px 1fr;
+  grid-template-rows:auto 1fr;
+  grid-template-areas:
+    "sidebar preview"
+    "sidebar grid";
   min-height:0;flex:1;height:100%;
   > *{min-width:0;min-height:0}
+  /* Scoped to direct children: .up-naut-sidebar is the shared Nautilus shell
+     reused by column-placed grids (blog, taxonomy, term, cv) that have no named
+     areas, so its base rule must stay free of grid-area. */
+  > .up-naut-sidebar{grid-area:sidebar}
+  > .up-project-preview{grid-area:preview}
+  > .up-project-grid{grid-area:grid}
 }
 
 .up-project-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(108px,1fr));
-  gap:6px;padding:18px 20px 24px;
+  grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+  gap:10px;padding:18px 20px 24px;
   overflow:auto;
   background:
     radial-gradient(circle at 1px 1px, rgba(90,58,13,.07) 1px, transparent 1.5px),
     linear-gradient(180deg,#FBFAF7 0%,#F4F0E8 100%);
   background-size:18px 18px, 100% 100%;
   align-content:start;
-  border-right:1px solid #D4CFC5;
-  box-shadow:inset 1px 0 0 rgba(255,255,255,.6);
 }
 
 .up-project-tile{
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  gap:8px;padding:10px 6px 8px;
+  gap:8px;padding:12px 10px 10px;
   background:transparent;border:1px solid transparent;border-radius:5px;
   color:#3A3733;cursor:pointer;font:inherit;text-align:center;
   outline:none;
@@ -947,11 +956,11 @@ body{
 
 .up-project-preview{
   background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
-  border-left:1px solid #CFC9BE;
-  padding:0;overflow:auto;
+  border-bottom:1px solid #CFC9BE;
+  padding:0;max-height:42vh;overflow:auto;
   display:flex;flex-direction:column;
   font-size:13px;color:#2E2B28;
-  box-shadow:inset 1px 0 0 rgba(255,255,255,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
 }
 .up-project-preview-header{
   display:grid;grid-template-columns:84px 1fr;
@@ -1040,6 +1049,10 @@ body{
   padding:28px 22px;text-align:center;
   background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
 }
+/* The projects empty state is a top band, not a tall column, so trim the
+   vertical padding. Scoped to the projects wrapper so the blog's right-column
+   empty pane retains its taller padding. */
+.up-project-preview.up-empty-pane{padding:18px 22px}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   color:#9A938D;
@@ -1060,7 +1073,12 @@ body{
 @media (max-width:980px){
   .up-blog-grid{grid-template-columns:1fr;height:auto}
   .up-cv-grid{grid-template-columns:1fr}
-  .up-projects-grid{grid-template-columns:1fr;height:auto}
+  .up-projects-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr;
+    grid-template-areas:"sidebar" "preview" "grid";
+    height:auto;
+  }
   .up-naut-sidebar{
     border-right:0;border-bottom:1px solid #D4D0CD;
     display:flex;flex-wrap:wrap;padding:6px 8px;
