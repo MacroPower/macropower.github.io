@@ -406,7 +406,10 @@ export class Readline {
     if (candidates.length === 0) return;
 
     if (candidates.length === 1) {
-      this.applyCompletion(current, candidates[0] ?? "", true);
+      const only = candidates[0] ?? "";
+      // A directory completion ends in "/": leave the cursor right after it
+      // (no trailing space) so the next Tab descends into it, like bash.
+      this.applyCompletion(current, only, !only.endsWith("/"));
       return;
     }
 
