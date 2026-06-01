@@ -1,5 +1,6 @@
 import { subscribe, getTrashFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
+import { showPreferences, setReduceMotion } from "./prefs";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
 const LAUNCHER_URLS: Record<string, string> = {
@@ -27,8 +28,6 @@ function dlg(opts: UPDialogOptions): Promise<string | null> {
 }
 
 const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
-  "dlg:prefs": () => ({ icon: "info", title: "Preferences",
-    body: "This site doesn't ship a settings panel." }),
   "dlg:launcher-info": () => ({ icon: "info", title: "Launcher is always shown",
     body: "The launcher is part of the shell." }),
   "dlg:shortcuts": () => ({
@@ -59,16 +58,8 @@ const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
       { id: "on", label: "Enable hotspot", primary: true },
     ],
   }),
-  "dlg:power-saver": () => ({ icon: "success", title: "Power saver enabled",
-    body: "Screen will dim after 1 minute. Background tasks throttled." }),
-  "dlg:power": () => ({ icon: "info", title: "Power settings",
-    body: "The System Settings panel isn't wired up in this build. The raw data lives in /sys/class/power_supply/BAT0/uevent." }),
   "dlg:cal": () => ({ icon: "info", title: "Calendar",
     body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
-  "dlg:time": () => ({ icon: "info", title: "Time & date",
-    body: "Time zone: Europe/Lisbon (WEST, UTC+1). Synced via NTP." }),
-  "dlg:lock": () => ({ icon: "info", title: "Lock screen",
-    body: "Just kidding — there's nothing to lock. This is a website." }),
 };
 
 function renderCalendar(host: HTMLElement, now: Date): void {
@@ -119,6 +110,18 @@ async function dispatchAction(action: string): Promise<void> {
   const site = getSite();
   const preset = DLG_PRESETS[action];
   if (preset) { await dlg(preset(site)); return; }
+  if (action === "dlg:prefs") {
+    await showPreferences();
+    return;
+  }
+  if (action === "dlg:power-saver") {
+    setReduceMotion(true);
+    await dlg({
+      icon: "success", title: "Power saver enabled",
+      body: "Animations reduced to save power. Turn motion back on in Edit → Preferences.",
+    });
+    return;
+  }
   if (action === "dlg:logout") {
     const r = await dlg({
       icon: "question", title: "Log out of " + (site.handle || "user") + "?",

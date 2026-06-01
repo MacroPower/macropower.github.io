@@ -1526,7 +1526,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-bat-bar-fill{
   height:100%;
-  background:linear-gradient(90deg,#DD4814,#E95420);
+  background:linear-gradient(90deg,var(--orange),var(--orange-light));
 }
 
 /* ---- mini calendar ----------------------------------------------------- */
@@ -1775,6 +1775,14 @@ a.up-sponsor-card[href]:hover{
     border-color:#2E2B28;
     outline:2px solid rgba(255,255,255,.6); outline-offset:-5px;
   }
+}
+
+/* Reduce-motion: seeded from prefers-reduced-motion, toggled live from
+   Preferences / Power saver. Kills animations and transitions site-wide so
+   the desktop snaps between states instead of easing. */
+body.up-reduce-motion *{
+  animation:none !important;
+  transition:none !important;
 }
 
 /* ---- trash window ------------------------------------------------------ */
