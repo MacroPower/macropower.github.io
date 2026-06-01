@@ -14,13 +14,45 @@
         <span class="up-pathbar-sep" aria-hidden="true">›</span>
         <span class="up-pathbar-pill is-current">trash</span>
       </div>
-      <div class="up-trash-empty">
+
+      <div class="up-trash-files" data-trash-files>
+        <div class="up-trash-tile is-pdf">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "glyphs/pdf" }}</span>
+          <span class="up-trash-tile-label">old-resume-FINAL-v3.pdf</span>
+        </div>
+        <div class="up-trash-tile is-file">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
+          <span class="up-trash-tile-label">passwords.txt</span>
+        </div>
+        <div class="up-trash-tile is-folder">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "glyphs/folder" }}</span>
+          <span class="up-trash-tile-label">node_modules</span>
+        </div>
+        <div class="up-trash-tile is-file">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
+          <span class="up-trash-tile-label">.DS_Store</span>
+        </div>
+        <div class="up-trash-tile is-file">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
+          <span class="up-trash-tile-label">screenshot-2009-08-14.png</span>
+        </div>
+        <div class="up-trash-tile is-folder">
+          <span class="up-trash-tile-icon">{{ partial "icon.html" "glyphs/folder" }}</span>
+          <span class="up-trash-tile-label">secret-startup-idea</span>
+        </div>
+      </div>
+
+      <div class="up-trash-empty" hidden>
         {{ partial "icon.html" "flat/trash-empty" }}
         <div class="up-trash-empty-headline">Trash is empty</div>
         <div class="up-trash-empty-detail">
           Nothing thrown away yet. Tried that essay about dotfiles three
           times — kept saving it.
         </div>
+      </div>
+
+      <div class="up-trash-footer">
+        <span class="up-trash-count" data-trash-count>6 items</span>
         <button type="button" class="up-trash-empty-btn" data-trash-empty>Empty Trash</button>
       </div>
     </div>

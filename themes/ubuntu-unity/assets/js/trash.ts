@@ -16,10 +16,54 @@ export function initTrash(): void {
 
   const closeBtn = chrome.querySelector<HTMLElement>(".up-tl-close");
   const minBtn   = chrome.querySelector<HTMLElement>(".up-tl-min");
-  const emptyBtn = chrome.querySelector<HTMLElement>("[data-trash-empty]");
+  const emptyBtn = chrome.querySelector<HTMLButtonElement>("[data-trash-empty]");
+  const filesView = chrome.querySelector<HTMLElement>("[data-trash-files]");
+  const emptyView = chrome.querySelector<HTMLElement>(".up-trash-empty");
+  const countEl = chrome.querySelector<HTMLElement>("[data-trash-count]");
+  const tiles = Array.from(chrome.querySelectorAll<HTMLElement>(".up-trash-tile"));
 
   let open = false;
   let minimized = false;
+  // Session-only: the trash refills on reload.
+  let emptied = false;
+
+  const reduceMotion = (): boolean =>
+    document.body.classList.contains("up-reduce-motion") ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Swap between the file list and the empty state, and reflect the count /
+  // button on the footer.
+  const renderTrash = (): void => {
+    if (filesView) filesView.hidden = emptied;
+    if (emptyView) emptyView.hidden = !emptied;
+    if (countEl) countEl.textContent = emptied ? "0 items" : `${tiles.length} items`;
+    if (emptyBtn) {
+      emptyBtn.disabled = emptied;
+      emptyBtn.textContent = emptied ? "Trash is empty" : "Empty Trash";
+    }
+  };
+
+  const finishEmpty = (): void => {
+    emptied = true;
+    if (filesView) filesView.classList.remove("is-removing");
+    renderTrash();
+  };
+
+  const doEmpty = (): void => {
+    if (!filesView || reduceMotion()) { finishEmpty(); return; }
+    // Animate the tiles out, then swap to the empty state once the last tile's
+    // animation lands. A timeout backstops a missed animationend event.
+    let done = false;
+    const onEnd = (): void => {
+      if (done) return;
+      done = true;
+      filesView.removeEventListener("animationend", onEnd);
+      finishEmpty();
+    };
+    filesView.addEventListener("animationend", onEnd);
+    filesView.classList.add("is-removing");
+    setTimeout(onEnd, 500);
+  };
 
   const render = (): void => {
     const focused = getTrashFocused();
@@ -51,11 +95,19 @@ export function initTrash(): void {
   minBtn  ?.addEventListener("click", (e) => { e.stopPropagation(); minimize(); });
 
   emptyBtn?.addEventListener("click", () => {
-    void window.uiDialog?.({
-      icon: "info",
-      title: "Trash is already empty",
-      body: "There's nothing here to remove.",
-    });
+    if (emptied) return;
+    void (async () => {
+      const r = await window.uiDialog?.({
+        icon: "warning",
+        title: `Permanently delete ${tiles.length} items?`,
+        body: "If you empty the trash, the items will be permanently deleted. This can't be undone.",
+        buttons: [
+          { id: "cancel", label: "Cancel" },
+          { id: "empty", label: "Empty Trash", primary: true, danger: true },
+        ],
+      });
+      if (r === "empty") doEmpty();
+    })();
   });
 
   document.addEventListener("click", (e) => {
@@ -80,5 +132,6 @@ export function initTrash(): void {
   installTitlebarDrag(chrome, { spring: false, yMin: 24 });
 
   subscribe(render);
+  renderTrash();
   render();
 }

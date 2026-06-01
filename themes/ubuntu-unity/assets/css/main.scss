@@ -1869,7 +1869,7 @@ body.up-reduce-motion *{
   text-align:center; line-height:1.5;
 }
 .up-trash-empty-btn{
-  margin-top:6px; padding:6px 14px;
+  padding:6px 14px;
   background:linear-gradient(180deg,#FBFAF9,#E5E2DF);
   border:1px solid #C9C5C1; border-radius:3px;
   font-size:12.5px; color:#3A3733; cursor:default;
@@ -1877,7 +1877,54 @@ body.up-reduce-motion *{
     background:linear-gradient(180deg,#FFFFFF,#E5E2DF);
     border-color:#A8A39E;
   }
+  &:disabled{
+    color:#A8A39E; cursor:default;
+    background:linear-gradient(180deg,#F4F2EF,#ECE9E5);
+    &:hover{border-color:#C9C5C1}
+  }
 }
+
+/* ---- trash file list --------------------------------------------------- */
+
+.up-trash-files{
+  flex:1 1 auto; min-height:0; overflow:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(92px, 1fr));
+  align-content:start;
+  gap:6px; padding:12px;
+  &[hidden]{display:none}
+}
+.up-trash-tile{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:8px 4px; border-radius:4px; text-align:center;
+}
+.up-trash-tile-icon{
+  width:46px; height:46px;
+  display:flex; align-items:center; justify-content:center;
+  svg{width:100%; height:100%}
+}
+/* glyph icons (folder/pdf) are thin monochrome; tint them so they read as
+   file-manager artwork next to the flat empty-file illustration. */
+.up-trash-tile.is-folder .up-trash-tile-icon{color:#C58A4D}
+.up-trash-tile.is-pdf .up-trash-tile-icon{color:#C7391E}
+.up-trash-tile-label{
+  font-size:11.5px; line-height:1.25; color:#3A3733;
+  word-break:break-word; max-width:88px;
+}
+.up-trash-files.is-removing .up-trash-tile{
+  animation:upTrashOut .3s ease forwards;
+}
+@keyframes upTrashOut{
+  to{opacity:0; transform:translateY(-10px) scale(.82)}
+}
+.up-trash-footer{
+  flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:8px 12px;
+  border-top:1px solid var(--content-line);
+  background:linear-gradient(180deg,#F4F2EF 0%,#ECE9E5 100%);
+}
+.up-trash-count{font-size:12px; color:#6B6764}
 
 /* ---- narrow-mode indicator collapse ------------------------------------ */
 
