@@ -9,7 +9,7 @@ const red = (s: string): string => color(PALETTE.red, s);
 
 // Resolve the input lines for a filter: file operands (ANSI-stripped) if any,
 // otherwise the piped stdin. Missing/dir operands print an error and set code.
-function inputLines(
+export function inputLines(
   ctx: CommandContext,
   cmd: string,
   files: string[],
@@ -26,7 +26,7 @@ function inputLines(
   return { lines, code };
 }
 
-function splitFlags(args: string[]): { flags: Set<string>; operands: string[] } {
+export function splitFlags(args: string[]): { flags: Set<string>; operands: string[] } {
   const flags = new Set<string>();
   const operands: string[] = [];
   for (const a of args) {
@@ -61,7 +61,7 @@ function parseLineCount(args: string[]): { n: number; files: string[]; err?: str
   return { n, files };
 }
 
-const pathComplete = (ctx: { vfs: import("../vfs").Vfs; cwd: string; current: string }): string[] =>
+export const pathComplete = (ctx: { vfs: import("../vfs").Vfs; cwd: string; current: string }): string[] =>
   completePath(ctx.vfs, ctx.cwd, ctx.current);
 
 export const grep: Command = {
@@ -180,6 +180,228 @@ export const sort: Command = {
     if (flags.has("r")) result.reverse();
     if (flags.has("u")) result = result.filter((l, i) => i === 0 || l !== result[i - 1]);
     for (const l of result) ctx.writeln(l);
+    return code;
+  },
+};
+
+// Parse a cut LIST ("1", "1,3", "2-", "-3", "1-5") into inclusive ranges; an
+// open upper bound becomes Infinity. Returns null on a malformed field.
+function parseRanges(spec: string): [number, number][] | null {
+  const ranges: [number, number][] = [];
+  for (const part of spec.split(",")) {
+    let m: RegExpExecArray | null;
+    if (/^\d+$/.test(part)) { const n = Number(part); ranges.push([n, n]); }
+    else if ((m = /^(\d+)-$/.exec(part))) ranges.push([Number(m[1]), Infinity]);
+    else if ((m = /^-(\d+)$/.exec(part))) ranges.push([1, Number(m[1])]);
+    else if ((m = /^(\d+)-(\d+)$/.exec(part))) ranges.push([Number(m[1]), Number(m[2])]);
+    else return null;
+  }
+  return ranges;
+}
+
+const inRanges = (i: number, ranges: [number, number][]): boolean =>
+  ranges.some(([lo, hi]) => i >= lo && i <= hi);
+
+export const cut: Command = {
+  name: "cut",
+  summary: "extract fields or characters from each line",
+  usage: "cut -f LIST [-d DELIM] | cut -c LIST [FILE...]",
+  details: "Print selected parts of each line. -f selects delimited fields (-d sets the delimiter, default TAB); -c selects character positions. LIST is a comma-separated set of N, N-, -M, or N-M ranges.",
+  complete: pathComplete,
+  run(ctx) {
+    let delim = "\t";
+    let fieldSpec: string | undefined;
+    let charSpec: string | undefined;
+    const files: string[] = [];
+    const args = ctx.args;
+    for (let i = 0; i < args.length; i += 1) {
+      const a = args[i] ?? "";
+      if (a === "-d") { delim = args[i + 1] ?? ""; i += 1; }
+      else if (a.startsWith("-d")) delim = a.slice(2);
+      else if (a === "-f") { fieldSpec = args[i + 1]; i += 1; }
+      else if (a.startsWith("-f")) fieldSpec = a.slice(2);
+      else if (a === "-c") { charSpec = args[i + 1]; i += 1; }
+      else if (a.startsWith("-c")) charSpec = a.slice(2);
+      else files.push(a);
+    }
+    const spec = charSpec ?? fieldSpec;
+    if (spec === undefined) { ctx.errln(red("cut: you must specify a list of bytes, characters, or fields")); return 1; }
+    const ranges = parseRanges(spec);
+    if (!ranges) { ctx.errln(red(`cut: invalid field value '${spec}'`)); return 1; }
+    const d = delim.length > 0 ? (delim[0] as string) : "\t";
+    const { lines, code } = inputLines(ctx, "cut", files);
+    for (const line of lines) {
+      if (charSpec !== undefined) {
+        const chars = [...line];
+        ctx.writeln(chars.filter((_, idx) => inRanges(idx + 1, ranges)).join(""));
+      } else if (!line.includes(d)) {
+        ctx.writeln(line);
+      } else {
+        const fields = line.split(d);
+        ctx.writeln(fields.filter((_, idx) => inRanges(idx + 1, ranges)).join(d));
+      }
+    }
+    return code;
+  },
+};
+
+// Expand a tr SET into its characters: ranges (a-z) enumerate, and the common
+// escapes (\n \t \r \\) decode.
+function expandSet(s: string): string[] {
+  const out: string[] = [];
+  const esc: Record<string, string> = { n: "\n", t: "\t", r: "\r", "\\": "\\" };
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] === "\\" && i + 1 < s.length) { const e = s[i + 1] as string; out.push(esc[e] ?? e); i += 2; continue; }
+    if (s[i + 1] === "-" && i + 2 < s.length && s[i + 2] !== "\\") {
+      const a = (s[i] as string).charCodeAt(0);
+      const b = (s[i + 2] as string).charCodeAt(0);
+      if (a <= b) { for (let c = a; c <= b; c += 1) out.push(String.fromCharCode(c)); i += 3; continue; }
+    }
+    out.push(s[i] as string);
+    i += 1;
+  }
+  return out;
+}
+
+export const tr: Command = {
+  name: "tr",
+  summary: "translate or delete characters",
+  usage: "tr [-d] SET1 [SET2]",
+  details: "Translate characters in SET1 to the matching ones in SET2, reading standard input. With -d, delete the characters in SET1 instead. Sets may use ranges like a-z.",
+  run(ctx) {
+    const { flags, operands } = splitFlags(ctx.args);
+    const set1 = operands[0];
+    if (set1 === undefined) { ctx.errln(red("tr: missing operand")); return 1; }
+    const s1 = expandSet(set1);
+    if (flags.has("d")) {
+      const drop = new Set(s1);
+      for (const line of ctx.stdin) ctx.writeln([...line].filter((c) => !drop.has(c)).join(""));
+      return 0;
+    }
+    const set2 = operands[1];
+    if (set2 === undefined) { ctx.errln(red(`tr: missing operand after '${set1}'`)); return 1; }
+    const s2 = expandSet(set2);
+    const last = s2.length - 1;
+    const map = new Map<string, string>();
+    s1.forEach((c, idx) => { map.set(c, s2[Math.min(idx, last)] ?? c); });
+    for (const line of ctx.stdin) ctx.writeln([...line].map((c) => map.get(c) ?? c).join(""));
+    return 0;
+  },
+};
+
+export const uniq: Command = {
+  name: "uniq",
+  summary: "drop adjacent duplicate lines",
+  usage: "uniq [-c] [FILE]",
+  details: "Collapse runs of identical adjacent lines into one. -c prefixes each line with the number of times it occurred. Input is usually sorted first.",
+  complete: pathComplete,
+  run(ctx) {
+    const { flags, operands } = splitFlags(ctx.args);
+    const { lines, code } = inputLines(ctx, "uniq", operands);
+    const count = flags.has("c");
+    let i = 0;
+    while (i < lines.length) {
+      let j = i + 1;
+      while (j < lines.length && lines[j] === lines[i]) j += 1;
+      if (count) ctx.writeln(`${String(j - i).padStart(7)} ${lines[i]}`);
+      else ctx.writeln(lines[i] as string);
+      i = j;
+    }
+    return code;
+  },
+};
+
+export const rev: Command = {
+  name: "rev",
+  summary: "reverse the characters of each line",
+  usage: "rev [FILE...]",
+  details: "Print each line of the input with its characters in reverse order.",
+  complete: pathComplete,
+  run(ctx) {
+    const { lines, code } = inputLines(ctx, "rev", ctx.args);
+    for (const l of lines) ctx.writeln([...l].reverse().join(""));
+    return code;
+  },
+};
+
+export const tac: Command = {
+  name: "tac",
+  summary: "print lines in reverse order",
+  usage: "tac [FILE...]",
+  details: "Concatenate the input and print its lines from last to first.",
+  complete: pathComplete,
+  run(ctx) {
+    const { lines, code } = inputLines(ctx, "tac", ctx.args);
+    for (let i = lines.length - 1; i >= 0; i -= 1) ctx.writeln(lines[i] as string);
+    return code;
+  },
+};
+
+export const nl: Command = {
+  name: "nl",
+  summary: "number the lines of input",
+  usage: "nl [FILE...]",
+  details: "Write the input to standard output with non-empty lines numbered in a right-justified, tab-separated column. Empty lines are printed without a number.",
+  complete: pathComplete,
+  run(ctx) {
+    const { lines, code } = inputLines(ctx, "nl", ctx.args);
+    let n = 1;
+    for (const l of lines) {
+      if (l === "") { ctx.writeln(""); continue; }
+      ctx.writeln(`${String(n).padStart(6)}\t${l}`);
+      n += 1;
+    }
+    return code;
+  },
+};
+
+// Format a seq value: integers bare, fractions trimmed of accumulation noise.
+function formatSeq(v: number): string {
+  return Number.isInteger(v) ? String(v) : String(Math.round(v * 1e10) / 1e10);
+}
+
+export const seq: Command = {
+  name: "seq",
+  summary: "print a sequence of numbers",
+  usage: "seq LAST | seq FIRST LAST | seq FIRST STEP LAST",
+  details: "Print numbers from FIRST (default 1) to LAST in increments of STEP (default 1), one per line. Fractional values print with their natural precision rather than GNU seq's uniform decimal width.",
+  run(ctx) {
+    const nums = ctx.args.map(Number);
+    let first = 1;
+    let step = 1;
+    let last: number;
+    if (nums.length === 1) { last = nums[0] as number; }
+    else if (nums.length === 2) { first = nums[0] as number; last = nums[1] as number; }
+    else if (nums.length === 3) { first = nums[0] as number; step = nums[1] as number; last = nums[2] as number; }
+    else { ctx.errln(red("seq: missing operand")); return 1; }
+    if ([first, step, last].some((n) => !Number.isFinite(n)) || step === 0) {
+      ctx.errln(red(`seq: invalid argument`));
+      return 1;
+    }
+    const eps = 1e-9;
+    if (step > 0) for (let v = first; v <= last + eps; v += step) ctx.writeln(formatSeq(v));
+    else for (let v = first; v >= last - eps; v += step) ctx.writeln(formatSeq(v));
+    return 0;
+  },
+};
+
+export const tee: Command = {
+  name: "tee",
+  summary: "copy standard input to files and stdout",
+  usage: "tee [-a] FILE...",
+  details: "Read standard input and write it to standard output and to each FILE. -a appends to the files instead of overwriting them.",
+  complete: pathComplete,
+  run(ctx) {
+    const { flags, operands } = splitFlags(ctx.args);
+    const append = flags.has("a");
+    const body = ctx.stdin.length ? `${ctx.stdin.join("\n")}\n` : "";
+    let code = 0;
+    for (const f of operands) {
+      const err = ctx.vfs.writeFile(ctx.vfs.resolvePath(ctx.cwd(), f), body, { append });
+      if (err) { ctx.errln(red(`tee: ${f}: ${err}`)); code = 1; }
+    }
+    for (const l of ctx.stdin) ctx.writeln(l);
     return code;
   },
 };

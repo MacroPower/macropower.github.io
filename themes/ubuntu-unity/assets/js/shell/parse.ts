@@ -45,10 +45,12 @@ export interface Word {
   hasUnquotedGlob: boolean;
 }
 
-// A redirection on a simple command. "file" sends an fd to a path (the VFS is
-// read-only, so any real target fails); "dup" points one fd at another (2>&1).
+// A redirection on a simple command. "file" sends an fd to a path (the session
+// VFS is writable, so the file is created/appended); "read" feeds a file to
+// stdin (`< file`); "dup" points one fd at another (2>&1).
 export type Redirect =
   | { kind: "file"; fd: number; op: ">" | ">>"; target: Word }
+  | { kind: "read"; fd: 0; target: Word }
   | { kind: "dup"; fd: number; toFd: number };
 
 export interface SimpleCommand {
@@ -71,6 +73,7 @@ export interface ParseResult {
 // word; "dup" stands alone. "both" is &> / &>> (stdout+stderr to one file).
 type RedirSpec =
   | { kind: "file"; fd: number; op: ">" | ">>" }
+  | { kind: "read"; fd: 0 }
   | { kind: "dup"; fd: number; toFd: number }
   | { kind: "both"; op: ">" | ">>" };
 
@@ -294,6 +297,13 @@ function tokenize(line: string, env: ParseEnv): { tokens: Token[]; error?: strin
       continue;
     }
 
+    if (c === "<") {
+      flushWord();
+      redir({ kind: "read", fd: 0 });
+      i += 1;
+      continue;
+    }
+
     // Tilde expands only at the start of a word, before / or end-of-word.
     if (c === "~" && !started) {
       const nx = line[i + 1];
@@ -345,7 +355,7 @@ function buildStatements(tokens: Token[]): ParseResult {
   let pipeline: SimpleCommand[] = [];
   let cmd: SimpleCommand = { words: [], redirs: [] };
   let connector: Connector = ";";
-  let pending: { kind: "file" | "both"; fd: number; op: ">" | ">>" } | null = null;
+  let pending: { kind: "file" | "both" | "read"; fd: number; op: ">" | ">>" } | null = null;
 
   const cmdEmpty = (): boolean => cmd.words.length === 0 && cmd.redirs.length === 0;
   const pushCmd = (): void => { pipeline.push(cmd); cmd = { words: [], redirs: [] }; };
@@ -355,6 +365,8 @@ function buildStatements(tokens: Token[]): ParseResult {
       if (pending) {
         if (pending.kind === "file") {
           cmd.redirs.push({ kind: "file", fd: pending.fd, op: pending.op, target: tok.word });
+        } else if (pending.kind === "read") {
+          cmd.redirs.push({ kind: "read", fd: 0, target: tok.word });
         } else {
           cmd.redirs.push({ kind: "file", fd: 1, op: pending.op, target: tok.word });
           cmd.redirs.push({ kind: "dup", fd: 2, toFd: 1 });
@@ -366,9 +378,10 @@ function buildStatements(tokens: Token[]): ParseResult {
       continue;
     }
     if (tok.kind === "redir") {
-      if (pending) return syntaxError(tok.spec.kind === "dup" ? "&" : ">");
+      if (pending) return syntaxError(tok.spec.kind === "dup" ? "&" : tok.spec.kind === "read" ? "<" : ">");
       if (tok.spec.kind === "dup") cmd.redirs.push({ kind: "dup", fd: tok.spec.fd, toFd: tok.spec.toFd });
       else if (tok.spec.kind === "file") pending = { kind: "file", fd: tok.spec.fd, op: tok.spec.op };
+      else if (tok.spec.kind === "read") pending = { kind: "read", fd: 0, op: ">" };
       else pending = { kind: "both", fd: 1, op: tok.spec.op };
       continue;
     }

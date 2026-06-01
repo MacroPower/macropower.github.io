@@ -60,10 +60,237 @@ describe("stderr routing", () => {
     expect(r.stdout).toBe("cat: nope.txt: No such file or directory\n");
     expect(r.stderr).toBe("");
   });
-  it("a real redirection target fails like a read-only mount", () => {
-    const r = makeShell().run("echo hi > out.txt");
-    expect(r.stderr).toBe("bash: out.txt: Read-only file system\n");
+});
+
+describe("writable filesystem", () => {
+  it("creates a file with > and reads it back with no trailing blank", () => {
+    const sh = makeShell();
+    sh.run("echo hi > f");
+    expect(sh.run("cat f").stdout).toBe("hi\n");
+  });
+  it("appends with >>", () => {
+    const sh = makeShell();
+    sh.run("echo one > f");
+    sh.run("echo two >> f");
+    expect(sh.run("cat f").stdout).toBe("one\ntwo\n");
+  });
+  it("truncates an existing file with >", () => {
+    const sh = makeShell();
+    sh.run("printf 'a\\nb\\nc\\n' > f");
+    sh.run("echo z > f");
+    expect(sh.run("cat f").stdout).toBe("z\n");
+  });
+  it("reads stdin from a file with <", () => {
+    const sh = makeShell();
+    sh.run("printf 'b\\na\\nc\\n' > f");
+    expect(sh.run("sort < f").stdout).toBe("a\nb\nc\n");
+  });
+  it("combines < input with a downstream pipe", () => {
+    const sh = makeShell();
+    sh.run("printf 'x\\ny\\nz\\n' > f");
+    expect(sh.run("cat < f | wc -l").stdout).toBe("3\n");
+  });
+  it("distinguishes > f 2>&1 from 2>&1 > f", () => {
+    const sh = makeShell();
+    // `> a 2>&1`: stderr aliases the file, so both streams land in a.
+    sh.run("ls nope > a 2>&1");
+    expect(sh.run("cat a").stdout).toBe("ls: cannot access 'nope': No such file or directory\n");
+    // `2>&1 > b`: stderr aliases the stdout *device* (still the terminal) before
+    // `> b` retargets stdout, so the error reaches the terminal, not the file.
+    const r = sh.run("ls nope 2>&1 > b");
+    expect(r.stdout).toBe("ls: cannot access 'nope': No such file or directory\n");
+    expect(sh.run("cat b").stdout).toBe("");
+  });
+  it("a bare > creates an empty file", () => {
+    const sh = makeShell();
+    sh.run("> empty");
+    expect(sh.run("[ -f empty ] && wc -l empty").stdout).toBe("0 empty\n");
+  });
+  it("redirecting onto a directory reports Is a directory", () => {
+    const r = makeShell().run("echo x > posts");
+    expect(r.stderr).toBe("bash: posts: Is a directory\n");
     expect(r.status).toBe(1);
+  });
+  it("redirecting into a missing directory reports No such file or directory", () => {
+    const r = makeShell().run("echo x > nodir/f");
+    expect(r.stderr).toBe("bash: nodir/f: No such file or directory\n");
+    expect(r.status).toBe(1);
+  });
+  it("reading a missing file fails and skips the command", () => {
+    const r = makeShell().run("cat < nope");
+    expect(r.stderr).toBe("bash: nope: No such file or directory\n");
+    expect(r.status).toBe(1);
+  });
+  it("opens redirects left-to-right, committing those staged before a failure", () => {
+    const sh = makeShell();
+    // `> f` opens (truncates) before `< nope` fails; f is left empty.
+    sh.run("printf 'old\\n' > f");
+    expect(sh.run("echo x > f < nope").status).toBe(1);
+    expect(sh.run("[ -f f ] && wc -l f").stdout).toBe("0 f\n");
+    // Reverse order: `< nope` fails first, so `> g` is never opened and a
+    // pre-existing g is untouched.
+    sh.run("printf 'keep\\n' > g");
+    expect(sh.run("cat < nope > g").status).toBe(1);
+    expect(sh.run("cat g").stdout).toBe("keep\n");
+  });
+  it("a created file lists with a stable size under ls -l", () => {
+    const sh = makeShell();
+    sh.run("echo hello > note.txt"); // "hello\n" -> 6 bytes
+    const line = sh.run("ls -l note.txt").stdout.trim();
+    expect(line).toContain("-rw-r--r--");
+    expect(line).toContain(" 6 ");
+    expect(line.endsWith("note.txt")).toBe(true);
+  });
+});
+
+describe("file-mutation commands", () => {
+  it("mkdir -p creates nested directories", () => {
+    const sh = makeShell();
+    expect(sh.run("mkdir -p a/b/c").status).toBe(0);
+    expect(sh.run("ls a").stdout).toBe("b/\n");
+    expect(sh.run("ls a/b").stdout).toBe("c/\n");
+  });
+  it("rmdir refuses a non-empty directory", () => {
+    const sh = makeShell();
+    sh.run("mkdir d");
+    sh.run("touch d/f");
+    const r = sh.run("rmdir d");
+    expect(r.stderr).toBe("rmdir: failed to remove 'd': Directory not empty\n");
+    expect(r.status).toBe(1);
+  });
+  it("rm refuses a directory without -r", () => {
+    const sh = makeShell();
+    sh.run("mkdir d");
+    const r = sh.run("rm d");
+    expect(r.stderr).toBe("rm: cannot remove 'd': Is a directory\n");
+    expect(sh.run("rm -r d").status).toBe(0);
+    expect(sh.run("ls d").status).toBe(2);
+  });
+  it("rm -f ignores a missing file", () => {
+    const r = makeShell().run("rm -f nope");
+    expect(r.stderr).toBe("");
+    expect(r.status).toBe(0);
+  });
+  it("cp -r deep-copies a directory independently", () => {
+    const sh = makeShell();
+    sh.run("mkdir src");
+    sh.run("echo hi > src/a");
+    expect(sh.run("cp -r src dst").status).toBe(0);
+    expect(sh.run("cat dst/a").stdout).toBe("hi\n");
+    sh.run("echo changed > src/a");
+    expect(sh.run("cat dst/a").stdout).toBe("hi\n"); // clone, not a shared ref
+  });
+  it("cp without -r omits a directory", () => {
+    const sh = makeShell();
+    sh.run("mkdir src");
+    const r = sh.run("cp src dst");
+    expect(r.stderr).toBe("cp: -r not specified; omitting directory 'src'\n");
+    expect(r.status).toBe(1);
+  });
+  it("mv renames a file", () => {
+    const sh = makeShell();
+    sh.run("echo hi > a");
+    expect(sh.run("mv a b").status).toBe(0);
+    expect(sh.run("cat b").stdout).toBe("hi\n");
+    expect(sh.run("cat a").status).toBe(1);
+  });
+  it("mv drops a file into an existing directory", () => {
+    const sh = makeShell();
+    sh.run("echo hi > a");
+    sh.run("mkdir d");
+    sh.run("mv a d");
+    expect(sh.run("cat d/a").stdout).toBe("hi\n");
+  });
+});
+
+describe("tee writes through the VFS", () => {
+  it("copies stdin to a file and to stdout", () => {
+    const sh = makeShell();
+    expect(sh.run("printf 'a\\nb\\n' | tee out").stdout).toBe("a\nb\n");
+    expect(sh.run("cat out").stdout).toBe("a\nb\n");
+  });
+  it("tee -a appends", () => {
+    const sh = makeShell();
+    sh.run("echo one | tee f");
+    sh.run("echo two | tee -a f");
+    expect(sh.run("cat f").stdout).toBe("one\ntwo\n");
+  });
+});
+
+describe("new text filters", () => {
+  it("cut selects fields and characters", () => {
+    const sh = makeShell();
+    expect(sh.run("printf 'a:b:c\\n' | cut -d: -f2").stdout).toBe("b\n");
+    expect(sh.run("printf 'a:b:c\\n' | cut -d: -f1,3").stdout).toBe("a:c\n");
+    expect(sh.run("printf 'hello\\n' | cut -c1-3").stdout).toBe("hel\n");
+  });
+  it("tr translates and deletes", () => {
+    const sh = makeShell();
+    expect(sh.run("printf 'abc\\n' | tr a-z A-Z").stdout).toBe("ABC\n");
+    expect(sh.run("printf 'a1b2\\n' | tr -d 0-9").stdout).toBe("ab\n");
+  });
+  it("uniq -c counts adjacent runs", () => {
+    expect(makeShell().run("printf 'a\\na\\nb\\n' | uniq -c").stdout).toBe("      2 a\n      1 b\n");
+  });
+  it("tac reverses line order and rev reverses characters", () => {
+    const sh = makeShell();
+    expect(sh.run("printf '1\\n2\\n3\\n' | tac").stdout).toBe("3\n2\n1\n");
+    expect(sh.run("printf 'abc\\n' | rev").stdout).toBe("cba\n");
+  });
+  it("seq counts with an optional step", () => {
+    const sh = makeShell();
+    expect(sh.run("seq 3").stdout).toBe("1\n2\n3\n");
+    expect(sh.run("seq 2 6").stdout).toBe("2\n3\n4\n5\n6\n");
+    expect(sh.run("seq 1 2 7").stdout).toBe("1\n3\n5\n7\n");
+  });
+});
+
+describe("path-string commands", () => {
+  it("basename strips directories and a suffix", () => {
+    const sh = makeShell();
+    expect(sh.run("basename /usr/lib/file.txt").stdout).toBe("file.txt\n");
+    expect(sh.run("basename /usr/lib/file.txt .txt").stdout).toBe("file\n");
+  });
+  it("dirname strips the last component", () => {
+    const sh = makeShell();
+    expect(sh.run("dirname /usr/lib/file.txt").stdout).toBe("/usr/lib\n");
+    expect(sh.run("dirname file").stdout).toBe(".\n");
+  });
+});
+
+describe("find and tree", () => {
+  it("find filters by -name and -type", () => {
+    const sh = makeShell();
+    sh.run("mkdir -p proj/sub");
+    sh.run("echo x > proj/a.md");
+    sh.run("echo y > proj/sub/b.md");
+    expect(sh.run("find proj -name '*.md'").stdout).toBe("proj/a.md\nproj/sub/b.md\n");
+    expect(sh.run("find proj -type d").stdout).toBe("proj\nproj/sub\n");
+  });
+  it("tree renders connectors and a summary", () => {
+    const sh = makeShell();
+    sh.run("mkdir -p t/d");
+    sh.run("echo x > t/f");
+    const out = sh.run("tree t").stdout;
+    expect(out).toContain("├── ");
+    expect(out).toContain("└── ");
+    expect(out.trim().endsWith("1 directory, 1 file")).toBe(true);
+  });
+});
+
+describe("system identity", () => {
+  it("uname reports kernel and machine", () => {
+    const sh = makeShell();
+    expect(sh.run("uname").stdout).toBe("Linux\n");
+    expect(sh.run("uname -m").stdout).toBe("x86_64\n");
+    expect(sh.run("uname -s -r").stdout).toBe("Linux 6.8.0-generic\n");
+  });
+  it("hostname comes from the data island", () => {
+    expect(makeShell().run("hostname").stdout).toBe("example.com\n");
+  });
+  it("cal has the expected shape (nondeterministic content)", () => {
+    const lines = makeShell().run("cal").stdout.split("\n");
+    expect(lines[1]).toBe("Su Mo Tu We Th Fr Sa");
   });
 });
 

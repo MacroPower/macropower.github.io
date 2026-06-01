@@ -94,6 +94,28 @@ const ROWS: string[] = [
   R`echo -ne 'a\tb'; echo .`,
   "echo -nx hi",
   "echo -x hi",
+
+  // --- Phase 5: pure stdin/arg coreutils filters ----------------------------
+  // These resolve to host coreutils (GNU on the dev/CI image); rows are kept to
+  // behaviors identical across coreutils variants.
+  R`printf 'a:b:c\n' | cut -d: -f2`,
+  R`printf 'a:b:c\n' | cut -d: -f1,3`,
+  R`printf 'a:b:c:d\n' | cut -d: -f2-`,
+  R`printf 'hello\n' | cut -c1-3`,
+  R`printf 'abc\n' | tr a-z A-Z`,
+  R`printf 'a1b2c3\n' | tr -d 0-9`,
+  R`printf 'a\na\nb\nb\nb\nc\n' | uniq`,
+  R`printf 'a\na\nb\n' | uniq -c`,
+  R`printf 'hello\n' | rev`,
+  R`printf '1\n2\n3\n' | tac`,
+  "seq 5",
+  "seq 2 6",
+  "seq 1 2 9",
+  "basename /usr/lib/file.txt",
+  "basename /usr/lib/file.txt .txt",
+  "basename path/to/file",
+  "dirname /usr/lib/file.txt",
+  "dirname file",
 ];
 
 describe.skipIf(!bashAvailable())("bash conformance", () => {

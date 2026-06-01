@@ -3,11 +3,33 @@
 // static -- sizes, modes, and mtimes come from literals, never Date/random --
 // so `ls` and `ls -l` render identically on every run. File bodies are thunks
 // so they can interpolate ShellData (socials, title, host) lazily.
+//
+// The tree is also writable for the session: redirections (`>`/`>>`) and the
+// file-mutation commands (mkdir/touch/rm/cp/mv/...) change it in place. Writes
+// are in-memory only and reset on reload (unlike persisted history). To keep
+// the golden `ls`/glob tests deterministic, every written node's mtime is the
+// module-level SESSION_MTIME constant -- never a real Date passed in from a
+// command -- and its size is a pure function of its content.
 
 import type { ShellData } from "./shell";
 import { color, PALETTE } from "./ansi";
 
 type NodeKind = "dir" | "file";
+
+// The mtime stamped on every node created or rewritten during the session. A
+// fixed literal (not `new Date()`) so written-file listings stay reproducible,
+// consistent with the static `binary()` mtime.
+export const SESSION_MTIME = "2025-07-13";
+
+// Split a buffer into stored file lines the same way a pipeline capture does
+// (shell.ts CaptureSink.lines): break on "\n", drop a trailing "\r" per line,
+// and discard the trailing empty element a final newline leaves behind. Shared
+// so `echo hi > f; cat f` yields one line, not a spurious blank.
+export function splitLines(s: string): string[] {
+  const parts = s.split("\n").map((l) => l.replace(/\r$/, ""));
+  if (parts.length && parts[parts.length - 1] === "") parts.pop();
+  return parts;
+}
 
 interface BaseNode {
   name: string;
@@ -112,6 +134,44 @@ function isExecutable(node: FsNode): boolean {
   return [...node.mode].some((d) => Number(d) & 1);
 }
 
+// A file created/rewritten during the session. `content` closes over the stored
+// lines; `size` is supplied by the caller (a pure function of the raw buffer).
+function writtenFile(name: string, lines: string[], size: number): FileNode {
+  return {
+    name,
+    kind: "file",
+    mode: "644",
+    mtime: SESSION_MTIME,
+    size,
+    content: () => lines,
+  };
+}
+
+// A directory created during the session (mkdir).
+function newDir(name: string): DirNode {
+  return { name, kind: "dir", mode: "755", mtime: SESSION_MTIME, size: 4096, children: new Map() };
+}
+
+// Deep-clone a node under a (possibly new) name for cp. Child Maps are copied so
+// the clone is independent; FileNode content thunks are immutable, so sharing
+// the reference is safe.
+function cloneNode(node: FsNode, name: string): FsNode {
+  if (node.kind === "file") return { ...node, name };
+  const children = new Map<string, FsNode>();
+  for (const [key, child] of node.children) children.set(key, cloneNode(child, key));
+  return { ...node, name, children };
+}
+
+// Split an absolute path into its parent directory path and final component.
+// "/" -> { parentPath: "/", base: "" }; "/a" -> { "/", "a" }.
+function splitPath(absPath: string): { parentPath: string; base: string } {
+  const slash = absPath.lastIndexOf("/");
+  return {
+    parentPath: slash <= 0 ? "/" : absPath.slice(0, slash),
+    base: absPath.slice(slash + 1),
+  };
+}
+
 export class Vfs {
   constructor(
     readonly root: DirNode,
@@ -167,6 +227,125 @@ export class Vfs {
   installBinary(name: string): void {
     const bin = this.lookup("/usr/bin");
     if (bin?.kind === "dir") bin.children.set(name, binary(name));
+  }
+
+  // --- Session write API ----------------------------------------------------
+  // Each mutator takes an absolute path (callers resolve through resolvePath)
+  // and returns a bash-style failure reason (e.g. "Is a directory") or
+  // undefined on success. Callers prepend their own `cmd: name:` prefix, the
+  // way `cat`/`ls` already format diagnostics. Writes are permissive: anything
+  // whose parent directory exists may be written; per-file permissions are not
+  // modeled, but bash's structural errors are reproduced.
+
+  // Create, overwrite, or (with append) extend a file. The buffer is normalized
+  // into stored lines like a pipeline capture; raw bytes (including ANSI) are
+  // otherwise kept so `cat` re-emits them and text filters strip on read.
+  writeFile(absPath: string, raw: string, opts: { append?: boolean } = {}): string | undefined {
+    if (absPath === "/") return "Is a directory";
+    const { parentPath, base } = splitPath(absPath);
+    const parent = this.lookup(parentPath);
+    if (!parent) return "No such file or directory";
+    if (parent.kind !== "dir") return "Not a directory";
+    const existing = parent.children.get(base);
+    if (existing?.kind === "dir") return "Is a directory";
+    const newLines = splitLines(raw);
+    if (opts.append && existing?.kind === "file") {
+      const lines = [...existing.content(), ...newLines];
+      parent.children.set(base, writtenFile(base, lines, existing.size + raw.length));
+    } else {
+      parent.children.set(base, writtenFile(base, newLines, raw.length));
+    }
+    return undefined;
+  }
+
+  // Create a directory. With `parents` (mkdir -p), intermediate dirs are made as
+  // needed and an existing target is not an error.
+  mkdir(absPath: string, opts: { parents?: boolean } = {}): string | undefined {
+    if (absPath === "/") return opts.parents ? undefined : "File exists";
+    if (opts.parents) {
+      let node: FsNode = this.root;
+      for (const seg of absPath.split("/").filter(Boolean)) {
+        if (node.kind !== "dir") return "Not a directory";
+        const next = node.children.get(seg);
+        if (!next) { const d = newDir(seg); node.children.set(seg, d); node = d; }
+        else node = next;
+      }
+      return node.kind === "dir" ? undefined : "Not a directory";
+    }
+    const { parentPath, base } = splitPath(absPath);
+    const parent = this.lookup(parentPath);
+    if (!parent) return "No such file or directory";
+    if (parent.kind !== "dir") return "Not a directory";
+    if (parent.children.has(base)) return "File exists";
+    parent.children.set(base, newDir(base));
+    return undefined;
+  }
+
+  // Remove a path. Backs both `rm` (recursive removes a non-empty dir) and
+  // `rmdir`/`rm -d` (dirOnly: the target must be an empty directory).
+  removePath(absPath: string, opts: { recursive?: boolean; dirOnly?: boolean } = {}): string | undefined {
+    if (absPath === "/") return "Is a directory";
+    const { parentPath, base } = splitPath(absPath);
+    const parent = this.lookup(parentPath);
+    if (!parent || parent.kind !== "dir") return "No such file or directory";
+    const node = parent.children.get(base);
+    if (!node) return "No such file or directory";
+    if (opts.dirOnly) {
+      if (node.kind !== "dir") return "Not a directory";
+      if (node.children.size > 0) return "Directory not empty";
+    } else if (node.kind === "dir" && !opts.recursive) {
+      return "Is a directory";
+    }
+    parent.children.delete(base);
+    return undefined;
+  }
+
+  // Copy src to dst (deep clone). A directory source needs `recursive`. When dst
+  // is an existing directory, the copy is dropped under it by src's basename,
+  // like bash.
+  copy(srcAbs: string, dstAbs: string, opts: { recursive?: boolean } = {}): string | undefined {
+    const src = this.lookup(srcAbs);
+    if (!src) return "No such file or directory";
+    if (src.kind === "dir" && !opts.recursive) return "omitting directory";
+    const targetPath = this.dropTarget(src, dstAbs);
+    const { parentPath, base } = splitPath(targetPath);
+    const parent = this.lookup(parentPath);
+    if (!parent || parent.kind !== "dir") return "No such file or directory";
+    parent.children.set(base, cloneNode(src, base));
+    return undefined;
+  }
+
+  // Move/rename src to dst by relinking (no clone). When dst is an existing
+  // directory, src is dropped under it by basename.
+  move(srcAbs: string, dstAbs: string): string | undefined {
+    const src = this.lookup(srcAbs);
+    if (!src) return "No such file or directory";
+    const { parentPath: sp, base: sb } = splitPath(srcAbs);
+    const srcParent = this.lookup(sp);
+    if (!srcParent || srcParent.kind !== "dir") return "No such file or directory";
+    const targetPath = this.dropTarget(src, dstAbs);
+    const { parentPath: dp, base: db } = splitPath(targetPath);
+    const dstParent = this.lookup(dp);
+    if (!dstParent || dstParent.kind !== "dir") return "No such file or directory";
+    srcParent.children.delete(sb);
+    src.name = db;
+    dstParent.children.set(db, src);
+    return undefined;
+  }
+
+  // Create an empty file if missing; an existing path is a no-op (no mtime bump,
+  // so listings stay deterministic).
+  touch(absPath: string): string | undefined {
+    if (this.lookup(absPath)) return undefined;
+    return this.writeFile(absPath, "");
+  }
+
+  // Resolve the effective write path for cp/mv: when dst is an existing
+  // directory, append src's basename; otherwise dst is used verbatim.
+  private dropTarget(src: FsNode, dstAbs: string): string {
+    const dst = this.lookup(dstAbs);
+    if (dst?.kind === "dir") return dstAbs === "/" ? `/${src.name}` : `${dstAbs}/${src.name}`;
+    return dstAbs;
   }
 
   // Resolve a command word the way the shell's path search does: an explicit

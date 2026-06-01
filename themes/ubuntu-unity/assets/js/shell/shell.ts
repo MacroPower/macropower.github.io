@@ -1,7 +1,7 @@
 import type { TerminalIO } from "./terminal";
 import { Readline, type CompletionContext } from "./readline";
 import { color, PALETTE, stripAnsi } from "./ansi";
-import { buildFs, globToRegExp, globToRegExpBody, type Vfs } from "./vfs";
+import { buildFs, globToRegExp, globToRegExpBody, splitLines, type Vfs } from "./vfs";
 import { Env } from "./env";
 import { evalArith } from "./arith";
 import {
@@ -135,11 +135,25 @@ class CaptureSink implements Sink {
   write(s: string): void { this.buf += s; }
   writeln(s: string): void { this.buf += `${s}\n`; }
   raw(): string { return this.buf; }
-  lines(): string[] {
-    const parts = stripAnsi(this.buf).split("\n").map((l) => l.replace(/\r$/, ""));
-    if (parts.length && parts[parts.length - 1] === "") parts.pop();
-    return parts;
-  }
+  lines(): string[] { return splitLines(stripAnsi(this.buf)); }
+}
+
+// Buffers a command's output bound for a `>`/`>>` file redirect, then commits it
+// to the VFS at flush time. Deferring the write lets a bare `> dir` (empty argv)
+// still surface bash's "Is a directory" via writeFile, and lets `> f 2>&1` merge
+// both streams into one buffer written once.
+class FileSink implements Sink {
+  private buf = "";
+  constructor(
+    private readonly vfs: Vfs,
+    private readonly path: string,
+    /** The target as the user wrote it, for bash-style diagnostics. */
+    readonly name: string,
+    private readonly append: boolean,
+  ) {}
+  write(s: string): void { this.buf += s; }
+  writeln(s: string): void { this.buf += `${s}\n`; }
+  flush(): string | undefined { return this.vfs.writeFile(this.path, this.buf, { append: this.append }); }
 }
 
 const NULL_SINK: Sink = { write() {}, writeln() {} };
@@ -483,29 +497,59 @@ export class Shell {
       const capture = isLast ? null : new CaptureSink();
       let out: Sink = isLast ? finalOut : (capture ?? NULL_SINK);
       let err: Sink = this.errSink;
+      let stdinOverride: string[] | null = null;
+      const fileSinks: FileSink[] = [];
 
+      // Redirects apply left-to-right: a dup (2>&1) aliases whatever the target
+      // fd points at *at that moment*, so `> f 2>&1` and `2>&1 > f` diverge.
       let blocked = false;
       for (const r of cmd.redirs) {
-        if (r.kind === "file") {
+        if (r.kind === "read") {
+          const target = expandNoSplit(r.target, exp);
+          const node = this.vfs.lookup(this.vfs.resolvePath(this.cwdPath, target));
+          if (!node) { this.errSink.writeln(color(PALETTE.red, `bash: ${target}: No such file or directory`)); blocked = true; break; }
+          if (node.kind === "dir") { this.errSink.writeln(color(PALETTE.red, `bash: ${target}: Is a directory`)); blocked = true; break; }
+          // Last `<` wins; overrides any upstream pipe output.
+          stdinOverride = node.content().map(stripAnsi);
+        } else if (r.kind === "file") {
           const target = expandNoSplit(r.target, exp);
           if (target === "/dev/null") {
             if (r.fd === 2) err = NULL_SINK; else out = NULL_SINK;
-          } else {
-            // The VFS is read-only, so any real redirection target fails the
-            // way bash would on a read-only mount.
-            this.errSink.writeln(color(PALETTE.red, `bash: ${target}: Read-only file system`));
-            blocked = true;
+            continue;
           }
+          // Validate parent existence at setup (bash opens redirs before
+          // running); the target-is-a-directory case is surfaced by writeFile
+          // at flush time, so a bare `> existing-dir` still reports it.
+          const abs = this.vfs.resolvePath(this.cwdPath, target);
+          const parent = this.vfs.lookup(this.vfs.resolvePath(abs, ".."));
+          if (!parent || parent.kind !== "dir") {
+            this.errSink.writeln(color(PALETTE.red, `bash: ${target}: No such file or directory`));
+            blocked = true;
+            break;
+          }
+          const sink = new FileSink(this.vfs, abs, target, r.op === ">>");
+          fileSinks.push(sink);
+          if (r.fd === 2) err = sink; else out = sink;
         } else if (r.fd === 2 && r.toFd === 1) {
           err = out;
         } else if (r.fd === 1 && r.toFd === 2) {
           out = err;
         }
       }
-      if (blocked) { code = 1; stdin = []; continue; }
+      // The command only runs if every redirect opened; a failure leaves it
+      // unexecuted (status 1) but still commits the file redirects staged before
+      // the failure, so `echo x > f < nope` truncates f the way bash does (its
+      // buffer is empty since the command never wrote).
+      if (blocked) code = 1;
+      else code = this.runCommand(cmd, stdinOverride ?? stdin, out, err);
 
-      code = this.runCommand(cmd, stdin, out, err);
-      stdin = capture && out === capture ? capture.lines() : [];
+      // Commit file redirects (deduped by identity so `> f 2>&1` writes once).
+      for (const sink of new Set(fileSinks)) {
+        const e = sink.flush();
+        if (e) { this.errSink.writeln(color(PALETTE.red, `bash: ${sink.name}: ${e}`)); code = 1; }
+      }
+
+      stdin = blocked ? [] : (capture && out === capture ? capture.lines() : []);
     }
     return code;
   }
