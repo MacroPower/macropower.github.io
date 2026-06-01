@@ -5,6 +5,8 @@
   --aubergine-light:#77216F;
   --orange:#DD4814;
   --orange-light:#E95420;
+  --orange-dark:#B23B11;
+  --orange-darker:#922F0C;
   --panel:#2B2B2B;
   --panel-grad-1:#3F3D3A;
   --panel-grad-2:#252423;
@@ -1737,7 +1739,7 @@ a.up-sponsor-card[href]:hover{
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
   &.is-primary{
-    background:linear-gradient(180deg,var(--orange) 0%,#B23B11 100%);
+    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-dark) 100%);
     color:#fff;
     border-color:rgba(0,0,0,.35);
     font-weight:500;
@@ -1746,10 +1748,10 @@ a.up-sponsor-card[href]:hover{
       0 1px 1px rgba(0,0,0,.15);
   }
   &.is-primary:hover{
-    background:linear-gradient(180deg,var(--orange-light) 0%,#B23B11 100%);
+    background:linear-gradient(180deg,var(--orange-light) 0%,var(--orange-dark) 100%);
   }
   &.is-primary:active{
-    background:linear-gradient(180deg,#BD3D11 0%,#922F0C 100%);
+    background:linear-gradient(180deg,var(--orange-dark) 0%,var(--orange-darker) 100%);
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
   &.is-danger{

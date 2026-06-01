@@ -16,11 +16,11 @@ let visible = false;
 let tickTimer = 0;
 let onUnlockCb: (() => void) | null = null;
 
+// Reduce-motion is driven solely by the in-app toggle (the body class the CSS
+// animation-kill keys off), not the OS query — when the class is set the
+// transition is suppressed, so the transitionend swap would never fire.
 function reduceMotion(): boolean {
-  return (
-    document.body.classList.contains("up-reduce-motion") ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  return document.body.classList.contains("up-reduce-motion");
 }
 
 function tick(): void {

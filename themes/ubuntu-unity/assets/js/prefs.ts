@@ -10,16 +10,19 @@ interface AccentDef {
   label: string;
   base: string;
   light: string;
+  dark: string;
+  darker: string;
 }
 
-// Ubuntu-flavored palette. `base` maps to --orange, `light` to --orange-light
-// (the slightly brighter hover/active tone). Orange is the default and matches
-// the values baked into :root in main.scss.
+// Ubuntu-flavored palette. The four shades map to --orange / --orange-light /
+// --orange-dark / --orange-darker so accent gradients (e.g. the primary dialog
+// button) recolor on BOTH stops rather than fading into a fixed dark orange.
+// Orange is the default and matches the values baked into :root in main.scss.
 const ACCENTS: AccentDef[] = [
-  { name: "orange", label: "Orange", base: "#DD4814", light: "#E95420" },
-  { name: "green", label: "Green", base: "#3A7D2C", light: "#4E9E3A" },
-  { name: "aubergine", label: "Aubergine", base: "#77216F", light: "#8B2A82" },
-  { name: "blue", label: "Blue", base: "#2A5F94", light: "#3F87C9" },
+  { name: "orange", label: "Orange", base: "#DD4814", light: "#E95420", dark: "#B23B11", darker: "#922F0C" },
+  { name: "green", label: "Green", base: "#3A7D2C", light: "#4E9E3A", dark: "#2E6322", darker: "#244F1B" },
+  { name: "aubergine", label: "Aubergine", base: "#77216F", light: "#8B2A82", dark: "#5E1A57", darker: "#4A1444" },
+  { name: "blue", label: "Blue", base: "#2A5F94", light: "#3F87C9", dark: "#224E79", darker: "#1A3C5E" },
 ];
 
 const state = {
@@ -39,13 +42,8 @@ export function setAccent(name: string): void {
   const root = document.documentElement;
   root.style.setProperty("--orange", accent.base);
   root.style.setProperty("--orange-light", accent.light);
-}
-
-export function initPrefs(): void {
-  // Seed reduce-motion from the OS preference so a visitor who already asked
-  // for reduced motion lands with animations off. Nothing writes back.
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (mq.matches) setReduceMotion(true);
+  root.style.setProperty("--orange-dark", accent.dark);
+  root.style.setProperty("--orange-darker", accent.darker);
 }
 
 function buildToggleRow(): HTMLElement {

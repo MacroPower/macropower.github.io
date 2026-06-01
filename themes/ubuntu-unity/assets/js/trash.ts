@@ -27,9 +27,11 @@ export function initTrash(): void {
   // Session-only: the trash refills on reload.
   let emptied = false;
 
+  // Driven by the in-app toggle (the body class the CSS animation-kill keys
+  // off), not the OS query: when set, the tile-out animation is suppressed, so
+  // the animationend swap would never fire.
   const reduceMotion = (): boolean =>
-    document.body.classList.contains("up-reduce-motion") ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.body.classList.contains("up-reduce-motion");
 
   // Swap between the file list and the empty state, and reflect the count /
   // button on the footer.
