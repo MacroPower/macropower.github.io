@@ -14,6 +14,7 @@ export const colon: Command = {
   summary: "do nothing, successfully",
   usage: ":",
   details: "The null command. Expands arguments and returns success (0).",
+  builtin: true,
   hidden: true,
   run() { return 0; },
 };
@@ -159,6 +160,7 @@ function runTest(ctx: CommandContext, toks: string[]): number {
 
 export const test: Command = {
   name: "test",
+  builtin: true,
   summary: "evaluate a conditional expression",
   usage: "test EXPRESSION",
   details: "Evaluate EXPRESSION and return 0 (true) or 1 (false). Supports string tests (-z -n = != < >), integer tests (-eq -ne -lt -le -gt -ge), file tests (-e -f -d), negation (!), and -a / -o.",
@@ -170,6 +172,7 @@ export const testBracket: Command = {
   summary: "evaluate a conditional expression",
   usage: "[ EXPRESSION ]",
   details: "Like `test`, but the final argument must be a literal `]`.",
+  builtin: true,
   hidden: true,
   run(ctx) {
     const args = ctx.args;
@@ -193,6 +196,7 @@ function pad(s: string, width: number, left: boolean, zero: boolean): string {
 
 export const printf: Command = {
   name: "printf",
+  builtin: true,
   summary: "format and print data",
   usage: "printf FORMAT [ARGUMENT...]",
   details: "Write ARGUMENTs under the control of FORMAT (%s %d %i %x %o %c %%), reusing FORMAT until all arguments are consumed. Interprets \\n \\t \\\\ \\r \\a and \\0NNN escapes.",

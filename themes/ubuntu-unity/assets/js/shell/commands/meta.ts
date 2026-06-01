@@ -5,6 +5,7 @@ import { decodeEscape } from "./escapes";
 
 export const help: Command = {
   name: "help",
+  builtin: true,
   summary: "list available commands",
   usage: "help",
   details: "List the built-in commands and a one-line summary of each. Use `man COMMAND` for a fuller description.",
@@ -87,6 +88,7 @@ function echoEscapes(s: string): { text: string; stop: boolean } {
 
 export const echo: Command = {
   name: "echo",
+  builtin: true,
   summary: "print text",
   usage: "echo [-neE] [STRING...]",
   details: "Write arguments to standard output, separated by spaces. -n suppresses the trailing newline; -e enables backslash escapes (\\n \\t \\\\ \\a \\r \\0NNN), -E (default) disables them.",
@@ -119,6 +121,7 @@ export const echo: Command = {
 
 export const history: Command = {
   name: "history",
+  builtin: true,
   summary: "show command history",
   run(ctx) {
     const items = ctx.history();

@@ -186,12 +186,14 @@ export const sort: Command = {
 
 export const tru: Command = {
   name: "true",
+  builtin: true,
   summary: "do nothing, successfully",
   run() { return 0; },
 };
 
 export const fls: Command = {
   name: "false",
+  builtin: true,
   summary: "do nothing, unsuccessfully",
   run() { return 1; },
 };

@@ -108,3 +108,41 @@ describe("command substitution isolation (JS-only)", () => {
     expect(sh.run("pwd").stdout).toBe("/home/me\n");
   });
 });
+
+describe("command resolution agrees with the filesystem", () => {
+  it("which prints a path that actually exists and is executable", () => {
+    const sh = makeShell();
+    expect(sh.run("which ls").stdout).toBe("/usr/bin/ls\n");
+    // The advertised path resolves in the VFS -- the inconsistency this fixes.
+    expect(sh.run("ls /usr/bin/ls").stdout).toBe("/usr/bin/ls\n");
+    expect(sh.run('[ -x "$(which ls)" ] && echo ok').stdout).toBe("ok\n");
+  });
+  it("which honors $PATH order and an explicit path", () => {
+    const sh = makeShell();
+    expect(sh.run("which bash").stdout).toBe("/bin/bash\n");
+    expect(sh.run("which ./posts").status).toBe(1); // not executable
+    expect(sh.run("which /bin/bash").stdout).toBe("/bin/bash\n");
+  });
+  it("which stays silent and fails for builtins, aliases, and unknowns", () => {
+    const sh = makeShell();
+    for (const name of ["cd", "ll", "frobnicate"]) {
+      const r = sh.run(`which ${name}`);
+      expect(r.stdout).toBe("");
+      expect(r.stderr).toBe("");
+      expect(r.status).toBe(1);
+    }
+  });
+  it("type distinguishes builtins, externals, and aliases consistently", () => {
+    const sh = makeShell();
+    expect(sh.run("type cd").stdout).toBe("cd is a shell builtin\n");
+    expect(sh.run("type ls").stdout).toBe("ls is /usr/bin/ls\n");
+    expect(sh.run("type ll").stdout).toBe("ll is aliased to `ls -la'\n");
+    const miss = sh.run("type frobnicate");
+    expect(miss.stderr).toBe("bash: type: frobnicate: not found\n");
+    expect(miss.status).toBe(1);
+  });
+  it("the PATH dirs the shell advertises are real directories", () => {
+    const sh = makeShell();
+    expect(sh.run("[ -d /usr/bin ] && [ -d /bin ] && echo ok").stdout).toBe("ok\n");
+  });
+});

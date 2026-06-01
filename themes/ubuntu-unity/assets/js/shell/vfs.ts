@@ -88,6 +88,30 @@ function dir(
   };
 }
 
+// An executable stub for a /bin or /usr/bin program. Lets `which`, `type`,
+// `ls`, and `test -x` agree on where a command lives without shipping real
+// machine code; `cat` shows a file(1)-style line instead of dumping bytes. The
+// size is a stable function of the name so listings never jitter.
+function binary(name: string): FileNode {
+  return file(name, {
+    mode: "755",
+    mtime: "2024-01-01",
+    size: 26000 + name.length * 137,
+    content: () => [
+      color(
+        PALETTE.muted,
+        `${name}: ELF 64-bit LSB executable, x86-64 (binary)`,
+      ),
+    ],
+  });
+}
+
+// Any execute bit set in the octal mode marks a node runnable -- the predicate
+// the PATH search and `test -x` share.
+function isExecutable(node: FsNode): boolean {
+  return [...node.mode].some((d) => Number(d) & 1);
+}
+
 export class Vfs {
   constructor(
     readonly root: DirNode,
@@ -135,6 +159,33 @@ export class Vfs {
       node = next;
     }
     return node;
+  }
+
+  // Drop an executable stub at /usr/bin/<name> so command introspection and the
+  // filesystem agree on where each external program lives. No-op when /usr/bin
+  // is absent.
+  installBinary(name: string): void {
+    const bin = this.lookup("/usr/bin");
+    if (bin?.kind === "dir") bin.children.set(name, binary(name));
+  }
+
+  // Resolve a command word the way the shell's path search does: an explicit
+  // path (one containing "/") is checked relative to `cwd`; a bare name is
+  // searched across the colon-separated `path`. Returns the absolute path of the
+  // first executable file found, or undefined -- the seam `which`/`type` share.
+  resolveCommand(name: string, cwd: string, path: string): string | undefined {
+    if (name.includes("/")) {
+      const abs = this.resolvePath(cwd, name);
+      const node = this.lookup(abs);
+      return node?.kind === "file" && isExecutable(node) ? abs : undefined;
+    }
+    for (const segment of path.split(":")) {
+      if (segment === "") continue;
+      const abs = this.resolvePath(cwd, `${segment}/${name}`);
+      const node = this.lookup(abs);
+      if (node?.kind === "file" && isExecutable(node)) return abs;
+    }
+    return undefined;
   }
 
   // Collapse home to ~ for the prompt, matching bash.
@@ -324,10 +375,18 @@ export function buildFs(data: ShellData): Vfs {
     ],
   });
 
+  // A small FHS skeleton so the paths the shell advertises actually exist:
+  // `/bin/bash` (the seeded $SHELL), the PATH dirs `which` searches, and a
+  // writable-looking `/tmp`. The command stubs under `/usr/bin` are injected
+  // after registration (see Shell.register) so they never drift from the
+  // registry.
   const root = dir("/", {
     mtime: "2025-07-13",
     children: [
-      dir("home", { mtime: "2025-07-13", children: [home] }),
+      dir("bin", {
+        mtime: "2024-01-01",
+        children: [binary("bash"), binary("sh")],
+      }),
       dir("etc", {
         mtime: "2024-01-01",
         children: [
@@ -335,6 +394,18 @@ export function buildFs(data: ShellData): Vfs {
             mtime: "2024-01-01",
             size: 84,
             content: () => [color(PALETTE.green, `Welcome to ${host}!`)],
+          }),
+        ],
+      }),
+      dir("home", { mtime: "2025-07-13", children: [home] }),
+      dir("tmp", { mtime: "2025-07-13", children: [] }),
+      dir("usr", {
+        mtime: "2024-01-01",
+        children: [
+          dir("bin", { mtime: "2024-01-01", children: [] }),
+          dir("local", {
+            mtime: "2024-01-01",
+            children: [dir("bin", { mtime: "2024-01-01", children: [] })],
           }),
         ],
       }),

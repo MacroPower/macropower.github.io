@@ -15,6 +15,7 @@ function formatAlias(name: string, value: string): string {
 
 export const alias: Command = {
   name: "alias",
+  builtin: true,
   summary: "define or display command aliases",
   usage: "alias [name[=value] ...]",
   details: "With no arguments, list defined aliases. `alias name=value` defines one; `alias name` prints a single definition.",
@@ -42,6 +43,7 @@ export const alias: Command = {
 
 export const unalias: Command = {
   name: "unalias",
+  builtin: true,
   summary: "remove command aliases",
   usage: "unalias name ...",
   run(ctx) {
@@ -56,6 +58,7 @@ export const unalias: Command = {
 
 export const exportCmd: Command = {
   name: "export",
+  builtin: true,
   summary: "set environment variables",
   usage: "export [NAME[=value] ...]",
   details: "Mark variables for export to the environment of subsequent commands. With no arguments, list exported variables.",
@@ -84,6 +87,7 @@ export const envCmd: Command = {
 
 export const setCmd: Command = {
   name: "set",
+  builtin: true,
   summary: "print all shell variables",
   run(ctx) {
     for (const [k, v] of ctx.env.all()) ctx.writeln(`${k}=${v}`);
@@ -93,6 +97,7 @@ export const setCmd: Command = {
 
 export const unset: Command = {
   name: "unset",
+  builtin: true,
   summary: "remove shell variables",
   usage: "unset NAME ...",
   run(ctx) {
@@ -103,15 +108,17 @@ export const unset: Command = {
 
 export const which: Command = {
   name: "which",
-  summary: "locate a command",
+  summary: "locate a command on PATH",
   usage: "which name ...",
+  details: "Search $PATH for each name and print the full path of the executable that would run. Like the external utility, it sees only programs on PATH -- not aliases, functions, or shell builtins -- and stays silent (exit 1) for names it cannot find.",
   complete: completeNames,
   run(ctx) {
+    const path = ctx.env.get("PATH") ?? "";
     let code = 0;
     for (const a of ctx.args) {
-      if (ctx.aliases.has(a)) { ctx.writeln(`${a}: aliased to ${ctx.aliases.get(a)}`); continue; }
-      if (ctx.commands().some((c) => c.name === a)) ctx.writeln(`/usr/bin/${a}`);
-      else { ctx.errln(red(`which: no ${a} in (/usr/local/bin:/usr/bin:/bin)`)); code = 1; }
+      const resolved = ctx.vfs.resolveCommand(a, ctx.cwd(), path);
+      if (resolved) ctx.writeln(resolved);
+      else code = 1;
     }
     return code;
   },
@@ -121,13 +128,22 @@ export const typeCmd: Command = {
   name: "type",
   summary: "describe how a name would be interpreted",
   usage: "type name ...",
+  builtin: true,
   complete: completeNames,
   run(ctx) {
+    const path = ctx.env.get("PATH") ?? "";
     let code = 0;
     for (const a of ctx.args) {
-      if (ctx.aliases.has(a)) ctx.writeln(`${a} is aliased to \`${ctx.aliases.get(a)}'`);
-      else if (ctx.commands().some((c) => c.name === a)) ctx.writeln(`${a} is a shell builtin`);
-      else { ctx.errln(`bash: type: ${a}: not found`); code = 1; }
+      const alias = ctx.aliases.get(a);
+      if (alias !== undefined) { ctx.writeln(`${a} is aliased to \`${alias}'`); continue; }
+      if (ctx.commands().find((c) => c.name === a)?.builtin) {
+        ctx.writeln(`${a} is a shell builtin`);
+        continue;
+      }
+      const resolved = ctx.vfs.resolveCommand(a, ctx.cwd(), path);
+      if (resolved) { ctx.writeln(`${a} is ${resolved}`); continue; }
+      ctx.errln(`bash: type: ${a}: not found`);
+      code = 1;
     }
     return code;
   },

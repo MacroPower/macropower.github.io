@@ -13,6 +13,7 @@ export const sudo: Command = {
 export const exit: Command = {
   name: "exit",
   summary: "close the session",
+  builtin: true,
   hidden: true,
   run(ctx) {
     ctx.writeln("logout");

@@ -108,6 +108,10 @@ export interface Command {
   usage?: string;
   /** DESCRIPTION paragraph for `man`; defaults to the summary. */
   details?: string;
+  /** A shell builtin -- `type` reports it as such, and no /usr/bin program is
+   *  installed for it (so `which` does not find it), matching bash. External
+   *  commands (the default) get an executable stub under /usr/bin on register. */
+  builtin?: boolean;
   hidden?: boolean;
   complete?(ctx: CompleteContext): string[];
   /** Returns the exit status; a void return is treated as 0 (success). */
@@ -345,7 +349,12 @@ export class Shell {
   }
 
   register(...cmds: Command[]): void {
-    for (const cmd of cmds) this.registry.set(cmd.name, cmd);
+    for (const cmd of cmds) {
+      this.registry.set(cmd.name, cmd);
+      // External programs gain a stub under /usr/bin so `which`/`type`/`ls`
+      // resolve to a path that actually exists; builtins and hidden eggs do not.
+      if (!cmd.builtin && !cmd.hidden) this.vfs.installBinary(cmd.name);
+    }
   }
 
   commands(): Command[] {

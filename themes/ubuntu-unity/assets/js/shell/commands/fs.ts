@@ -22,6 +22,7 @@ function parseLsArgs(args: string[]): { flags: Set<string>; operands: string[] }
 
 export const pwd: Command = {
   name: "pwd",
+  builtin: true,
   summary: "print the current directory",
   usage: "pwd",
   run(ctx) {
@@ -144,6 +145,7 @@ export const ls: Command = {
 
 export const cd: Command = {
   name: "cd",
+  builtin: true,
   summary: "change the working directory",
   usage: "cd [DIR]",
   details: "Change the shell working directory. With no argument, change to $HOME; `cd -` returns to the previous directory ($OLDPWD).",
