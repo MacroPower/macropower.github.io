@@ -5,7 +5,7 @@
 // columns, globbing, and multi-column wc are JS-only golden tests elsewhere.
 
 import { describe, it } from "vitest";
-import { bashAvailable, expectMatchesBash, makeShell } from "./testkit";
+import { bashAvailable, expectMatchesBash, makeShell, runBash } from "./testkit";
 import { expect } from "vitest";
 
 const R = String.raw;
@@ -121,6 +121,17 @@ const ROWS: string[] = [
 describe.skipIf(!bashAvailable())("bash conformance", () => {
   for (const row of ROWS) {
     it(row, () => { expectMatchesBash(row); });
+  }
+});
+
+// The harness must never spawn a filesystem-mutating program against the real
+// host (FS-mutating behavior is covered by in-memory makeShell tests). This
+// guard runs regardless of bash availability -- it throws before any spawn.
+describe("runBash refuses to mutate the host filesystem", () => {
+  for (const danger of ["rm -rf /", "rm -rf --no-preserve-root /", "mkdir x", "touch y", "echo hi | tee z"]) {
+    it(`rejects: ${danger}`, () => {
+      expect(() => runBash(danger)).toThrow(/filesystem-mutating/);
+    });
   }
 });
 

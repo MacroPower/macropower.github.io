@@ -102,9 +102,25 @@ export interface BashResult {
   status: number;
 }
 
+// Conformance rows run through the *real* host bash with the real PATH and
+// vitest's cwd, so a filesystem-mutating program would touch the developer's
+// machine. The table is read-only by policy (FS-mutating behavior is covered by
+// in-memory makeShell golden tests, never here); this guard refuses to spawn a
+// program that names a mutating command so a stray row fails loudly instead of
+// running. `>`/`>>` are intentionally not blocked -- existing rows use fd dups
+// and `2>/dev/null`, and any real `>` target here would still be caught by the
+// command-name list if it mattered.
+const MUTATING_COMMAND = /\b(rm|rmdir|mkdir|mv|cp|touch|tee|dd|ln|shred|truncate|chmod|chown|install|mkfifo|mknod)\b/;
+
 // Run a program through a clean, locale-pinned bash. --norc/--noprofile keep
 // it free of dotfile influence; LC_ALL=C fixes collation to byte order.
 export function runBash(program: string): BashResult {
+  if (MUTATING_COMMAND.test(program)) {
+    throw new Error(
+      `runBash refused a filesystem-mutating program: ${JSON.stringify(program)}. ` +
+      "Conformance rows must be read-only; assert FS-mutating behavior with makeShell instead.",
+    );
+  }
   const r = spawnSync("bash", ["--norc", "--noprofile", "-c", program], {
     env: { PATH: process.env.PATH ?? "", HOME: "/home/me", USER: "me", LC_ALL: "C" },
     encoding: "utf8",
