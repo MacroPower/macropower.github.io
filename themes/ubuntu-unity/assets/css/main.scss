@@ -1813,9 +1813,9 @@ a.up-sponsor-card[href]:hover{
   }
 }
 
-/* Reduce-motion: seeded from prefers-reduced-motion, toggled live from
-   Preferences / Power saver. Kills animations and transitions site-wide so
-   the desktop snaps between states instead of easing. */
+/* Reduce-motion: toggled live from Preferences / Power saver (default off).
+   Kills animations and transitions site-wide so the desktop snaps between
+   states instead of easing. */
 body.up-reduce-motion *{
   animation:none !important;
   transition:none !important;

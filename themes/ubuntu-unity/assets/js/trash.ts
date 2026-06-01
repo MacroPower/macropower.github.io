@@ -28,8 +28,6 @@ export function initTrash(): void {
   // Session-only: the trash refills on reload.
   let emptied = false;
 
-  // Swap between the file list and the empty state, and reflect the count /
-  // button on the footer.
   const renderTrash = (): void => {
     if (filesView) filesView.hidden = emptied;
     if (emptyView) emptyView.hidden = !emptied;
