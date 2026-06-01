@@ -143,6 +143,15 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
       cdetailsEl.textContent = details;
       cdetailsEl.hidden = false;
     }
+    if (opts.render) {
+      const custom = document.createElement("div");
+      custom.className = "up-dlg-custom";
+      // Slot into the `.up-dlg-content` column (cdetailsEl's parent), after the
+      // body/details and before the footer, so custom controls flow with the
+      // dialog text rather than spanning the icon gutter.
+      cdetailsEl.parentElement?.appendChild(custom);
+      opts.render(custom);
+    }
 
     const d: DialogEntry = {
       id: ++dialogSeq,

@@ -19,6 +19,11 @@ export interface UPDialogOptions {
   details?: string | null;
   icon?: UPDialogIcon;
   buttons?: UPDialogButton[];
+  /** Optional rich-content hook: receives a `.up-dlg-custom` container slotted
+   *  after the body/details and before the footer. Lets a caller build live
+   *  controls (e.g. the Preferences settings) without the dialog layer needing
+   *  a per-control schema. */
+  render?(content: HTMLElement): void;
 }
 
 export interface UPSite {

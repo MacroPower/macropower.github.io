@@ -109,7 +109,7 @@ function renderCalendar(host: HTMLElement, now: Date): void {
   host.replaceChildren(headRow, grid);
 }
 
-function dispatchAction(action: string): void {
+async function dispatchAction(action: string): Promise<void> {
   if (action.startsWith("nav:")) { navigate(action.slice(4)); return; }
   if (action === "reload") { window.location.reload(); return; }
   if (action === "fullscreen") {
@@ -118,19 +118,17 @@ function dispatchAction(action: string): void {
   }
   const site = getSite();
   const preset = DLG_PRESETS[action];
-  if (preset) { void dlg(preset(site)); return; }
+  if (preset) { await dlg(preset(site)); return; }
   if (action === "dlg:logout") {
-    void (async () => {
-      const r = await dlg({
-        icon: "question", title: "Log out of " + (site.handle || "user") + "?",
-        body: "All unsaved windows will be closed. You can sign back in by reloading the page.",
-        buttons: [
-          { id: "cancel", label: "Cancel" },
-          { id: "out", label: "Log out", primary: true, danger: true },
-        ],
-      });
-      if (r === "out") window.location.reload();
-    })();
+    const r = await dlg({
+      icon: "question", title: "Log out of " + (site.handle || "user") + "?",
+      body: "All unsaved windows will be closed. You can sign back in by reloading the page.",
+      buttons: [
+        { id: "cancel", label: "Cancel" },
+        { id: "out", label: "Log out", primary: true, danger: true },
+      ],
+    });
+    if (r === "out") window.location.reload();
     return;
   }
   console.warn("ubuntu-unity: unknown action", action);
@@ -377,7 +375,7 @@ export function initTopPanel(): void {
       return;
     }
     closeOpen();
-    dispatchAction(action);
+    void dispatchAction(action);
   });
 
   syncVolUI();
