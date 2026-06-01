@@ -1,6 +1,7 @@
 import { subscribe, getTrashFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { showPreferences, setReduceMotion } from "./prefs";
+import { showLock } from "./lock";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
 const LAUNCHER_URLS: Record<string, string> = {
@@ -110,6 +111,10 @@ async function dispatchAction(action: string): Promise<void> {
   const site = getSite();
   const preset = DLG_PRESETS[action];
   if (preset) { await dlg(preset(site)); return; }
+  if (action === "dlg:lock") {
+    showLock();
+    return;
+  }
   if (action === "dlg:prefs") {
     await showPreferences();
     return;

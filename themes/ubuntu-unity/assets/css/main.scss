@@ -1785,6 +1785,62 @@ body.up-reduce-motion *{
   transition:none !important;
 }
 
+/* ---- lock screen ------------------------------------------------------- */
+/* Full-viewport Ubuntu greeter. z-index 2000 keeps it above a multi-dialog
+   stack (dialogs sit at 1000 + depth*2). Fades in via the shared appear
+   pattern; reduce-motion neutralizes the transition. */
+.up-lock{
+  position:fixed; inset:0; z-index:2000;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .3s ease;
+  &[hidden]{display:none}
+  &.is-visible{opacity:1}
+}
+.up-lock-backdrop{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(120% 100% at 50% 38%,
+      rgba(119,33,111,.92) 0%, rgba(78,19,70,.94) 32%,
+      rgba(44,0,30,.97) 68%, rgba(26,0,17,.98) 100%);
+  backdrop-filter:blur(22px) saturate(1.1);
+  -webkit-backdrop-filter:blur(22px) saturate(1.1);
+}
+.up-lock-inner{
+  position:relative; z-index:1;
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; color:#fff;
+}
+.up-lock-time{
+  font-size:84px; font-weight:300; line-height:1;
+  letter-spacing:-.02em;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+.up-lock-date{
+  font-size:18px; color:rgba(255,255,255,.72);
+  margin-top:8px;
+}
+.up-lock-card{
+  margin-top:56px;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.up-lock-user{
+  font-size:20px; font-weight:500;
+}
+.up-lock-input{
+  width:248px; padding:9px 16px;
+  text-align:center; font-size:14px; font-family:inherit;
+  color:#fff;
+  background:rgba(0,0,0,.32);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:5px;
+  &::placeholder{color:rgba(255,255,255,.5)}
+  &:focus{outline:2px solid var(--orange-light); outline-offset:0}
+}
+.up-lock-hint{
+  font-size:12.5px; color:rgba(255,255,255,.65);
+  min-height:1.1em;
+}
+
 /* ---- trash window ------------------------------------------------------ */
 
 .up-trash-stage{

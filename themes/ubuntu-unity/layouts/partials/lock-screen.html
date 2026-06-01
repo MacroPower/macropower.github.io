@@ -1,0 +1,16 @@
+{{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
+<div class="up-lock" data-up-lock hidden>
+  <div class="up-lock-backdrop" aria-hidden="true"></div>
+  <div class="up-lock-inner">
+    <div class="up-lock-time" data-lock-clock>00:00</div>
+    <div class="up-lock-date" data-lock-date></div>
+    <div class="up-lock-card">
+      <div class="up-lock-user">{{ $handle }}</div>
+      <form class="up-lock-form" data-lock-form>
+        <input class="up-lock-input" data-lock-input type="password"
+               placeholder="Password" aria-label="Password" autocomplete="off">
+      </form>
+      <div class="up-lock-hint" data-lock-hint></div>
+    </div>
+  </div>
+</div>
