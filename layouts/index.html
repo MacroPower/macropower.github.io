@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{- $user := "me" -}}
+{{- $user := "user" -}}
 {{- $host := "jacobcolvin.com" -}}
 {{- $birth := time.AsTime (printf "%sT00:00:00Z" .Site.Params.author.born) -}}
 {{- $tnow := now -}}

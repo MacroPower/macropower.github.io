@@ -1,4 +1,4 @@
 +++
-title = "me@jacobcolvin.com: ~"
+title = "user@jacobcolvin.com: ~"
 date  = "2026-05-24"
 +++
