@@ -5,6 +5,8 @@
 // `onUnlock` turns it into a logout greeter: signing in runs that callback
 // (e.g. reload a fresh session) instead of simply revealing the desktop.
 
+import { isReduceMotion } from "./prefs";
+
 let root: HTMLElement | null = null;
 let clockEl: HTMLElement | null = null;
 let dateEl: HTMLElement | null = null;
@@ -15,13 +17,6 @@ let hintEl: HTMLElement | null = null;
 let visible = false;
 let tickTimer = 0;
 let onUnlockCb: (() => void) | null = null;
-
-// Reduce-motion is driven solely by the in-app toggle (the body class the CSS
-// animation-kill keys off), not the OS query — when the class is set the
-// transition is suppressed, so the transitionend swap would never fire.
-function reduceMotion(): boolean {
-  return document.body.classList.contains("up-reduce-motion");
-}
 
 function tick(): void {
   const now = new Date();
@@ -50,22 +45,20 @@ function unlock(): void {
   onUnlockCb = null;
   if (cb) { cb(); return; }
 
-  const finish = (): void => { if (root) root.hidden = true; };
+  // Idempotent and self-detaching, so the transitionend listener and the safety
+  // timeout can race to call it without leaking a listener.
+  const finish = (): void => {
+    root?.removeEventListener("transitionend", finish);
+    if (root) root.hidden = true;
+  };
   root.classList.remove("is-visible");
-  if (reduceMotion()) {
+  if (isReduceMotion()) {
     finish();
   } else {
-    // Fade out, then hide once the opacity transition lands. A safety timeout
-    // covers the case where transitionend never fires (e.g. tab backgrounded).
-    let done = false;
-    const onEnd = (): void => {
-      if (done) return;
-      done = true;
-      root?.removeEventListener("transitionend", onEnd);
-      finish();
-    };
-    root.addEventListener("transitionend", onEnd);
-    setTimeout(onEnd, 400);
+    // Fade out, then hide once the opacity transition lands. The safety timeout
+    // covers a transitionend that never fires (e.g. tab backgrounded).
+    root.addEventListener("transitionend", finish);
+    setTimeout(finish, 400);
   }
 
   // Hand focus back to the page content.

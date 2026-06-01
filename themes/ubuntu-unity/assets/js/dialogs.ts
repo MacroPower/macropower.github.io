@@ -124,9 +124,7 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
     dialog.setAttribute("aria-label", title);
 
     if (icon === "none") {
-      // `.up-dlg-icon { display:flex }` overrides the UA `[hidden]` rule, so
-      // hide via display directly. Also drop the icon gutter's gap.
-      iconEl.style.display = "none";
+      iconEl.hidden = true;
     } else {
       iconEl.className = "up-dlg-icon up-dlg-icon-" + icon;
       iconGlyph.textContent = ICON_GLYPHS[icon];

@@ -1,5 +1,6 @@
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
+import { isReduceMotion } from "./prefs";
 
 function syncLauncherTile(open: boolean, focused: boolean): void {
   const tile = document.querySelector<HTMLElement>("[data-launcher-trash]");
@@ -27,12 +28,6 @@ export function initTrash(): void {
   // Session-only: the trash refills on reload.
   let emptied = false;
 
-  // Driven by the in-app toggle (the body class the CSS animation-kill keys
-  // off), not the OS query: when set, the tile-out animation is suppressed, so
-  // the animationend swap would never fire.
-  const reduceMotion = (): boolean =>
-    document.body.classList.contains("up-reduce-motion");
-
   // Swap between the file list and the empty state, and reflect the count /
   // button on the footer.
   const renderTrash = (): void => {
@@ -52,18 +47,17 @@ export function initTrash(): void {
   };
 
   const doEmpty = (): void => {
-    if (!filesView || reduceMotion()) { finishEmpty(); return; }
-    // Animate the tiles out, then swap to the empty state once the last tile's
-    // animation lands. A timeout backstops a missed animationend event.
-    let done = false;
+    if (!filesView || isReduceMotion()) { finishEmpty(); return; }
+    // Animate the tiles out, then swap to the empty state once the animation
+    // lands. `onEnd` is idempotent and self-detaching; the timeout backstops a
+    // missed animationend event.
+    const view = filesView;
     const onEnd = (): void => {
-      if (done) return;
-      done = true;
-      filesView.removeEventListener("animationend", onEnd);
+      view.removeEventListener("animationend", onEnd);
       finishEmpty();
     };
-    filesView.addEventListener("animationend", onEnd);
-    filesView.classList.add("is-removing");
+    view.addEventListener("animationend", onEnd);
+    view.classList.add("is-removing");
     setTimeout(onEnd, 500);
   };
 

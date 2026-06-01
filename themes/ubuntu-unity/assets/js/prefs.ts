@@ -25,20 +25,23 @@ const ACCENTS: AccentDef[] = [
   { name: "blue", label: "Blue", base: "#2A5F94", light: "#3F87C9", dark: "#224E79", darker: "#1A3C5E" },
 ];
 
-const state = {
-  reduceMotion: false,
-  accent: "orange",
-};
+// The body class is the single source of truth for reduce-motion (the CSS
+// animation-kill keys off it); accent just needs the last-picked name for the
+// swatch row's active state.
+let activeAccent = "orange";
+
+export function isReduceMotion(): boolean {
+  return document.body.classList.contains("up-reduce-motion");
+}
 
 export function setReduceMotion(on: boolean): void {
-  state.reduceMotion = on;
   document.body.classList.toggle("up-reduce-motion", on);
 }
 
 export function setAccent(name: string): void {
   const accent = ACCENTS.find((a) => a.name === name);
   if (!accent) return;
-  state.accent = name;
+  activeAccent = name;
   const root = document.documentElement;
   root.style.setProperty("--orange", accent.base);
   root.style.setProperty("--orange-light", accent.light);
@@ -63,12 +66,13 @@ function buildToggleRow(): HTMLElement {
   toggle.className = "up-pref-toggle";
   toggle.setAttribute("role", "switch");
   const sync = (): void => {
-    toggle.classList.toggle("is-on", state.reduceMotion);
-    toggle.setAttribute("aria-checked", String(state.reduceMotion));
+    const on = isReduceMotion();
+    toggle.classList.toggle("is-on", on);
+    toggle.setAttribute("aria-checked", String(on));
   };
   sync();
   toggle.addEventListener("click", () => {
-    setReduceMotion(!state.reduceMotion);
+    setReduceMotion(!isReduceMotion());
     sync();
   });
 
@@ -90,7 +94,7 @@ function buildAccentRow(): HTMLElement {
   const buttons = new Map<string, HTMLButtonElement>();
   const syncActive = (): void => {
     for (const [name, btn] of buttons) {
-      btn.classList.toggle("is-active", name === state.accent);
+      btn.classList.toggle("is-active", name === activeAccent);
     }
   };
   for (const accent of ACCENTS) {
