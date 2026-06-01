@@ -44,6 +44,9 @@ export class XtermTerminal implements TerminalIO {
       cursorBlink: true,
       allowTransparency: true,
       convertEol: false,
+      // Send Option+key as a Meta escape (ESC-prefixed) so the readline Alt
+      // word bindings (Alt-B/F/D) work on macOS, as in a real terminal.
+      macOptionIsMeta: true,
       theme: {
         // Transparent background lets the container's .up-neofetch HUD
         // (color-mix + backdrop-filter:blur) show the wallpaper through.

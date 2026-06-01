@@ -7,6 +7,31 @@ import {
   clear, date, echo, help, history, links, neofetch, social, uptime, whoami,
 } from "./commands/meta";
 import { exit, sudo } from "./commands/eggs";
+import { fls, grep, head, sort, tail, tru, wc } from "./commands/text";
+import {
+  alias, envCmd, exportCmd, man, setCmd, typeCmd, unalias, unset, which,
+} from "./commands/builtins";
+
+const HISTORY_KEY = "up:shell-history";
+
+function loadHistory(): string[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(items: readonly string[]): void {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(-500)));
+  } catch {
+    // localStorage may be unavailable (private mode); history stays in-memory.
+  }
+}
 
 (function (): void {
   "use strict";
@@ -26,10 +51,17 @@ import { exit, sudo } from "./commands/eggs";
   }
 
   const term = new XtermTerminal(mount);
-  const shell = new Shell(term, data);
+  const shell = new Shell(term, data, {
+    history: loadHistory(),
+    persist: saveHistory,
+  });
   shell.register(
-    help, neofetch, whoami, pwd, ls, cd, open, cat,
-    social, links, date, uptime, echo, history, clear,
+    help, man,
+    neofetch, whoami, pwd, ls, cd, open, cat,
+    echo, grep, head, tail, wc, sort,
+    alias, unalias, exportCmd, envCmd, setCmd, unset, which, typeCmd,
+    social, links, date, uptime, history, clear,
+    tru, fls,
     sudo, exit,
   );
 

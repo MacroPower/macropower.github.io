@@ -49,6 +49,13 @@ export const cursorLeft = (n = 1): string => (n > 0 ? `${ESC}${n}D` : "");
 export const cursorRight = (n = 1): string => (n > 0 ? `${ESC}${n}C` : "");
 export const eraseLine = `${ESC}2K`;
 
+// Strip CSI/SGR escape sequences so captured command output can be matched and
+// counted as plain text when piped into another command (grep, wc, ...).
+const ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]/g;
+export function stripAnsi(s: string): string {
+  return s.replace(ANSI_RE, "");
+}
+
 // One Dark palette. The 8 normal + 8 bright slots map to xterm's 16 ANSI
 // colors in terminal.ts; the named entries below drive banner/command output.
 export const PALETTE = {

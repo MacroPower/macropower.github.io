@@ -23,8 +23,10 @@ function parseLsArgs(args: string[]): { flags: Set<string>; operands: string[] }
 export const pwd: Command = {
   name: "pwd",
   summary: "print the current directory",
+  usage: "pwd",
   run(ctx) {
     ctx.writeln(ctx.cwd());
+    return 0;
   },
 };
 
@@ -62,6 +64,12 @@ function dirRows(node: DirNode, showAll: boolean): Row[] {
 
 function renderShort(ctx: CommandContext, rows: Row[]): void {
   if (rows.length === 0) return;
+  // One entry per line when piped/redirected (like real ls to a non-tty), so
+  // downstream filters see each name on its own line; columns only on a tty.
+  if (!ctx.isTTY) {
+    for (const row of rows) ctx.writeln(cell(row));
+    return;
+  }
   ctx.writeln(rows.map(cell).join("  "));
 }
 
@@ -89,6 +97,8 @@ function renderLong(ctx: CommandContext, rows: Row[], withTotal: boolean): void 
 export const ls: Command = {
   name: "ls",
   summary: "list directory contents",
+  usage: "ls [-la] [FILE...]",
+  details: "List information about files (the current directory by default). -l uses a long listing format; -a shows entries starting with a dot.",
   complete(ctx) {
     return completePath(ctx.vfs, ctx.cwd, ctx.current);
   },
@@ -98,12 +108,14 @@ export const ls: Command = {
     const showAll = flags.has("a");
     const names = operands.length ? operands : ["."];
 
+    let code = 0;
     const files: Row[] = [];
     const dirs: { name: string; node: DirNode }[] = [];
     for (const name of names) {
       const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), name));
       if (!node) {
         ctx.writeln(color(PALETTE.red, `ls: cannot access '${name}': No such file or directory`));
+        code = 2;
       } else if (node.kind === "dir") {
         dirs.push({ name, node });
       } else {
@@ -126,35 +138,48 @@ export const ls: Command = {
       if (longFmt) renderLong(ctx, rows, true);
       else renderShort(ctx, rows);
     });
+    return code;
   },
 };
 
 export const cd: Command = {
   name: "cd",
   summary: "change the working directory",
+  usage: "cd [DIR]",
+  details: "Change the shell working directory. With no argument, change to $HOME; `cd -` returns to the previous directory ($OLDPWD).",
   complete(ctx) {
     return completePath(ctx.vfs, ctx.cwd, ctx.current, { dirsOnly: true });
   },
   run(ctx) {
     const target = ctx.args[0];
-    if (!target || target === "~") { ctx.setCwd(ctx.vfs.homePath); return; }
+    if (!target || target === "~") { ctx.setCwd(ctx.vfs.homePath); return 0; }
+    if (target === "-") {
+      const prev = ctx.env.get("OLDPWD");
+      if (!prev) { ctx.writeln(color(PALETTE.red, "cd: OLDPWD not set")); return 1; }
+      ctx.setCwd(prev);
+      ctx.writeln(prev);
+      return 0;
+    }
     const abs = ctx.vfs.resolvePath(ctx.cwd(), target);
     const node = ctx.vfs.lookup(abs);
     if (!node) {
       ctx.writeln(color(PALETTE.red, `cd: no such file or directory: ${target}`));
-      return;
+      return 1;
     }
     if (node.kind !== "dir") {
       ctx.writeln(color(PALETTE.red, `cd: not a directory: ${target}`));
-      return;
+      return 1;
     }
     ctx.setCwd(abs);
+    return 0;
   },
 };
 
 export const open: Command = {
   name: "open",
   summary: "open a page or social link in the browser",
+  usage: "open TARGET",
+  details: "Navigate the browser to a file's underlying page (posts, pages) or to a named social link.",
   complete(ctx) {
     return [
       ...completePath(ctx.vfs, ctx.cwd, ctx.current),
@@ -164,33 +189,40 @@ export const open: Command = {
   run(ctx) {
     const target = ctx.args[0] ?? "";
     const social = ctx.data.socials.find((s) => s.label === target);
-    if (social) { navigate(social.url); return; }
+    if (social) { navigate(social.url); return 0; }
     const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), target));
-    if (node?.url) { navigate(node.url); return; }
+    if (node?.url) { navigate(node.url); return 0; }
     ctx.writeln(color(PALETTE.red, `open: cannot open '${target}'`));
+    return 1;
   },
 };
 
 export const cat: Command = {
   name: "cat",
   summary: "show file contents",
+  usage: "cat [FILE...]",
+  details: "Concatenate files to the terminal. With no file arguments, copy standard input (e.g. the left side of a pipe).",
   complete(ctx) {
     return completePath(ctx.vfs, ctx.cwd, ctx.current);
   },
   run(ctx) {
     if (ctx.args.length === 0) {
-      ctx.writeln(color(PALETTE.red, "cat: missing operand"));
-      return;
+      for (const line of ctx.stdin) ctx.writeln(line);
+      return 0;
     }
+    let code = 0;
     for (const name of ctx.args) {
       const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), name));
       if (!node) {
         ctx.writeln(color(PALETTE.red, `cat: ${name}: No such file or directory`));
+        code = 1;
       } else if (node.kind === "dir") {
         ctx.writeln(color(PALETTE.red, `cat: ${name}: Is a directory`));
+        code = 1;
       } else {
         for (const line of node.content()) ctx.writeln(line);
       }
     }
+    return code;
   },
 };
