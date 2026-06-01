@@ -1501,6 +1501,21 @@ a.up-sponsor-card[href]:hover{
 }
 .up-net-row-name{color:inherit}
 
+/* Net indicator while a hotspot is broadcasting: accent-tinted with a gentle
+   pulse (reduce-motion neutralizes the animation via the global rule). */
+.up-indicator.is-hotspot{
+  color:var(--orange-light);
+  animation:upHotspotPulse 1.8s ease-in-out infinite;
+}
+@keyframes upHotspotPulse{
+  0%,100%{opacity:1}
+  50%{opacity:.55}
+}
+.up-dropdown-row.is-hotspot-status{
+  color:var(--orange-light); font-weight:600;
+  cursor:default;
+}
+
 /* ---- volume slider ----------------------------------------------------- */
 
 .up-vol-slider{

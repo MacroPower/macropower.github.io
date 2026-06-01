@@ -43,25 +43,51 @@ const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
       : "This is a personal site.",
     buttons: [{ id: "ok", label: "OK", primary: true }],
   }),
-  "dlg:subscribe": (site) => ({
-    icon: "success", title: "Subscribed",
-    body: site.rss
-      ? "Pretend-subscribed to " + site.rss + ". Drop the URL into your reader of choice."
-      : "Pretend-subscribed. Drop the feed URL into your reader of choice.",
-  }),
   "dlg:wired": () => ({ icon: "warning", title: "No wired connection",
     body: "No ethernet cable detected. Plug one in to use a wired network." }),
-  "dlg:hotspot": () => ({
-    icon: "question", title: "Enable Wi-Fi hotspot?",
-    body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
-    buttons: [
-      { id: "cancel", label: "Cancel" },
-      { id: "on", label: "Enable hotspot", primary: true },
-    ],
-  }),
   "dlg:cal": () => ({ icon: "info", title: "Calendar",
     body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
 };
+
+function fmtDuration(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = Math.round(mins % 60);
+  const unit = (n: number, u: string): string => `${n} ${u}${n === 1 ? "" : "s"}`;
+  const parts: string[] = [];
+  if (h) parts.push(unit(h, "hour"));
+  if (m) parts.push(unit(m, "minute"));
+  return parts.length ? parts.join(" ") : "less than a minute";
+}
+
+interface SimBattery {
+  level: number;
+  charging: boolean;
+  detail: string;
+}
+
+// Easter egg: the battery "charges" overnight (22:00-06:00) and "discharges"
+// through the day (06:00-22:00). Level and time-to-flip ramp linearly across
+// each half-cycle, meeting at 100% by 06:00 and 20% by 22:00, so the dropdown
+// tracks the wall clock instead of showing fixed numbers. Shared by the panel
+// glyph sync and the Power settings dialog's fallback path.
+function computeSimBattery(now: Date): SimBattery {
+  const hour = now.getHours() + now.getMinutes() / 60;
+  const charging = hour >= 22 || hour < 6;
+  const [start, length] = charging ? [22, 8] : [6, 16];
+  const elapsed = (hour - start + 24) % 24; // hours into the current half-cycle
+  const pct = charging
+    ? 20 + (elapsed / length) * 80
+    : 100 - (elapsed / length) * 80;
+  const detail = `About ${fmtDuration((length - elapsed) * 60)} ${charging ? "until full" : "remaining"}`;
+  return { level: Math.round(pct), charging, detail };
+}
+
+interface BatteryManager {
+  level: number;
+  charging: boolean;
+  chargingTime: number;
+  dischargingTime: number;
+}
 
 function renderCalendar(host: HTMLElement, now: Date): void {
   const y = now.getFullYear();
@@ -101,6 +127,129 @@ function renderCalendar(host: HTMLElement, now: Date): void {
   host.replaceChildren(headRow, grid);
 }
 
+async function showTime(): Promise<void> {
+  const opts = Intl.DateTimeFormat().resolvedOptions();
+  const offMin = new Date().getTimezoneOffset(); // minutes; positive when behind UTC
+  const sign = offMin <= 0 ? "+" : "-";
+  const abs = Math.abs(offMin);
+  const hh = String(Math.floor(abs / 60)).padStart(2, "0");
+  const mm = String(abs % 60).padStart(2, "0");
+  const localTime = new Date().toLocaleTimeString([], {
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  });
+  await dlg({
+    icon: "info", title: "Time & date",
+    body: `Time zone: ${opts.timeZone} (UTC${sign}${hh}:${mm})`,
+    details: `Locale: ${opts.locale}\nLocal time: ${localTime}`,
+  });
+}
+
+async function showPower(): Promise<void> {
+  const nav = navigator as Navigator & { getBattery?: () => Promise<BatteryManager> };
+  if (nav.getBattery) {
+    try {
+      const bat = await nav.getBattery();
+      const level = Math.round(bat.level * 100);
+      let line: string;
+      if (bat.charging) {
+        line = Number.isFinite(bat.chargingTime) && bat.chargingTime > 0
+          ? `About ${fmtDuration(bat.chargingTime / 60)} until full`
+          : "Fully charged";
+      } else {
+        line = Number.isFinite(bat.dischargingTime) && bat.dischargingTime > 0
+          ? `About ${fmtDuration(bat.dischargingTime / 60)} remaining`
+          : "Estimating time remaining…";
+      }
+      await dlg({
+        icon: "info", title: "Power settings",
+        body: `Battery: ${level}% — ${bat.charging ? "charging" : "on battery"}`,
+        details: `${line}\nReported by the Battery Status API.`,
+      });
+      return;
+    } catch {
+      // Permission denied or unavailable; fall through to the simulation.
+    }
+  }
+  const sim = computeSimBattery(new Date());
+  await dlg({
+    icon: "info", title: "Power settings",
+    body: `Battery: ${sim.level}% — ${sim.charging ? "charging" : "discharging"}`,
+    details: `${sim.detail}\nThe raw data lives in /sys/class/power_supply/BAT0/uevent.`,
+  });
+}
+
+async function showSubscribe(site: UPSite): Promise<void> {
+  const url = site.rss;
+  if (!url) {
+    await dlg({ icon: "info", title: "Subscribe to feed",
+      body: "This site doesn't expose an RSS feed." });
+    return;
+  }
+  let copied = false;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      copied = true;
+    }
+  } catch {
+    // Clipboard can reject (denied permission / insecure origin); show the URL.
+    copied = false;
+  }
+  const r = await dlg({
+    icon: copied ? "success" : "info",
+    title: "Subscribe to feed",
+    body: copied
+      ? `Copied ${url} — paste it into your reader.`
+      : `Feed URL: ${url}`,
+    buttons: [
+      { id: "close", label: "Close" },
+      { id: "open", label: "Open feed", primary: true },
+    ],
+  });
+  if (r === "open") window.open(url, "_blank", "noopener");
+}
+
+// In-memory hotspot state. Toggling mutates the SSR net indicator + dropdown
+// directly (dispatchAction has no panel ref); session-only.
+const hotspot = { active: false };
+
+async function handleHotspot(): Promise<void> {
+  const indicator = document.querySelector<HTMLElement>('[data-indicator="net"]');
+  const body = document.querySelector<HTMLElement>('[data-dropdown-for="net"] .up-dropdown-body');
+  const trigger = document.querySelector<HTMLElement>('[data-action="dlg:hotspot"]');
+
+  if (hotspot.active) {
+    hotspot.active = false;
+    indicator?.classList.remove("is-hotspot");
+    body?.querySelector("[data-hotspot-status]")?.remove();
+    if (trigger) trigger.textContent = "Enable hotspot";
+    await dlg({ icon: "info", title: "Hotspot disabled",
+      body: "Wi-Fi hotspot turned off. Other devices can no longer share this connection." });
+    return;
+  }
+
+  const r = await dlg({
+    icon: "question", title: "Enable Wi-Fi hotspot?",
+    body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
+    buttons: [
+      { id: "cancel", label: "Cancel" },
+      { id: "on", label: "Enable hotspot", primary: true },
+    ],
+  });
+  if (r !== "on") return;
+
+  hotspot.active = true;
+  indicator?.classList.add("is-hotspot");
+  if (trigger) trigger.textContent = "Disable hotspot";
+  if (body) {
+    const status = document.createElement("div");
+    status.className = "up-dropdown-row is-hotspot-status";
+    status.setAttribute("data-hotspot-status", "");
+    status.textContent = "Hotspot active · personal-site (2 devices)";
+    body.insertBefore(status, body.firstChild);
+  }
+}
+
 async function dispatchAction(action: string): Promise<void> {
   if (action.startsWith("nav:")) { navigate(action.slice(4)); return; }
   if (action === "reload") { window.location.reload(); return; }
@@ -127,6 +276,10 @@ async function dispatchAction(action: string): Promise<void> {
     });
     return;
   }
+  if (action === "dlg:time") { await showTime(); return; }
+  if (action === "dlg:power") { await showPower(); return; }
+  if (action === "dlg:subscribe") { await showSubscribe(site); return; }
+  if (action === "dlg:hotspot") { await handleHotspot(); return; }
   if (action === "dlg:logout") {
     const r = await dlg({
       icon: "question", title: "Log out of " + (site.handle || "user") + "?",
@@ -243,32 +396,8 @@ export function initTopPanel(): void {
   // without overrunning the outline.
   const BAT_GLYPH_FILL_MAX = 14;
 
-  const fmtDuration = (mins: number): string => {
-    const h = Math.floor(mins / 60);
-    const m = Math.round(mins % 60);
-    const unit = (n: number, u: string): string => `${n} ${u}${n === 1 ? "" : "s"}`;
-    const parts: string[] = [];
-    if (h) parts.push(unit(h, "hour"));
-    if (m) parts.push(unit(m, "minute"));
-    return parts.length ? parts.join(" ") : "less than a minute";
-  };
-
-  // Easter egg: the battery "charges" overnight (22:00-06:00) and "discharges"
-  // through the day (06:00-22:00). Level and time-to-flip ramp linearly across
-  // each half-cycle, meeting at 100% by 06:00 and 20% by 22:00, so the dropdown
-  // tracks the wall clock instead of showing fixed numbers.
   const syncBattery = (): void => {
-    const now = new Date();
-    const hour = now.getHours() + now.getMinutes() / 60;
-    const charging = hour >= 22 || hour < 6;
-
-    const [start, length] = charging ? [22, 8] : [6, 16];
-    const elapsed = (hour - start + 24) % 24; // hours into the current half-cycle
-    const pct = charging
-      ? 20 + (elapsed / length) * 80
-      : 100 - (elapsed / length) * 80;
-    const detail = `About ${fmtDuration((length - elapsed) * 60)} ${charging ? "until full" : "remaining"}`;
-    const level = Math.round(pct);
+    const { level, charging, detail } = computeSimBattery(new Date());
 
     toggleGlyphPair(batGlyphs, "data-bat-glyph-charging", charging);
     if (batHeadline) batHeadline.textContent = `${level}% — ${charging ? "charging" : "discharging"}`;
