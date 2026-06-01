@@ -283,13 +283,14 @@ async function dispatchAction(action: string): Promise<void> {
   if (action === "dlg:logout") {
     const r = await dlg({
       icon: "question", title: "Log out of " + (site.handle || "user") + "?",
-      body: "All unsaved windows will be closed. You can sign back in by reloading the page.",
+      body: "All unsaved windows will be closed and you'll be returned to the login screen.",
       buttons: [
         { id: "cancel", label: "Cancel" },
         { id: "out", label: "Log out", primary: true, danger: true },
       ],
     });
-    if (r === "out") window.location.reload();
+    // Drop to the greeter; "signing in" reloads a fresh session.
+    if (r === "out") showLock({ onUnlock: () => { window.location.reload(); } });
     return;
   }
   console.warn("ubuntu-unity: unknown action", action);

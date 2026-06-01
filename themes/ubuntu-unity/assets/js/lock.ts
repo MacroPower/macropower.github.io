@@ -1,7 +1,9 @@
-// Full-viewport lock screen (Ubuntu greeter style). Session-only, no
+// Full-viewport lock screen / greeter (Ubuntu style). Session-only, no
 // persistence: showLock() reveals the SSR overlay, ticks a live clock, traps
-// Esc, and unlocks on form submit (any input) or Esc. The overlay sits above
-// the dialog stack (z-index 2000+) so it covers everything.
+// Esc, and unlocks on form submit (a non-empty password) or Esc. The overlay
+// sits above the dialog stack (z-index 2000+) so it covers everything. Passing
+// `onUnlock` turns it into a logout greeter: signing in runs that callback
+// (e.g. reload a fresh session) instead of simply revealing the desktop.
 
 let root: HTMLElement | null = null;
 let clockEl: HTMLElement | null = null;
@@ -12,6 +14,7 @@ let hintEl: HTMLElement | null = null;
 
 let visible = false;
 let tickTimer = 0;
+let onUnlockCb: (() => void) | null = null;
 
 function reduceMotion(): boolean {
   return (
@@ -41,6 +44,12 @@ function unlock(): void {
   if (hintEl) hintEl.textContent = "";
   if (input) input.value = "";
 
+  // Logout greeter: run the sign-in callback (e.g. reload) and skip the fade —
+  // the page is going away anyway.
+  const cb = onUnlockCb;
+  onUnlockCb = null;
+  if (cb) { cb(); return; }
+
   const finish = (): void => { if (root) root.hidden = true; };
   root.classList.remove("is-visible");
   if (reduceMotion()) {
@@ -63,8 +72,9 @@ function unlock(): void {
   document.querySelector<HTMLElement>("[data-page-window]")?.focus?.();
 }
 
-export function showLock(): void {
+export function showLock(opts?: { onUnlock?: () => void }): void {
   if (!root || visible) return;
+  onUnlockCb = opts?.onUnlock ?? null;
   visible = true;
   if (hintEl) hintEl.textContent = "";
   if (input) input.value = "";
@@ -89,8 +99,10 @@ export function initLock(): void {
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     if (input && input.value.trim() === "") {
-      // Any input unlocks; an empty submit gets the playful nudge.
-      if (hintEl) hintEl.textContent = "Hint: just press Enter.";
+      // Empty submit: keep the greeter up so the playful nudge is actually
+      // visible. Any typed password (or Esc) lets you through.
+      if (hintEl) hintEl.textContent = "Hint: any password works — just type something.";
+      return;
     }
     unlock();
   });
