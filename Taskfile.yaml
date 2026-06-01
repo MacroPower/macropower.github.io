@@ -19,9 +19,15 @@ tasks:
       - hugo --minify
 
   typecheck:
-    desc: Type-check the theme's TypeScript sources
+    desc: Type-check the theme's TypeScript sources (production + tests)
     cmds:
       - npx --no-install tsc --noEmit
+      - npx --no-install tsc -p tsconfig.test.json --noEmit
+
+  test:
+    desc: Run the shell core's unit + bash-conformance tests
+    cmds:
+      - npm test
 
   pre-commit:
     desc: Run all pre-commit checks

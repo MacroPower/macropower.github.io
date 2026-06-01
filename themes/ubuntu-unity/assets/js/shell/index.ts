@@ -2,15 +2,7 @@ import { XtermTerminal } from "./terminal";
 import { Shell, type ShellData } from "./shell";
 import { writeBanner } from "./banner";
 import { color, PALETTE } from "./ansi";
-import { cat, cd, ls, open, pwd } from "./commands/fs";
-import {
-  clear, date, echo, help, history, links, neofetch, social, uptime, whoami,
-} from "./commands/meta";
-import { exit, sudo } from "./commands/eggs";
-import { fls, grep, head, sort, tail, tru, wc } from "./commands/text";
-import {
-  alias, envCmd, exportCmd, man, setCmd, typeCmd, unalias, unset, which,
-} from "./commands/builtins";
+import { registerAll } from "./commands/all";
 
 const HISTORY_KEY = "up:shell-history";
 
@@ -55,15 +47,7 @@ function saveHistory(items: readonly string[]): void {
     history: loadHistory(),
     persist: saveHistory,
   });
-  shell.register(
-    help, man,
-    neofetch, whoami, pwd, ls, cd, open, cat,
-    echo, grep, head, tail, wc, sort,
-    alias, unalias, exportCmd, envCmd, setCmd, unset, which, typeCmd,
-    social, links, date, uptime, history, clear,
-    tru, fls,
-    sudo, exit,
-  );
+  registerAll(shell);
 
   // Print the banner only after the web font has loaded so term.cols() (used
   // to size the banner's info column) reflects the real cell metrics. Falls

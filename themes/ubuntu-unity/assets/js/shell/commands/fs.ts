@@ -114,7 +114,7 @@ export const ls: Command = {
     for (const name of names) {
       const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), name));
       if (!node) {
-        ctx.writeln(color(PALETTE.red, `ls: cannot access '${name}': No such file or directory`));
+        ctx.errln(color(PALETTE.red, `ls: cannot access '${name}': No such file or directory`));
         code = 2;
       } else if (node.kind === "dir") {
         dirs.push({ name, node });
@@ -155,7 +155,7 @@ export const cd: Command = {
     if (!target || target === "~") { ctx.setCwd(ctx.vfs.homePath); return 0; }
     if (target === "-") {
       const prev = ctx.env.get("OLDPWD");
-      if (!prev) { ctx.writeln(color(PALETTE.red, "cd: OLDPWD not set")); return 1; }
+      if (!prev) { ctx.errln(color(PALETTE.red, "bash: cd: OLDPWD not set")); return 1; }
       ctx.setCwd(prev);
       ctx.writeln(prev);
       return 0;
@@ -163,11 +163,11 @@ export const cd: Command = {
     const abs = ctx.vfs.resolvePath(ctx.cwd(), target);
     const node = ctx.vfs.lookup(abs);
     if (!node) {
-      ctx.writeln(color(PALETTE.red, `cd: no such file or directory: ${target}`));
+      ctx.errln(color(PALETTE.red, `bash: cd: ${target}: No such file or directory`));
       return 1;
     }
     if (node.kind !== "dir") {
-      ctx.writeln(color(PALETTE.red, `cd: not a directory: ${target}`));
+      ctx.errln(color(PALETTE.red, `bash: cd: ${target}: Not a directory`));
       return 1;
     }
     ctx.setCwd(abs);
@@ -192,7 +192,7 @@ export const open: Command = {
     if (social) { navigate(social.url); return 0; }
     const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), target));
     if (node?.url) { navigate(node.url); return 0; }
-    ctx.writeln(color(PALETTE.red, `open: cannot open '${target}'`));
+    ctx.errln(color(PALETTE.red, `open: cannot open '${target}'`));
     return 1;
   },
 };
@@ -214,10 +214,10 @@ export const cat: Command = {
     for (const name of ctx.args) {
       const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), name));
       if (!node) {
-        ctx.writeln(color(PALETTE.red, `cat: ${name}: No such file or directory`));
+        ctx.errln(color(PALETTE.red, `cat: ${name}: No such file or directory`));
         code = 1;
       } else if (node.kind === "dir") {
-        ctx.writeln(color(PALETTE.red, `cat: ${name}: Is a directory`));
+        ctx.errln(color(PALETTE.red, `cat: ${name}: Is a directory`));
         code = 1;
       } else {
         for (const line of node.content()) ctx.writeln(line);

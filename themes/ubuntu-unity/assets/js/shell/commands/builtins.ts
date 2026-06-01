@@ -30,7 +30,7 @@ export const alias: Command = {
       const eq = a.indexOf("=");
       if (eq === -1) {
         const value = ctx.aliases.get(a);
-        if (value === undefined) { ctx.writeln(red(`alias: ${a}: not found`)); code = 1; }
+        if (value === undefined) { ctx.errln(red(`alias: ${a}: not found`)); code = 1; }
         else ctx.writeln(formatAlias(a, value));
       } else {
         ctx.aliases.set(a.slice(0, eq), a.slice(eq + 1));
@@ -45,10 +45,10 @@ export const unalias: Command = {
   summary: "remove command aliases",
   usage: "unalias name ...",
   run(ctx) {
-    if (ctx.args.length === 0) { ctx.writeln(red("unalias: usage: unalias name [name ...]")); return 2; }
+    if (ctx.args.length === 0) { ctx.errln(red("unalias: usage: unalias name [name ...]")); return 2; }
     let code = 0;
     for (const a of ctx.args) {
-      if (!ctx.aliases.delete(a)) { ctx.writeln(red(`unalias: ${a}: not found`)); code = 1; }
+      if (!ctx.aliases.delete(a)) { ctx.errln(red(`unalias: ${a}: not found`)); code = 1; }
     }
     return code;
   },
@@ -111,7 +111,7 @@ export const which: Command = {
     for (const a of ctx.args) {
       if (ctx.aliases.has(a)) { ctx.writeln(`${a}: aliased to ${ctx.aliases.get(a)}`); continue; }
       if (ctx.commands().some((c) => c.name === a)) ctx.writeln(`/usr/bin/${a}`);
-      else { ctx.writeln(red(`which: no ${a} in (/usr/local/bin:/usr/bin:/bin)`)); code = 1; }
+      else { ctx.errln(red(`which: no ${a} in (/usr/local/bin:/usr/bin:/bin)`)); code = 1; }
     }
     return code;
   },
@@ -127,7 +127,7 @@ export const typeCmd: Command = {
     for (const a of ctx.args) {
       if (ctx.aliases.has(a)) ctx.writeln(`${a} is aliased to \`${ctx.aliases.get(a)}'`);
       else if (ctx.commands().some((c) => c.name === a)) ctx.writeln(`${a} is a shell builtin`);
-      else { ctx.writeln(`bash: type: ${a}: not found`); code = 1; }
+      else { ctx.errln(`bash: type: ${a}: not found`); code = 1; }
     }
     return code;
   },
@@ -152,9 +152,9 @@ export const man: Command = {
   complete: completeNames,
   run(ctx) {
     const target = ctx.args[0];
-    if (!target) { ctx.writeln("What manual page do you want?"); return 1; }
+    if (!target) { ctx.errln("What manual page do you want?"); return 1; }
     const cmd = ctx.commands().find((c) => c.name === target);
-    if (!cmd) { ctx.writeln(red(`No manual entry for ${target}`)); return 1; }
+    if (!cmd) { ctx.errln(red(`No manual entry for ${target}`)); return 1; }
     ctx.writeln(bold("NAME"));
     ctx.writeln(`    ${cmd.name} - ${cmd.summary}`);
     ctx.writeln("");

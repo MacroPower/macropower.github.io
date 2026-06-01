@@ -7,3 +7,6 @@ pre-commit:
     typecheck:
       glob: "{tsconfig.json,themes/ubuntu-unity/assets/js/**/*.{ts,tsx}}"
       run: npx --no-install tsc --noEmit
+    typecheck-test:
+      glob: "{tsconfig.json,tsconfig.test.json,themes/ubuntu-unity/assets/js/**/*.{ts,tsx}}"
+      run: npx --no-install tsc -p tsconfig.test.json --noEmit

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "exclude": [],
+  "include": [
+    "themes/ubuntu-unity/assets/js/shell/**/*.test.ts",
+    "themes/ubuntu-unity/assets/js/shell/testkit.ts"
+  ]
+}

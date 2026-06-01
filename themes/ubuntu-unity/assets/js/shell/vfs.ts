@@ -144,6 +144,84 @@ export class Vfs {
       return `~${absPath.slice(this.homePath.length)}`;
     return absPath;
   }
+
+  // Expand a filename glob against the tree, returning matches shaped like the
+  // input (absolute if the pattern was, relative to `cwd` otherwise), sorted.
+  // Returns [] when nothing matches -- the caller keeps the literal pattern,
+  // matching bash with nullglob off.
+  glob(cwd: string, pattern: string): string[] {
+    const isAbs = pattern.startsWith("/");
+    const segs = pattern.split("/").filter((s) => s !== "");
+    const start = isAbs ? this.root : this.lookup(cwd);
+    if (!start || start.kind !== "dir") return [];
+
+    const join = (prefix: string, name: string): string =>
+      prefix === "" ? name : prefix === "/" ? `/${name}` : `${prefix}/${name}`;
+
+    let frontier: { node: FsNode; path: string }[] = [{ node: start, path: isAbs ? "/" : "" }];
+    for (const seg of segs) {
+      const next: { node: FsNode; path: string }[] = [];
+      if (/[*?[]/.test(seg)) {
+        const re = globToRegExp(seg, { leadingDot: true });
+        for (const f of frontier) {
+          if (f.node.kind !== "dir") continue;
+          for (const name of [...f.node.children.keys()].sort()) {
+            const child = f.node.children.get(name);
+            if (child && re.test(name)) next.push({ node: child, path: join(f.path, name) });
+          }
+        }
+      } else {
+        for (const f of frontier) {
+          if (f.node.kind !== "dir") continue;
+          const child = f.node.children.get(seg);
+          if (child) next.push({ node: child, path: join(f.path, seg) });
+        }
+      }
+      frontier = next;
+    }
+    return frontier.map((f) => f.path).sort();
+  }
+}
+
+// Compile a shell glob pattern (* ? [...]) to a RegExp source (no anchors).
+// `*` matches any run (including "/", as bash does for ${VAR#pat} patterns).
+export function globToRegExpBody(pat: string): string {
+  let re = "";
+  let i = 0;
+  while (i < pat.length) {
+    const c = pat[i] ?? "";
+    if (c === "*") { re += ".*"; i += 1; continue; }
+    if (c === "?") { re += "."; i += 1; continue; }
+    if (c === "[") {
+      let j = i + 1;
+      let neg = false;
+      if (pat[j] === "!" || pat[j] === "^") { neg = true; j += 1; }
+      let cls = "";
+      if (pat[j] === "]") { cls += "\\]"; j += 1; }
+      while (j < pat.length && pat[j] !== "]") {
+        const ch = pat[j] ?? "";
+        cls += ch === "\\" ? "\\\\" : ch;
+        j += 1;
+      }
+      if (j >= pat.length) { re += "\\["; i += 1; continue; } // unterminated -> literal
+      re += `[${neg ? "^" : ""}${cls}]`;
+      i = j + 1;
+      continue;
+    }
+    re += c.replace(REGEX_META, "\\$&");
+    i += 1;
+  }
+  return re;
+}
+
+const REGEX_META = /[.*+?^${}()|[\]\\]/;
+
+// Anchored full-match RegExp for a glob pattern. With `leadingDot`, a pattern
+// that starts with a metacharacter does not match a leading "." -- the
+// filename-globbing rule; parameter-expansion patterns leave it off.
+export function globToRegExp(pat: string, opts: { leadingDot?: boolean } = {}): RegExp {
+  const guard = opts.leadingDot && /[*?[]/.test(pat[0] ?? "") ? "(?!\\.)" : "";
+  return new RegExp(`^${guard}${globToRegExpBody(pat)}$`);
 }
 
 export function buildFs(data: ShellData): Vfs {

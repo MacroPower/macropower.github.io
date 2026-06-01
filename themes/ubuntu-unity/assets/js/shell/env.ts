@@ -7,6 +7,9 @@ export interface EnvHooks {
   status(): number;
 }
 
+// Parameters the shell computes rather than storing; always "set".
+const SPECIAL_PARAMS = new Set(["?", "$", "RANDOM", "!", "#", "*", "@", "-", "0"]);
+
 export class Env {
   private readonly vars = new Map<string, string>();
   private readonly exported = new Set<string>();
@@ -38,6 +41,13 @@ export class Env {
     return this.exported.has(name);
   }
 
+  // Whether a parameter is set, distinguishing unset from null (empty). Backs
+  // ${VAR-word} vs ${VAR:-word}: the special params are always considered set.
+  isSet(name: string): boolean {
+    if (SPECIAL_PARAMS.has(name)) return true;
+    return this.vars.has(name);
+  }
+
   /** Variable names, sorted -- backs $-completion. */
   names(): string[] {
     return [...this.vars.keys()].sort();
@@ -51,6 +61,19 @@ export class Env {
   /** Exported variables only, sorted -- backs `env` and bare `export`. */
   exports(): [string, string][] {
     return [...this.exported].sort().map((n) => [n, this.vars.get(n) ?? ""]);
+  }
+
+  // Capture / restore the full variable state, so a command substitution runs
+  // in an isolated subshell whose assignments do not leak to the outer shell.
+  snapshot(): { vars: [string, string][]; exported: string[] } {
+    return { vars: [...this.vars.entries()], exported: [...this.exported] };
+  }
+
+  restore(snap: { vars: [string, string][]; exported: string[] }): void {
+    this.vars.clear();
+    for (const [k, v] of snap.vars) this.vars.set(k, v);
+    this.exported.clear();
+    for (const k of snap.exported) this.exported.add(k);
   }
 
   // Resolve a parameter name to its value during expansion. The special

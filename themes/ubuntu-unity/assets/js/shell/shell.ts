@@ -1,11 +1,13 @@
 import type { TerminalIO } from "./terminal";
 import { Readline, type CompletionContext } from "./readline";
 import { color, PALETTE, stripAnsi } from "./ansi";
-import { buildFs, type Vfs } from "./vfs";
+import { buildFs, globToRegExp, globToRegExpBody, type Vfs } from "./vfs";
 import { Env } from "./env";
+import { evalArith } from "./arith";
 import {
-  parse, tokenizeWords, expandWord, isNullWord,
-  type ParseEnv, type SimpleCommand,
+  parse, tokenizeWords,
+  type ParseEnv, type ParseResult, type ParamExpr,
+  type SimpleCommand, type Word, type WordPart,
 } from "./parse";
 
 export interface SocialLink {
@@ -70,6 +72,9 @@ export interface CommandContext {
   isTTY: boolean;
   write(s: string): void;
   writeln(s: string): void;
+  /** Write to standard error (the active stderr sink), bypassing any pipe. */
+  err(s: string): void;
+  errln(s: string): void;
   clear(): void;
   cwd(): string;
   setCwd(path: string): void;
@@ -114,14 +119,18 @@ export interface ShellOptions {
   history?: string[];
   /** Persist the full history after each accepted line. */
   persist?: (history: readonly string[]) => void;
+  /** Sink for diagnostics; defaults to the terminal. Tests pass a capturing
+   *  sink to read stderr separately from stdout. */
+  stderr?: Sink;
 }
 
 // Buffers a pipeline stage's output, exposing it as plain (ANSI-stripped) lines
-// for the next command's stdin.
+// for the next command's stdin, or as the raw buffer for command substitution.
 class CaptureSink implements Sink {
   private buf = "";
   write(s: string): void { this.buf += s; }
   writeln(s: string): void { this.buf += `${s}\n`; }
+  raw(): string { return this.buf; }
   lines(): string[] {
     const parts = stripAnsi(this.buf).split("\n").map((l) => l.replace(/\r$/, ""));
     if (parts.length && parts[parts.length - 1] === "") parts.pop();
@@ -131,8 +140,126 @@ class CaptureSink implements Sink {
 
 const NULL_SINK: Sink = { write() {}, writeln() {} };
 
-function isAssignment(tok: string): boolean {
-  return /^[A-Za-z_][A-Za-z0-9_]*=/.test(tok);
+// Runtime services parameter expansion needs from the shell: variable access,
+// assignment (for ${VAR:=word}), command substitution, arithmetic, and a
+// diagnostics channel (for ${VAR:?word}).
+export interface Expander {
+  lookup(name: string): string;
+  isSet(name: string): boolean;
+  assign(name: string, value: string): void;
+  runSub(prog: ParseResult): string;
+  arith(expr: string): number;
+  error(msg: string): void;
+}
+
+// A word is a leading assignment (NAME=value) when its first part is a literal
+// matching NAME=; such words configure the environment instead of forming argv.
+function isAssignmentWord(word: Word): boolean {
+  const first = word.parts[0];
+  return first !== undefined && "lit" in first && /^[A-Za-z_][A-Za-z0-9_]*=/.test(first.lit);
+}
+
+// Resolve one expansion part to its string value.
+function expandPart(part: WordPart, exp: Expander): string {
+  if ("lit" in part) return part.lit;
+  if ("param" in part) return exp.lookup(part.param);
+  if ("arith" in part) return String(exp.arith(part.arith));
+  if ("cmdsub" in part) return exp.runSub(part.cmdsub);
+  return evalParamExpr(part.paramExpr, exp);
+}
+
+// Concatenate a word's parts with no field splitting (used for assignment RHS
+// and redirection targets).
+export function expandNoSplit(word: Word, exp: Expander): string {
+  let out = "";
+  for (const part of word.parts) out += expandPart(part, exp);
+  return out;
+}
+
+// Expand a word into fields. Unquoted expansion results undergo IFS word
+// splitting (space/tab/newline); literals and quoted parts do not. A bare
+// unquoted empty expansion contributes zero fields (a null word), while a
+// quoted "" contributes one empty field.
+export function expandFields(word: Word, exp: Expander): string[] {
+  // An empty quoted word ("") has no parts but still contributes one field;
+  // any other partless word (only possible when unquoted-and-empty) contributes
+  // none.
+  if (word.parts.length === 0) return word.quoted ? [""] : [];
+  const fields: string[] = [];
+  let current = "";
+  let hasCurrent = false;
+  const close = (): void => { if (hasCurrent) { fields.push(current); current = ""; hasCurrent = false; } };
+  const appendLit = (s: string): void => { current += s; hasCurrent = true; };
+  const appendSplit = (v: string): void => {
+    if (v === "") return;
+    const segs = v.split(/[ \t\n]+/);
+    segs.forEach((tok, idx) => {
+      if (idx === 0) { if (tok === "") close(); else appendLit(tok); }
+      else { close(); if (tok !== "") appendLit(tok); }
+    });
+  };
+  for (const part of word.parts) {
+    if ("lit" in part) { appendLit(part.lit); continue; }
+    const v = expandPart(part, exp);
+    if (part.quoted) appendLit(v); else appendSplit(v);
+  }
+  close();
+  return fields;
+}
+
+// Evaluate a ${VAR op word} expansion against the expander.
+function evalParamExpr(pe: ParamExpr, exp: Expander): string {
+  const { name, op, word } = pe;
+  const set = exp.isSet(name);
+  const val = exp.lookup(name);
+  const operand = (): string => expandNoSplit(word, exp);
+  const nullOrUnset = !set || val === "";
+  switch (op) {
+    case "len": return String(val.length);
+    case ":-": return nullOrUnset ? operand() : val;
+    case "-": return set ? val : operand();
+    case ":+": return nullOrUnset ? "" : operand();
+    case "+": return set ? operand() : "";
+    case ":=": { if (nullOrUnset) { const o = operand(); exp.assign(name, o); return o; } return val; }
+    case "=": { if (!set) { const o = operand(); exp.assign(name, o); return o; } return val; }
+    // :? / ? report to stderr but, unlike bash, do not abort the command --
+    // the expansion just yields "" (there is no command-level abort hook).
+    case ":?": { if (nullOrUnset) { exp.error(`${name}: ${operand() || "parameter null or not set"}`); return ""; } return val; }
+    case "?": { if (!set) { exp.error(`${name}: ${operand() || "parameter null or not set"}`); return ""; } return val; }
+    case "#": return stripAffix(val, operand(), "prefix", false);
+    case "##": return stripAffix(val, operand(), "prefix", true);
+    case "%": return stripAffix(val, operand(), "suffix", false);
+    case "%%": return stripAffix(val, operand(), "suffix", true);
+    case "/": case "//": {
+      const s = operand();
+      const slash = s.indexOf("/");
+      const pat = slash === -1 ? s : s.slice(0, slash);
+      const repl = slash === -1 ? "" : s.slice(slash + 1);
+      if (pat === "") return val;
+      const re = new RegExp(globToRegExpBody(pat), op === "//" ? "g" : "");
+      return val.replace(re, () => repl);
+    }
+    default: return val;
+  }
+}
+
+// Remove the shortest (or longest) prefix/suffix of `value` matching `pattern`
+// (a glob). No leading-dot rule -- ${VAR#pat} patterns are plain globs. `k` is
+// the affix length tried; shortest scans up from 0, longest down from len.
+function stripAffix(value: string, pattern: string, end: "prefix" | "suffix", longest: boolean): string {
+  const re = globToRegExp(pattern);
+  const len = value.length;
+  const lengths = longest
+    ? Array.from({ length: len + 1 }, (_, i) => len - i)
+    : Array.from({ length: len + 1 }, (_, i) => i);
+  for (const k of lengths) {
+    if (end === "prefix") {
+      if (re.test(value.slice(0, k))) return value.slice(k);
+    } else if (re.test(value.slice(len - k))) {
+      return value.slice(0, len - k);
+    }
+  }
+  return value;
 }
 
 // Levenshtein distance, capped use for command "did you mean?" hints.
@@ -164,6 +291,7 @@ export class Shell {
   private status = 0;
 
   private readonly termSink: Sink;
+  private readonly errSink: Sink;
 
   constructor(
     private readonly term: TerminalIO,
@@ -180,6 +308,9 @@ export class Shell {
       write: (s) => { this.term.write(s); },
       writeln: (s) => { this.term.writeln(s); },
     };
+    // Diagnostics route here; production keeps rendering them to the terminal,
+    // while tests pass a capturing sink to read stderr apart from stdout.
+    this.errSink = opts.stderr ?? this.termSink;
 
     this.readline = new Readline(term, {
       onLine: (line) => { this.onLine(line); },
@@ -226,6 +357,14 @@ export class Shell {
     this.prompt();
   }
 
+  // Execute one line without the readline/prompt machinery, returning its exit
+  // status. The seam a headless driver (or a future `source`/scripting hook)
+  // runs lines through.
+  runLine(line: string): number {
+    this.exec(line);
+    return this.status;
+  }
+
   private prompt(): void {
     this.readline.setPrompt(this.buildPrompt());
     this.readline.prompt();
@@ -270,66 +409,122 @@ export class Shell {
 
   private exec(line: string): void {
     const parsed = parse(line, this.parseEnv());
+    this.execParsed(parsed, this.termSink);
+  }
+
+  // Execute a parsed program, sending the terminal-bound stage's stdout to
+  // `finalOut` (the terminal normally; a capture sink for command substitution).
+  private execParsed(parsed: ParseResult, finalOut: Sink): void {
     if (parsed.error) {
-      this.term.writeln(color(PALETTE.red, `bash: ${parsed.error}`));
+      this.errSink.writeln(color(PALETTE.red, `bash: ${parsed.error}`));
       this.status = 2;
       return;
     }
     for (const stmt of parsed.statements) {
       if (stmt.connector === "&&" && this.status !== 0) continue;
       if (stmt.connector === "||" && this.status === 0) continue;
-      this.status = this.runPipeline(stmt.pipeline);
+      this.status = this.runPipeline(stmt.pipeline, finalOut);
     }
   }
 
-  private runPipeline(cmds: SimpleCommand[]): number {
+  // The services parameter expansion calls back into. Command substitution runs
+  // through this same shell into a capture sink.
+  private expander(): Expander {
+    return {
+      lookup: (n) => this.env.lookup(n),
+      isSet: (n) => this.env.isSet(n),
+      assign: (n, v) => { this.env.set(n, v, { export: this.env.isExported(n) }); },
+      runSub: (p) => this.runSub(p),
+      arith: (e) => this.runArith(e),
+      error: (m) => { this.errSink.writeln(color(PALETTE.red, `bash: ${m}`)); },
+    };
+  }
+
+  private runArith(expr: string): number {
+    try {
+      return evalArith(expr, (n) => this.env.lookup(n));
+    } catch {
+      this.errSink.writeln(color(PALETTE.red, `bash: ${expr}: arithmetic syntax error`));
+      return 0;
+    }
+  }
+
+  // Run a command substitution in an isolated subshell: cwd and the full
+  // variable state are snapshotted and restored so `$(cd /etc)` does not move
+  // the outer shell. `$?` is intentionally left as the sub's last status (bash
+  // behavior). All trailing newlines are stripped, as bash collapses them.
+  private runSub(prog: ParseResult): string {
+    const savedCwd = this.cwdPath;
+    const savedEnv = this.env.snapshot();
+    const cap = new CaptureSink();
+    this.execParsed(prog, cap);
+    this.cwdPath = savedCwd;
+    this.env.restore(savedEnv);
+    return stripAnsi(cap.raw()).replace(/\n+$/, "");
+  }
+
+  private runPipeline(cmds: SimpleCommand[], finalOut: Sink): number {
     let stdin: string[] = [];
     let code = 0;
+    const exp = this.expander();
     for (let i = 0; i < cmds.length; i += 1) {
       const cmd = cmds[i];
       if (!cmd) continue;
       const isLast = i === cmds.length - 1;
+      const capture = isLast ? null : new CaptureSink();
+      let out: Sink = isLast ? finalOut : (capture ?? NULL_SINK);
+      let err: Sink = this.errSink;
 
-      let discard = false;
-      if (cmd.redir) {
-        const target = expandWord(cmd.redir.target, this.env);
-        if (target === "/dev/null") {
-          discard = true;
-        } else {
-          // The VFS is read-only, so any real redirection target fails the way
-          // bash would on a read-only mount.
-          this.term.writeln(color(PALETTE.red, `bash: ${target}: Read-only file system`));
-          code = 1;
-          stdin = [];
-          continue;
+      let blocked = false;
+      for (const r of cmd.redirs) {
+        if (r.kind === "file") {
+          const target = expandNoSplit(r.target, exp);
+          if (target === "/dev/null") {
+            if (r.fd === 2) err = NULL_SINK; else out = NULL_SINK;
+          } else {
+            // The VFS is read-only, so any real redirection target fails the
+            // way bash would on a read-only mount.
+            this.errSink.writeln(color(PALETTE.red, `bash: ${target}: Read-only file system`));
+            blocked = true;
+          }
+        } else if (r.fd === 2 && r.toFd === 1) {
+          err = out;
+        } else if (r.fd === 1 && r.toFd === 2) {
+          out = err;
         }
       }
+      if (blocked) { code = 1; stdin = []; continue; }
 
-      const toTerminal = isLast && !cmd.redir;
-      const capture = !toTerminal && !discard ? new CaptureSink() : null;
-      const out: Sink = toTerminal ? this.termSink : capture ?? NULL_SINK;
-      code = this.runCommand(cmd, stdin, out);
-      stdin = capture ? capture.lines() : [];
+      code = this.runCommand(cmd, stdin, out, err);
+      stdin = capture && out === capture ? capture.lines() : [];
     }
     return code;
   }
 
-  private runCommand(cmd: SimpleCommand, stdin: string[], out: Sink): number {
-    // Expand parameters now, at execution time, so $? and same-line assignments
-    // read the live value. Unquoted empty expansions are dropped (null words).
-    let argv: string[] = [];
-    for (const w of cmd.words) {
-      const s = expandWord(w, this.env);
-      if (isNullWord(w, s)) continue;
-      argv.push(s);
-    }
+  private runCommand(cmd: SimpleCommand, stdin: string[], out: Sink, err: Sink): number {
+    const exp = this.expander();
 
-    // Leading NAME=value assignments configure the environment.
-    while (argv.length && isAssignment(argv[0] ?? "")) {
-      const tok = argv[0] ?? "";
+    // Leading NAME=value assignments configure the environment. The RHS is
+    // expanded without word splitting (bash assignment semantics).
+    let wi = 0;
+    while (wi < cmd.words.length && isAssignmentWord(cmd.words[wi] as Word)) {
+      const tok = expandNoSplit(cmd.words[wi] as Word, exp);
       const eq = tok.indexOf("=");
       this.env.set(tok.slice(0, eq), tok.slice(eq + 1), { export: this.env.isExported(tok.slice(0, eq)) });
-      argv = argv.slice(1);
+      wi += 1;
+    }
+
+    // Expand the remaining words into fields, then apply filename globbing to
+    // any word that carried an unquoted glob metacharacter.
+    let argv: string[] = [];
+    for (let k = wi; k < cmd.words.length; k += 1) {
+      const w = cmd.words[k] as Word;
+      const fields = expandFields(w, exp);
+      if (!w.hasUnquotedGlob) { argv.push(...fields); continue; }
+      for (const f of fields) {
+        const matches = this.vfs.glob(this.cwdPath, f);
+        if (matches.length) argv.push(...matches); else argv.push(f);
+      }
     }
     if (argv.length === 0) return 0;
 
@@ -337,35 +532,38 @@ export class Shell {
     const name = argv[0] ?? "";
     const command = this.registry.get(name);
     if (!command) {
-      this.writeNotFound(name);
+      this.writeNotFound(name, err, out === this.termSink);
       return 127;
     }
-    const r = command.run(this.makeContext(argv, stdin, out));
+    const r = command.run(this.makeContext(argv, stdin, out, err));
     return typeof r === "number" ? r : 0;
   }
 
   // One-level (loop-guarded) textual alias substitution of the command word.
   private expandAlias(argv: string[]): string[] {
+    const exp = this.expander();
     const seen = new Set<string>();
     let cur = argv;
     for (;;) {
       const head = cur[0] ?? "";
       if (!this.aliases.has(head) || seen.has(head)) break;
       seen.add(head);
-      const words = tokenizeWords(this.aliases.get(head) ?? "", this.parseEnv())
-        .map((w) => expandWord(w, this.env));
-      if (words.length === 0) break;
-      cur = [...words, ...cur.slice(1)];
+      const expanded = tokenizeWords(this.aliases.get(head) ?? "", this.parseEnv())
+        .flatMap((w) => expandFields(w, exp));
+      if (expanded.length === 0) break;
+      cur = [...expanded, ...cur.slice(1)];
     }
     return cur;
   }
 
-  private writeNotFound(name: string): void {
-    const suggestion = this.closest(name);
-    const hint = suggestion ? `did you mean '${suggestion}'?` : "try 'help'";
-    this.term.writeln(
-      `${color(PALETTE.red, `command not found: ${name}`)}  ${color(PALETTE.muted, `(${hint})`)}`,
-    );
+  private writeNotFound(name: string, err: Sink, isTTY: boolean): void {
+    err.writeln(color(PALETTE.red, `bash: ${name}: command not found`));
+    // Keep the friendly hint, but only on an interactive terminal -- a pipe or
+    // capture must see the bash-accurate message alone.
+    if (isTTY) {
+      const suggestion = this.closest(name);
+      if (suggestion) err.writeln(color(PALETTE.muted, `(did you mean '${suggestion}'?)`));
+    }
   }
 
   private closest(name: string): string | null {
@@ -382,7 +580,7 @@ export class Shell {
     return best && bestD <= 2 && bestD < name.length ? best : null;
   }
 
-  private makeContext(argv: string[], stdin: string[], out: Sink): CommandContext {
+  private makeContext(argv: string[], stdin: string[], out: Sink, err: Sink): CommandContext {
     return {
       name: argv[0] ?? "",
       args: argv.slice(1),
@@ -391,6 +589,8 @@ export class Shell {
       isTTY: out === this.termSink,
       write: (s) => { out.write(s); },
       writeln: (s) => { out.writeln(s); },
+      err: (s) => { err.write(s); },
+      errln: (s) => { err.writeln(s); },
       clear: () => { this.term.clear(); },
       cwd: () => this.cwdPath,
       setCwd: (p) => { this.setCwd(p); },

@@ -1,6 +1,7 @@
 import type { Command, CommandContext } from "../shell";
 import { color, PALETTE } from "../ansi";
 import { writeBanner } from "../banner";
+import { decodeEscape } from "./escapes";
 
 export const help: Command = {
   name: "help",
@@ -68,16 +69,49 @@ export const uptime: Command = {
   },
 };
 
+// Interpret the backslash escapes that `echo -e` honors (the bash builtin set).
+// \c stops output entirely (signaled via the returned flag); every other escape
+// shares printf's decoder.
+function echoEscapes(s: string): { text: string; stop: boolean } {
+  let out = "";
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] !== "\\") { out += s[i]; i += 1; continue; }
+    if (s[i + 1] === "c") return { text: out, stop: true };
+    const e = decodeEscape(s, i);
+    out += e.text;
+    i += e.len;
+  }
+  return { text: out, stop: false };
+}
+
 export const echo: Command = {
   name: "echo",
   summary: "print text",
-  usage: "echo [-n] [STRING...]",
-  details: "Write arguments to standard output, separated by spaces. -n suppresses the trailing newline.",
+  usage: "echo [-neE] [STRING...]",
+  details: "Write arguments to standard output, separated by spaces. -n suppresses the trailing newline; -e enables backslash escapes (\\n \\t \\\\ \\a \\r \\0NNN), -E (default) disables them.",
   run(ctx) {
     let args = ctx.args;
     let newline = true;
-    while (args[0] === "-n") { newline = false; args = args.slice(1); }
-    const text = args.join(" ");
+    let escapes = false;
+    // Leading flag tokens are exactly -, then one or more of n/e/E; the first
+    // token with any other char (or a non-flag) stops parsing and is an operand.
+    while (args.length) {
+      const a = args[0] ?? "";
+      if (a.length < 2 || a[0] !== "-" || ![...a.slice(1)].every((c) => "neE".includes(c))) break;
+      for (const c of a.slice(1)) {
+        if (c === "n") newline = false;
+        else if (c === "e") escapes = true;
+        else escapes = false;
+      }
+      args = args.slice(1);
+    }
+    let text = args.join(" ");
+    if (escapes) {
+      const r = echoEscapes(text);
+      text = r.text;
+      if (r.stop) newline = false;
+    }
     if (newline) ctx.writeln(text); else ctx.write(text);
     return 0;
   },

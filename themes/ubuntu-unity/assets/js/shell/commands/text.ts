@@ -19,8 +19,8 @@ function inputLines(
   let code = 0;
   for (const f of files) {
     const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), f));
-    if (!node) { ctx.writeln(red(`${cmd}: ${f}: No such file or directory`)); code = 1; continue; }
-    if (node.kind === "dir") { ctx.writeln(red(`${cmd}: ${f}: Is a directory`)); code = 1; continue; }
+    if (!node) { ctx.errln(red(`${cmd}: ${f}: No such file or directory`)); code = 1; continue; }
+    if (node.kind === "dir") { ctx.errln(red(`${cmd}: ${f}: Is a directory`)); code = 1; continue; }
     for (const l of node.content()) lines.push(stripAnsi(l));
   }
   return { lines, code };
@@ -73,12 +73,12 @@ export const grep: Command = {
   run(ctx) {
     const { flags, operands } = splitFlags(ctx.args);
     const pattern = operands.shift();
-    if (pattern === undefined) { ctx.writeln(red("usage: grep [-ivncE] PATTERN [FILE...]")); return 2; }
+    if (pattern === undefined) { ctx.errln(red("usage: grep [-ivncE] PATTERN [FILE...]")); return 2; }
 
     const ci = flags.has("i");
     let re: RegExp;
     try { re = new RegExp(pattern, ci ? "i" : ""); }
-    catch { ctx.writeln(red(`grep: invalid pattern: ${pattern}`)); return 2; }
+    catch { ctx.errln(red(`grep: invalid pattern: ${pattern}`)); return 2; }
 
     const invert = flags.has("v");
     const { lines, code } = inputLines(ctx, "grep", operands);
@@ -111,7 +111,7 @@ export const head: Command = {
   complete: pathComplete,
   run(ctx) {
     const { n, files, err } = parseLineCount(ctx.args);
-    if (err) { ctx.writeln(red(`head: ${err}`)); return 2; }
+    if (err) { ctx.errln(red(`head: ${err}`)); return 2; }
     const { lines, code } = inputLines(ctx, "head", files);
     for (const l of lines.slice(0, n)) ctx.writeln(l);
     return code;
@@ -126,7 +126,7 @@ export const tail: Command = {
   complete: pathComplete,
   run(ctx) {
     const { n, files, err } = parseLineCount(ctx.args);
-    if (err) { ctx.writeln(red(`tail: ${err}`)); return 2; }
+    if (err) { ctx.errln(red(`tail: ${err}`)); return 2; }
     const { lines, code } = inputLines(ctx, "tail", files);
     const tailLines = n <= 0 ? [] : lines.slice(-n);
     for (const l of tailLines) ctx.writeln(l);
@@ -146,12 +146,16 @@ export const wc: Command = {
     const lineCount = lines.length;
     const wordCount = lines.reduce((m, l) => m + (l.trim() ? l.trim().split(/\s+/).length : 0), 0);
     const charCount = lines.reduce((m, l) => m + l.length + 1, 0);
-    const any = flags.has("l") || flags.has("w") || flags.has("c");
-    const parts: string[] = [];
-    if (!any || flags.has("l")) parts.push(String(lineCount).padStart(4));
-    if (!any || flags.has("w")) parts.push(String(wordCount).padStart(4));
-    if (!any || flags.has("c")) parts.push(String(charCount).padStart(4));
-    ctx.writeln(parts.join(" ") + (operands.length === 1 ? ` ${operands[0]}` : ""));
+    const counts: number[] = [];
+    if (flags.has("l")) counts.push(lineCount);
+    if (flags.has("w")) counts.push(wordCount);
+    if (flags.has("c")) counts.push(charCount);
+    // A single selected count prints bare (matching bash `wc -l`); the default
+    // three-column form stays right-aligned.
+    const single = counts.length === 1;
+    const fields = (counts.length ? counts : [lineCount, wordCount, charCount])
+      .map((n) => (single ? String(n) : String(n).padStart(4)));
+    ctx.writeln(fields.join(" ") + (operands.length === 1 ? ` ${operands[0]}` : ""));
     return code;
   },
 };
