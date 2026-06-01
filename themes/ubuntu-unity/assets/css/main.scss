@@ -603,6 +603,22 @@ a.up-sponsor-card[href]:hover{
   font-size:12pt; line-height:1.2;
   color:var(--aod-red);
 }
+/* Reconnect overlay shown after `exit` disposes the terminal. */
+.up-shell-reconnect{
+  height:100%; width:100%;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:12pt; line-height:1.4;
+  color:var(--aod-fg,#ABB2BF);
+  cursor:pointer; outline:none;
+  .up-shell-reconnect-btn{
+    margin-top:1.4em;
+    color:var(--aod-green,#98C379);
+  }
+  &:focus-visible .up-shell-reconnect-btn{
+    text-decoration:underline;
+  }
+}
 
 /* Structural CSS copied from @xterm/xterm 6.0.0 (css/xterm.css). Layout rules
    only; keep this block in sync when bumping the @xterm/xterm dependency. The
