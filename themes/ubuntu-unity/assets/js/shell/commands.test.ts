@@ -191,6 +191,25 @@ describe("file-mutation commands", () => {
     expect(sh.run("rm -rf --no-preserve-root /").status).toBe(0);
     expect(sh.run("ls /").stdout).toBe("");
   });
+  it("deleting a binary makes it uninvokable", () => {
+    const sh = makeShell();
+    expect(sh.run("cat README.md").status).toBe(0);
+    sh.run("rm /usr/bin/cat");
+    const r = sh.run("cat README.md");
+    expect(r.stderr).toBe("bash: cat: command not found\n");
+    expect(r.status).toBe(127);
+  });
+  it("after wiping the tree, builtins survive but binaries do not", () => {
+    const sh = makeShell();
+    sh.run("rm -rf --no-preserve-root /");
+    // builtins need no file on disk
+    expect(sh.run("echo hello").stdout).toBe("hello\n");
+    expect(sh.run("cd /").status).toBe(0);
+    // external programs are gone
+    const r = sh.run("ls");
+    expect(r.stderr).toBe("bash: ls: command not found\n");
+    expect(r.status).toBe(127);
+  });
   it("cp -r deep-copies a directory independently", () => {
     const sh = makeShell();
     sh.run("mkdir src");

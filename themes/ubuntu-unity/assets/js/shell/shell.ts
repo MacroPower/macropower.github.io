@@ -588,6 +588,15 @@ export class Shell {
       this.writeNotFound(name, err, out === this.termSink);
       return 127;
     }
+    // External programs run only while their binary still exists on $PATH:
+    // delete /usr/bin/ls (or wipe the tree) and `ls` becomes "command not
+    // found", just like bash. Builtins need no file, and hidden eggs ship no
+    // stub, so both bypass the check.
+    if (!command.builtin && !command.hidden
+      && !this.vfs.resolveCommand(name, this.cwdPath, this.env.lookup("PATH"))) {
+      err.writeln(color(PALETTE.red, `bash: ${name}: command not found`));
+      return 127;
+    }
     const r = command.run(this.makeContext(argv, stdin, out, err));
     return typeof r === "number" ? r : 0;
   }
