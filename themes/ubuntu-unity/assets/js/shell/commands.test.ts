@@ -171,6 +171,26 @@ describe("file-mutation commands", () => {
     expect(r.stderr).toBe("");
     expect(r.status).toBe(0);
   });
+  it("rm -rf / hits the GNU preserve-root failsafe", () => {
+    const r = makeShell().run("rm -rf /");
+    expect(r.stderr).toBe(
+      "rm: it is dangerous to operate recursively on '/'\n" +
+      "rm: use --no-preserve-root to override this failsafe\n",
+    );
+    expect(r.status).toBe(1);
+    // the tree survived
+    expect(makeShell().run("ls / | head -n1").status).toBe(0);
+  });
+  it("a non-recursive rm / still reports Is a directory", () => {
+    const r = makeShell().run("rm /");
+    expect(r.stderr).toBe("rm: cannot remove '/': Is a directory\n");
+    expect(r.status).toBe(1);
+  });
+  it("rm -rf --no-preserve-root / empties the session tree", () => {
+    const sh = makeShell();
+    expect(sh.run("rm -rf --no-preserve-root /").status).toBe(0);
+    expect(sh.run("ls /").stdout).toBe("");
+  });
   it("cp -r deep-copies a directory independently", () => {
     const sh = makeShell();
     sh.run("mkdir src");

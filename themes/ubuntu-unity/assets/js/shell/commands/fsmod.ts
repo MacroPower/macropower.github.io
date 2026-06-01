@@ -55,7 +55,8 @@ export const rm: Command = {
   details: "Remove files. -r (or -R) removes directories and their contents recursively; -f ignores missing operands and never reports an error.",
   complete: pathComplete,
   run(ctx) {
-    const { flags, operands } = splitFlags(ctx.args);
+    const noPreserveRoot = ctx.args.includes("--no-preserve-root");
+    const { flags, operands } = splitFlags(ctx.args.filter((a) => a !== "--no-preserve-root"));
     const recursive = flags.has("r") || flags.has("R");
     const force = flags.has("f");
     if (operands.length === 0) {
@@ -65,7 +66,16 @@ export const rm: Command = {
     }
     let code = 0;
     for (const op of operands) {
-      const err = ctx.vfs.removePath(ctx.vfs.resolvePath(ctx.cwd(), op), { recursive });
+      const abs = ctx.vfs.resolvePath(ctx.cwd(), op);
+      // GNU's --preserve-root failsafe: refuse to recurse over "/" by default.
+      // Pass --no-preserve-root and it really does empty the (session) tree.
+      if (abs === "/" && recursive && !noPreserveRoot) {
+        ctx.errln(red("rm: it is dangerous to operate recursively on '/'"));
+        ctx.errln(red("rm: use --no-preserve-root to override this failsafe"));
+        code = 1;
+        continue;
+      }
+      const err = ctx.vfs.removePath(abs, { recursive, noPreserveRoot });
       if (err) {
         if (force && err === "No such file or directory") continue;
         ctx.errln(red(`rm: cannot remove '${op}': ${err}`));

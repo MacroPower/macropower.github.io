@@ -283,8 +283,14 @@ export class Vfs {
 
   // Remove a path. Backs both `rm` (recursive removes a non-empty dir) and
   // `rmdir`/`rm -d` (dirOnly: the target must be an empty directory).
-  removePath(absPath: string, opts: { recursive?: boolean; dirOnly?: boolean } = {}): string | undefined {
-    if (absPath === "/") return "Is a directory";
+  removePath(absPath: string, opts: { recursive?: boolean; dirOnly?: boolean; noPreserveRoot?: boolean } = {}): string | undefined {
+    if (absPath === "/") {
+      // Root can only be emptied once `rm` has cleared the --preserve-root
+      // failsafe; "/" itself has no parent to unlink, so we clear its children.
+      // Session-scoped, so a reload brings the tree back.
+      if (opts.recursive && opts.noPreserveRoot) { this.root.children.clear(); return undefined; }
+      return "Is a directory";
+    }
     const { parentPath, base } = splitPath(absPath);
     const parent = this.lookup(parentPath);
     if (!parent || parent.kind !== "dir") return "No such file or directory";
