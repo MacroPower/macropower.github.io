@@ -43,8 +43,6 @@ const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
       : "This is a personal site.",
     buttons: [{ id: "ok", label: "OK", primary: true }],
   }),
-  "dlg:wired": () => ({ icon: "warning", title: "No wired connection",
-    body: "No ethernet cable detected. Plug one in to use a wired network." }),
   "dlg:cal": () => ({ icon: "info", title: "Calendar",
     body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
 };
@@ -87,6 +85,17 @@ interface BatteryManager {
   charging: boolean;
   chargingTime: number;
   dischargingTime: number;
+}
+
+// Shape of the Network Information API's `navigator.connection`, which the lib
+// config doesn't type. Every field is optional: Chromium exposes them, but
+// Firefox/Safari omit `connection` entirely. Mirrors the BatteryManager shim.
+interface NetworkInformation {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+  type?: string;
 }
 
 function renderCalendar(host: HTMLElement, now: Date): void {
@@ -175,6 +184,40 @@ async function showPower(): Promise<void> {
     icon: "info", title: "Power settings",
     body: `Battery: ${sim.level}% — ${sim.charging ? "charging" : "discharging"}`,
     details: `${sim.detail}\nThe raw data lives in /sys/class/power_supply/BAT0/uevent.`,
+  });
+}
+
+async function showWired(): Promise<void> {
+  const nav = navigator as Navigator & { connection?: NetworkInformation };
+  const conn = nav.connection;
+  if (conn && (conn.effectiveType || conn.downlink != null || conn.rtt != null)) {
+    const wired = conn.type === "ethernet";
+    const lines: string[] = [];
+    if (conn.effectiveType) lines.push(`Effective type: ${conn.effectiveType}`);
+    if (conn.downlink != null) lines.push(`Downlink: ~${conn.downlink} Mbps`);
+    if (conn.rtt != null) lines.push(`Round-trip time: ${conn.rtt} ms`);
+    if (conn.type) lines.push(`Type: ${conn.type}`);
+    lines.push(`Data saver: ${conn.saveData ? "on" : "off"}`);
+    lines.push("Reported by the Network Information API.");
+    await dlg({
+      icon: "info",
+      title: wired ? "Wired connection" : "Connection details",
+      body: wired
+        ? "Ethernet link is up."
+        : "No wired link, but here's what the browser will tell us:",
+      details: lines.join("\n"),
+    });
+    return;
+  }
+  // Firefox/Safari don't expose navigator.connection; report the one real bit
+  // we do have — online/offline — with a playful nod to the missing details.
+  const online = navigator.onLine;
+  await dlg({
+    icon: online ? "info" : "warning",
+    title: online ? "Connection details" : "You're offline",
+    body: online
+      ? "You're online, but this browser won't admit over what. No cable, no Mbps, no secrets."
+      : "No connection detected. Check the cable nobody can see.",
   });
 }
 
@@ -278,6 +321,7 @@ async function dispatchAction(action: string): Promise<void> {
   }
   if (action === "dlg:time") { await showTime(); return; }
   if (action === "dlg:power") { await showPower(); return; }
+  if (action === "dlg:wired") { await showWired(); return; }
   if (action === "dlg:subscribe") { await showSubscribe(site); return; }
   if (action === "dlg:hotspot") { await handleHotspot(); return; }
   if (action === "dlg:logout") {
