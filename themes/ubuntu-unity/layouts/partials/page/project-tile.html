@@ -1,0 +1,25 @@
+{{- /*
+  One file-manager tile in the projects grid. Receives a single project dict
+  (from site.Data.projects) and emits the <button.up-project-tile> carrying the
+  data-* attributes projects.ts reads to rebuild the preview pane on selection.
+
+  Required keys: name, language, updated, topics, description, url.
+  Optional keys: stars, forks, license (emitted only when present, matching the
+  source contract so projects.ts can treat their absence as "unknown").
+*/ -}}
+{{- $p := . -}}
+<button type="button"
+        class="up-project-tile"
+        data-up-project-tile
+        data-name="{{ $p.name }}"
+        data-language="{{ $p.language }}"
+        {{ with $p.stars }}data-stars="{{ . }}"{{ end }}
+        {{ with $p.forks }}data-forks="{{ . }}"{{ end }}
+        data-updated="{{ $p.updated }}"
+        data-topics="{{ delimit $p.topics " " }}"
+        data-description="{{ $p.description }}"
+        {{ with $p.license }}data-license="{{ . }}"{{ end }}
+        data-url="{{ $p.url }}">
+  {{ partial "page/icons/folder-emblem.html" (dict "language" $p.language) }}
+  <span class="up-project-tile-label">{{ $p.name }}</span>
+</button>

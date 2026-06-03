@@ -1,0 +1,29 @@
+{{- /*
+  Top-panel app menu (File / Edit / View / Help) — the trigger plus its
+  left-aligned dropdown of rows.
+
+  Caller params:
+    menu  string   the data-menu / data-dropdown-for key (required)
+    label string   visible trigger text (required)
+    items []dict   ordered rows. Each entry is either a separator
+                   (dict "sep" true) or a ui/menu-item.html dict
+                   (label / action / shortcut / disabled / check).
+
+  data-panel-trigger + the matching data-dropdown-for sibling are the contract
+  top-panel.ts toggles; keep them in sync.
+*/ -}}
+{{- $menu := .menu -}}
+<div class="up-panel-item">
+  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="{{ $menu }}" tabindex="0" role="button">{{ .label }}</span>
+  <div class="up-dropdown" data-dropdown-for="{{ $menu }}" data-align="left" hidden>
+    <div class="up-dropdown-body">
+      {{- range .items }}
+        {{- if .sep }}
+        <div class="up-dropdown-sep"></div>
+        {{- else }}
+        {{ partial "ui/menu-item.html" . }}
+        {{- end }}
+      {{- end }}
+    </div>
+  </div>
+</div>

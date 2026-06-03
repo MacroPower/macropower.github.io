@@ -5,13 +5,6 @@
   {{- if index $known $name -}}
     {{ partial (printf "page/%s.html" $name) . }}
   {{- else -}}
-    <article class="up-page selectable">
-      <header class="up-page-header">
-        <h1>{{ .Title }}</h1>
-      </header>
-      <div class="up-page-body">
-        {{ .Content }}
-      </div>
-    </article>
+    {{ partial "ui/page.html" (dict "title" .Title "content" .Content) }}
   {{- end -}}
 {{ end }}

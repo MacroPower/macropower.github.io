@@ -1,0 +1,23 @@
+{{- /*
+  Top-panel app-menu row (the File / Edit / View / Help dropdown items).
+
+  Caller params:
+    label    string  visible text (required)
+    action   string  data-action dispatch key (optional)
+    shortcut string  keyboard hint; adds has-shortcut + the shortcut span
+    disabled bool    adds is-disabled
+    check    bool    adds has-check (the left ✓ gutter)
+
+  Modifier order matches the hand-written markup: is-disabled, has-check,
+  has-shortcut. data-action is emitted through safeHTMLAttr — Go's
+  html/template otherwise rewrites scheme-like values (nav:* / dlg:*) to the
+  #ZgotmplZ sentinel, which would break top-panel.ts dispatch.
+
+  This partial covers .up-menu-item only; the .up-dropdown-row indicator rows
+  (network / battery / clock / user) keep their own bespoke markup.
+*/ -}}
+{{- $cls := "up-menu-item" -}}
+{{- if .disabled }}{{ $cls = printf "%s is-disabled" $cls }}{{ end -}}
+{{- if .check }}{{ $cls = printf "%s has-check" $cls }}{{ end -}}
+{{- if .shortcut }}{{ $cls = printf "%s has-shortcut" $cls }}{{ end -}}
+<div class="{{ $cls }}"{{ with .action }} {{ printf `data-action="%s"` (htmlEscape .) | safeHTMLAttr }}{{ end }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>

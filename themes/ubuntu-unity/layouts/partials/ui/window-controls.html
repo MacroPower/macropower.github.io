@@ -1,0 +1,19 @@
+{{- /*
+  Window titlebar traffic-light controls. Emits the .up-tl-group wrapper
+  holding the close + minimize buttons, and optionally maximize.
+
+  Caller params:
+    max  bool  include the maximize button (default false)
+
+  The .up-tl-close / .up-tl-min / .up-tl-max classes and the aria-labels are
+  DOM contracts queried by page-window.ts and trash.ts — keep them verbatim.
+  This partial intentionally does NOT cover the dialog close (.up-dlg-close is
+  a distinct class dialogs.ts queries separately).
+*/ -}}
+<div class="up-tl-group">
+  <button class="up-tl up-tl-close" type="button" aria-label="Close">{{ partial "icon.html" "glyphs/titlebar-close" }}</button>
+  <button class="up-tl up-tl-min" type="button" aria-label="Minimize">{{ partial "icon.html" "glyphs/titlebar-min" }}</button>
+  {{- if .max }}
+  <button class="up-tl up-tl-max" type="button" aria-label="Maximize">{{ partial "icon.html" "glyphs/titlebar-max" }}</button>
+  {{- end }}
+</div>

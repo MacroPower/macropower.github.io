@@ -1,0 +1,25 @@
+{{- /*
+  Generic content-page shell: <article.up-page selectable> with an <h1>
+  header and a body. Used by the fallthrough single page, the section list,
+  and 404 — every plain page that is not one of the bespoke Nautilus layouts.
+
+  Caller params:
+    title    string         the <h1> text (required)
+    content  template.HTML  body HTML; pass .Content or a safeHTML string
+    children []dict          optional {url,title} list rendered as
+                             <ul.up-page-children> after the content
+*/ -}}
+{{- $children := .children -}}
+<article class="up-page selectable">
+  <header class="up-page-header"><h1>{{ .title }}</h1></header>
+  <div class="up-page-body">
+    {{ .content }}
+    {{- with $children }}
+      <ul class="up-page-children">
+        {{- range . }}
+          <li><a href="{{ .url }}">{{ .title }}</a></li>
+        {{- end }}
+      </ul>
+    {{- end }}
+  </div>
+</article>

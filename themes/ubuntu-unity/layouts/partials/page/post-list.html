@@ -18,23 +18,15 @@
       {{- $isActive := and (ne $here "") (eq $here .RelPermalink) }}
       {{- $tagList := slice }}
       {{- range .Params.categories }}{{ $tagList = $tagList | append (lower .) }}{{ end }}
-      <a class="up-post-row{{ if $isActive }} is-active{{ end }}"
-         href="{{ .RelPermalink }}"
-         data-up-post-row
-         data-title="{{ lower .Title }}"
-         data-tags="{{ delimit $tagList " " }}"
-         data-date="{{ .Date.Format "2006-01-02" }}"
-         {{- if $isActive }} aria-current="page"{{ end }}>
-        <div class="up-post-row-main">
-          <div class="up-post-title">{{ .Title }}</div>
-          <div class="up-post-meta">
-            {{- range .Params.categories }}
-              <span class="up-post-chip">#{{ . }}</span>
-            {{- end }}
-          </div>
-        </div>
-        <time class="up-post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
-      </a>
+      {{- $iso := .Date.Format "2006-01-02" }}
+      {{ partial "page/post-row.html" (dict
+          "url" .RelPermalink
+          "title" .Title
+          "active" $isActive
+          "chips" .Params.categories
+          "date" (.Date.Format $dateFmt)
+          "datetime" $iso
+          "filter" (dict "title" (lower .Title) "tags" (delimit $tagList " ") "date" $iso)) }}
     {{- end }}
     <div class="up-post-empty" data-up-post-empty hidden>No posts match.</div>
   </div>

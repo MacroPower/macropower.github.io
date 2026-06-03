@@ -1,17 +1,5 @@
 {{ define "main" }}
-  <article class="up-page selectable">
-    <header class="up-page-header">
-      <h1>{{ .Title }}</h1>
-    </header>
-    <div class="up-page-body">
-      {{ .Content }}
-      {{- with .Pages }}
-        <ul class="up-page-children">
-          {{- range . }}
-            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-          {{- end }}
-        </ul>
-      {{- end }}
-    </div>
-  </article>
+  {{- $children := slice -}}
+  {{- range .Pages }}{{ $children = $children | append (dict "url" .RelPermalink "title" .Title) }}{{ end -}}
+  {{ partial "ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
 {{ end }}

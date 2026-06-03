@@ -7,60 +7,40 @@
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
   </div>
 
-  <div class="up-panel-item">
-    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="file" tabindex="0" role="button">File</span>
-    <div class="up-dropdown" data-dropdown-for="file" data-align="left" hidden>
-      <div class="up-dropdown-body">
-        <div class="up-menu-item" data-action="nav:blog"><span class="up-menu-item-label">Open blog</span></div>
-        <div class="up-menu-item" data-action="nav:cv"><span class="up-menu-item-label">Open CV</span></div>
-        <div class="up-menu-item" data-action="nav:projects"><span class="up-menu-item-label">Open projects</span></div>
-        <div class="up-menu-item" data-action="nav:sponsors"><span class="up-menu-item-label">Open sponsors</span></div>
-        <div class="up-dropdown-sep"></div>
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Close window</span><span class="up-menu-item-shortcut">Ctrl+W</span></div>
-      </div>
-    </div>
-  </div>
+  {{ partial "ui/panel-menu.html" (dict "menu" "file" "label" "File" "items" (slice
+    (dict "label" "Open blog" "action" "nav:blog")
+    (dict "label" "Open CV" "action" "nav:cv")
+    (dict "label" "Open projects" "action" "nav:projects")
+    (dict "label" "Open sponsors" "action" "nav:sponsors")
+    (dict "sep" true)
+    (dict "label" "Close window" "disabled" true "shortcut" "Ctrl+W")
+  )) }}
 
-  <div class="up-panel-item">
-    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="edit" tabindex="0" role="button">Edit</span>
-    <div class="up-dropdown" data-dropdown-for="edit" data-align="left" hidden>
-      <div class="up-dropdown-body">
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Undo</span><span class="up-menu-item-shortcut">Ctrl+Z</span></div>
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Redo</span><span class="up-menu-item-shortcut">Ctrl+Y</span></div>
-        <div class="up-dropdown-sep"></div>
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Cut</span><span class="up-menu-item-shortcut">Ctrl+X</span></div>
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Copy</span><span class="up-menu-item-shortcut">Ctrl+C</span></div>
-        <div class="up-menu-item is-disabled has-shortcut"><span class="up-menu-item-label">Paste</span><span class="up-menu-item-shortcut">Ctrl+V</span></div>
-        <div class="up-dropdown-sep"></div>
-        <div class="up-menu-item" data-action="dlg:prefs"><span class="up-menu-item-label">Preferences…</span></div>
-      </div>
-    </div>
-  </div>
+  {{ partial "ui/panel-menu.html" (dict "menu" "edit" "label" "Edit" "items" (slice
+    (dict "label" "Undo" "disabled" true "shortcut" "Ctrl+Z")
+    (dict "label" "Redo" "disabled" true "shortcut" "Ctrl+Y")
+    (dict "sep" true)
+    (dict "label" "Cut" "disabled" true "shortcut" "Ctrl+X")
+    (dict "label" "Copy" "disabled" true "shortcut" "Ctrl+C")
+    (dict "label" "Paste" "disabled" true "shortcut" "Ctrl+V")
+    (dict "sep" true)
+    (dict "label" "Preferences…" "action" "dlg:prefs")
+  )) }}
 
-  <div class="up-panel-item">
-    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="view" tabindex="0" role="button">View</span>
-    <div class="up-dropdown" data-dropdown-for="view" data-align="left" hidden>
-      <div class="up-dropdown-body">
-        <div class="up-menu-item has-shortcut" data-action="reload"><span class="up-menu-item-label">Reload</span><span class="up-menu-item-shortcut">Ctrl+R</span></div>
-        <div class="up-menu-item" data-action="fullscreen"><span class="up-menu-item-label">Toggle full window</span></div>
-        <div class="up-dropdown-sep"></div>
-        <div class="up-menu-item has-check" data-action="dlg:launcher-info"><span class="up-menu-item-label">Show launcher</span></div>
-        <div class="up-menu-item has-check"><span class="up-menu-item-label">Show top panel</span></div>
-      </div>
-    </div>
-  </div>
+  {{ partial "ui/panel-menu.html" (dict "menu" "view" "label" "View" "items" (slice
+    (dict "label" "Reload" "action" "reload" "shortcut" "Ctrl+R")
+    (dict "label" "Toggle full window" "action" "fullscreen")
+    (dict "sep" true)
+    (dict "label" "Show launcher" "action" "dlg:launcher-info" "check" true)
+    (dict "label" "Show top panel" "check" true)
+  )) }}
 
-  <div class="up-panel-item">
-    <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="help" tabindex="0" role="button">Help</span>
-    <div class="up-dropdown" data-dropdown-for="help" data-align="left" hidden>
-      <div class="up-dropdown-body">
-        <div class="up-menu-item" data-action="dlg:shortcuts"><span class="up-menu-item-label">Keyboard shortcuts</span></div>
-        <div class="up-dropdown-sep"></div>
-        <div class="up-menu-item" data-action="dlg:github"><span class="up-menu-item-label">View source on github</span></div>
-        <div class="up-menu-item" data-action="nav:icons"><span class="up-menu-item-label">Icon vault</span></div>
-      </div>
-    </div>
-  </div>
+  {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" "Help" "items" (slice
+    (dict "label" "Keyboard shortcuts" "action" "dlg:shortcuts")
+    (dict "sep" true)
+    (dict "label" "View source on github" "action" "dlg:github")
+    (dict "label" "Icon vault" "action" "nav:icons")
+  )) }}
 
   <div class="up-panel-spacer"></div>
 
@@ -87,21 +67,13 @@
     <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Network</div>
       <div class="up-dropdown-body">
-        <div class="up-dropdown-row up-net-row is-strong is-on" data-net-name="café-do-bairro" data-net-on>
-          <span class="up-net-row-dot">●</span><span class="up-net-row-name">café-do-bairro</span>
-        </div>
-        <div class="up-dropdown-row up-net-row" data-net-name="MEO-WiFi">
-          <span class="up-net-row-dot">○</span><span class="up-net-row-name">MEO-WiFi</span>
-        </div>
-        <div class="up-dropdown-row up-net-row is-mono" data-net-name="ngrok-tunnel">
-          <span class="up-net-row-dot">○</span><span class="up-net-row-name">ngrok-tunnel</span>
-        </div>
-        <div class="up-dropdown-row up-net-row is-muted" data-net-name="(hidden)">
-          <span class="up-net-row-dot">○</span><span class="up-net-row-name">(hidden)</span>
-        </div>
+        {{ partial "ui/net-row.html" (dict "name" "café-do-bairro" "on" true "strong" true) }}
+        {{ partial "ui/net-row.html" (dict "name" "MEO-WiFi") }}
+        {{ partial "ui/net-row.html" (dict "name" "ngrok-tunnel" "mono" true) }}
+        {{ partial "ui/net-row.html" (dict "name" "(hidden)" "muted" true) }}
         <div class="up-dropdown-sep"></div>
-        <div class="up-dropdown-row" data-action="dlg:wired">Wired connection</div>
-        <div class="up-dropdown-row" data-action="dlg:hotspot">Enable hotspot</div>
+        {{ partial "ui/dropdown-row.html" (dict "label" "Wired connection" "action" "dlg:wired") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" "Enable hotspot" "action" "dlg:hotspot") }}
       </div>
     </div>
   </div>
@@ -145,8 +117,8 @@
         <div class="up-bat-headline" data-bat-headline>76% — discharging</div>
         <div class="up-bat-detail" data-bat-detail>About 3 hours 14 minutes remaining</div>
         <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill style="width:76%"></div></div>
-        <div class="up-dropdown-row" data-action="dlg:power-saver">Enable power saver</div>
-        <div class="up-dropdown-row" data-action="dlg:power">Power settings…</div>
+        {{ partial "ui/dropdown-row.html" (dict "label" "Enable power saver" "action" "dlg:power-saver") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" "Power settings…" "action" "dlg:power") }}
       </div>
     </div>
   </div>
@@ -160,8 +132,8 @@
       <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
       <div class="up-dropdown-body">
         <div class="up-calendar" data-calendar></div>
-        <div class="up-dropdown-row" data-action="dlg:cal">Open calendar</div>
-        <div class="up-dropdown-row" data-action="dlg:time">Time settings…</div>
+        {{ partial "ui/dropdown-row.html" (dict "label" "Open calendar" "action" "dlg:cal") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" "Time settings…" "action" "dlg:time") }}
       </div>
     </div>
   </div>
@@ -173,9 +145,9 @@
     <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ $handle }}</div>
       <div class="up-dropdown-body">
-        <div class="up-dropdown-row" data-action="dlg:lock">Lock screen</div>
-        <div class="up-dropdown-row" data-action="reload">Restart session</div>
-        <div class="up-dropdown-row is-danger" data-action="dlg:logout">Log out…</div>
+        {{ partial "ui/dropdown-row.html" (dict "label" "Lock screen" "action" "dlg:lock") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" "Restart session" "action" "reload") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" "Log out…" "action" "dlg:logout" "danger" true) }}
       </div>
     </div>
   </div>

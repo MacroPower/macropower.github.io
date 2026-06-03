@@ -15,15 +15,11 @@
           <span>Posts</span>
         </header>
         {{- range $terms }}
-          <a class="up-post-row" href="{{ .Page.RelPermalink }}">
-            <div class="up-post-row-main">
-              <div class="up-post-title">{{ .Page.Title }}</div>
-              <div class="up-post-meta">
-                <span class="up-post-chip">#{{ .Page.Title | lower }}</span>
-              </div>
-            </div>
-            <span class="up-post-date">{{ .Count }}</span>
-          </a>
+          {{ partial "page/post-row.html" (dict
+              "url" .Page.RelPermalink
+              "title" .Page.Title
+              "chips" (slice (.Page.Title | lower))
+              "date" .Count) }}
         {{- else }}
           <div class="up-post-empty">No {{ $plural }} yet.</div>
         {{- end }}

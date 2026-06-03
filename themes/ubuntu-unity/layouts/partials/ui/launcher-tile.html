@@ -1,0 +1,32 @@
+{{- /*
+  Launcher dock tile. Both the nav tiles (<a>) and the trash tile (<button>)
+  share the same inner structure: icon + the two slide arrows + tooltip.
+
+  Caller params:
+    tag     "a" | "button"   default "a"
+    key     string           data-launcher value (required)
+    label   string           tooltip + aria-label (required)
+    icon    string           launcher icon path, e.g. "launcher/home" (required)
+    url     string           href, required when tag="a"
+    active  bool             nav tiles: adds is-active + data-page-current
+    trash   bool             adds data-launcher-trash (the trash tile)
+
+  Preserves .up-launcher-tile, data-launcher, data-launcher-trash,
+  data-page-current, and is-active — all DOM contracts read by
+  page-window.ts / trash.ts.
+*/ -}}
+{{- $tag := .tag | default "a" -}}
+{{- if eq $tag "button" -}}
+<button class="up-launcher-tile{{ if .active }} is-active{{ end }}" data-launcher="{{ .key }}"{{ if .trash }} data-launcher-trash{{ end }} aria-label="{{ .label }}" type="button">
+{{- else -}}
+<a class="up-launcher-tile{{ if .active }} is-active{{ end }}" href="{{ .url }}" data-launcher="{{ .key }}" aria-label="{{ .label }}"{{ if .active }} data-page-current="1"{{ end }}>
+{{- end -}}
+  <span class="up-launcher-icon">{{ partial "icon.html" .icon }}</span>
+  <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
+  <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
+  <span class="up-tooltip" aria-hidden="true">{{ .label }}</span>
+{{- if eq $tag "button" -}}
+</button>
+{{- else -}}
+</a>
+{{- end -}}

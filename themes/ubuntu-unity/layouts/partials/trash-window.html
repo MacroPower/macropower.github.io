@@ -1,11 +1,16 @@
 {{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
+{{- $files := slice
+  (dict "icon" "launcher/document"  "label" "old-resume-FINAL-v3.pdf")
+  (dict "icon" "flat/empty-file"    "label" "passwords.txt")
+  (dict "icon" "flat/empty-folder"  "label" "node_modules")
+  (dict "icon" "flat/empty-file"    "label" ".DS_Store")
+  (dict "icon" "flat/empty-file"    "label" "screenshot-2009-08-14.png")
+  (dict "icon" "flat/empty-folder"  "label" "secret-startup-idea")
+-}}
 <div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
   <section class="up-window-chrome">
     <div class="up-titlebar" data-titlebar>
-      <div class="up-tl-group">
-        <button class="up-tl up-tl-close" type="button" aria-label="Close">{{ partial "icon.html" "glyphs/titlebar-close" }}</button>
-        <button class="up-tl up-tl-min"   type="button" aria-label="Minimize">{{ partial "icon.html" "glyphs/titlebar-min" }}</button>
-      </div>
+      {{ partial "ui/window-controls.html" (dict) }}
       <span class="up-titlebar-text">Trash</span>
     </div>
     <div class="up-window-body">
@@ -16,30 +21,12 @@
       </div>
 
       <div class="up-trash-files" data-trash-files>
+        {{- range $files }}
         <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "launcher/document" }}</span>
-          <span class="up-trash-tile-label">old-resume-FINAL-v3.pdf</span>
+          <span class="up-trash-tile-icon">{{ partial "icon.html" .icon }}</span>
+          <span class="up-trash-tile-label">{{ .label }}</span>
         </div>
-        <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
-          <span class="up-trash-tile-label">passwords.txt</span>
-        </div>
-        <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-folder" }}</span>
-          <span class="up-trash-tile-label">node_modules</span>
-        </div>
-        <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
-          <span class="up-trash-tile-label">.DS_Store</span>
-        </div>
-        <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-file" }}</span>
-          <span class="up-trash-tile-label">screenshot-2009-08-14.png</span>
-        </div>
-        <div class="up-trash-tile">
-          <span class="up-trash-tile-icon">{{ partial "icon.html" "flat/empty-folder" }}</span>
-          <span class="up-trash-tile-label">secret-startup-idea</span>
-        </div>
+        {{- end }}
       </div>
 
       <div class="up-trash-empty" hidden>
@@ -52,7 +39,7 @@
       </div>
 
       <div class="up-trash-footer">
-        <span class="up-trash-count" data-trash-count>6 items</span>
+        <span class="up-trash-count" data-trash-count>{{ len $files }} items</span>
         <button type="button" class="up-trash-empty-btn" data-trash-empty>Empty Trash</button>
       </div>
     </div>

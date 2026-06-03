@@ -1,0 +1,37 @@
+{{- /*
+  A row in a Nautilus-style post list — both the filterable blog list and the
+  taxonomy term lists.
+
+  Caller params:
+    url      string    row href (required)
+    title    string    post / term title (required)
+    active   bool      adds is-active + aria-current="page"
+    chips    []string  tag labels; each renders as a #tag chip
+    date     any       right-column text (a formatted date or a post count)
+    datetime string    when set, the right column is a <time datetime=…>
+                       element instead of a plain <span>
+    filter   dict      when set, emits the blog.ts filter contract
+                       (data-up-post-row + data-title/-tags/-date) from its
+                       title / tags / date keys
+
+  data-up-post-row and the data-title/-tags/-date trio are read by blog.ts;
+  they are emitted only when `filter` is passed (the taxonomy rows are static).
+*/ -}}
+{{- $filter := .filter -}}
+<a class="up-post-row{{ if .active }} is-active{{ end }}" href="{{ .url }}"
+  {{- with $filter }} data-up-post-row data-title="{{ .title }}" data-tags="{{ .tags }}" data-date="{{ .date }}"{{ end }}
+  {{- if .active }} aria-current="page"{{ end }}>
+  <div class="up-post-row-main">
+    <div class="up-post-title">{{ .title }}</div>
+    <div class="up-post-meta">
+      {{- range .chips }}
+        <span class="up-post-chip">#{{ . }}</span>
+      {{- end }}
+    </div>
+  </div>
+  {{- with .datetime }}
+  <time class="up-post-date" datetime="{{ . }}">{{ $.date }}</time>
+  {{- else }}
+  <span class="up-post-date">{{ .date }}</span>
+  {{- end }}
+</a>

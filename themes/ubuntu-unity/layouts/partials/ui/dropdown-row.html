@@ -1,0 +1,16 @@
+{{- /*
+  Plain clickable row inside a top-panel indicator dropdown (network actions,
+  calendar/time, power, session). For the network access points use
+  ui/net-row.html instead.
+
+  Caller params:
+    label  string  visible text (required)
+    action string  data-action dispatch key (optional)
+    danger bool    adds is-danger (the red "Log out…" treatment)
+
+  data-action is emitted through safeHTMLAttr so scheme-like keys (dlg:* )
+  survive Go's html/template attribute sanitizer.
+*/ -}}
+{{- $cls := "up-dropdown-row" -}}
+{{- if .danger }}{{ $cls = printf "%s is-danger" $cls }}{{ end -}}
+<div class="{{ $cls }}"{{ with .action }} {{ printf `data-action="%s"` (htmlEscape .) | safeHTMLAttr }}{{ end }}>{{ .label }}</div>

@@ -9,72 +9,21 @@
 {{- $blogActive     := hasPrefix $current $blog -}}
 {{- $projectsActive := eq $current $projects -}}
 {{- $sponsorsActive := eq $current $sponsors -}}
+{{- $tiles := slice
+  (dict "key" "home"     "label" "Home"     "icon" "launcher/home"     "url" $home     "active" $homeActive)
+  (dict "key" "cv"       "label" "CV"       "icon" "launcher/cv"       "url" $cv       "active" $cvActive)
+  (dict "key" "projects" "label" "Projects" "icon" "launcher/projects" "url" $projects "active" $projectsActive)
+  (dict "key" "blog"     "label" "Blog"     "icon" "launcher/blog"     "url" $blog     "active" $blogActive)
+  (dict "key" "sponsors" "label" "Sponsors" "icon" "launcher/heart"    "url" $sponsors "active" $sponsorsActive)
+-}}
 <aside class="up-launcher" aria-label="Launcher">
-  <a class="up-launcher-tile{{ if $homeActive }} is-active{{ end }}"
-     href="{{ $home }}" data-launcher="home" aria-label="Home"
-     {{ if $homeActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/home" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">Home</span>
-  </a>
-
-  <a class="up-launcher-tile{{ if $cvActive }} is-active{{ end }}"
-     href="{{ $cv }}" data-launcher="cv" aria-label="CV"
-     {{ if $cvActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/cv" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">CV</span>
-  </a>
-
-  <a class="up-launcher-tile{{ if $projectsActive }} is-active{{ end }}"
-     href="{{ $projects }}" data-launcher="projects" aria-label="Projects"
-     {{ if $projectsActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/projects" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">Projects</span>
-  </a>
-
-  <a class="up-launcher-tile{{ if $blogActive }} is-active{{ end }}"
-     href="{{ $blog }}" data-launcher="blog" aria-label="Blog"
-     {{ if $blogActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/blog" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">Blog</span>
-  </a>
-
-  <a class="up-launcher-tile{{ if $sponsorsActive }} is-active{{ end }}"
-     href="{{ $sponsors }}" data-launcher="sponsors" aria-label="Sponsors"
-     {{ if $sponsorsActive }}data-page-current="1"{{ end }}>
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/heart" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">Sponsors</span>
-  </a>
+  {{- range $tiles }}
+  {{ partial "ui/launcher-tile.html" . }}
+  {{- end }}
 
   <div class="up-launcher-spacer"></div>
 
-  <button class="up-launcher-tile" data-launcher="trash" data-launcher-trash aria-label="Trash" type="button">
-    <span class="up-launcher-icon">
-      {{ partial "icon.html" "launcher/trash" }}
-    </span>
-    <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
-    <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-    <span class="up-tooltip" aria-hidden="true">Trash</span>
-  </button>
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" "Trash" "icon" "launcher/trash" "trash" true) }}
 </aside>
 
 <div class="up-desktop-label">

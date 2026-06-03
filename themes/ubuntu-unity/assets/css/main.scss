@@ -20,6 +20,89 @@
   --content-line:#D8D5D2;
   --hud:#1F0E1A;
 }
+
+/* =========================================================================
+   reusable recipes: button + surface mixins shared across the Unity chrome.
+   Kept as @mixins (not @extend) so each consumer inlines the declarations at
+   its own source position — the cascade and specificity stay exactly as if
+   the properties were hand-written, only without the duplication.
+   ========================================================================= */
+
+/* Ambiance light "raised" button — the beige toolbar / dialog / link-button
+   skin (idle gradient, beige edge, inset highlight, hover lighten). $press
+   adds the momentary pressed state; sticky-toggle buttons that show state via
+   a class instead pass $press:false. */
+@mixin up-raised-button($radius: 2px, $press: true) {
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:$radius;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
+  @if $press {
+    &:active{
+      background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+      box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+    }
+  }
+}
+
+/* Titlebar "traffic-light" bead — shared geometry for the window controls and
+   the dialog close button. display and the radial face stay per-consumer
+   (the dialog close is a flex item; see up-bead-face for the colored fill). */
+@mixin up-bead($size: 14px) {
+  width:$size; height:$size;
+  border-radius:$size * .5;
+  border:0; padding:0;
+  align-items:center; justify-content:center;
+  cursor:default;
+}
+
+/* The bead's radial face. Same shape everywhere; only the three stops vary —
+   which is how the dialog close reuses the focused window-close colors. */
+@mixin up-bead-face($a, $b, $c) {
+  background:radial-gradient(circle at 38% 32%, #{$a} 0%, #{$b} 70%, #{$c} 100%);
+}
+
+/* Dark Unity popover surface — the top-panel dropdowns and the right-click
+   context menu. Sizing / position / border-radius stay per-consumer. */
+@mixin up-overlay-surface {
+  background:linear-gradient(180deg,
+    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
+  border:1px solid rgba(0,0,0,.6);
+  box-shadow:0 12px 32px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  color:#E8E5E2;
+  font-size:12.5px;
+  overflow:hidden;
+}
+
+/* The accent row-hover used inside the dark popover surface (dropdown rows and
+   context-menu items). The .is-danger override keeps its softer fill. */
+@mixin up-overlay-row-hover {
+  background:rgba(221,72,20,.65);
+  color:#fff;
+}
+
+/* Single-line ellipsis truncation. */
+@mixin up-truncate {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Raised capsule badge — the beige bordered pill used for project topic chips
+   and the preview language tag. Fill / padding / type stay per-consumer. */
+@mixin up-pill {
+  display:inline-flex;
+  align-items:center;
+  border-radius:9999px;
+  border:1px solid #D4CCBC;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;
   font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
@@ -83,7 +166,7 @@ body{
   max-width:min(40vw, 280px);
   color:#fff;
   font-weight:700;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  @include up-truncate;
 }
 .up-panel-menu{
   display:inline-flex; align-items:center;
@@ -253,22 +336,18 @@ svg[hidden]{ display:none; }
       background:linear-gradient(180deg, var(--panel-grad-1) 0%, var(--chrome-2) 100%);
     }
     .up-tl-close{
-      background:radial-gradient(circle at 38% 32%,
-        #F0664A 0%, #C7391E 70%, #8C2410 100%);
+      @include up-bead-face(#F0664A, #C7391E, #8C2410);
     }
     .up-tl-close:hover{
-      background:radial-gradient(circle at 38% 32%,
-        #FF8060 0%, #DC4824 70%, #A02B12 100%);
+      @include up-bead-face(#FF8060, #DC4824, #A02B12);
     }
     .up-tl-min,
     .up-tl-max{
-      background:radial-gradient(circle at 38% 32%,
-        #6E6963 0%, #4A4540 70%, #2A2622 100%);
+      @include up-bead-face(#6E6963, #4A4540, #2A2622);
     }
     .up-tl-min:hover,
     .up-tl-max:hover{
-      background:radial-gradient(circle at 38% 32%,
-        #88837C 0%, #5C5750 70%, #34302C 100%);
+      @include up-bead-face(#88837C, #5C5750, #34302C);
     }
     .up-tl svg{ opacity:1; }
     .up-titlebar-text{
@@ -290,27 +369,21 @@ svg[hidden]{ display:none; }
   margin-right:10px;
 }
 .up-tl{
-  width:14px; height:14px;
-  border-radius:7px;
-  border:0;
-  padding:0;
-  display:inline-flex; align-items:center; justify-content:center;
+  @include up-bead;
+  display:inline-flex;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.25),
     inset 0 -1px 0 rgba(0,0,0,.3),
     0 1px 0 rgba(0,0,0,.4);
-  cursor:default;
   color:#fff;
   svg{ transition:opacity .12s ease; opacity:.55; }
 }
 .up-tl-close{
-  background:radial-gradient(circle at 38% 32%,
-    #6E4842 0%, #4A2820 70%, #2C140F 100%);
+  @include up-bead-face(#6E4842, #4A2820, #2C140F);
 }
 .up-tl-min,
 .up-tl-max{
-  background:radial-gradient(circle at 38% 32%,
-    #514D48 0%, #38342F 70%, #1F1C18 100%);
+  @include up-bead-face(#514D48, #38342F, #1F1C18);
 }
 .up-titlebar-text{
   flex:1;
@@ -319,9 +392,7 @@ svg[hidden]{ display:none; }
   font-size:12px;
   font-weight:500;
   letter-spacing:.01em;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  @include up-truncate;
   margin-right:60px;
 }
 .up-window-body{
@@ -427,7 +498,7 @@ svg[hidden]{ display:none; }
 .up-naut-item-icon svg{display:block}
 .up-naut-item.is-active .up-naut-item-icon{color:#fff}
 .up-naut-item-label{
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  @include up-truncate;
   line-height:1.4;
 }
 .up-naut-item-count{
@@ -494,7 +565,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-sponsor-name{
   font-size:14px;font-weight:500;min-width:0;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  @include up-truncate;
 }
 .up-empty-pane.up-sponsors-empty-pane{
   min-height:240px;margin:18px 0 24px;
@@ -772,18 +843,9 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-arrow{
   display:inline-flex;align-items:center;justify-content:center;
   width:22px;height:22px;
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;border-radius:2px;color:#3A3733;
+  color:#3A3733;
   text-decoration:none;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 rgba(0,0,0,.04);
-  &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
-  }
-  &:active{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
-  }
+  @include up-raised-button;
   &.is-disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -796,7 +858,7 @@ a.up-sponsor-card[href]:hover{
   display:inline-block;padding:2px 8px;border-radius:2px;
   background:#E5E2DF;border:1px solid #C9C5C1;color:#3A3733;
   text-decoration:none;line-height:1.6;
-  max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:340px;@include up-truncate;
   vertical-align:middle;
   &:hover{background:#EFEDEB}
   &.is-current{background:#fff;color:#1F1D1A;font-weight:500}
@@ -805,14 +867,9 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-icon-btn{
   display:inline-flex;align-items:center;justify-content:center;
   width:22px;height:22px;
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;border-radius:2px;color:#3A3733;
+  color:#3A3733;
   cursor:pointer;flex-shrink:0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 rgba(0,0,0,.04);
-  &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
-  }
+  @include up-raised-button($press: false);
   &.is-active,
   &[aria-expanded="true"],
   &[aria-pressed="true"]{
@@ -926,7 +983,7 @@ a.up-sponsor-card[href]:hover{
 .up-post-row-main{min-width:0}
 .up-post-title{
   font-weight:500;font-size:13.5px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  @include up-truncate;
 }
 .up-post-meta{
   display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;
@@ -960,10 +1017,7 @@ a.up-sponsor-card[href]:hover{
   display:inline-flex;align-items:center;gap:5px;
   margin:14px 16px 0;padding:3px 8px 3px 6px;width:fit-content;
   font-size:12px;color:#3A3733;text-decoration:none;
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
-  &:hover{background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);border-color:#A8A39E}
+  @include up-raised-button($press: false);
   svg{color:#3A3733}
 }
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
@@ -1159,18 +1213,15 @@ a.up-sponsor-card[href]:hover{
 /* Right-click menu: mirrors the Unity dropdown tokens but is a transient,
    position:fixed overlay parented to <body>. */
 .up-ctx-menu{
+  @include up-overlay-surface;
   position:fixed;z-index:1100;min-width:170px;
-  background:linear-gradient(180deg,
-    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
-  border:1px solid rgba(0,0,0,.6);
-  box-shadow:0 12px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
-  border-radius:4px;color:#E8E5E2;font-size:12.5px;
-  padding:6px 0;overflow:hidden;
+  border-radius:4px;
+  padding:6px 0;
   &[hidden]{display:none}
 }
 .up-ctx-item{
   padding:5px 16px;cursor:default;color:rgba(255,255,255,.86);white-space:nowrap;
-  &:hover{background:rgba(221,72,20,.65);color:#fff}
+  &:hover{@include up-overlay-row-hover}
 }
 
 .up-project-folder{
@@ -1252,11 +1303,11 @@ a.up-sponsor-card[href]:hover{
   word-break:break-word;font-family:"Ubuntu",sans-serif;
 }
 .up-project-preview-lang{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:2px 9px 2px 7px;border-radius:9999px;
-  background:rgba(255,255,255,.75);border:1px solid #D4CCBC;
+  @include up-pill;
+  gap:6px;
+  padding:2px 9px 2px 7px;
+  background:rgba(255,255,255,.75);
   font-size:11.5px;color:#3A3733;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
   svg{display:block}
 }
 
@@ -1272,7 +1323,7 @@ a.up-sponsor-card[href]:hover{
   color:#3A3733;font-size:13px;line-height:1.55;
   border-bottom:1px dashed #D4CCBC;
   font-style:italic;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  @include up-truncate;
 }
 .up-project-preview-stats{
   display:grid;grid-template-columns:1fr 1fr;
@@ -1283,7 +1334,7 @@ a.up-sponsor-card[href]:hover{
   display:flex;align-items:center;gap:7px;min-width:0;
   font-size:12.5px;color:#2E2B28;font-variant-numeric:tabular-nums;
   svg{color:#8A7E60;flex-shrink:0}
-  > span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  > span{min-width:0;@include up-truncate}
   &.up-project-preview-stat-wide{grid-column:1 / -1}
 }
 .up-project-preview-section-label{
@@ -1297,12 +1348,12 @@ a.up-sponsor-card[href]:hover{
   display:flex;flex-wrap:nowrap;gap:5px;overflow:hidden;
 }
 .up-project-chip{
+  @include up-pill;
   flex:none;
-  display:inline-flex;align-items:center;padding:2px 8px;border-radius:9999px;
+  padding:2px 8px;
   background:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
-  border:1px solid #D4CCBC;color:#5A5550;
+  color:#5A5550;
   font-size:11px;line-height:1.4;white-space:nowrap;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
 }
 /* Multi-select summary chips wrap and scroll, unlike the single-row topic clip. */
 .up-project-preview-namelist{
@@ -1310,18 +1361,8 @@ a.up-sponsor-card[href]:hover{
 }
 .up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
   color:#2E2B28;font-size:12.5px;font-weight:500;text-decoration:none;
-  border:1px solid #A8A39E;border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 1px 0 rgba(0,0,0,.04);
-  &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#8A8580;
-  }
-  &:active{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.16);
-  }
+  @include up-raised-button;
   svg{color:#3A3733}
 }
 /* projects preview pins the open button to the left under the stats */
@@ -1395,19 +1436,12 @@ a.up-sponsor-card[href]:hover{
 /* ---- top-panel dropdowns ------------------------------------------------ */
 
 .up-dropdown{
+  @include up-overlay-surface;
   position:absolute; top:24px;
   min-width:248px; max-width:320px;
-  background:linear-gradient(180deg,
-    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
-  border:1px solid rgba(0,0,0,.6);
-  box-shadow:0 12px 32px rgba(0,0,0,.5),
-    inset 0 1px 0 rgba(255,255,255,.06);
   border-radius:0 0 4px 4px;
-  color:#E8E5E2;
-  font-size:12.5px;
   z-index:200;
   padding:0;
-  overflow:hidden;
   &[hidden]{display:none}
   &[data-align="left"]{left:0}
   &[data-align="right"]{right:0}
@@ -1425,8 +1459,7 @@ a.up-sponsor-card[href]:hover{
   cursor:default;
   color:rgba(255,255,255,.86);
   &:hover{
-    background:rgba(221,72,20,.65);
-    color:#fff;
+    @include up-overlay-row-hover;
   }
   &.is-danger{color:#F0B0A0}
   &.is-danger:hover{background:rgba(221,72,20,.5);color:#fff}
@@ -1557,7 +1590,7 @@ a.up-sponsor-card[href]:hover{
   &.is-playing{color:var(--orange-light)}
 }
 [data-vol-nowplaying]{
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  @include up-truncate;
 }
 
 /* ---- battery bar ------------------------------------------------------- */
@@ -1654,18 +1687,15 @@ a.up-sponsor-card[href]:hover{
   user-select:none;
 }
 .up-dlg-close{
-  width:14px; height:14px; border-radius:7px;
-  padding:0; border:0; cursor:default;
-  background:radial-gradient(circle at 38% 32%,
-    #F0664A 0%, #C7391E 70%, #8C2410 100%);
+  @include up-bead;
+  display:flex;
+  @include up-bead-face(#F0664A, #C7391E, #8C2410);
   box-shadow:
     inset 0 .5px 0 rgba(255,255,255,.35),
     inset 0 -.5px 0 rgba(0,0,0,.55),
     0 1px 1px rgba(0,0,0,.4);
-  display:flex; align-items:center; justify-content:center;
   &:hover{
-    background:radial-gradient(circle at 38% 32%,
-      #FF8060 0%, #DC4824 70%, #A02B12 100%);
+    @include up-bead-face(#FF8060, #DC4824, #A02B12);
   }
 }
 .up-dlg-title{
@@ -2027,13 +2057,8 @@ body.up-reduce-motion *{
   display:inline-flex;align-items:center;gap:6px;
   margin:0 0 12px;padding:5px 12px;
   font-size:12.5px;color:#3A3733;text-decoration:none;
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
-  &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;color:#1F1D1A;
-  }
+  @include up-raised-button($press: false);
+  &:hover{color:#1F1D1A}
   svg{flex-shrink:0;color:#A02B12}
 }
 
