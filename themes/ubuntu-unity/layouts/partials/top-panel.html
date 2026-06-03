@@ -2,7 +2,7 @@
 {{- $longDate := now.Format "Monday, 2 January 2006" -}}
 {{- $time := now.Format "15:04" -}}
 {{- $shortDate := now.Format "Mon, Jan 2" -}}
-<div class="up-top-panel" data-ssr>
+<div class="up-top-panel" data-ssr{{ with resources.Get "midi/nggyu.midi" }} data-vol-midi="{{ .RelPermalink }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
   </div>
@@ -123,7 +123,13 @@
           <span class="up-vol-readout" data-vol-readout>62</span>
         </div>
         <div class="up-dropdown-meta">Output: <span class="up-dropdown-meta-strong">Built-in audio</span></div>
-        <div class="up-dropdown-meta-em">♪ Now playing: <i>Caetano Veloso — Transa, A1</i></div>
+        <div class="up-dropdown-meta-em">
+          <button type="button" class="up-vol-play" data-action="vol-play" aria-label="Play/Pause">
+            {{ partial "icon.html" "glyphs/panel-play" }}
+            {{ partial "icon.html" "glyphs/panel-pause" }}
+          </button>
+          <span data-vol-nowplaying>Paused</span>
+        </div>
       </div>
     </div>
   </div>

@@ -1462,6 +1462,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-dropdown-meta-strong{color:rgba(255,255,255,.85)}
 .up-dropdown-meta-em{
+  display:flex; align-items:center; gap:6px;
   color:rgba(255,255,255,.55);
   padding:0 14px;
   i{color:rgba(255,255,255,.85)}
@@ -1546,6 +1547,17 @@ a.up-sponsor-card[href]:hover{
 .up-vol-readout{
   width:28px; text-align:right;
   color:rgba(255,255,255,.7); font-size:11px;
+}
+.up-vol-play{
+  flex:0 0 auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:18px; padding:0;
+  border:0; background:transparent; color:rgba(255,255,255,.7); cursor:default;
+  &:hover{color:#fff}
+  &.is-playing{color:var(--orange-light)}
+}
+[data-vol-nowplaying]{
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
 /* ---- battery bar ------------------------------------------------------- */

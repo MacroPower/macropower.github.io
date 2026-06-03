@@ -2,6 +2,7 @@ import { subscribe, getTrashFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { showPreferences, setReduceMotion } from "./prefs";
 import { showLock } from "./lock";
+import * as audio from "./audio";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
 const LAUNCHER_URLS: Record<string, string> = {
@@ -367,6 +368,7 @@ async function netClick(row: HTMLElement): Promise<void> {
 export function initTopPanel(): void {
   const panel = document.querySelector<HTMLElement>(".up-top-panel[data-ssr]");
   if (!panel) return;
+  if (panel.dataset.volMidi) audio.configure(panel.dataset.volMidi, "Never Gonna Give You Up");
   const titleSlot = panel.querySelector<HTMLElement>('[data-panel-slot="title"]');
   const clockWide = panel.querySelector<HTMLElement>("[data-clock-wide]");
   const clockNarrow = panel.querySelector<HTMLElement>("[data-clock-narrow]");
@@ -524,16 +526,36 @@ export function initTopPanel(): void {
   const slider = panel.querySelector<HTMLInputElement>("[data-vol-slider]");
   const readout = panel.querySelector<HTMLElement>("[data-vol-readout]");
   const volGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-vol-glyph]"));
+  const playGlyphs = Array.from(panel.querySelectorAll<HTMLElement>("[data-vol-play-glyph]"));
+  const playBtn = panel.querySelector<HTMLElement>(".up-vol-play");
+  const nowPlaying = panel.querySelector<HTMLElement>("[data-vol-nowplaying]");
 
+  const syncNowPlaying = (): void => {
+    if (!nowPlaying) return;
+    if (!audio.isPlaying()) { nowPlaying.textContent = "Paused"; return; }
+    const name = audio.trackName();
+    nowPlaying.textContent = vol.muted ? `${name} (muted)` : name;
+  };
+
+  const syncPlayUI = (isPlaying: boolean): void => {
+    toggleGlyphPair(playGlyphs, "data-vol-play-glyph-playing", isPlaying);
+    playBtn?.classList.toggle("is-playing", isPlaying);
+    syncNowPlaying();
+  };
+
+  // Keeps the now-playing label in sync too, so callers never have to remember
+  // the pairing (the mute/volume readout and the label both reflect `vol`).
   const syncVolUI = (): void => {
     toggleGlyphPair(volGlyphs, "data-vol-glyph-mute", vol.muted);
     if (slider) slider.value = String(vol.muted ? 0 : vol.level);
     if (readout) readout.textContent = vol.muted ? "—" : String(vol.level);
+    syncNowPlaying();
   };
 
   slider?.addEventListener("input", () => {
     vol.level = Number(slider.value);
     vol.muted = false;
+    audio.setVolume(vol.level);
     syncVolUI();
   });
 
@@ -553,7 +575,12 @@ export function initTopPanel(): void {
     if (!action) return;
     if (action === "vol-toggle") {
       vol.muted = !vol.muted;
+      audio.setMuted(vol.muted);
       syncVolUI();
+      return;
+    }
+    if (action === "vol-play") {
+      void audio.toggle().then(syncPlayUI);
       return;
     }
     closeOpen();
