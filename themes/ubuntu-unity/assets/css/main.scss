@@ -28,6 +28,17 @@
    the properties were hand-written, only without the duplication.
    ========================================================================= */
 
+/* Translucent accent ink — the runtime equivalent of rgba(accent, alpha).
+   Accent shades live in :root custom properties that prefs.ts swaps when the
+   user picks a new accent, so a literal rgba() would stay pinned to the seeded
+   orange; color-mix() re-resolves against the live var. $shade names one of
+   the accent properties ("orange", "orange-light", ...). Semantic reds (close
+   beads, .is-danger, the error icon) stay literal by design — danger doesn't
+   recolor with the accent. */
+@function up-accent($alpha, $shade: "orange") {
+  @return color-mix(in srgb, var(--#{$shade}) #{$alpha}, transparent);
+}
+
 /* Ambiance light "raised" button — the beige toolbar / dialog / link-button
    skin (idle gradient, beige edge, inset highlight, hover lighten). $press
    adds the momentary pressed state; sticky-toggle buttons that show state via
@@ -79,10 +90,12 @@
   overflow:hidden;
 }
 
-/* The accent row-hover used inside the dark popover surface (dropdown rows and
-   context-menu items). The .is-danger override keeps its softer fill. */
+/* The accent row-hover used inside the dark popover surface (dropdown rows,
+   context-menu items, and the File/Edit/View/Help menu items). Solid accent so
+   every popover row highlights alike and follows the Preferences accent swap.
+   The .is-danger override keeps its softer fill. */
 @mixin up-overlay-row-hover {
-  background:rgba(221,72,20,.65);
+  background:var(--orange-light);
   color:#fff;
 }
 
@@ -115,17 +128,17 @@
   transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
   &[hidden]{display:none}
   &:hover{
-    background:rgba(221,72,20,.07);
-    border-color:rgba(221,72,20,.18);
+    background:up-accent(7%);
+    border-color:up-accent(18%);
   }
   &.is-focused{
-    background:rgba(221,72,20,.12);
-    border-color:rgba(221,72,20,.55);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px rgba(221,72,20,.12);
+    background:up-accent(12%);
+    border-color:up-accent(55%);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px up-accent(12%);
   }
   &.is-active{
-    background:linear-gradient(180deg, rgba(233,84,32,.92) 0%, rgba(221,72,20,.95) 100%);
-    color:#fff;border-color:#8C2410;
+    background:linear-gradient(180deg, up-accent(92%, "orange-light") 0%, up-accent(95%) 100%);
+    color:#fff;border-color:var(--orange-darker);
     box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
   }
   &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
@@ -133,7 +146,7 @@
      .is-active.is-focused so its box-shadow wins when a tile is anchor,
      active, and keyboard-focused at once. */
   &.is-anchor.is-active{
-    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px #8C2410, 0 1px 2px rgba(0,0,0,.2);
+    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
   }
   &.is-dragging{
     will-change:transform;cursor:grabbing;opacity:.92;
@@ -148,7 +161,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;
   background:#000;user-select:none;-webkit-user-select:none}
 body{font-size:13.5px;line-height:1.45}
 button{font-family:inherit}
-::selection{background:rgba(221,72,20,.35)}
+::selection{background:up-accent(35%)}
 #root{height:100%}
 
 /* let normal text be selectable inside windows */
@@ -520,11 +533,11 @@ svg[hidden]{ display:none; }
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
-  &:focus-visible{outline:1px dotted rgba(221,72,20,.7);outline-offset:-3px}
+  &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-3px}
   &.is-active{
-    background:linear-gradient(180deg, rgba(233,84,32,.95) 0%, rgba(221,72,20,1) 100%);
+    background:linear-gradient(180deg, up-accent(95%, "orange-light") 0%, var(--orange) 100%);
     color:#fff;
-    border-left-color:#7C2410;
+    border-left-color:color-mix(in srgb, var(--orange-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
     text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
@@ -587,7 +600,7 @@ svg[hidden]{ display:none; }
   transition:border-color .1s linear, box-shadow .1s linear;
 }
 a.up-sponsor-card[href]:hover{
-  border-color:rgba(221,72,20,.55);
+  border-color:up-accent(55%);
   box-shadow:0 1px 4px rgba(0,0,0,.08);
 }
 .up-sponsor-avatar{
@@ -942,7 +955,7 @@ a.up-sponsor-card[href]:hover{
   outline:none;
   &:focus{
     border-color:var(--orange-light);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px rgba(233,84,32,.22);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px up-accent(22%, "orange-light");
   }
   &::placeholder{color:#9A938D}
 }
@@ -1002,11 +1015,11 @@ a.up-sponsor-card[href]:hover{
   border-left:3px solid transparent;
   outline:none;
   &[hidden]{display:none}
-  &:hover{background:rgba(221,72,20,.10)}
+  &:hover{background:up-accent(10%)}
   &.is-focused{
-    background:rgba(221,72,20,.12);
-    border-left-color:rgba(221,72,20,.55);
-    box-shadow:inset 0 0 0 1px rgba(221,72,20,.35);
+    background:up-accent(12%);
+    border-left-color:up-accent(55%);
+    box-shadow:inset 0 0 0 1px up-accent(35%);
   }
   &.is-active{
     background:var(--orange-light);color:#fff;
@@ -1042,11 +1055,11 @@ a.up-sponsor-card[href]:hover{
 }
 .up-reader-progress-bar{
   position:absolute;inset:0;
-  background:linear-gradient(90deg,#DD4814 0%,#E95420 50%,#F26D33 100%);
+  background:linear-gradient(90deg,var(--orange) 0%,var(--orange-light) 50%,color-mix(in srgb, var(--orange-light) 85%, white) 100%);
   transform-origin:0 50%;
   transform:scaleX(0);
   transition:transform .08s linear;
-  box-shadow:0 0 6px rgba(233,84,32,.45);
+  box-shadow:0 0 6px up-accent(45%, "orange-light");
 }
 
 /* ---------- Reader pane ---------- */
@@ -1152,8 +1165,8 @@ a.up-sponsor-card[href]:hover{
   }
   &:active{background:#2A2825}
   &.is-copied{
-    color:#fff;background:linear-gradient(180deg,#E95420 0%,#C7391E 100%);
-    border-color:#8C2410;opacity:1;
+    color:#fff;background:linear-gradient(180deg,var(--orange-light) 0%,color-mix(in srgb, var(--orange) 50%, var(--orange-dark)) 100%);
+    border-color:var(--orange-darker);opacity:1;
   }
 }
 
@@ -1211,8 +1224,8 @@ a.up-sponsor-card[href]:hover{
 /* Rubber-band marquee, positioned in grid-content space (see projects-desktop). */
 .up-marquee{
   position:absolute;z-index:5;pointer-events:none;
-  border:1px solid rgba(221,72,20,.8);
-  background:rgba(221,72,20,.14);
+  border:1px solid up-accent(80%);
+  background:up-accent(14%);
   border-radius:1px;
   &[hidden]{display:none}
 }
@@ -1518,8 +1531,7 @@ a.up-sponsor-card[href]:hover{
   color:rgba(255,255,255,.92);
   cursor:default;
   &:hover{
-    background:var(--orange-light);
-    color:#fff;
+    @include up-overlay-row-hover;
   }
   &.is-disabled{
     color:rgba(255,255,255,.35);
@@ -1806,12 +1818,16 @@ a.up-sponsor-card[href]:hover{
     background:linear-gradient(180deg,var(--orange-dark) 0%,var(--orange-darker) 100%);
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
-  &.is-danger{
+  /* Red label only on the beige (non-primary) skin. Combined with .is-primary
+     the orange suggested-action skin wins, so destructive confirms (Log out,
+     Delete, Empty Trash) look like every other primary button — the danger cue
+     lives in the dialog copy, as in Ambiance. */
+  &.is-danger:not(.is-primary){
     color:#A02B12;
-  }
-  &.is-danger:active{
-    background:linear-gradient(180deg,#8C2410 0%,#8C2410 100%);
-    color:#fff;
+    &:active{
+      background:linear-gradient(180deg,#8C2410 0%,#8C2410 100%);
+      color:#fff;
+    }
   }
 }
 
