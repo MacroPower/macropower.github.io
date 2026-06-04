@@ -7,6 +7,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["themes/ubuntu-unity/assets/js/shell/**/*.test.ts"],
+    // The shell core plus any other DOM-free module with tests beside it
+    // (midi.ts's parser/tempo-warp suite lives at assets/js/midi.test.ts).
+    include: ["themes/ubuntu-unity/assets/js/**/*.test.ts"],
   },
 });

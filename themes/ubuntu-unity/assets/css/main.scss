@@ -1608,6 +1608,14 @@ a.up-sponsor-card[href]:hover{
   &:hover{color:#fff}
   &.is-playing{color:var(--orange-light)}
 }
+.up-vol-next{
+  flex:0 0 auto;
+  margin-left:auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:18px; padding:0;
+  border:0; background:transparent; color:rgba(255,255,255,.55); cursor:default;
+  &:hover{color:#fff}
+}
 [data-vol-nowplaying]{
   @include up-truncate;
 }
@@ -2047,6 +2055,446 @@ body.up-reduce-motion *{
   background:linear-gradient(180deg,#F4F2EF 0%,#ECE9E5 100%);
 }
 .up-trash-count{font-size:12px; color:#6B6764}
+
+/* ---- studio (DAW) window ------------------------------------------------
+   A period Linux-DAW pastiche driven by daw.ts: standard Ambiance titlebar
+   outside, dark steel-and-LCD instrument panel inside. The green LCD glow is
+   the one deliberate departure from the Unity palette (it reads "audio tool",
+   not "shell"), while the playhead stays Unity orange. */
+
+.up-daw-stage{
+  position:fixed;
+  inset:0;
+  z-index:30;
+  pointer-events:none;
+  > *{pointer-events:auto}
+  &[hidden]{display:none}
+  .up-window-chrome{
+    position:absolute;
+    left:96px; top:46px;
+    width:min(860px, calc(100vw - 112px));
+    height:min(560px, calc(100vh - 70px));
+    max-width:none; max-height:none;
+  }
+  /* Maximized: fill the desktop between launcher and panel. The shared
+     .up-window-stage.is-maximized rule already shifts the stage itself to the
+     launcher edge (64px, 56px on phones), so the chrome just anchors to the
+     stage box below the panel. transform:none overrides drag.ts's inline
+     translate while maximized (drags are gated, and the inline value survives
+     so restore puts the window back where it was dragged). */
+  &.is-maximized .up-window-chrome{
+    inset:24px 0 0 0;
+    width:auto; height:auto;
+    border-radius:0;
+    transform:none !important;
+  }
+}
+
+.up-daw-body{
+  --daw-bg:#23262B;
+  --daw-panel:#2B2F35;
+  --daw-edge:#121418;
+  --daw-text:#C9CCD1;
+  --daw-dim:#8E939B;
+  --daw-lcd-bg:#0D1206;
+  --daw-lcd:#A8E22E;
+  --daw-lcd-glow:rgba(168,226,46,.5);
+  background:var(--daw-bg);
+  color:var(--daw-text);
+  user-select:none;
+}
+
+/* raised dark control — the studio counterpart of up-raised-button */
+@mixin up-daw-raised{
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  color:var(--daw-text);
+  cursor:default;
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+
+/* ---- studio toolbar / transport ---- */
+
+.up-daw-toolbar{
+  flex-shrink:0;
+  display:flex; align-items:center; gap:8px;
+  height:40px; padding:0 10px;
+  background:linear-gradient(180deg,#32363D 0%,#272B31 100%);
+  border-bottom:1px solid var(--daw-edge);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.up-daw-transport{display:flex; gap:4px}
+.up-daw-toolbar-spacer{flex:1}
+.up-daw-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:24px; padding:0;
+  @include up-daw-raised;
+  svg{width:13px; height:13px; display:block}
+  span{display:inline-flex}
+  span[hidden]{display:none}
+  &.is-on{
+    color:var(--daw-lcd);
+    background:#1E2126;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.18);
+  }
+}
+.up-daw-lcdbox{
+  display:flex; align-items:center; gap:6px;
+  padding:3px 4px 3px 8px;
+  background:#1A1D21;
+  border:1px solid var(--daw-edge); border-radius:3px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.5);
+}
+.up-daw-lcd-label{
+  font-size:9px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--daw-dim);
+}
+.up-daw-lcd{
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:14px; line-height:1;
+  padding:3px 7px;
+  min-width:40px; text-align:right;
+  color:var(--daw-lcd);
+  background:var(--daw-lcd-bg);
+  border:1px solid rgba(0,0,0,.6); border-radius:2px;
+  box-shadow:inset 0 0 6px rgba(0,0,0,.7);
+  text-shadow:0 0 4px var(--daw-lcd-glow);
+  &.is-spin{cursor:ns-resize}
+  &.is-trk{min-width:28px; text-align:center}
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+}
+.up-daw-trk{
+  display:flex; align-items:center; gap:3px;
+}
+.up-daw-led{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--daw-dim);
+  &::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:#3A3F45;
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.6);
+  }
+  &.is-on::before{
+    background:radial-gradient(circle at 35% 30%, #D6FF7E 0%, #A8E22E 60%, #5C8210 100%);
+    box-shadow:0 0 6px var(--daw-lcd-glow);
+  }
+}
+
+/* ---- studio rack (tracks / synth / fx) ---- */
+
+.up-daw-main{
+  flex:1 1 auto; min-height:0;
+  display:flex;
+}
+.up-daw-rack{
+  flex:0 0 208px;
+  display:flex; flex-direction:column;
+  /* With the full option set the rack can exceed the window: sections collapse
+     (below), and the rack itself scrolls as the fallback. */
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#4A5058 var(--daw-panel);
+  background:var(--daw-panel);
+  border-right:1px solid var(--daw-edge);
+}
+.up-daw-section{
+  flex:none;
+  border-bottom:1px solid var(--daw-edge);
+  box-shadow:0 1px 0 rgba(255,255,255,.04); /* etched divider */
+  padding-bottom:10px;
+  /* A busy MIDI can have a dozen channels: the track list flexes and scrolls
+     internally so the synth/FX sections below stay pinned and reachable. */
+  &.is-tracks{
+    flex:1 1 auto; min-height:76px;
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    padding-bottom:4px;
+  }
+  /* Qt-groupbox-style collapse, toggled from the title button. */
+  &.is-collapsed{
+    padding-bottom:0;
+    > :not(.up-daw-section-title){display:none}
+    .up-daw-section-title::before{transform:rotate(0deg)}
+    &.is-tracks{flex:none; min-height:0}
+  }
+}
+.up-daw-tracks{
+  flex:1 1 auto; min-height:0;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#4A5058 var(--daw-panel);
+}
+.up-daw-section-title{
+  display:flex; align-items:center; gap:6px;
+  width:100%; padding:8px 10px 6px;
+  background:transparent; border:0; text-align:left;
+  font-family:"Ubuntu",sans-serif;
+  font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--daw-dim);
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+  cursor:default;
+  &:hover{color:var(--daw-text)}
+  &::before{ /* collapse caret */
+    content:"";
+    width:0; height:0;
+    border-left:4px solid currentColor;
+    border-top:3px solid transparent;
+    border-bottom:3px solid transparent;
+    transform:rotate(90deg);
+    transition:transform .12s ease;
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:-2px}
+}
+.up-daw-track{
+  display:flex; align-items:center; gap:5px;
+  padding:3px 8px 3px 10px;
+  &:hover{background:rgba(255,255,255,.03)}
+}
+.up-daw-track-chip{
+  flex-shrink:0;
+  width:8px; height:20px; border-radius:2px;
+  background:var(--tc);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 5px color-mix(in srgb, var(--tc) 35%, transparent);
+}
+.up-daw-track-name{
+  flex:1; min-width:0;
+  font-size:12px;
+  @include up-truncate;
+}
+.up-daw-ms{
+  flex-shrink:0;
+  width:16px; height:16px; padding:0;
+  font-size:9px; font-weight:700; line-height:1;
+  @include up-daw-raised;
+  border-radius:2px;
+  color:var(--daw-dim);
+  &:hover{color:var(--daw-text)}
+  &.is-mute{
+    color:#FF9B6A; background:#3A2218; border-color:#5A2E1A;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px rgba(233,84,32,.35);
+  }
+  &.is-solo{
+    color:#D6FF7E; background:#26330F; border-color:#3F5417;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px var(--daw-lcd-glow);
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+}
+/* per-strip instrument selector + its popover */
+.up-daw-patch{
+  flex-shrink:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:16px; padding:0;
+  @include up-daw-raised;
+  border-radius:2px;
+  color:var(--daw-dim);
+  svg{display:block}
+  &:hover{color:var(--daw-text)}
+  &.is-custom{
+    color:var(--daw-lcd);
+    filter:drop-shadow(0 0 2px var(--daw-lcd-glow));
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+}
+.up-daw-patch-blank{flex-shrink:0; width:24px}
+.up-daw-patchmenu{
+  position:absolute; z-index:5;
+  min-width:104px;
+  padding:4px;
+  display:flex; flex-direction:column;
+  background:#1E2126;
+  border:1px solid var(--daw-edge); border-radius:3px;
+  box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.up-daw-patchmenu-item{
+  display:flex; align-items:center; gap:8px;
+  width:100%;
+  padding:3px 10px 3px 8px;
+  background:transparent; border:0; border-radius:2px;
+  text-align:left;
+  font-family:"Ubuntu",sans-serif; font-size:11.5px;
+  color:var(--daw-text); cursor:default;
+  svg{flex-shrink:0; opacity:.75}
+  &:hover{background:rgba(255,255,255,.08)}
+  &.is-on{
+    color:var(--daw-lcd);
+    text-shadow:0 0 3px var(--daw-lcd-glow);
+    svg{opacity:1; filter:drop-shadow(0 0 2px var(--daw-lcd-glow))}
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:-2px}
+}
+
+.up-daw-waves{
+  display:flex; flex-wrap:wrap; gap:4px;
+  padding:0 10px 8px;
+}
+.up-daw-wave{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:24px; padding:0;
+  @include up-daw-raised;
+  color:var(--daw-dim);
+  svg{display:block}
+  &:hover{color:var(--daw-text)}
+  &.is-on{
+    color:var(--daw-lcd);
+    background:#1E2126; border-color:#3F5417;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+}
+.up-daw-knobs{
+  display:flex; flex-wrap:wrap; gap:6px 10px;
+  padding:2px 10px 0;
+}
+.up-daw-times{
+  display:flex; align-items:center; gap:4px;
+  padding:10px 10px 0;
+}
+.up-daw-times-label{
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--daw-dim);
+  margin-right:2px;
+}
+.up-daw-time{
+  display:inline-flex; align-items:center;
+  height:20px; padding:0 7px;
+  @include up-daw-raised;
+  border-radius:2px;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:10px; line-height:1;
+  color:var(--daw-dim);
+  &:hover{color:var(--daw-text)}
+  &.is-on{
+    color:var(--daw-lcd);
+    background:#1E2126; border-color:#3F5417;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+}
+
+/* ---- rotary knobs ---- */
+
+.up-daw-knob{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  width:46px;
+  &.is-sm{width:auto}
+}
+.up-daw-knob-dial{
+  --rot:-135deg;
+  --arc:0deg;
+  position:relative;
+  width:30px; height:30px; border-radius:50%;
+  cursor:ns-resize;
+  background:radial-gradient(circle at 38% 30%, #4A5058 0%, #33383F 55%, #23262B 100%);
+  border:1px solid var(--daw-edge);
+  box-shadow:0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14);
+  /* value arc: a 270° ring lit up to --arc, hollowed out by a radial mask */
+  &::before{
+    content:""; position:absolute; inset:-4px; border-radius:50%;
+    background:conic-gradient(from 225deg,
+      var(--daw-lcd) var(--arc),
+      rgba(255,255,255,.08) var(--arc) 270deg,
+      transparent 270deg 360deg);
+    -webkit-mask:radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+    mask:radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  }
+  /* pointer line, rotated about the dial center */
+  &::after{
+    content:""; position:absolute;
+    left:calc(50% - 1px); top:2px;
+    width:2px; height:9px; border-radius:1px;
+    background:#E6E9ED;
+    transform-origin:1px 13px;
+    transform:rotate(var(--rot));
+    box-shadow:0 0 2px rgba(0,0,0,.6);
+  }
+  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:3px}
+}
+.up-daw-knob.is-sm .up-daw-knob-dial{
+  width:20px; height:20px;
+  &::before{inset:-3px}
+  &::after{height:6px; transform-origin:1px 8px}
+}
+.up-daw-knob-label{
+  font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--daw-dim);
+}
+.up-daw-knob-value{
+  min-width:32px; padding:1px 4px;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:9.5px; line-height:1.3; text-align:center;
+  color:var(--daw-lcd);
+  background:var(--daw-lcd-bg);
+  border-radius:2px;
+  text-shadow:0 0 3px var(--daw-lcd-glow);
+}
+.up-daw-knob.is-sm .up-daw-knob-label,
+.up-daw-knob.is-sm .up-daw-knob-value{display:none}
+
+/* while a knob / BPM / note drag is live, the gesture cursor wins everywhere */
+body.up-daw-turning, body.up-daw-turning *,
+body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
+
+/* ---- piano roll ---- */
+
+.up-daw-roll{
+  position:relative;
+  flex:1 1 auto; min-width:0;
+  background:#1B1E23;
+}
+.up-daw-canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+}
+.up-daw-scroller{
+  position:absolute; inset:0;
+  overflow:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#4A5058 #1B1E23;
+}
+.up-daw-loading{
+  position:absolute; inset:0; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 24px; text-align:center;
+  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-size:12px;
+  color:var(--daw-dim);
+  background:#1B1E23;
+  // The explicit display:flex would override the UA [hidden] rule (the
+  // trash-empty trap); restore the hide for track-switch toggling.
+  &[hidden]{display:none}
+}
+.up-daw-status{
+  flex-shrink:0;
+  padding:4px 10px;
+  font-size:10.5px;
+  color:var(--daw-dim);
+  background:linear-gradient(180deg,#272B31 0%,#22262B 100%);
+  border-top:1px solid var(--daw-edge);
+  span{display:block; @include up-truncate}
+}
+
+@media (max-width:820px){
+  .up-daw-stage .up-window-chrome{
+    left:68px;
+    width:calc(100vw - 78px);
+  }
+  .up-daw-rack{flex-basis:170px}
+}
+@media (max-width:560px){
+  .up-daw-stage .up-window-chrome{
+    left:60px; top:32px;
+    width:calc(100vw - 66px);
+    height:calc(100vh - 44px);
+  }
+}
 
 /* ---- narrow-mode indicator collapse ------------------------------------ */
 

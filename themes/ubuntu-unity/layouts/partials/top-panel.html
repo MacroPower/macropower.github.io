@@ -2,7 +2,14 @@
 {{- $longDate := now.Format "Monday, 2 January 2006" -}}
 {{- $time := now.Format "15:04" -}}
 {{- $shortDate := now.Format "Mon, Jan 2" -}}
-<div class="up-top-panel" data-ssr{{ with resources.Get "midi/nggyu.midi" }} data-vol-midi="{{ .RelPermalink }}"{{ end }}>
+{{- /* The bundled MIDI playlist. Order matters: it defines the anonymous
+     "Track N" labels the player shows — what each one actually is stays a
+     surprise until someone presses play. */ -}}
+{{- $playlist := slice -}}
+{{- range slice "midi/nggyu.midi" "midi/rasp.midi" "midi/mii.midi" "midi/numb.midi" "midi/yes.midi" -}}
+  {{- with resources.Get . }}{{ $playlist = $playlist | append .RelPermalink }}{{ end -}}
+{{- end -}}
+<div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
   </div>
@@ -101,6 +108,12 @@
             {{ partial "icon.html" "glyphs/panel-pause" }}
           </button>
           <span data-vol-nowplaying>Paused</span>
+          <button type="button" class="up-vol-next" data-action="vol-next" aria-label="Next track" title="Next track">
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5l7 4.5-7 4.5v-9zM11 3h2v10h-2V3z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="up-dropdown-row-buttons">
+          <button type="button" class="up-dropdown-btn is-ghost" data-action="daw:open">Open in Studio…</button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
+import { clearOverlayFocus, subscribe, getOverlayFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
 
 interface PageWindowState {
@@ -47,7 +47,7 @@ export function installPageWindow(): void {
   };
   let transitioning = false;
 
-  const isFocused = (): boolean => state.visible && !getTrashFocused();
+  const isFocused = (): boolean => state.visible && !getOverlayFocused();
 
   function syncFocus(): void {
     const focused = isFocused();
@@ -62,12 +62,12 @@ export function installPageWindow(): void {
 
   function focusPageWindow(): void {
     if (!state.visible) return;
-    if (!getTrashFocused()) {
+    if (!getOverlayFocused()) {
       syncFocus();
       return;
     }
-    // The subscribe callback below fires syncFocus when trash unfocuses.
-    setTrashFocused(false);
+    // The subscribe callback below fires syncFocus when the overlay unfocuses.
+    clearOverlayFocus();
   }
 
   function waitForTransition(el: HTMLElement, fallbackMs: number): Promise<void> {
@@ -157,7 +157,7 @@ export function installPageWindow(): void {
     state.visible = true;
     state.minimized = false;
     state.closed = false;
-    setTrashFocused(false);
+    clearOverlayFocus();
     syncFocus();
   }
 

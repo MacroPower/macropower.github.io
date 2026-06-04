@@ -1,6 +1,7 @@
 import { initDialogs } from "./dialogs";
 import { initTopPanel } from "./top-panel";
 import { initTrash } from "./trash";
+import { initDaw } from "./daw";
 import { installPageWindow } from "./page-window";
 import { initLock } from "./lock";
 
@@ -11,5 +12,6 @@ initDialogs();
 initLock();
 initTopPanel();
 initTrash();
+initDaw();
 installPageWindow();
 document.body.classList.add("up-ready");

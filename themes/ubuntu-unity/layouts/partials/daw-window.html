@@ -1,0 +1,107 @@
+{{- /*
+  The Studio window — a period Linux-DAW pastiche (think LMMS on 14.04) that
+  daw.ts drives. SSR emits the chrome, transport toolbar, rack skeleton, and
+  piano-roll mount; the track strips, knobs, and canvas content are built
+  client-side from the parsed MIDI.
+
+  DOM contracts read by daw.ts (keep verbatim): data-up-window="daw",
+  data-daw-title, data-daw-play, data-daw-play-glyph(+-playing), data-daw-stop,
+  data-daw-prev, data-daw-trk, data-daw-next, data-daw-pos, data-daw-bpm,
+  data-daw-zoom-out, data-daw-zoom-in, data-daw-follow, data-daw-collapse,
+  data-daw-tracks, data-daw-synth, data-daw-fx, data-daw-groove, data-daw-roll,
+  data-daw-canvas, data-daw-scroller, data-daw-spacer, data-daw-loading,
+  data-daw-status.
+*/ -}}
+<div class="up-window-stage up-daw-stage" data-up-window="daw" hidden>
+  <section class="up-window-chrome up-daw-chrome">
+    <div class="up-titlebar" data-titlebar>
+      {{ partial "ui/window-controls.html" (dict "max" true) }}
+      <span class="up-titlebar-text" data-daw-title>Studio</span>
+    </div>
+    <div class="up-window-body up-daw-body">
+
+      <div class="up-daw-toolbar">
+        <div class="up-daw-transport">
+          <button type="button" class="up-daw-btn up-daw-btn-play" data-daw-play aria-label="Play/Pause">
+            <span data-daw-play-glyph>{{ partial "icon.html" "glyphs/panel-play" }}</span>
+            <span data-daw-play-glyph-playing hidden>{{ partial "icon.html" "glyphs/panel-pause" }}</span>
+          </button>
+          <button type="button" class="up-daw-btn" data-daw-stop aria-label="Stop">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="8" height="8" fill="currentColor"/></svg>
+          </button>
+        </div>
+
+        <div class="up-daw-trk">
+          <button type="button" class="up-daw-btn" data-daw-prev aria-label="Previous track" title="Previous track">
+            {{ partial "icon.html" "glyphs/chevron-left" }}
+          </button>
+          <div class="up-daw-lcdbox">
+            <span class="up-daw-lcd-label">trk</span>
+            <span class="up-daw-lcd is-trk" data-daw-trk>—</span>
+          </div>
+          <button type="button" class="up-daw-btn" data-daw-next aria-label="Next track" title="Next track">
+            {{ partial "icon.html" "glyphs/chevron-right" }}
+          </button>
+        </div>
+
+        <div class="up-daw-lcdbox">
+          <span class="up-daw-lcd-label">pos</span>
+          <span class="up-daw-lcd" data-daw-pos>001.1</span>
+        </div>
+        <div class="up-daw-lcdbox">
+          <span class="up-daw-lcd-label">bpm</span>
+          <span class="up-daw-lcd is-spin" data-daw-bpm tabindex="0" role="slider"
+            aria-label="Tempo" title="Tempo — drag up/down, double-click to reset">—</span>
+        </div>
+        <span class="up-daw-led is-on" title="The song always loops">loop</span>
+
+        <div class="up-daw-toolbar-spacer"></div>
+
+        <button type="button" class="up-daw-btn is-toggle is-on" data-daw-follow aria-pressed="true"
+          title="Follow the playhead">
+          {{ partial "icon.html" "glyphs/arrow-right" }}
+        </button>
+        <button type="button" class="up-daw-btn" data-daw-zoom-out aria-label="Zoom out">
+          {{ partial "icon.html" "glyphs/minus" }}
+        </button>
+        <button type="button" class="up-daw-btn" data-daw-zoom-in aria-label="Zoom in">
+          {{ partial "icon.html" "glyphs/plus" }}
+        </button>
+      </div>
+
+      <div class="up-daw-main">
+        <aside class="up-daw-rack">
+          <div class="up-daw-section is-tracks">
+            <button type="button" class="up-daw-section-title" data-daw-collapse>Tracks</button>
+            <div class="up-daw-tracks" data-daw-tracks></div>
+          </div>
+          <div class="up-daw-section">
+            <button type="button" class="up-daw-section-title" data-daw-collapse>Synth</button>
+            <div class="up-daw-synth" data-daw-synth></div>
+          </div>
+          <div class="up-daw-section">
+            <button type="button" class="up-daw-section-title" data-daw-collapse>FX</button>
+            <div class="up-daw-fx" data-daw-fx></div>
+          </div>
+          <div class="up-daw-section">
+            <button type="button" class="up-daw-section-title" data-daw-collapse>Groove</button>
+            <div class="up-daw-knobs" data-daw-groove></div>
+          </div>
+        </aside>
+
+        <div class="up-daw-roll" data-daw-roll>
+          <canvas class="up-daw-canvas" data-daw-canvas></canvas>
+          <div class="up-daw-scroller" data-daw-scroller>
+            <div class="up-daw-spacer" data-daw-spacer></div>
+          </div>
+          <div class="up-daw-loading" data-daw-loading>Loading…</div>
+        </div>
+      </div>
+
+      <div class="up-daw-status">
+        <span data-daw-status>Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets</span>
+      </div>
+
+    </div>
+  </section>
+</div>

@@ -154,6 +154,9 @@ export function initTrash(): void {
     const visible = open && !minimized;
     stage.hidden = !visible;
     chrome.classList.toggle("is-focused", visible && focused);
+    // The stage class rides the shared .up-window-stage.is-focused z-index
+    // raise, so the focused overlay window paints above the other (studio).
+    stage.classList.toggle("is-focused", visible && focused);
     syncLauncherTile(visible, focused);
   };
 

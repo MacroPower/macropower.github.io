@@ -21,6 +21,9 @@
   {{ partial "ui/launcher-tile.html" . }}
   {{- end }}
 
+  {{/* Running-app tile: hidden until daw.ts opens the Studio window. */}}
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" "Studio" "icon" "launcher/piano" "hidden" true) }}
+
   <div class="up-launcher-spacer"></div>
 
   {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" "Trash" "icon" "launcher/trash" "trash" true) }}

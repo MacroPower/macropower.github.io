@@ -10,6 +10,7 @@
     url     string           href, required when tag="a"
     active  bool             nav tiles: adds is-active + data-page-current
     trash   bool             adds data-launcher-trash (the trash tile)
+    hidden  bool             render hidden (running-app tiles JS reveals, e.g. Studio)
 
   Preserves .up-launcher-tile, data-launcher, data-launcher-trash,
   data-page-current, and is-active — all DOM contracts read by
@@ -17,7 +18,7 @@
 */ -}}
 {{- $tag := .tag | default "a" -}}
 {{- if eq $tag "button" -}}
-<button class="up-launcher-tile{{ if .active }} is-active{{ end }}" data-launcher="{{ .key }}"{{ if .trash }} data-launcher-trash{{ end }} aria-label="{{ .label }}" type="button">
+<button class="up-launcher-tile{{ if .active }} is-active{{ end }}" data-launcher="{{ .key }}"{{ if .trash }} data-launcher-trash{{ end }}{{ if .hidden }} hidden{{ end }} aria-label="{{ .label }}" type="button">
 {{- else -}}
 <a class="up-launcher-tile{{ if .active }} is-active{{ end }}" href="{{ .url }}" data-launcher="{{ .key }}" aria-label="{{ .label }}"{{ if .active }} data-page-current="1"{{ end }}>
 {{- end -}}

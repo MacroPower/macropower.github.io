@@ -1,7 +1,8 @@
-import { subscribe, getTrashFocused } from "./focus";
+import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { showPreferences, setReduceMotion } from "./prefs";
 import { showLock } from "./lock";
+import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
@@ -304,6 +305,10 @@ async function dispatchAction(action: string): Promise<void> {
   const site = getSite();
   const preset = DLG_PRESETS[action];
   if (preset) { await dlg(preset(site)); return; }
+  if (action === "daw:open") {
+    openStudio();
+    return;
+  }
   if (action === "dlg:lock") {
     showLock();
     return;
@@ -368,7 +373,13 @@ async function netClick(row: HTMLElement): Promise<void> {
 export function initTopPanel(): void {
   const panel = document.querySelector<HTMLElement>(".up-top-panel[data-ssr]");
   if (!panel) return;
-  if (panel.dataset.volMidi) audio.configure(panel.dataset.volMidi, "Never Gonna Give You Up");
+  if (panel.dataset.volPlaylist) {
+    try {
+      audio.configure(JSON.parse(panel.dataset.volPlaylist) as string[]);
+    } catch {
+      // Malformed playlist attribute; the player just stays unconfigured.
+    }
+  }
   const titleSlot = panel.querySelector<HTMLElement>('[data-panel-slot="title"]');
   const clockWide = panel.querySelector<HTMLElement>("[data-clock-wide]");
   const clockNarrow = panel.querySelector<HTMLElement>("[data-clock-narrow]");
@@ -387,6 +398,7 @@ export function initTopPanel(): void {
 
   const syncTitle = (): void => {
     if (getTrashFocused()) { setTitle("Trash"); return; }
+    if (getStudioFocused()) { setTitle("Studio"); return; }
     setTitle(winVisible ? pageTitle : "Ubuntu");
   };
 
@@ -530,10 +542,16 @@ export function initTopPanel(): void {
   const playBtn = panel.querySelector<HTMLElement>(".up-vol-play");
   const nowPlaying = panel.querySelector<HTMLElement>("[data-vol-nowplaying]");
 
+  // The label only ever shows the anonymous "Track N" — which track is which
+  // is a surprise. Paused still names the selection so the next-track button
+  // gives visible feedback before anything plays.
   const syncNowPlaying = (): void => {
     if (!nowPlaying) return;
-    if (!audio.isPlaying()) { nowPlaying.textContent = "Paused"; return; }
     const name = audio.trackName();
+    if (!audio.isPlaying()) {
+      nowPlaying.textContent = name ? `${name} — paused` : "Paused";
+      return;
+    }
     nowPlaying.textContent = vol.muted ? `${name} (muted)` : name;
   };
 
@@ -580,12 +598,23 @@ export function initTopPanel(): void {
       return;
     }
     if (action === "vol-play") {
-      void audio.toggle().then(syncPlayUI);
+      void audio.toggle();
+      return;
+    }
+    if (action === "vol-next") {
+      // Like vol-play, handled without closing the dropdown so you can flip
+      // through the playlist; the label updates via audio.onChange.
+      void audio.selectTrack(audio.trackIndex() + 1);
       return;
     }
     closeOpen();
     void dispatchAction(action);
   });
+
+  // Play state flows through the audio module's pub/sub (not the toggle()
+  // promise) so the Studio transport and this panel always agree, whichever
+  // one started or stopped playback.
+  audio.onChange(() => syncPlayUI(audio.isPlaying()));
 
   syncVolUI();
   syncTitle();
