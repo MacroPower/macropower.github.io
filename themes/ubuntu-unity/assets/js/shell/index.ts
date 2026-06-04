@@ -1,4 +1,4 @@
-import { XtermTerminal } from "./terminal";
+import { XtermTerminal, FONT_PROBES } from "./terminal";
 import { Shell, type ShellData } from "./shell";
 import { writeBanner } from "./banner";
 import { color, PALETTE } from "./ansi";
@@ -42,21 +42,32 @@ function saveHistory(items: readonly string[]): void {
     return;
   }
 
-  const term = new XtermTerminal(mount);
-  const shell = new Shell(term, data, {
-    history: loadHistory(),
-    persist: saveHistory,
-  });
-  registerAll(shell);
+  // Ubuntu Mono is Google-hosted with display=swap, so on a cold cache it is
+  // not yet active when this deferred bundle runs. xterm measures the cell
+  // once at open() and only re-measures on a fontFamily/fontSize change, so
+  // building the terminal before the font activates bakes in fallback-font
+  // metrics and renders garbled until reload. Actively load the faces first
+  // (fonts.load() fetches and resolves on activation, unlike fonts.ready,
+  // which can resolve before the font is even requested), then build. Race a
+  // timeout so a stalled or failed font fetch never blocks the shell; if the
+  // font lands after the timeout, terminal.ts re-measures the glyph metrics,
+  // though output already written (the banner) keeps the column layout it was
+  // sized for — an accepted residual: slow-path only, and cosmetic (wrapped or
+  // ragged banner columns, not garbled glyphs).
+  const FONT_TIMEOUT_MS = 1500;
 
-  // Print the banner only after the web font has loaded so term.cols() (used
-  // to size the banner's info column) reflects the real cell metrics. Falls
-  // back to a timeout so a stalled font load never blocks the shell.
   let started = false;
   const start = (): void => {
     if (started) return;
     started = true;
-    term.fit();
+
+    const term = new XtermTerminal(mount);
+    const shell = new Shell(term, data, {
+      history: loadHistory(),
+      persist: saveHistory,
+    });
+    registerAll(shell);
+
     writeBanner(term, data);
     term.writeln("");
     term.writeln(color(PALETTE.muted, "Type 'help' for a list of commands."));
@@ -65,9 +76,11 @@ function saveHistory(items: readonly string[]): void {
     root.setAttribute("data-shell-ready", "");
   };
 
-  if (document.fonts?.ready) {
-    void document.fonts.ready.then(start);
-    setTimeout(start, 1000);
+  if (document.fonts?.load) {
+    const fonts = Promise.all(FONT_PROBES.map((f) => document.fonts.load(f)));
+    const timeout = new Promise<void>((r) => setTimeout(r, FONT_TIMEOUT_MS));
+    // load() rejects on fetch failure for a known face; start either way.
+    void Promise.race([fonts, timeout]).then(start, start);
   } else {
     start();
   }

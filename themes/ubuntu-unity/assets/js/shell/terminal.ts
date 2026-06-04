@@ -27,6 +27,12 @@ export interface TerminalIO {
 // WINDOW_STATE_EVENT in page-window.ts (recorded in the theme CLAUDE.md).
 const WINDOW_STATE_EVENT = "up:page-window-state";
 
+const FONT_FAMILY = '"Ubuntu Mono", ui-monospace, Menlo, monospace';
+// Font shorthand probes for document.fonts.load()/check(): the faces xterm
+// actually renders (regular + ANSI-bold). index.ts gates construction on
+// loading these; the constructor backstop checks them.
+export const FONT_PROBES = ['16px "Ubuntu Mono"', '700 16px "Ubuntu Mono"'];
+
 export class XtermTerminal implements TerminalIO {
   private readonly term: Terminal;
   private readonly fitAddon: FitAddon;
@@ -37,7 +43,7 @@ export class XtermTerminal implements TerminalIO {
 
   constructor(mount: HTMLElement) {
     this.term = new Terminal({
-      fontFamily: '"Ubuntu Mono", ui-monospace, Menlo, monospace',
+      fontFamily: FONT_FAMILY,
       // Matches the .up-neofetch font size in main.scss (12pt); keep in sync.
       fontSize: 16,
       lineHeight: 1.2,
@@ -92,10 +98,22 @@ export class XtermTerminal implements TerminalIO {
     window.addEventListener(WINDOW_STATE_EVENT, this.onWindowState);
     window.addEventListener("resize", this.onWindowResize);
 
-    // The web font (Ubuntu Mono) may load after the initial fit, changing cell
-    // metrics; re-fit once it is ready so the column count is accurate.
-    if (document.fonts?.ready) {
-      void document.fonts.ready.then(() => { this.fit(); });
+    // index.ts builds us only after Ubuntu Mono activates (when FontFaceSet is
+    // available — without it, both its gate and this backstop no-op together),
+    // so metrics are correct. Its load gate has a timeout fallback though: if
+    // the font lands after that, we were measured with the fallback font, and
+    // xterm caches cell metrics until a fontFamily/fontSize change (it ignores
+    // no-op writes). Re-measure when the font finishes by switching fontFamily
+    // to a distinct but visually identical string — this clears the glyph
+    // width cache, resets the renderer, and re-measures; then re-fit so the
+    // column count matches the corrected cell width. (Already-written output
+    // keeps the layout it was written for — see the slow-path note in
+    // index.ts.)
+    if (document.fonts?.ready && FONT_PROBES.some((p) => !document.fonts.check(p))) {
+      void document.fonts.ready.then(() => {
+        this.term.options.fontFamily = `${FONT_FAMILY}, monospace`;
+        this.fit();
+      });
     }
   }
 
