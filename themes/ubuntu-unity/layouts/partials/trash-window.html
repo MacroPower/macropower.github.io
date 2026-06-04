@@ -1,11 +1,11 @@
 {{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
 {{- $files := slice
-  (dict "icon" "launcher/document"  "label" "old-resume-FINAL-v3.pdf")
+  (dict "icon" "flat/empty-file"    "label" "old-resume-FINAL-v3.pdf")
   (dict "icon" "flat/empty-file"    "label" "passwords.txt")
   (dict "icon" "flat/empty-folder"  "label" "node_modules")
   (dict "icon" "flat/empty-file"    "label" ".DS_Store")
   (dict "icon" "flat/empty-file"    "label" "screenshot-2009-08-14.png")
-  (dict "icon" "flat/empty-folder"  "label" "secret-startup-idea")
+  (dict "icon" "flat/empty-folder"  "label" "System32")
 -}}
 <div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
   <section class="up-window-chrome">
@@ -22,10 +22,10 @@
 
       <div class="up-trash-files" data-trash-files>
         {{- range $files }}
-        <div class="up-trash-tile">
+        <button type="button" class="up-trash-tile" data-trash-tile data-name="{{ .label }}">
           <span class="up-trash-tile-icon">{{ partial "icon.html" .icon }}</span>
           <span class="up-trash-tile-label">{{ .label }}</span>
-        </div>
+        </button>
         {{- end }}
       </div>
 
@@ -33,8 +33,7 @@
         {{ partial "icon.html" "flat/trash-empty" }}
         <div class="up-trash-empty-headline">Trash is empty</div>
         <div class="up-trash-empty-detail">
-          Nothing thrown away yet. Tried that essay about dotfiles three
-          times — kept saving it.
+          Nothing thrown away yet.
         </div>
       </div>
 

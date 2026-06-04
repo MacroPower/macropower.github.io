@@ -1,16 +1,28 @@
-// Desktop file-manager gestures for the /projects/ grid: click-select,
+// Desktop file-manager gestures over an icon grid: click-select,
 // drag-to-reorder, double-click-to-open, multi-select, marquee, and a
-// right-click menu. projects.ts owns the selection model and preview; this
-// module is the sole gesture owner over the grid and drives that model through
-// `deps`.
+// right-click menu. The consumer owns the selection model (desktop-select) and
+// its pane; this module is the sole gesture owner over the grid and drives that
+// model through `deps`. The projects grid uses the defaults (GitHub open/menu
+// actions); the trash window overrides the selector and hooks for its
+// Restore/Delete actions.
 //
 // Pointer Events throughout (capture + unified mouse/touch). The drag model is
 // live reorder: the selected tiles lift and follow the cursor as one rigid block
 // (every member moves by the same delta, keeping their relative positions) while
 // the unselected tiles reorder in the CSS grid and slide to their new cells via
 // FLIP. DOM order is the display order, so reordering mutates `deps.tiles` in
-// place (the array filter-nav and projects.ts share) alongside the DOM. "Clean
+// place (the array the consumer and filter-nav share) alongside the DOM. "Clean
 // Up Icons" restores the original order. No persistence.
+//
+// Imported by both the app.ts and projects.ts bundles — esbuild duplicates the
+// module into each, so two instances coexist on /projects/. All gesture state
+// lives in installDesktop's closure and every document-level listener guards on
+// it; never add module-level mutable state here.
+
+export interface DesktopMenuItem {
+  label: string;
+  run(): void;
+}
 
 export interface DesktopDeps {
   grid: HTMLElement;
@@ -23,22 +35,76 @@ export interface DesktopDeps {
   setMany(tiles: HTMLElement[], additive: boolean): void;
   clear(): void;
   selectAllVisible(): void;
+
+  /** Tile match selector. Default "[data-up-project-tile]". */
+  tileSelector?: string;
+  /** Node reorders insert before (keeps an in-grid placeholder last). Explicit
+   *  null = append; omitted = the projects [data-up-project-empty] lookup. */
+  emptyAnchor?: HTMLElement | null;
+  /** Double-click handler. Default: open tile.dataset.url in a new tab. */
+  onOpen?(tile: HTMLElement): void;
+  /** Right-click on a tile -> menu items, given the selection snapshot (taken
+   *  after right-click retargets to an unselected tile). Default: Open on
+   *  GitHub / Copy link. */
+  tileMenu?(tile: HTMLElement, selected: HTMLElement[]): DesktopMenuItem[];
+  /** Right-click on empty space -> menu items. Default: Select All / Clean Up
+   *  Icons (the passed callback). */
+  emptyMenu?(cleanUpIcons: () => void): DesktopMenuItem[];
+  /** Skip removeTiles animation when true. Injected (rather than importing
+   *  prefs.ts) so the engine stays free of cross-module imports. */
+  reduceMotion?(): boolean;
+}
+
+export interface DesktopController {
+  /** Session-only tile removal (trash Restore / Delete): detaches the targets
+   *  and splices them out of the shared tiles array. onDone fires once the
+   *  grid has settled, on both the animated and instant paths. */
+  removeTiles(tiles: HTMLElement[], opts?: { animate?: boolean; onDone?(): void }): void;
+  cleanUpIcons(): void;
 }
 
 const DRAG_THRESHOLD = 4;
 const DBLCLICK_MS = 300;
 const REFLOW_MS = 180;
 const SETTLE_MS = 160;
-const TILE_SEL = "[data-up-project-tile]";
+const REMOVE_MS = 300; // matches the upTileOut keyframe
+const DEFAULT_TILE_SEL = "[data-up-project-tile]";
 
-export function installDesktop(deps: DesktopDeps): void {
+export function installDesktop(deps: DesktopDeps): DesktopController {
   const { grid } = deps;
+  const TILE_SEL = deps.tileSelector ?? DEFAULT_TILE_SEL;
   // Reorders insert before this node so the empty-state placeholder stays last.
-  const emptyAnchor = grid.querySelector<HTMLElement>("[data-up-project-empty]");
+  const emptyAnchor = deps.emptyAnchor !== undefined
+    ? deps.emptyAnchor
+    : grid.querySelector<HTMLElement>("[data-up-project-empty]");
   const originalOrder = [...deps.tiles];
+
+  const reduceMotion = deps.reduceMotion ?? ((): boolean => false);
+  const onOpen = deps.onOpen ?? ((tile: HTMLElement): void => {
+    const url = tile.dataset.url;
+    if (url) window.open(url, "_blank", "noopener");
+  });
+  const tileMenu = deps.tileMenu ?? ((tile: HTMLElement): DesktopMenuItem[] => {
+    const url = tile.dataset.url ?? "";
+    return [
+      { label: "Open on GitHub", run: () => {
+        if (url) window.open(url, "_blank", "noopener");
+      } },
+      { label: "Copy link", run: () => {
+        if (url && navigator.clipboard) navigator.clipboard.writeText(url).catch(() => { /* no-op */ });
+      } },
+    ];
+  });
+  const emptyMenu = deps.emptyMenu ?? ((clean: () => void): DesktopMenuItem[] => [
+    { label: "Select All", run: () => deps.selectAllVisible() },
+    { label: "Clean Up Icons", run: () => clean() },
+  ]);
 
   // ---- gesture state -------------------------------------------------------
   let mode: "none" | "tile" | "marquee" = "none";
+  // True while removeTiles' exit animation is pending: gestures must not start
+  // on tiles the deferred detach is about to pull out from under them.
+  let removing = false;
   let pointerId = -1;
   let startX = 0;
   let startY = 0;
@@ -86,7 +152,7 @@ export function installDesktop(deps: DesktopDeps): void {
   }
 
   grid.addEventListener("pointerdown", (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || removing) return;
     // A drag that produced no synthetic click would otherwise carry a stale
     // justDragged into this gesture's click; reset it up front.
     justDragged = false;
@@ -180,8 +246,7 @@ export function installDesktop(deps: DesktopDeps): void {
         // browsers.
         const now = performance.now();
         if (lastClick && lastClick.tile === pressTile && now - lastClick.time < DBLCLICK_MS) {
-          const url = pressTile.dataset.url;
-          if (url) window.open(url, "_blank", "noopener");
+          onOpen(pressTile);
           lastClick = null;
         } else {
           lastClick = { tile: pressTile, time: now };
@@ -408,7 +473,60 @@ export function installDesktop(deps: DesktopDeps): void {
   }
 
   function cleanUpIcons(): void {
-    animateToOrder([...originalOrder]);
+    // Filter by isConnected: commitOrder's appendChild would re-attach any
+    // node removeTiles detached, resurrecting deleted trash items.
+    animateToOrder(originalOrder.filter((t) => t.isConnected));
+  }
+
+  // Session-only removal: splice the targets out of the shared tiles array AND
+  // originalOrder (belt and braces with the isConnected filter above), detach
+  // them, and FLIP the survivors into the closed-up grid.
+  function removeTiles(targets: HTMLElement[], opts?: { animate?: boolean; onDone?(): void }): void {
+    if (mode !== "none" || removing) return; // never mutate the grid mid-gesture
+    const known = new Set(deps.tiles);
+    const set = new Set(targets.filter((t) => known.has(t)));
+    if (!set.size) { opts?.onDone?.(); return; }
+
+    const detach = (): void => {
+      for (let i = deps.tiles.length - 1; i >= 0; i--) if (set.has(deps.tiles[i]!)) deps.tiles.splice(i, 1);
+      for (let i = originalOrder.length - 1; i >= 0; i--) if (set.has(originalOrder[i]!)) originalOrder.splice(i, 1);
+      for (const el of set) el.remove();
+    };
+
+    if (!opts?.animate || reduceMotion()) {
+      detach();
+      opts?.onDone?.();
+      return;
+    }
+
+    // Animate the targets out (per-tile keyframe), then close the gap.
+    const movers = deps.tiles.filter((t) => !t.hidden && !set.has(t));
+    const first = new Map(movers.map((t) => [t, t.getBoundingClientRect()] as const));
+    for (const el of set) el.classList.add("is-removing-tile");
+    removing = true;
+    window.setTimeout(() => {
+      removing = false;
+      detach();
+      for (const t of movers) { t.style.transition = "none"; t.style.transform = "none"; }
+      void grid.offsetWidth;
+      for (const t of movers) {
+        const f = first.get(t)!;
+        const l = t.getBoundingClientRect();
+        const dx = f.left - l.left;
+        const dy = f.top - l.top;
+        if (dx || dy) t.style.transform = `translate(${dx}px, ${dy}px)`;
+      }
+      requestAnimationFrame(() => {
+        for (const t of movers) {
+          t.style.transition = `transform ${REFLOW_MS}ms ease`;
+          t.style.transform = "none";
+        }
+      });
+      opts?.onDone?.();
+      window.setTimeout(() => {
+        for (const t of movers) { t.style.transition = ""; t.style.transform = ""; }
+      }, REFLOW_MS + 60);
+    }, REMOVE_MS);
   }
 
   // Tiles are <button>s, so a click follows pointerup. Swallow it after a drag;
@@ -530,17 +648,16 @@ export function installDesktop(deps: DesktopDeps): void {
     menu.replaceChildren();
 
     if (tile && grid.contains(tile)) {
-      if (!deps.get().includes(tile)) deps.setSingle(tile);
-      const url = tile.dataset.url ?? "";
-      menu.appendChild(ctxItem("Open on GitHub", () => {
-        if (url) window.open(url, "_blank", "noopener");
-      }));
-      menu.appendChild(ctxItem("Copy link", () => {
-        if (url && navigator.clipboard) navigator.clipboard.writeText(url).catch(() => { /* no-op */ });
-      }));
+      // Right-click outside the selection retargets to the clicked tile;
+      // inside it, the menu actions apply to the whole selection.
+      let sel = deps.get();
+      if (!sel.includes(tile)) {
+        deps.setSingle(tile);
+        sel = deps.get();
+      }
+      for (const it of tileMenu(tile, sel)) menu.appendChild(ctxItem(it.label, it.run));
     } else {
-      menu.appendChild(ctxItem("Select All", () => deps.selectAllVisible()));
-      menu.appendChild(ctxItem("Clean Up Icons", () => cleanUpIcons()));
+      for (const it of emptyMenu(cleanUpIcons)) menu.appendChild(ctxItem(it.label, it.run));
     }
 
     // Reveal first to measure, then clamp into the viewport.
@@ -596,6 +713,8 @@ export function installDesktop(deps: DesktopDeps): void {
       moved = false;
     }
   }, true);
+
+  return { removeTiles, cleanUpIcons };
 }
 
 function union(a: HTMLElement[], b: HTMLElement[]): HTMLElement[] {
