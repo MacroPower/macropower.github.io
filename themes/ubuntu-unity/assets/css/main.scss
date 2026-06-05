@@ -1785,6 +1785,10 @@ a.up-sponsor-card[href]:hover{
 .up-dlg-content-body{
   color:#3A3733; line-height:1.5; white-space:pre-wrap;
 }
+.up-dlg-content-body a{
+  color:#2B4E8E; text-decoration:none;
+  &:hover{color:var(--orange-light); text-decoration:underline}
+}
 .up-dlg-content-details{
   margin-top:12px; padding:10px 12px;
   background:#FBFAF9; border:1px solid #DCD7D2;

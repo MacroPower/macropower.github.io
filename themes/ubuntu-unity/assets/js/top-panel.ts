@@ -14,7 +14,7 @@ const LAUNCHER_URLS: Record<string, string> = {
   icons: "/icons/",
 };
 
-const EMPTY_SITE: UPSite = { handle: "", github: "", rss: "" };
+const EMPTY_SITE: UPSite = { handle: "", github: "", repo: "", rss: "" };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 function navigate(key: string): void {
@@ -38,13 +38,32 @@ const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
     body: "A few shortcuts work across the desktop:",
     details: "Ctrl+W       close the focused window\nEsc           dismiss menus and dialogs\nDrag titlebar to reposition any window or dialog.",
   }),
-  "dlg:github": (site) => ({
-    icon: "info", title: "Source",
-    body: site.github
-      ? "This is a personal site living at " + site.github + "."
-      : "This is a personal site.",
-    buttons: [{ id: "ok", label: "OK", primary: true }],
-  }),
+  "dlg:github": (site) => {
+    const url = site.repo;
+    if (!url) {
+      return {
+        icon: "info", title: "Source",
+        body: "This is a personal site.",
+        buttons: [{ id: "ok", label: "OK", primary: true }],
+      };
+    }
+    return {
+      icon: "info", title: "Source",
+      render: (content) => {
+        const p = document.createElement("p");
+        p.className = "up-dlg-content-body";
+        p.append("This is a personal site living at ");
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = url.replace(/^https?:\/\//, "");
+        p.append(a, ".");
+        content.appendChild(p);
+      },
+      buttons: [{ id: "ok", label: "OK", primary: true }],
+    };
+  },
   "dlg:cal": () => ({ icon: "info", title: "Calendar",
     body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
 };

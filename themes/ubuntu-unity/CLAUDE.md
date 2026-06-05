@@ -78,7 +78,7 @@ The shell is a separate IIFE bundle and cannot import symbols from `app.ts`'s bu
 
 ## Site-provided globals
 
-`baseof.html` injects `window.UP_SITE = { handle, github, rss }` from `Site.Params.author.name`, `Site.Params.social[name=github]`, and the RSS output format before the JS bundle loads. Components that need site identity (e.g. the top-panel session menu) read from `window.UP_SITE` rather than re-deriving from the DOM. The `Window` augmentation lives in `assets/js/types.ts`; keep it in sync if you add new globals.
+`baseof.html` injects `window.UP_SITE = { handle, github, repo, rss }` from `Site.Params.author.name`, `Site.Params.social[name=github]`, `Site.Params.repoUrl` (the source-repo link the "View source" dialog renders), and the RSS output format before the JS bundle loads. Components that need site identity (e.g. the top-panel session menu) read from `window.UP_SITE` rather than re-deriving from the DOM. The `Window` augmentation lives in `assets/js/types.ts`; keep it in sync if you add new globals.
 
 ## Editing notes
 

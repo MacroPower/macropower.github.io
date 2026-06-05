@@ -83,6 +83,9 @@ disable404     = false
   # plausibleDataDomain   = 'test.com'
   # plausibleScriptSource = 'https://plausible.io/js/script.js'
 
+  # Source repository for this site (linked from the "View source" dialog).
+  repoUrl = "https://github.com/MacroPower/macropower.github.io"
+
   [params.author]
     name = "Jacob Colvin"
     born = "1996-10-03"

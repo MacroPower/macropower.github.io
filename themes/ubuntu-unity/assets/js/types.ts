@@ -29,6 +29,7 @@ export interface UPDialogOptions {
 export interface UPSite {
   handle: string;
   github: string;
+  repo: string;
   rss: string;
 }
 

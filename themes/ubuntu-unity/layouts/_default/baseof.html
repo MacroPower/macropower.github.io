@@ -18,8 +18,9 @@
   {{ $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower }}
   {{ $github := "" }}{{ with index $gh 0 }}{{ $github = .url }}{{ end }}
   {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
+  {{ $repo := .Site.Params.repoUrl | default "" }}
   <script>
-window.UP_SITE = {{ (dict "handle" $handle "github" $github "rss" $rss) | jsonify | safeJS }};
+window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss) | jsonify | safeJS }};
   </script>
 
   {{ $jsOpts := dict
