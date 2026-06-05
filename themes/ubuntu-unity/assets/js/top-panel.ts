@@ -1,6 +1,7 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { showPreferences, setReduceMotion } from "./prefs";
+import { showShortcuts } from "./shortcuts";
 import { showLock } from "./lock";
 import { openStudio } from "./daw";
 import * as audio from "./audio";
@@ -33,11 +34,6 @@ function dlg(opts: UPDialogOptions): Promise<string | null> {
 const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
   "dlg:launcher-info": () => ({ icon: "info", title: "Launcher is always shown",
     body: "The launcher is part of the shell." }),
-  "dlg:shortcuts": () => ({
-    icon: "info", title: "Keyboard shortcuts",
-    body: "A few shortcuts work across the desktop:",
-    details: "Ctrl+W       close the focused window\nEsc           dismiss menus and dialogs\nDrag titlebar to reposition any window or dialog.",
-  }),
   "dlg:github": (site) => {
     const url = site.repo;
     if (!url) {
@@ -334,6 +330,10 @@ async function dispatchAction(action: string): Promise<void> {
   }
   if (action === "dlg:prefs") {
     await showPreferences();
+    return;
+  }
+  if (action === "dlg:shortcuts") {
+    await showShortcuts();
     return;
   }
   if (action === "dlg:power-saver") {
