@@ -371,10 +371,13 @@ svg[hidden]{ display:none; }
     // stages' inset:0 for the maximized Studio.
     left:var(--launcher-w);
     .up-window-chrome{
-      width:100%;
+      // !important beats resize.ts's inline width/height on any window that
+      // is both resizable and maximizable (the inline values survive, so
+      // restore returns to the pre-maximize size).
+      width:100% !important;
       max-width:none;
       max-height:none;
-      height:100%;
+      height:100% !important;
       border-radius:0;
     }
   }
@@ -417,6 +420,23 @@ svg[hidden]{ display:none; }
     }
   }
 }
+/* Invisible edge/corner hit zones appended by resize.ts (trash + studio).
+   Edge strips inset 10px so the corners win at the ends; the chrome's
+   overflow:hidden clips them flush to the borders. */
+.up-resize-handle{ position:absolute; z-index:6; }
+.up-resize-n{ top:0; left:10px; right:10px; height:6px; cursor:n-resize; }
+.up-resize-s{ bottom:0; left:10px; right:10px; height:6px; cursor:s-resize; }
+.up-resize-w{ top:10px; bottom:10px; left:0; width:6px; cursor:w-resize; }
+.up-resize-e{ top:10px; bottom:10px; right:0; width:6px; cursor:e-resize; }
+.up-resize-nw{ top:0; left:0; width:10px; height:10px; cursor:nwse-resize; }
+.up-resize-ne{ top:0; right:0; width:10px; height:10px; cursor:nesw-resize; }
+.up-resize-sw{ bottom:0; left:0; width:10px; height:10px; cursor:nesw-resize; }
+.up-resize-se{ bottom:0; right:0; width:10px; height:10px; cursor:nwse-resize; }
+/* Active resize: lock the direction cursor (set on body by resize.ts) so it
+   doesn't flicker when the pointer overshoots the thin strip. */
+body.up-resizing{ user-select:none; }
+body.up-resizing *{ cursor:inherit !important; }
+
 .up-titlebar{
   flex-shrink:0;
   height:26px;
@@ -2146,14 +2166,16 @@ body.up-reduce-motion *{
      .up-window-stage.is-maximized rule already shifts the stage itself to the
      launcher edge (--launcher-w), so the chrome just anchors to the
      stage box below the panel. transform:none overrides drag.ts's inline
-     translate while maximized (drags are gated, and the inline value survives
-     so restore puts the window back where it was dragged). */
+     translate and width/height:auto override resize.ts's inline size while
+     maximized (drag and resize are gated, and the inline values survive so
+     restore puts the window back at its dragged + resized geometry). */
   &.is-maximized .up-window-chrome{
     inset:24px 0 0 0;
-    width:auto; height:auto;
+    width:auto !important; height:auto !important;
     border-radius:0;
     transform:none !important;
   }
+  &.is-maximized .up-resize-handle{ display:none; }
 }
 
 .up-daw-body{

@@ -3,6 +3,7 @@ import { installTitlebarDrag } from "./drag";
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
 import { isReduceMotion } from "./prefs";
 import { installDesktop } from "./projects-desktop";
+import { installResize } from "./resize";
 
 function syncLauncherTile(open: boolean, focused: boolean): void {
   const tile = document.querySelector<HTMLElement>("[data-launcher-trash]");
@@ -216,7 +217,9 @@ export function initTrash(): void {
     }
   });
 
-  installTitlebarDrag(chrome, { spring: false, yMin: 24 });
+  const drag = installTitlebarDrag(chrome, { spring: false, yMin: 24 });
+  // 280x200 keeps two grid columns plus the pathbar and footer usable.
+  installResize(chrome, { minW: 280, minH: 200, yMin: 24, handle: drag });
 
   subscribe(render);
   renderTrash();

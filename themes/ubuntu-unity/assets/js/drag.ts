@@ -5,6 +5,16 @@ export interface InstallTitlebarDragOptions {
   gate?: () => boolean;
 }
 
+// The window's position is expressed purely as the translate3d offset owned
+// here (inline left/top never change post-SSR). The handle exposes that
+// offset so collaborators — resize.ts moving the origin for north/west
+// resizes — go through the same state instead of fighting the transform.
+export interface DragHandle {
+  dispose(): void;
+  getOffset(): { x: number; y: number };
+  setOffset(x: number, y: number): void;
+}
+
 const damp = (d: number): number => {
   const s = Math.sign(d);
   const a = Math.abs(d);
@@ -14,7 +24,7 @@ const damp = (d: number): number => {
 export function installTitlebarDrag(
   el: HTMLElement,
   opts: InstallTitlebarDragOptions = {},
-): () => void {
+): DragHandle {
   const titlebarSelector = opts.titlebarSelector ?? "[data-titlebar]";
   const spring = opts.spring !== false;
   const yMin = opts.yMin;
@@ -118,8 +128,17 @@ export function installTitlebarDrag(
 
   el.addEventListener("mousedown", onMouseDown);
 
-  return () => {
-    el.removeEventListener("mousedown", onMouseDown);
-    cancelSpring();
+  return {
+    dispose: () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      cancelSpring();
+    },
+    getOffset: () => ({ x: baseX, y: baseY }),
+    setOffset: (x, y) => {
+      cancelSpring();
+      baseX = x;
+      baseY = y;
+      apply(x, y);
+    },
   };
 }

@@ -14,6 +14,7 @@ import * as audio from "./audio";
 import { installTitlebarDrag } from "./drag";
 import { setStudioFocused, getStudioFocused, subscribe } from "./focus";
 import type { MidiNote, MidiSong } from "./midi";
+import { installResize } from "./resize";
 
 // ---- piano-roll geometry ----------------------------------------------------
 
@@ -366,7 +367,7 @@ export function initDaw(): void {
     }
   });
 
-  installTitlebarDrag(chrome, { spring: false, yMin: 24, gate: () => !maximized });
+  const drag = installTitlebarDrag(chrome, { spring: false, yMin: 24, gate: () => !maximized });
   subscribe(render);
   render();
 
@@ -630,6 +631,19 @@ export function initDaw(): void {
   // Either scroller moving under an open menu would leave it mis-anchored.
   tracksHost?.addEventListener("scroll", closePatchMenu);
   chrome.querySelector(".up-daw-rack")?.addEventListener("scroll", closePatchMenu);
+
+  // Edge/corner resize shares the drag's transform offset so north/west
+  // resizes move the origin without the two fighting. The piano roll re-fits
+  // itself via the roll's ResizeObserver; the rack scrolls as the fallback at
+  // the 520x360 minimum. Installed here (not next to the drag) because
+  // closePatchMenu is a const above — the menu anchors via
+  // getBoundingClientRect and would mis-anchor mid-resize.
+  installResize(chrome, {
+    minW: 520, minH: 360, yMin: 24,
+    gate: () => !maximized,
+    onStart: () => closePatchMenu(),
+    handle: drag,
+  });
 
   // Arrow (not a hoisted declaration) so the `chrome` null-guard narrowing
   // above applies inside.
