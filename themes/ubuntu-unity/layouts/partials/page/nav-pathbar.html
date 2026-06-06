@@ -23,13 +23,21 @@
       </a>
     </div>
     <div class="up-pathbar-crumbs">
+      {{- $homeIcon := partial "icon.html" "glyphs/home" -}}
       {{ range $i, $seg := $segments }}
         {{- $last := eq (add $i 1) (len $segments) -}}
+        {{- /* the first segment is the path's root — home gets its house icon */ -}}
+        {{- $icon := cond (eq $i 0) $homeIcon "" -}}
         {{- if $last -}}
-          <span class="up-pathbar-pill is-current">{{ $seg.label }}</span>
+          <span class="up-pathbar-btn is-current" aria-current="page">
+            {{- $icon -}}
+            <span class="up-pathbar-label">{{ $seg.label }}</span>
+          </span>
         {{- else -}}
-          <a class="up-pathbar-pill" href="{{ $seg.url }}">{{ $seg.label }}</a>
-          <span class="up-pathbar-sep" aria-hidden="true">›</span>
+          <a class="up-pathbar-btn" href="{{ $seg.url }}">
+            {{- $icon -}}
+            <span class="up-pathbar-label">{{ $seg.label }}</span>
+          </a>
         {{- end -}}
       {{ end }}
     </div>

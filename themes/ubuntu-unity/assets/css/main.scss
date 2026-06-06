@@ -64,6 +64,28 @@
   }
 }
 
+/* The sticky checked/depressed state of up-raised-button — class- or
+   aria-toggled buttons that hold the pressed look (the pathbar's current
+   location, the search toggle while open). */
+@mixin up-raised-button-checked {
+  background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
+  border-color:#9A958F;color:#1F1D1A;
+}
+
+/* GTK linked button group: members sit edge-to-edge sharing their 1px
+   borders, only the outer corners round (longhand corners so a lone child
+   rounds all four), and a hovered/focused member raises above its neighbor
+   so its highlighted border paints whole. Consumers pass $radius:0 to
+   up-raised-button and let this mixin shape the corners. */
+@mixin up-linked-group($radius: 3px) {
+  position:relative;
+  &:first-child{border-top-left-radius:$radius;border-bottom-left-radius:$radius}
+  &:last-child{border-top-right-radius:$radius;border-bottom-right-radius:$radius}
+  & + &{margin-left:-1px}
+  &:hover,&:focus-visible{z-index:1}
+}
+
 /* Titlebar "traffic-light" bead — shared geometry for the window controls and
    the dialog close button. display and the radial face stay per-consumer
    (the dialog close is a flex item; see up-bead-face for the colored fill). */
@@ -918,46 +940,53 @@ a.up-sponsor-card[href]:hover{
   padding:5px 10px 5px 6px;
   font-size:12px;min-height:30px;
 }
+/* GtkPathBar: two up-linked-groups, the history pair and the crumbs. The
+   current location is the GTK "checked" button — recessed, never hover-lit. */
 .up-pathbar-nav{
-  display:inline-flex;align-items:center;gap:2px;
+  display:inline-flex;align-items:stretch;align-self:stretch;
   margin-right:2px;
 }
-.up-pathbar-arrow{
+/* history arrows and the search toggle share one geometry: padding reset
+   (the toggle is a <button>), stretched to the crumb row's height so every
+   member of the bar stands equally tall. */
+.up-pathbar-arrow,
+.up-pathbar-icon-btn{
   display:inline-flex;align-items:center;justify-content:center;
-  width:22px;height:22px;
+  width:24px;padding:0;
   color:#3A3733;
+}
+.up-pathbar-arrow{
   text-decoration:none;
-  @include up-raised-button;
+  @include up-raised-button($radius: 0);
+  @include up-linked-group;
   &.is-disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
   }
 }
 .up-pathbar-crumbs{
-  display:flex;align-items:center;gap:4px;flex-wrap:wrap;flex:1;min-width:0;
+  display:flex;align-items:center;flex-wrap:wrap;flex:1;min-width:0;
 }
-.up-pathbar-pill{
-  display:inline-block;padding:2px 8px;border-radius:2px;
-  background:#E5E2DF;border:1px solid #C9C5C1;color:#3A3733;
-  text-decoration:none;line-height:1.6;
-  max-width:340px;@include up-truncate;
-  vertical-align:middle;
-  &:hover{background:#EFEDEB}
-  &.is-current{background:#fff;color:#1F1D1A;font-weight:500}
+.up-pathbar-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;
+  color:#3A3733;text-decoration:none;line-height:1.6;
+  @include up-raised-button($radius: 0, $press: false);
+  @include up-linked-group;
+  svg{width:12px;height:12px;flex-shrink:0}
+  &.is-current{
+    @include up-raised-button-checked;
+    font-weight:500;
+  }
 }
-.up-pathbar-sep{color:#8A8580;padding:0 2px}
+.up-pathbar-label{max-width:340px;@include up-truncate}
 .up-pathbar-icon-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:22px;height:22px;
-  color:#3A3733;
-  cursor:pointer;flex-shrink:0;
-  @include up-raised-button($press: false);
+  cursor:pointer;flex-shrink:0;align-self:stretch;
+  @include up-raised-button($radius: 3px, $press: false);
   &.is-active,
   &[aria-expanded="true"],
   &[aria-pressed="true"]{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-    border-color:#9A958F;color:#1F1D1A;
+    @include up-raised-button-checked;
   }
 }
 
@@ -1469,14 +1498,15 @@ a.up-sponsor-card[href]:hover{
   .up-naut-section-label{padding:0 4px;display:none}
   .up-naut-item{padding:4px 8px;display:inline-flex;gap:4px}
   .up-post-list{border-right:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
-  .up-pathbar-pill{max-width:180px}
+  .up-pathbar-label{max-width:180px}
   .up-pathbar-search-input{font-size:16px}
   .up-neofetch{grid-template-columns:1fr;padding:22px 24px;gap:18px}
   .up-neofetch-ascii{align-self:center}
 }
 @media (max-width:560px){
   .up-pathbar{padding:5px 8px 5px 4px;gap:4px}
-  .up-pathbar-pill{max-width:120px;font-size:11.5px}
+  .up-pathbar-btn{font-size:11.5px}
+  .up-pathbar-label{max-width:120px}
   .up-reader-inner{padding:24px 18px 40px}
   .up-neofetch{padding:16px;font-size:12pt}
   .up-neofetch-ascii{display:none}
@@ -2615,7 +2645,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline:2px solid var(--orange-light);
   outline-offset:-2px;
 }
-.up-pathbar-pill:focus-visible,
+.up-pathbar-btn:focus-visible,
 .up-pathbar-arrow:focus-visible,
 .up-pathbar-icon-btn:focus-visible,
 .up-pathbar-search-input:focus-visible,

@@ -14,10 +14,20 @@
       <span class="up-titlebar-text">Trash</span>
     </div>
     <div class="up-window-body">
+      {{- /* Inline crumbs rather than page/nav-pathbar.html: the partial's
+             wrap chrome, nav landmark, and history arrows are page-window
+             furniture the trash window doesn't want. Keep the markup in sync
+             with the partial's .up-pathbar-btn/.up-pathbar-label shape. */}}
       <div class="up-pathbar">
-        <span class="up-pathbar-pill">{{ $handle }}</span>
-        <span class="up-pathbar-sep" aria-hidden="true">›</span>
-        <span class="up-pathbar-pill is-current">trash</span>
+        <div class="up-pathbar-crumbs">
+          <span class="up-pathbar-btn">
+            {{- partial "icon.html" "glyphs/home" -}}
+            <span class="up-pathbar-label">{{ $handle }}</span>
+          </span>
+          <span class="up-pathbar-btn is-current" aria-current="location">
+            <span class="up-pathbar-label">trash</span>
+          </span>
+        </div>
       </div>
 
       <div class="up-trash-files" data-trash-files>
