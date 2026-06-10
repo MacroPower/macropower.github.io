@@ -65,8 +65,9 @@ const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
 };
 
 function fmtDuration(mins: number): string {
-  const h = Math.floor(mins / 60);
-  const m = Math.round(mins % 60);
+  const t = Math.round(mins);
+  const h = Math.floor(t / 60);
+  const m = t % 60;
   const unit = (n: number, u: string): string => `${n} ${u}${n === 1 ? "" : "s"}`;
   const parts: string[] = [];
   if (h) parts.push(unit(h, "hour"));
