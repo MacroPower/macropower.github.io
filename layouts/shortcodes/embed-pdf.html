@@ -124,6 +124,9 @@ SOFTWARE.
       </a>
     </div>
     <canvas class="pdf-canvas" id="pdf-canvas-{{ substr (.Get "url" | md5) 0 8 }}"></canvas>
+    <div class="pdf-error" id="pdf-error-{{ substr (.Get "url" | md5) 0 8 }}" style="display:none; padding: 1em; text-align: center;">
+      The PDF preview could not be loaded. Please use the &quot;Open PDF&quot; link instead.
+    </div>
 </div>
 
 <div class="pdf-paginator" id="pdf-paginator-{{ substr (.Get "url" | md5) 0 8 }}">
@@ -194,7 +197,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
         var renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
-        renderTask.promise.then(function() {
+        return renderTask.promise.then(function() {
           pageRendering = false;
           showContent();
 
@@ -204,10 +207,22 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
             pageNumPending = null;
           }
         });
-      });
+      }).catch(showError);
 
       // Update page counters
       document.getElementById('pdf-pagenum-{{ substr (.Get "url" | md5) 0 8 }}').textContent = num;
+    }
+
+    /**
+     * Hides loader and canvas, and surfaces a visible failure message so a
+     * failed fetch/render does not leave an infinite spinner.
+     */
+    function showError(err) {
+      pageRendering = false;
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'none';
+      document.getElementById('pdf-error-{{ substr (.Get "url" | md5) 0 8 }}').style.display = 'block';
+      if (window.console && console.error) console.error('PDF embed failed:', err);
     }
 
     /**
@@ -286,7 +301,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
 
       // Initial/first page rendering
       renderPage(pageNum);
-    });
+    }).catch(showError);
     }
 
     if (document.readyState === 'loading') {
