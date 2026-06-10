@@ -2194,7 +2194,10 @@ body.up-reduce-motion *{
   top:24px; left:var(--launcher-w); right:0; bottom:0;
   z-index:38;
   pointer-events:none;
-  > *{pointer-events:auto}
+  /* Gated on .is-visible: close() drops the class immediately but leaves
+     the node un-hidden until the opacity fade ends, and the invisible
+     overlay must not eat clicks/drags during that window. */
+  &.is-visible > *{pointer-events:auto}
   opacity:0;
   transition:opacity .16s ease;
   &[hidden]{display:none}
