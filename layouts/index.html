@@ -62,6 +62,35 @@
         would double-encode the JSON. jsonify already \u-escapes < > & so the
         payload is safe to emit verbatim. Same pattern as UP_SITE in baseof.html. */ -}}
   <script type="application/json" data-shell-data>{{ $payload | jsonify | safeJS }}</script>
+  {{- /* Visually hidden equivalent of the terminal's neofetch banner. The
+        xterm canvas never reaches the accessibility tree, so this is the home
+        page's only screen-reader content: its missing <h1>, the title, and
+        real links for the social URLs and launcher destinations. */ -}}
+  <div class="up-sr-only">
+    <h1>{{ $payload.name }}</h1>
+    <p>{{ $payload.title }}</p>
+    <h2>Links</h2>
+    <ul>
+      {{- range $socials }}
+      <li><a href="{{ .url }}">{{ .label }}: {{ .display }}</a></li>
+      {{- end }}
+    </ul>
+    <nav aria-label="Site">
+      <h2>Explore</h2>
+      <ul>
+        <li><a href="{{ relURL "cv/" }}">CV</a></li>
+        <li><a href="{{ relURL "projects/" }}">Projects</a></li>
+        <li><a href="{{ relURL "posts/" }}">Blog</a></li>
+        <li><a href="{{ relURL "sponsors/" }}">Sponsors</a></li>
+      </ul>
+    </nav>
+    <h2>Posts</h2>
+    <ul>
+      {{- range $posts }}
+      <li><a href="{{ .url }}">{{ .title }}</a> ({{ .date }})</li>
+      {{- end }}
+    </ul>
+  </div>
   <div class="up-shell-term" data-shell-mount></div>
   <noscript>
     <div class="up-shell-noscript">{{ $user }}@{{ $host }}: this terminal requires JavaScript.</div>

@@ -53,6 +53,13 @@ export class XtermTerminal implements TerminalIO {
       // Send Option+key as a Meta escape (ESC-prefixed) so the readline Alt
       // word bindings (Alt-B/F/D) work on macOS, as in a real terminal.
       macOptionIsMeta: true,
+      // Announce output through xterm's live region (the helper textarea is
+      // already labeled "Terminal input"). This also removes the keyboard
+      // trap: with screenReaderMode on, xterm stops cancelling Shift+Tab, so
+      // it moves focus natively out of the terminal (documented in
+      // shortcuts.ts) while plain Tab keeps driving completion -- the ESC[Z it
+      // would emit is dead input to readline either way.
+      screenReaderMode: true,
       theme: {
         // Transparent background lets the container's .up-neofetch HUD
         // (color-mix + backdrop-filter:blur) show the wallpaper through.

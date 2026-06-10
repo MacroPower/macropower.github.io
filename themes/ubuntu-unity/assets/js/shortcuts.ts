@@ -2,7 +2,8 @@
 // the desktop actually implements, rendered as native rows of keycap chips
 // (GNOME-shortcuts-window style) through the dialog `render` hook. Purely
 // presentational — every row documents a handler that lives elsewhere
-// (dialogs.ts, drag.ts, page-window.ts, filter-nav.ts, shell/readline.ts);
+// (dialogs.ts, drag.ts, page-window.ts, filter-nav.ts, shell/readline.ts,
+// shell/terminal.ts for the Shift+Tab focus escape screenReaderMode enables);
 // keep the table in sync when bindings change.
 
 interface ShortcutRow {
@@ -51,6 +52,7 @@ const SECTIONS: ShortcutSection[] = [
       { combos: [["Ctrl", "R"]], desc: "Search history" },
       { combos: [["Ctrl", "L"]], desc: "Clear the screen" },
       { combos: [["Tab"]], desc: "Complete commands and paths" },
+      { combos: [["Shift", "Tab"]], desc: "Leave the terminal" },
       { combos: [["Up"], ["Down"]], desc: "Step through history" },
     ],
   },
