@@ -17,7 +17,7 @@
     "scripts": {
       "build":     ["hugo --minify"],
       "serve":     ["hugo server -D --disableFastRender"],
-      "typecheck": ["npx tsc --noEmit"]
+      "typecheck": ["npx tsc --noEmit", "npx tsc -p tsconfig.test.json --noEmit"]
     }
   }
 }
