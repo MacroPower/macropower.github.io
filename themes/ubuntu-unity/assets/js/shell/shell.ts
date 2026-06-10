@@ -84,6 +84,10 @@ export interface CommandContext {
   env: Env;
   /** Exit status of the previous command. */
   status(): number;
+  /** Ask the shell to end the session after the current line. The host's
+   *  ShellOptions.onExit (if any) runs instead of the next prompt; without a
+   *  handler the request is a no-op and the read loop continues. */
+  requestExit(): void;
   term: TerminalIO;
   data: ShellData;
   vfs: Vfs;
@@ -126,6 +130,11 @@ export interface ShellOptions {
   /** Sink for diagnostics; defaults to the terminal. Tests pass a capturing
    *  sink to read stderr separately from stdout. */
   stderr?: Sink;
+  /** Called instead of the next prompt when a command requests exit (the
+   *  `exit` builtin). The host owns what "exit" means -- production disposes
+   *  the terminal and shows the reconnect overlay; headless shells that pass
+   *  no handler keep prompting, so exit degrades to a no-op there. */
+  onExit?: () => void;
 }
 
 // Buffers a pipeline stage's output, exposing it as plain (ANSI-stripped) lines
@@ -307,6 +316,10 @@ export class Shell {
   private readonly aliases = new Map<string, string>();
   private cwdPath: string;
   private status = 0;
+  // Set by CommandContext.requestExit (the `exit` builtin); consumed after the
+  // line finishes so exit ends the line's whole `&&`/`;` chain first.
+  private exitRequested = false;
+  private readonly onExit?: () => void;
 
   private readonly termSink: Sink;
   private readonly errSink: Sink;
@@ -316,6 +329,7 @@ export class Shell {
     readonly data: ShellData,
     opts: ShellOptions = {},
   ) {
+    this.onExit = opts.onExit;
     this.vfs = buildFs(data);
     this.cwdPath = this.vfs.homePath;
     this.env = new Env({ status: () => this.status });
@@ -420,12 +434,20 @@ export class Shell {
 
   private onLine(line: string): void {
     this.exec(line);
+    // An exit request ends the read loop: hand the session to the host's
+    // onExit instead of prompting again. Without a handler the shell has
+    // nowhere to go, so it keeps prompting (headless/test shells).
+    if (this.exitRequested) {
+      this.exitRequested = false;
+      if (this.onExit) { this.onExit(); return; }
+    }
     this.prompt();
   }
 
   private onEof(): void {
-    // Ctrl-D on an empty line. A web terminal cannot truly log out, so mirror
-    // bash's ignoreeof guidance instead of dropping the user into a dead shell.
+    // Ctrl-D on an empty line. Mirror bash's ignoreeof guidance rather than
+    // ending the session on a stray keystroke; `exit` really does end it (the
+    // host's onExit takes over), so the hint points at the real exit path.
     this.term.writeln('Use "exit" to leave the shell.');
     this.prompt();
   }
@@ -479,10 +501,13 @@ export class Shell {
   private runSub(prog: ParseResult): string {
     const savedCwd = this.cwdPath;
     const savedEnv = this.env.snapshot();
+    const savedExit = this.exitRequested;
     const cap = new CaptureSink();
     this.execParsed(prog, cap);
     this.cwdPath = savedCwd;
     this.env.restore(savedEnv);
+    // `$(exit)` exits only the subshell, as in bash.
+    this.exitRequested = savedExit;
     return stripAnsi(cap.raw()).replace(/\n+$/, "");
   }
 
@@ -661,6 +686,7 @@ export class Shell {
       aliases: this.aliases,
       env: this.env,
       status: () => this.status,
+      requestExit: () => { this.exitRequested = true; },
       term: this.term,
       data: this.data,
       vfs: this.vfs,

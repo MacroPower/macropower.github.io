@@ -56,15 +56,55 @@ function saveHistory(items: readonly string[]): void {
   // ragged banner columns, not garbled glyphs).
   const FONT_TIMEOUT_MS = 1500;
 
-  let started = false;
-  const start = (): void => {
-    if (started) return;
-    started = true;
+  // Swap the disposed terminal for the reconnect overlay (.up-shell-reconnect
+  // styles live in main.scss): the closed-connection text `exit` printed plus
+  // a "[ Reconnect ]" line. Click or Enter/Space rebuilds the shell fresh.
+  const showReconnect = (): void => {
+    const overlay = document.createElement("div");
+    overlay.className = "up-shell-reconnect";
+    overlay.tabIndex = 0;
+    overlay.setAttribute("role", "button");
 
+    const logout = document.createElement("div");
+    logout.textContent = "logout";
+    const closed = document.createElement("div");
+    closed.textContent = `Connection to ${data.host} closed.`;
+    const btn = document.createElement("div");
+    btn.className = "up-shell-reconnect-btn";
+    btn.textContent = "[ Reconnect ]";
+    overlay.append(logout, closed, btn);
+
+    const reconnect = (): void => {
+      overlay.remove();
+      boot().focus();
+    };
+    overlay.addEventListener("click", reconnect);
+    overlay.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        reconnect();
+      }
+    });
+
+    mount.appendChild(overlay);
+    overlay.focus();
+  };
+
+  // Build the terminal + shell pair. Runs once at startup and again after
+  // each reconnect; `exit` tears the pair down via the shell's onExit hook.
+  const boot = (): XtermTerminal => {
     const term = new XtermTerminal(mount);
     const shell = new Shell(term, data, {
       history: loadHistory(),
       persist: saveHistory,
+      onExit: () => {
+        term.dispose();
+        // dispose() removes xterm's element; replaceChildren is the backstop
+        // that guarantees an empty mount for the overlay (and the next boot).
+        mount.replaceChildren();
+        root.removeAttribute("data-shell-ready");
+        showReconnect();
+      },
     });
     registerAll(shell);
 
@@ -74,6 +114,14 @@ function saveHistory(items: readonly string[]): void {
     term.writeln("");
     shell.start();
     root.setAttribute("data-shell-ready", "");
+    return term;
+  };
+
+  let started = false;
+  const start = (): void => {
+    if (started) return;
+    started = true;
+    boot();
   };
 
   if (document.fonts?.load) {

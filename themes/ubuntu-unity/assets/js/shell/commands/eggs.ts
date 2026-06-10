@@ -18,6 +18,9 @@ export const exit: Command = {
   run(ctx) {
     ctx.writeln("logout");
     ctx.writeln(`Connection to ${ctx.data.host} closed.`);
+    // End the read loop: in production the host disposes the terminal and
+    // shows the reconnect overlay (index.ts); headless shells keep prompting.
+    ctx.requestExit();
     return 0;
   },
 };
