@@ -3,6 +3,7 @@
   {{- $singular := .Data.Singular -}}
   {{- $terms := .Data.Terms.Alphabetical -}}
   <article class="up-blog selectable" data-blog-kind="taxonomy">
+    <h1 class="up-sr-only">{{ humanize $plural }}</h1>
     {{ partial "page/nav-pathbar.html" (dict "segments" (slice
         (dict "label" "Home" "url" "/")
         (dict "label" "Posts" "url" "/posts/")

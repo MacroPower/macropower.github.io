@@ -10,4 +10,4 @@
       {{ partial "ui/window-controls.html" (dict "max" true) }}
       <span class="up-titlebar-text">{{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}</span>
     </div>
-    <div class="up-window-body selectable">
+    <div class="up-window-body selectable" role="main">

@@ -193,6 +193,18 @@ button{font-family:inherit}
 /* let normal text be selectable inside windows */
 .selectable, .selectable *{user-select:text;-webkit-user-select:text}
 
+/* Screen-reader-only content: visually removed, still in the accessibility
+   tree. Used for the page headings the desktop chrome has no visual slot
+   for, and the home terminal's HTML banner fallback. */
+.up-sr-only{
+  position:absolute !important;
+  width:1px; height:1px;
+  padding:0; margin:-1px; border:0;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+
 /* =========================================================================
    chrome: wallpaper, top panel, launcher, window chrome
    ========================================================================= */
