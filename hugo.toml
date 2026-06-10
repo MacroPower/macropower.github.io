@@ -48,6 +48,10 @@ disable404     = false
 
   description = "Jacob Colvin is a Site Reliability Engineer writing about Kubernetes, observability, and open source infrastructure."
 
+  # Default share image for Open Graph / Twitter cards (a screenshot of
+  # the desktop home page); pages can override via front-matter images.
+  images = ["/img/og-card.png"]
+
   # Home subtitle of the index page.
   homeSubtitle = "Site Reliability Engineer"
 

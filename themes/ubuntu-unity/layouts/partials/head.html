@@ -16,12 +16,11 @@
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
 <link rel="canonical" href="{{ .Permalink }}">
-<meta property="og:title" content="{{ $title }}">
-<meta property="og:type" content="{{ cond .IsPage "article" "website" }}">
-<meta property="og:url" content="{{ .Permalink }}">
-{{- with $description }}
-<meta property="og:description" content="{{ . | plainify | truncate 200 }}">
-{{- end }}
+{{ partial "opengraph.html" . }}
+{{ partial "twitter_cards.html" . }}
+{{- range .Site.Params.social }}{{ if eq .name "twitter" }}
+<meta name="twitter:site" content="@{{ path.Base .url }}">
+{{- end }}{{ end }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap">
