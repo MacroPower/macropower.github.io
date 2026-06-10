@@ -28,7 +28,6 @@ disable404     = false
   posts = "/posts/:year/:month/:title/"
 
 [taxonomies]
-  tag      = "tags"
   category = "categories"
   series   = "series"
 
