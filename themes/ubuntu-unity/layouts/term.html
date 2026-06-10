@@ -1,7 +1,6 @@
 {{ define "main" }}
   {{- $plural := .Data.Plural -}}
   <article class="up-blog selectable" data-blog-kind="term">
-    <h1 class="up-sr-only">{{ .Title }}</h1>
     {{ partial "page/nav-pathbar.html" (dict "segments" (slice
         (dict "label" "Home" "url" "/")
         (dict "label" "Posts" "url" "/posts/")
