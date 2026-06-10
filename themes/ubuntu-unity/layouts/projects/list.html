@@ -34,5 +34,14 @@
           "hint" "No item selected"
           "tagline" "jacob@unity:~/projects$ ls | head") }}
     </div>
+    <noscript>
+      {{- /* The grid tiles are JS-gestured <button>s; without JS the page
+            would contain zero links to any project. */}}
+      <ul class="up-projects-noscript">
+        {{- range site.Data.projects }}
+        <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
+        {{- end }}
+      </ul>
+    </noscript>
   </article>
 {{ end }}

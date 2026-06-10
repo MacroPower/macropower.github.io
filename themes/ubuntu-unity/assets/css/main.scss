@@ -1441,6 +1441,16 @@ a.up-sponsor-card[href]:hover{
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
 
+/* No-JS projects fallback: the only project links in the document when the
+   gesture engine cannot run. */
+.up-projects-noscript{
+  margin:0;padding:14px 22px;list-style:none;
+  background:var(--content-bg);
+  li{padding:5px 0;border-bottom:1px dashed var(--content-line)}
+  a{color:#2B4E8E;text-decoration:none}
+  a:hover{color:var(--orange-light);text-decoration:underline}
+}
+
 /* ---------- 404 ---------- */
 /* The not-found page is one full-window empty-folder pane (GitHub Pages
    serves it for every bad URL). */
