@@ -10,11 +10,12 @@
                    (label / action / shortcut / disabled / check).
 
   data-panel-trigger + the matching data-dropdown-for sibling are the contract
-  top-panel.ts toggles; keep them in sync.
+  top-panel.ts toggles; keep them in sync. The trigger is a real <button> so
+  Enter/Space activate natively; aria-expanded is synced by top-panel.ts.
 */ -}}
 {{- $menu := .menu -}}
 <div class="up-panel-item">
-  <span class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="{{ $menu }}" tabindex="0" role="button">{{ .label }}</span>
+  <button type="button" class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="{{ $menu }}" aria-haspopup="true" aria-expanded="false">{{ .label }}</button>
   <div class="up-dropdown" data-dropdown-for="{{ $menu }}" data-align="left" hidden>
     <div class="up-dropdown-body">
       {{- range .items }}

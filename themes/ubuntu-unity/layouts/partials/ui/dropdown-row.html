@@ -10,7 +10,14 @@
 
   data-action is emitted through safeHTMLAttr so scheme-like keys (dlg:* )
   survive Go's html/template attribute sanitizer.
+
+  Rows carrying an action render as real <button>s so Enter/Space activate
+  natively; rows without one stay static, non-focusable <div>s.
 */ -}}
 {{- $cls := "up-dropdown-row" -}}
 {{- if .danger }}{{ $cls = printf "%s is-danger" $cls }}{{ end -}}
-<div class="{{ $cls }}"{{ with .action }} {{ printf `data-action="%s"` (htmlEscape .) | safeHTMLAttr }}{{ end }}>{{ .label }}</div>
+{{- if .action -}}
+<button type="button" class="{{ $cls }}" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}>{{ .label }}</button>
+{{- else -}}
+<div class="{{ $cls }}">{{ .label }}</div>
+{{- end -}}

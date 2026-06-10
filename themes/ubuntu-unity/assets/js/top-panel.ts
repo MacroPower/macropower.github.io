@@ -512,10 +512,15 @@ export function initTopPanel(): void {
 
   const closeOpen = (): void => {
     if (!openTrigger || !openDropdown) return;
+    // If focus is about to be hidden along with the dropdown, hand it back to
+    // the trigger so keyboard users aren't dumped at the top of the document.
+    const refocus = openDropdown.contains(document.activeElement) ? openTrigger : null;
     openDropdown.hidden = true;
     openTrigger.classList.remove("is-open");
+    openTrigger.setAttribute("aria-expanded", "false");
     openTrigger = null;
     openDropdown = null;
+    refocus?.focus();
   };
 
   const openTriggerEl = (trig: HTMLElement): void => {
@@ -525,6 +530,7 @@ export function initTopPanel(): void {
     closeOpen();
     drop.hidden = false;
     trig.classList.add("is-open");
+    trig.setAttribute("aria-expanded", "true");
     openTrigger = trig;
     openDropdown = drop;
     if (trig.dataset.indicator === "clock") {
@@ -534,12 +540,65 @@ export function initTopPanel(): void {
     }
   };
 
+  // Every natively-focusable control inside a dropdown, in DOM order: the
+  // action rows are <button>s, plus the inbox Compose link and the volume
+  // dropdown's slider — all of them participate in the arrow-key roving.
+  const dropdownItems = (drop: HTMLElement): HTMLElement[] =>
+    Array.from(drop.querySelectorAll<HTMLElement>(
+      "button:not([disabled]), a[href], input:not([disabled])",
+    ));
+
+  const moveDropdownFocus = (drop: HTMLElement, dir: 1 | -1): void => {
+    const items = dropdownItems(drop);
+    if (!items.length) return;
+    const idx = items.indexOf(document.activeElement as HTMLElement);
+    const next = idx === -1
+      ? (dir === 1 ? items[0] : items[items.length - 1])
+      : items[(idx + dir + items.length) % items.length];
+    next?.focus();
+  };
+
   for (const t of triggers) {
     t.addEventListener("click", (e) => {
       e.stopPropagation();
+      const wasOpen = openTrigger === t;
       openTriggerEl(t);
+      // A keyboard "click" (Enter/Space on the button) reports detail 0;
+      // opening that way moves focus straight to the first dropdown item.
+      if (!wasOpen && e.detail === 0 && openDropdown) moveDropdownFocus(openDropdown, 1);
     });
   }
+
+  panel.addEventListener("keydown", (e) => {
+    const target = e.target instanceof HTMLElement ? e.target : null;
+    if (!target) return;
+    if (e.key === "ArrowDown" && dropdownByTrigger.has(target)) {
+      e.preventDefault();
+      if (openTrigger !== target) openTriggerEl(target);
+      if (openDropdown) moveDropdownFocus(openDropdown, 1);
+      return;
+    }
+    if ((e.key === "ArrowDown" || e.key === "ArrowUp") && openDropdown?.contains(target)) {
+      e.preventDefault();
+      moveDropdownFocus(openDropdown, e.key === "ArrowDown" ? 1 : -1);
+      return;
+    }
+    // Left/Right walk the adjacent top-level triggers while a menu is open,
+    // GTK-style — except on the volume slider, where they adjust the value.
+    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && openTrigger
+        && !(target instanceof HTMLInputElement)) {
+      const visible = triggers.filter((t) => t.offsetParent !== null);
+      const idx = visible.indexOf(openTrigger);
+      if (idx === -1) return;
+      e.preventDefault();
+      const dir = e.key === "ArrowRight" ? 1 : -1;
+      const next = visible[(idx + dir + visible.length) % visible.length];
+      if (next && next !== openTrigger) {
+        openTriggerEl(next);
+        next.focus();
+      }
+    }
+  });
 
   document.addEventListener("click", (e) => {
     if (!openTrigger) return;
@@ -551,7 +610,10 @@ export function initTopPanel(): void {
   });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && openTrigger) closeOpen();
+    if (e.key !== "Escape" || !openTrigger) return;
+    const trig = openTrigger;
+    closeOpen();
+    trig.focus();
   });
 
   const vol = { level: 62, muted: false };

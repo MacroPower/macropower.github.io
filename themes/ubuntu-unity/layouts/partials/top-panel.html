@@ -52,9 +52,9 @@
   <div class="up-panel-spacer"></div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-inbox" }}
-    </span>
+    </button>
     <div class="up-dropdown" data-dropdown-for="inbox" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Messages</div>
       <div class="up-dropdown-body">
@@ -68,9 +68,9 @@
   </div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-net" }}
-    </span>
+    </button>
     <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Network</div>
       <div class="up-dropdown-body">
@@ -86,10 +86,10 @@
   </div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-volume-on" }}
       {{ partial "icon.html" "glyphs/panel-volume-mute" }}
-    </span>
+    </button>
     <div class="up-dropdown" data-dropdown-for="vol" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Sound</div>
       <div class="up-dropdown-body">
@@ -120,10 +120,10 @@
   </div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-battery" }}
       {{ partial "icon.html" "glyphs/panel-battery-charging" }}
-    </span>
+    </button>
     <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">Battery</div>
       <div class="up-dropdown-body">
@@ -137,10 +137,10 @@
   </div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Clock">
+    <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Clock" aria-haspopup="true" aria-expanded="false">
       <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
       <span data-clock-narrow hidden>{{ $time }}</span>
-    </span>
+    </button>
     <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
       <div class="up-dropdown-body">
@@ -152,9 +152,9 @@
   </div>
 
   <div class="up-panel-item">
-    <span class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-user" }}
-    </span>
+    </button>
     <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ $handle }}</div>
       <div class="up-dropdown-body">

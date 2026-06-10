@@ -10,13 +10,15 @@
 
   data-net-name / data-net-on are read by top-panel.ts; the is-* modifiers
   are styled by the .up-net-row rules. Modifier order matches the original
-  markup so the rendered output is unchanged.
+  markup so the rendered output is unchanged. Every row is clickable (the
+  panel click handler routes .up-net-row to netClick), so each renders as a
+  real <button> for native Enter/Space activation.
 */ -}}
 {{- $cls := "up-dropdown-row up-net-row" -}}
 {{- if .strong }}{{ $cls = printf "%s is-strong" $cls }}{{ end -}}
 {{- if .mono }}{{ $cls = printf "%s is-mono" $cls }}{{ end -}}
 {{- if .muted }}{{ $cls = printf "%s is-muted" $cls }}{{ end -}}
 {{- if .on }}{{ $cls = printf "%s is-on" $cls }}{{ end -}}
-<div class="{{ $cls }}" data-net-name="{{ .name }}"{{ if .on }} data-net-on{{ end }}>
+<button type="button" class="{{ $cls }}" data-net-name="{{ .name }}"{{ if .on }} data-net-on{{ end }}>
   <span class="up-net-row-dot">{{ if .on }}●{{ else }}○{{ end }}</span><span class="up-net-row-name">{{ .name }}</span>
-</div>
+</button>

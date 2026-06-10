@@ -13,6 +13,10 @@
   html/template otherwise rewrites scheme-like values (nav:* / dlg:*) to the
   #ZgotmplZ sentinel, which would break top-panel.ts dispatch.
 
+  Rows carrying an action render as real <button>s so Enter/Space activate
+  natively; static rows (disabled placeholders, checked toggles with no
+  action) stay non-focusable <div>s.
+
   This partial covers .up-menu-item only; the .up-dropdown-row indicator rows
   (network / battery / clock / user) keep their own bespoke markup.
 */ -}}
@@ -20,4 +24,8 @@
 {{- if .disabled }}{{ $cls = printf "%s is-disabled" $cls }}{{ end -}}
 {{- if .check }}{{ $cls = printf "%s has-check" $cls }}{{ end -}}
 {{- if .shortcut }}{{ $cls = printf "%s has-shortcut" $cls }}{{ end -}}
-<div class="{{ $cls }}"{{ with .action }} {{ printf `data-action="%s"` (htmlEscape .) | safeHTMLAttr }}{{ end }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+{{- if .action -}}
+<button type="button" class="{{ $cls }}" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
+{{- else -}}
+<div class="{{ $cls }}"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+{{- end -}}
