@@ -39,6 +39,7 @@ const SECTIONS: ShortcutSection[] = [
       { combos: [["/"], ["Ctrl", "F"]], desc: "Search" },
       { combos: [["Arrows"], ["H", "J", "K", "L"]], desc: "Move selection", loose: true },
       { combos: [["Enter"]], desc: "Open the selected item" },
+      { combos: [["Shift", "F10"]], desc: "Open the context menu for the selection" },
     ],
   },
   {
