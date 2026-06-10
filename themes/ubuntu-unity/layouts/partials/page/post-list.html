@@ -3,13 +3,15 @@
 {{- $dateFmt := site.Params.dateformNum | default "2006-01-02" -}}
 
 <section class="up-post-list" aria-label="Posts" data-up-post-list>
-  <header class="up-post-list-header" role="row">
-    <button type="button" class="up-post-list-col" data-up-sort="name" role="columnheader" aria-sort="none">
+  <header class="up-post-list-header">
+    <button type="button" class="up-post-list-col" data-up-sort="name" aria-pressed="false">
       <span>Name</span>
+      <span class="up-sr-only" data-up-sort-sr></span>
       <span class="up-post-list-caret" aria-hidden="true"></span>
     </button>
-    <button type="button" class="up-post-list-col is-sorted is-desc" data-up-sort="date" role="columnheader" aria-sort="descending">
+    <button type="button" class="up-post-list-col is-sorted is-desc" data-up-sort="date" aria-pressed="true">
       <span>Date</span>
+      <span class="up-sr-only" data-up-sort-sr>sorted descending</span>
       <span class="up-post-list-caret" aria-hidden="true">▾</span>
     </button>
   </header>

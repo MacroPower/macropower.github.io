@@ -63,13 +63,16 @@ interface SortState {
     sortBtns.forEach((btn) => {
       const k = btn.getAttribute("data-up-sort");
       const caret = btn.querySelector<HTMLElement>(".up-post-list-caret");
+      const sr = btn.querySelector<HTMLElement>("[data-up-sort-sr]");
       btn.classList.remove("is-sorted", "is-asc", "is-desc");
       if (k === key) {
         btn.classList.add("is-sorted", sortState.dir === "desc" ? "is-desc" : "is-asc");
-        btn.setAttribute("aria-sort", sortState.dir === "desc" ? "descending" : "ascending");
+        btn.setAttribute("aria-pressed", "true");
+        if (sr) sr.textContent = sortState.dir === "desc" ? "sorted descending" : "sorted ascending";
         if (caret) caret.textContent = sortState.dir === "desc" ? "▾" : "▴";
       } else {
-        btn.setAttribute("aria-sort", "none");
+        btn.setAttribute("aria-pressed", "false");
+        if (sr) sr.textContent = "";
         if (caret) caret.textContent = "";
       }
     });
