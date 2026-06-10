@@ -70,6 +70,26 @@ const SETTLE_MS = 160;
 const REMOVE_MS = 300; // matches the upTileOut keyframe
 const DEFAULT_TILE_SEL = "[data-up-project-tile]";
 
+// FLIP glides run on the Web Animations API, not CSS transitions: the
+// reduce-motion blanket (`body.up-reduce-motion *` and the
+// prefers-reduced-motion media rule, both `transition:none !important`)
+// beats inline transition styles and would reduce every drag-reorder to a
+// teleport. These glides are user-initiated, position-communicating motion,
+// so they stay; the engine's reduceMotion() hook remains the policy point
+// for the animations it does skip (tile removal).
+function glide(el: HTMLElement, dx: number, dy: number, ms: number): void {
+  el.animate(
+    [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+    { duration: ms, easing: "ease" },
+  );
+}
+
+// A glide in flight reports animated positions to getBoundingClientRect;
+// cancel before measuring an element's settled cell.
+function stopGlide(el: HTMLElement): void {
+  for (const a of el.getAnimations()) a.cancel();
+}
+
 export function installDesktop(deps: DesktopDeps): DesktopController {
   const { grid } = deps;
   const TILE_SEL = deps.tileSelector ?? DEFAULT_TILE_SEL;
@@ -375,10 +395,10 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
 
     commitOrder(blockInsertOrder(ref));
 
-    // Settle movers and the block to their new cells (transition off) and measure
+    // Settle movers and the block to their new cells (glides cancelled) and measure
     // clean: movers feed the FLIP and the insertion-rect cache; block members feed
     // their refreshed layout slot so the rigid follow stays anchored.
-    for (const t of movers) { t.style.transition = "none"; t.style.transform = "none"; }
+    for (const t of movers) { stopGlide(t); t.style.transition = "none"; t.style.transform = "none"; }
     for (const el of block) { el.style.transition = "none"; el.style.transform = "none"; }
     void grid.offsetWidth;
     dragRects.clear();
@@ -394,20 +414,14 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     }
     applyFollow();
 
-    // FLIP: jump each mover back to where it was, then release to its cell.
+    // FLIP: glide each mover from where it was into its new cell.
     for (const t of movers) {
       const f = first.get(t)!;
       const l = last.get(t)!;
       const dx = f.left - l.left;
       const dy = f.top - l.top;
-      if (dx || dy) t.style.transform = `translate(${dx}px, ${dy}px)`;
+      if (dx || dy) glide(t, dx, dy, REFLOW_MS);
     }
-    requestAnimationFrame(() => {
-      for (const t of movers) {
-        t.style.transition = `transform ${REFLOW_MS}ms ease`;
-        t.style.transform = "none";
-      }
-    });
 
     currentRef = ref;
   }
@@ -415,17 +429,14 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   // FLIP a lifted tile from under the cursor down into its resting cell.
   function settle(el: HTMLElement): void {
     const f = el.getBoundingClientRect();
+    stopGlide(el);
     el.style.transition = "none";
     el.style.transform = "none";
     const l = el.getBoundingClientRect();
     const dx = f.left - l.left;
     const dy = f.top - l.top;
     if (!dx && !dy) return;
-    el.style.transform = `translate(${dx}px, ${dy}px)`;
-    requestAnimationFrame(() => {
-      el.style.transition = `transform ${SETTLE_MS}ms ease`;
-      el.style.transform = "none";
-    });
+    glide(el, dx, dy, SETTLE_MS);
   }
 
   function clearDragArtifacts(): void {
@@ -465,21 +476,15 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     const movers = deps.tiles.filter((t) => !t.hidden);
     const first = new Map(movers.map((t) => [t, t.getBoundingClientRect()] as const));
     commitOrder(order);
-    for (const t of movers) { t.style.transition = "none"; t.style.transform = "none"; }
+    for (const t of movers) { stopGlide(t); t.style.transition = "none"; t.style.transform = "none"; }
     void grid.offsetWidth;
     for (const t of movers) {
       const f = first.get(t)!;
       const l = t.getBoundingClientRect();
       const dx = f.left - l.left;
       const dy = f.top - l.top;
-      if (dx || dy) t.style.transform = `translate(${dx}px, ${dy}px)`;
+      if (dx || dy) glide(t, dx, dy, REFLOW_MS);
     }
-    requestAnimationFrame(() => {
-      for (const t of movers) {
-        t.style.transition = `transform ${REFLOW_MS}ms ease`;
-        t.style.transform = "none";
-      }
-    });
     window.setTimeout(() => {
       for (const t of movers) { t.style.transition = ""; t.style.transform = ""; }
     }, REFLOW_MS + 60);
@@ -520,21 +525,15 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     window.setTimeout(() => {
       removing = false;
       detach();
-      for (const t of movers) { t.style.transition = "none"; t.style.transform = "none"; }
+      for (const t of movers) { stopGlide(t); t.style.transition = "none"; t.style.transform = "none"; }
       void grid.offsetWidth;
       for (const t of movers) {
         const f = first.get(t)!;
         const l = t.getBoundingClientRect();
         const dx = f.left - l.left;
         const dy = f.top - l.top;
-        if (dx || dy) t.style.transform = `translate(${dx}px, ${dy}px)`;
+        if (dx || dy) glide(t, dx, dy, REFLOW_MS);
       }
-      requestAnimationFrame(() => {
-        for (const t of movers) {
-          t.style.transition = `transform ${REFLOW_MS}ms ease`;
-          t.style.transform = "none";
-        }
-      });
       opts?.onDone?.();
       window.setTimeout(() => {
         for (const t of movers) { t.style.transition = ""; t.style.transform = ""; }
