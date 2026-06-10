@@ -76,6 +76,9 @@ function saveHistory(items: readonly string[]): void {
 
     const reconnect = (): void => {
       overlay.remove();
+      // Release the height frozen at exit; the fresh boot re-derives the
+      // window's natural size from xterm's rendered rows, like first load.
+      mount.style.minHeight = "";
       boot().focus();
     };
     overlay.addEventListener("click", reconnect);
@@ -98,6 +101,11 @@ function saveHistory(items: readonly string[]): void {
       history: loadHistory(),
       persist: saveHistory,
       onExit: () => {
+        // The window's height is content-driven by xterm's rendered rows.
+        // Freeze it before the teardown so swapping in the three-line
+        // reconnect overlay (height:100%) keeps the window at its size
+        // instead of shrink-wrapping it to a small box mid-desktop.
+        mount.style.minHeight = `${mount.offsetHeight}px`;
         term.dispose();
         // dispose() removes xterm's element; replaceChildren is the backstop
         // that guarantees an empty mount for the overlay (and the next boot).
