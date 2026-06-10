@@ -1,5 +1,5 @@
 +++
-categories  = ["Kubernetes", "K8s"]
+categories  = ["Kubernetes"]
 date        = "2025-07-13"
 type        = ["posts", "post"]
 series      = ["kat"]

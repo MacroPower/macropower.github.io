@@ -1,5 +1,5 @@
 +++
-categories  = ["Homelab", "Kubernetes", "K8s", "Hardware"]
+categories  = ["Homelab", "Kubernetes", "Hardware"]
 date        = "2023-04-02"
 type        = ["posts", "post"]
 series      = ["My Homelab"]
