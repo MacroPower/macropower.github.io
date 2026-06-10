@@ -93,6 +93,23 @@
   </div>
   <div class="up-shell-term" data-shell-mount></div>
   <noscript>
+    {{- /* Without JS the terminal never mounts; un-hide the banner block so
+          the page still shows the owner's name, links, and posts instead of
+          a lone error line. */}}
+    <style>
+      [data-shell] .up-sr-only{
+        position:static !important; width:auto; height:auto;
+        margin:0; padding:6px 2px; border:0;
+        overflow:visible; clip-path:none; white-space:normal;
+      }
+      [data-shell] .up-sr-only a{color:var(--aod-blue); text-decoration:none}
+      [data-shell] .up-sr-only a:hover{color:var(--aod-cyan); text-decoration:underline}
+      [data-shell] .up-sr-only h1{margin:0 0 2px; font-size:1.5em}
+      [data-shell] .up-sr-only h2{margin:14px 0 4px; font-size:1.1em}
+      [data-shell] .up-sr-only p, [data-shell] .up-sr-only ul{margin:2px 0}
+      [data-shell] .up-sr-only ul{padding-left:1.2em}
+      [data-shell]{overflow:auto}
+    </style>
     <div class="up-shell-noscript">{{ $user }}@{{ $host }}: this terminal requires JavaScript.</div>
   </noscript>
 </section>
