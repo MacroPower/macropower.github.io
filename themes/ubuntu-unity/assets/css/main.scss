@@ -1398,7 +1398,10 @@ a.up-sponsor-card[href]:hover{
 }
 .up-ctx-item{
   padding:5px 16px;cursor:default;color:rgba(255,255,255,.86);white-space:nowrap;
+  outline:none;
   &:hover{@include up-overlay-row-hover}
+  /* keyboard-opened menus move real focus between items */
+  &:focus-visible{@include up-overlay-row-hover}
 }
 
 .up-project-folder{

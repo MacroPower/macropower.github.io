@@ -62,7 +62,13 @@ export function createSelection(deps: SelectionDeps): Selection {
   function render(): void {
     const multi = selection.size > 1;
     for (const t of deps.tiles) {
-      t.classList.toggle("is-active", selection.has(t));
+      const active = selection.has(t);
+      t.classList.toggle("is-active", active);
+      // Mirror selection for AT: the is-active class is invisible to screen
+      // readers. Both consumers' tiles are <button>s; the guard keeps the
+      // attribute (a button semantic) off any non-button item a future
+      // consumer routes through here.
+      if (t.tagName === "BUTTON") t.setAttribute("aria-pressed", active ? "true" : "false");
       // The anchor ring only distinguishes the primary tile among several
       // selected tiles; a lone selection keeps the plain active look.
       t.classList.toggle("is-anchor", multi && t === anchor);
@@ -131,6 +137,14 @@ export function createSelection(deps: SelectionDeps): Selection {
     for (const t of [...selection]) if (!selectable(t)) selection.delete(t);
     if (anchor && !selectable(anchor)) anchor = lastOf(selection);
     render();
+  }
+
+  // Seed the AT-visible state so unselected tiles read as unpressed toggle
+  // buttons before the first render() (which only runs on selection changes).
+  // A full render() here would call onRender before the consumer's instance
+  // binding exists, so only the attribute is painted.
+  for (const t of deps.tiles) {
+    if (t.tagName === "BUTTON") t.setAttribute("aria-pressed", "false");
   }
 
   return {

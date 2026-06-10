@@ -116,10 +116,11 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     });
   }
 
-  function focusItem(item: HTMLElement | null): void {
+  function focusItem(item: HTMLElement | null, moveFocus = false): void {
     for (const i of items) i.classList.remove("is-focused");
     if (!item) return;
     item.classList.add("is-focused");
+    if (moveFocus) item.focus({ preventScroll: true });
     item.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
@@ -140,10 +141,33 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
 
     const list = items.filter((i) => !i.hidden);
     if (!list.length) return;
-    let idx = list.findIndex((i) => i.classList.contains("is-focused"));
+
+    // Real DOM focus follows the cursor only when focus is already on (or in)
+    // an item — i.e. the user tabbed into the grid/list. When focus sits
+    // elsewhere (body, the sidebar filters, the search toggle), a document-
+    // level arrow press must not yank it away, so only the visual cursor moves.
+    const focusInItems =
+      target instanceof HTMLElement &&
+      items.some((i) => i === target || i.contains(target));
+
+    // The really-focused item wins over the painted cursor, so Tab-ing into
+    // the list rebinds Enter/arrows to where focus actually is; the class
+    // fallbacks keep the cursor model for focus-outside navigation.
+    let idx = focusInItems
+      ? list.findIndex((i) => i === target || i.contains(target as HTMLElement))
+      : -1;
+    if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-focused"));
     if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-active"));
 
     if (e.key === "Enter") {
+      // A focused control outside the items owns its own Enter: hijacking it
+      // would activate a tile instead and preventDefault the control's native
+      // click.
+      if (
+        !focusInItems &&
+        target instanceof HTMLElement &&
+        target.closest("a, button, summary, [tabindex]")
+      ) return;
       const focused = list[idx];
       if (focused) { e.preventDefault(); onActivate(focused); }
       return;
@@ -173,7 +197,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
         return;
     }
     e.preventDefault();
-    focusItem(list[nextIdx] ?? null);
+    focusItem(list[nextIdx] ?? null, focusInItems);
   });
 
   applyFilters();

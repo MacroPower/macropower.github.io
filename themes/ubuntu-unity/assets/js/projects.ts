@@ -259,12 +259,19 @@ import { installDesktop } from "./projects-desktop";
   });
 
   for (const btn of filterBtns) {
+    // Mirror the SSR is-active state (the All filter) for AT, then keep
+    // aria-pressed in lockstep with the class on every filter change.
+    btn.setAttribute("aria-pressed", btn.classList.contains("is-active") ? "true" : "false");
     btn.addEventListener("click", () => {
       const key = btn.getAttribute("data-projects-filter");
       if (!key) return;
       currentFilter = key;
-      for (const other of filterBtns) other.classList.remove("is-active");
+      for (const other of filterBtns) {
+        other.classList.remove("is-active");
+        other.setAttribute("aria-pressed", "false");
+      }
       btn.classList.add("is-active");
+      btn.setAttribute("aria-pressed", "true");
       controller.applyFilters();
     });
   }

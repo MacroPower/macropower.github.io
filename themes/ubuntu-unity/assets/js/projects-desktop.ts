@@ -532,6 +532,9 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   // Tiles are <button>s, so a click follows pointerup. Swallow it after a drag;
   // otherwise only act on keyboard activation (detail === 0): filter-nav's
   // onActivate -> item.click() and a native Space/Enter on a focused button.
+  // Keyboard activation selects AND opens in one go (Nautilus: Enter opens the
+  // item immediately), which is what the shortcuts dialog documents and what
+  // gives the trash a keyboard path to Restore via its can't-open dialog.
   // Mouse single-clicks (detail >= 1) already selected on pointerup.
   grid.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
@@ -543,7 +546,10 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       e.stopPropagation();
       return;
     }
-    if (e.detail === 0) deps.setSingle(tile);
+    if (e.detail === 0 && !removing) {
+      deps.setSingle(tile);
+      onOpen(tile);
+    }
   });
 
   // ---- marquee -------------------------------------------------------------
@@ -616,18 +622,63 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
 
   // ---- context menu --------------------------------------------------------
   let ctxMenu: HTMLDivElement | null = null;
+  // Focus to restore when the menu closes. Set only on the keyboard-opened
+  // path (the only one that moves focus into the menu), so pointer users never
+  // get a focus ring painted onto the tile after a right-click action.
+  let ctxRestoreFocus: HTMLElement | null = null;
+
+  function ctxItems(): HTMLElement[] {
+    return ctxMenu
+      ? Array.from(ctxMenu.querySelectorAll<HTMLElement>(".up-ctx-item"))
+      : [];
+  }
 
   function ensureCtxMenu(): HTMLDivElement {
     if (!ctxMenu) {
       ctxMenu = document.createElement("div");
       ctxMenu.className = "up-ctx-menu";
+      ctxMenu.setAttribute("role", "menu");
       ctxMenu.hidden = true;
+      // Menu-pattern keys, live only while focus is inside the menu (the
+      // keyboard-opened path): arrows move focus between items with wrap,
+      // Enter/Space activate, Tab closes (the close restores focus to the
+      // originating tile, so Tab continues from there). Escape is handled by
+      // the document-level capture keydown below. stopPropagation keeps the
+      // arrows away from filter-nav's document-level cursor.
+      ctxMenu.addEventListener("keydown", (e) => {
+        const items = ctxItems();
+        if (!items.length) return;
+        const idx = items.indexOf(document.activeElement as HTMLElement);
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          e.stopPropagation();
+          const step = e.key === "ArrowDown" ? 1 : -1;
+          const next = idx === -1
+            ? (e.key === "ArrowDown" ? 0 : items.length - 1)
+            : (idx + step + items.length) % items.length;
+          items[next]!.focus();
+        } else if (e.key === "Home" || e.key === "End") {
+          e.preventDefault();
+          e.stopPropagation();
+          items[e.key === "Home" ? 0 : items.length - 1]!.focus();
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          if (idx >= 0) items[idx]!.click(); // ctxItem's click runs fn + close
+        } else if (e.key === "Tab") {
+          closeCtxMenu();
+        }
+      });
       document.body.appendChild(ctxMenu);
     }
     return ctxMenu;
   }
   function closeCtxMenu(): void {
-    if (ctxMenu) ctxMenu.hidden = true;
+    if (!ctxMenu || ctxMenu.hidden) return;
+    ctxMenu.hidden = true;
+    const restore = ctxRestoreFocus;
+    ctxRestoreFocus = null;
+    if (restore && restore.isConnected) restore.focus();
   }
   function ctxMenuOpen(): boolean {
     return ctxMenu?.hidden === false;
@@ -635,6 +686,11 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   function ctxItem(label: string, fn: () => void): HTMLElement {
     const el = document.createElement("div");
     el.className = "up-ctx-item";
+    // Stays a <div> (a <button> would need a UA-style reset in main.scss) but
+    // exposes menuitem semantics and takes programmatic focus from the menu's
+    // keydown handler above.
+    el.setAttribute("role", "menuitem");
+    el.tabIndex = -1;
     el.textContent = label;
     el.addEventListener("click", () => { fn(); closeCtxMenu(); });
     return el;
@@ -646,6 +702,15 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     const tile = target.closest<HTMLElement>(TILE_SEL);
     const menu = ensureCtxMenu();
     menu.replaceChildren();
+    ctxRestoreFocus = null;
+
+    // Shift+F10 / the Menu key raise contextmenu without a pointer: no
+    // button-2 press, and no pointerType (Chrome fires a PointerEvent with an
+    // empty one; Firefox a MouseEvent without the field). That path anchors
+    // the menu to the focused tile and moves focus into it; pointer-opened
+    // menus are positioned and focused exactly as before.
+    const keyboardOpen =
+      e.button !== 2 && !(e as MouseEvent & { pointerType?: string }).pointerType;
 
     if (tile && grid.contains(tile)) {
       // Right-click outside the selection retargets to the clicked tile;
@@ -665,10 +730,24 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     const rect = menu.getBoundingClientRect();
     let left = e.clientX;
     let top = e.clientY;
+    if (keyboardOpen) {
+      // Keyboard opens carry no useful coordinates (Firefox reports 0,0);
+      // anchor to the tile (or the grid for an empty-space menu) instead.
+      const anchorEl = tile && grid.contains(tile) ? tile : grid;
+      const r = anchorEl.getBoundingClientRect();
+      left = r.left + r.width / 2;
+      top = r.top + r.height / 2;
+    }
     if (left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 4;
     if (top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 4;
     menu.style.left = `${Math.max(4, left)}px`;
     menu.style.top = `${Math.max(4, top)}px`;
+
+    if (keyboardOpen) {
+      ctxRestoreFocus =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      ctxItems()[0]?.focus();
+    }
   });
 
   document.addEventListener("pointerdown", (e) => {
