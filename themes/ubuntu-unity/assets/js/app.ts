@@ -4,6 +4,15 @@ import { initTrash } from "./trash";
 import { initDaw } from "./daw";
 import { installPageWindow } from "./page-window";
 import { initLock } from "./lock";
+import { setReduceMotion } from "./prefs";
+
+// Seed reduce-motion from the OS preference so JS-timed animations
+// (window fly-out, tile removal, lock fade) skip their waits too; the
+// CSS media query already covers pure style animations. The Preferences
+// switch reads the body class, so it reflects the seeded state.
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  setReduceMotion(true);
+}
 
 initDialogs();
 // Before initTopPanel so the lock overlay's window keydown listener is

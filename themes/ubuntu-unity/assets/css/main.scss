@@ -2002,12 +2002,20 @@ a.up-sponsor-card[href]:hover{
   font-size:11px; color:var(--content-muted);
 }
 
-/* Reduce-motion: toggled live from Preferences / Power saver (default off).
-   Kills animations and transitions site-wide so the desktop snaps between
-   states instead of easing. */
+/* Reduce-motion: toggled live from Preferences / Power saver, and seeded
+   from the OS prefers-reduced-motion setting at startup (app.ts). Kills
+   animations and transitions site-wide so the desktop snaps between states
+   instead of easing. The media query mirrors the body class so even a
+   no-JS or pre-init paint honors the OS preference. */
 body.up-reduce-motion *{
   animation:none !important;
   transition:none !important;
+}
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation:none !important;
+    transition:none !important;
+  }
 }
 
 /* ---- lock screen ------------------------------------------------------- */
