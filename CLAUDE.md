@@ -12,7 +12,7 @@ Hugo static site for jacobcolvin.com, deployed to GitHub Pages from `main`. The 
 - `hugo server -D` — local dev server with drafts enabled; live-reloads on changes.
 - `hugo --minify` — production build into `public/` (the same command CI runs).
 - `npm test` / `npm run test:watch` — Vitest suites under `themes/ubuntu-unity/assets/js/**/*.test.ts`: the terminal shell core's unit + bash-conformance tests plus the MIDI parser/tempo-warp suite (`midi.test.ts`). CI runs both the tests and both typecheck passes (after `npm ci`, before the Hugo build); the conformance suite auto-skips when `bash` is absent. `npm run typecheck` covers the production bundle and `npm run typecheck:test` covers the test sources.
-- The only theme is `themes/ubuntu-unity/` — an in-tree fork. There are no git submodules even though the README mentions `git submodule update --remote`; that line is historical.
+- The only theme is `themes/ubuntu-unity/` — an in-tree fork; there are no git submodules.
 
 ## Architecture
 
