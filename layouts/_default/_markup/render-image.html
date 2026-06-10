@@ -1,0 +1,7 @@
+{{- /* Markdown images load lazily and decode off the critical path; the
+       posts hotlink multi-megabyte GIFs that previously downloaded eagerly
+       before the reader ever scrolled to them. */ -}}
+<img src="{{ .Destination | safeURL }}"
+  {{- with .Text }} alt="{{ . }}"{{ end }}
+  {{- with .Title }} title="{{ . }}"{{ end }}
+  loading="lazy" decoding="async">
