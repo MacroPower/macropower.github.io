@@ -771,7 +771,11 @@ body.up-resizing *{ cursor:inherit !important; }
   &:hover{background:rgba(0,0,0,.045)}
   &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-3px}
   &.is-active{
-    background:linear-gradient(180deg, up-accent(95%, "orange-dark") 0%, var(--orange-darker) 100%);
+    /* The brand orange-light/orange gradient, deliberately kept over the
+       AA-darker shades a contrast pass once swapped in: the active rows
+       must match the tile-selection orange, and 13px bold white on it is
+       borderline-large text the text-shadow further separates. */
+    background:linear-gradient(180deg, up-accent(95%, "orange-light") 0%, var(--orange) 100%);
     color:#fff;
     border-left-color:color-mix(in srgb, var(--orange-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
@@ -1211,8 +1215,11 @@ a.up-sponsor-card[href]:hover{
     box-shadow:inset 0 0 0 1px up-accent(35%);
   }
   &.is-active{
-    background:var(--orange-dark);color:#fff;
-    border-left-color:var(--orange-darker);
+    /* Brand orange-light, matching the tile-selection orange (see the
+       .up-naut-item.is-active note); the meta/date keep the raised .95
+       alpha from the contrast pass. */
+    background:var(--orange-light);color:#fff;
+    border-left-color:var(--orange);
     .up-post-meta{color:rgba(255,255,255,.95)}
     .up-post-date{color:rgba(255,255,255,.95)}
   }
