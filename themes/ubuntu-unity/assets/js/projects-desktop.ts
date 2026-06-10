@@ -704,13 +704,15 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     menu.replaceChildren();
     ctxRestoreFocus = null;
 
-    // Shift+F10 / the Menu key raise contextmenu without a pointer: no
-    // button-2 press, and no pointerType (Chrome fires a PointerEvent with an
-    // empty one; Firefox a MouseEvent without the field). That path anchors
-    // the menu to the focused tile and moves focus into it; pointer-opened
-    // menus are positioned and focused exactly as before.
-    const keyboardOpen =
-      e.button !== 2 && !(e as MouseEvent & { pointerType?: string }).pointerType;
+    // Shift+F10 / the Menu key raise contextmenu without a pointer: Chromium
+    // fires a PointerEvent with button -1 (and pointerType "mouse", so the
+    // type field cannot distinguish it); Firefox a MouseEvent with no
+    // pointerType. That path anchors the menu to the focused tile and moves
+    // focus into it; pointer-opened menus (right-click button 2, touch
+    // long-press with pointerType "touch") are positioned and focused
+    // exactly as before.
+    const keyboardOpen = e.button === -1
+      || (e.button !== 2 && !(e as MouseEvent & { pointerType?: string }).pointerType);
 
     if (tile && grid.contains(tile)) {
       // Right-click outside the selection retargets to the clicked tile;
