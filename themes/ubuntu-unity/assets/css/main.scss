@@ -258,6 +258,8 @@ body{
   @include up-truncate;
 }
 .up-panel-menu{
+  /* real <button>; reset the user-agent chrome */
+  appearance:none;
   display:inline-flex; align-items:center;
   height:100%;
   padding:0 8px;
@@ -271,6 +273,8 @@ body{
 }
 .up-panel-spacer{ flex:1 1 auto; }
 .up-indicator{
+  /* real <button>; reset the user-agent chrome */
+  appearance:none;background:transparent;border:0;font:inherit;
   display:inline-flex; align-items:center; justify-content:center;
   height:100%;
   padding:0 6px;
@@ -1437,6 +1441,21 @@ a.up-sponsor-card[href]:hover{
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
 
+/* ---------- 404 ---------- */
+/* The not-found page is one full-window empty-folder pane (GitHub Pages
+   serves it for every bad URL). */
+.up-404{
+  flex:1;min-height:0;display:flex;
+  .up-empty-pane{flex:1}
+  .up-empty-pane-hint{font-size:16px;font-weight:500;margin:0}
+  .up-empty-pane-icon svg{width:72px;height:72px}
+}
+.up-404-links{
+  margin-top:10px;display:flex;gap:18px;
+  a{color:#2B4E8E;text-decoration:none}
+  a:hover{color:var(--orange-light);text-decoration:underline}
+}
+
 /* ---------- Responsive collapse ---------- */
 @media (max-width:980px){
   .up-blog-grid{grid-template-columns:1fr;height:auto}
@@ -1490,6 +1509,10 @@ a.up-sponsor-card[href]:hover{
 }
 .up-dropdown-body{padding:6px 0}
 .up-dropdown-row{
+  /* both <div> (static rows) and <button> (action rows) reach this rule;
+     reset the button user-agent chrome so the two render identically */
+  appearance:none;background:transparent;border:0;font:inherit;
+  display:block;width:100%;text-align:inherit;
   padding:5px 14px;
   cursor:default;
   color:rgba(255,255,255,.86);
@@ -1539,6 +1562,9 @@ a.up-sponsor-card[href]:hover{
 /* ---- menu items (File/Edit/View/Help) ---------------------------------- */
 
 .up-menu-item{
+  /* both <div> (static rows) and <button> (action rows) reach this rule;
+     reset the button user-agent chrome so the two render identically */
+  appearance:none;border:0;font:inherit;width:100%;text-align:inherit;
   display:flex; align-items:center; gap:10px;
   padding:4px 14px 4px 26px;
   position:relative;
@@ -2612,6 +2638,11 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 }
 .up-panel-menu:focus-visible,
 .up-indicator:focus-visible{
+  outline:1px solid rgba(255,255,255,.55);
+  outline-offset:-1px;
+}
+.up-menu-item:focus-visible,
+.up-dropdown-row:focus-visible{
   outline:1px solid rgba(255,255,255,.55);
   outline-offset:-1px;
 }
