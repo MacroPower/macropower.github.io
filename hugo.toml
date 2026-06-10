@@ -164,7 +164,7 @@ disable404     = false
   [[params.social]]
     name  = "hackthebox"
     short = "htb"
-    url   = "https://app.hackthebox.eu/users/427511"
+    url   = "https://app.hackthebox.com/users/427511"
 
   [[params.social]]
     name = "steam"
