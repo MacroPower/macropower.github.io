@@ -21,6 +21,30 @@
 {{- range .Site.Params.social }}{{ if eq .name "twitter" }}
 <meta name="twitter:site" content="@{{ path.Base .url }}">
 {{- end }}{{ end }}
+{{- if .IsHome }}
+{{- $sameAs := slice }}
+{{- range .Site.Params.social }}{{ $sameAs = $sameAs | append .url }}{{ end }}
+<script type="application/ld+json">{{ dict
+  "@context" "https://schema.org"
+  "@type" "Person"
+  "name" .Site.Params.author.name
+  "jobTitle" .Site.Params.homeSubtitle
+  "url" .Site.BaseURL
+  "sameAs" $sameAs
+  | jsonify | safeJS }}</script>
+{{- else if and .IsPage (eq .Section "posts") }}
+<script type="application/ld+json">{{ dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "url" .Permalink
+  "datePublished" (.Date.Format "2006-01-02")
+  "dateModified" (.Lastmod.Format "2006-01-02")
+  "description" ($description | plainify)
+  "image" (slice (absURL "/img/og-card.png"))
+  "author" (dict "@type" "Person" "name" .Site.Params.author.name "url" .Site.BaseURL)
+  | jsonify | safeJS }}</script>
+{{- end }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap">
