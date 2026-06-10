@@ -25,7 +25,7 @@ course!
 
 ## Choosing a Tool
 
-There were a few solutions that I had heard mentioned lot on /r/homelab, and I
+There were a few solutions that I had heard mentioned a lot on /r/homelab, and I
 took a look at all of them. Those being [Duplicacy][duplicacy], [Borg][borg],
 and [Restic][restic].
 
@@ -56,7 +56,7 @@ Restic is so much more developed.
 
 There are several tools out there that exist to make backing up persistent
 storage on Kubernetes with Restic much easier. Typically, they are operators
-that allow you define things like a backup schedule and what PVCs you want to be
+that allow you to define things like a backup schedule and what PVCs you want to be
 in which Restic repo. Again, I took a look at three relatively popular options.
 
 The first product that I found was [Stash][stash]. Stash is interesting because
@@ -69,7 +69,7 @@ disabled, but it's clear to me that at least some enterprise functionality isn't
 present in the normal public repo, so that's off the table as well.
 
 Another very popular choice is [Velero][velero]. However, I was immediately very
-apprehensive about it because it was made by Hepito, who sold out to VMware some
+apprehensive about it because it was made by Heptio, who sold out to VMware some
 time ago. This has led to a good amount of abandonware. It does look like
 Velero is still being supported, but it's still important to realize that this
 acquisition altered the goals of the project. And I would have to pray that
@@ -318,4 +318,4 @@ And of course a huge thanks to the authors of the following projects:
 [stash]: https://github.com/stashed/stash
 [velero]: https://github.com/vmware-tanzu/velero
 [rclone-chart]: https://github.com/MacroPower/helm-charts/tree/main/charts/rclone
-[timescale-restore]: https://docs.timescale.com/timescaledb/latest/how-to-guides/backup-and-restore/pg-dump-and-restore/#restoring-an-entire-database-from-backup
+[timescale-restore]: https://web.archive.org/web/20230417221143/https://docs.timescale.com/self-hosted/latest/backup-and-restore/pg-dump-and-restore/#restoring-an-entire-database-from-backup
