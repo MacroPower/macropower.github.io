@@ -140,6 +140,15 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   let marqueeGridLeft = 0;
   let marqueeGridTop = 0;
 
+  // Native text selection fights the icon drag: the press lands on a label
+  // kept user-select:text by the window's .selectable rule, and the tile
+  // branch cannot preventDefault its pointerdown (that would kill the plain
+  // click path), so the browser starts extending a selection across tile
+  // labels as the block rides the cursor. startDrag clears what accumulated
+  // before the threshold crossed and this blocks re-starts for the rest of
+  // the gesture; every end path runs removeMoveListeners, which detaches it.
+  const suppressSelect = (e: Event): void => { e.preventDefault(); };
+
   function addMoveListeners(): void {
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", endGesture);
@@ -149,6 +158,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", endGesture);
     window.removeEventListener("pointercancel", endGesture);
+    document.removeEventListener("selectstart", suppressSelect);
   }
 
   grid.addEventListener("pointerdown", (e) => {
@@ -273,6 +283,9 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       block = [pressTile!];
     }
     orderAtDragStart = [...deps.tiles];
+
+    document.getSelection()?.removeAllRanges();
+    document.addEventListener("selectstart", suppressSelect);
 
     // Lift every block member, clearing any transform left over from a prior
     // settle so the start cell measures true.

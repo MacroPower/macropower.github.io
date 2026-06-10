@@ -1411,7 +1411,11 @@ a.up-sponsor-card[href]:hover{
 
 /* Drag-to-reorder: the grid suppresses text selection mid-drag; the lifted
    tile's drag states come from up-tile-states. */
-.up-project-grid.is-dragging{cursor:default;user-select:none}
+/* The descendant arm out-specifies `.selectable *` (which re-enables
+   user-select:text on every label) so the icon drag cannot smear a native
+   text selection across the grid. */
+.up-project-grid.is-dragging,
+.up-project-grid.is-dragging *{cursor:default;user-select:none;-webkit-user-select:none}
 
 /* Rubber-band marquee, positioned in grid-content space (see projects-desktop). */
 .up-marquee{
@@ -2534,7 +2538,10 @@ body.up-reduce-motion *{
   touch-action:manipulation;
   @include up-tile-states;
 }
-.up-trash-files.is-dragging{cursor:default; user-select:none}
+/* Descendant arm for the same reason as .up-project-grid.is-dragging:
+   `.selectable *` would otherwise keep the labels text-selectable mid-drag. */
+.up-trash-files.is-dragging,
+.up-trash-files.is-dragging *{cursor:default;user-select:none;-webkit-user-select:none}
 .up-trash-tile-icon{
   width:44px; height:44px;
   display:flex; align-items:center; justify-content:center;
