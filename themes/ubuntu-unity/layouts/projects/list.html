@@ -38,8 +38,14 @@
       {{- /* The grid tiles are JS-gestured <button>s; without JS the page
             would contain zero links to any project. The grid's chrome
             (sidebar, preview pane) is inert without JS and its collapsed
-            flow height would otherwise overlap this list, so hide it. */}}
-      <style>.up-projects-grid{display:none}</style>
+            flow height would otherwise overlap this list, so hide it.
+            display:contents lifts the list out of the noscript box and
+            into the article's flex layout, so its flex:1 + overflow:auto
+            sizing (main.scss) can actually constrain and scroll it. */}}
+      <style>
+        .up-projects-grid{display:none}
+        .up-projects noscript{display:contents}
+      </style>
       <ul class="up-projects-noscript">
         {{- range site.Data.projects }}
         <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
