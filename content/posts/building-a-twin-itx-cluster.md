@@ -17,9 +17,7 @@ both of these in a single chassis to save space, which is possible with a "dual
 mini-itx", or "twin-itx" chassis. This article covers most of the chassis I
 discovered.
 
-As of writing, I have made a purchase (I went with the MyElectronics chassis)
-and am waiting for it to arrive. I will eventually be writing another article
-covering my exact setup.
+As of writing, I have made a purchase (I went with the MyElectronics chassis).
 
 ## 1U
 
@@ -42,8 +40,8 @@ For this reason the 2U list is likely more complete.
 
 **Items**:
 
-- [MK150](https://www.onlogic.com/mk150/)
-- [AKDB-MK15X](https://www.onlogic.com/akdb-mk15x/)
+- [MK150](https://web.archive.org/web/20240423101335/https://www.onlogic.com/mk150/)
+- [AKDB-MK15X](https://web.archive.org/web/20230208192648/https://www.onlogic.com/akdb-mk15x/)
 
 **Notes:** Normal mini-itx chassis that can be adapted into a dual-mainboard
 chassis.
@@ -93,13 +91,13 @@ contact with them.
 
 ### Travla / TAWA Series
 
-**Items**:
+**Items** (kiwatek.com has since gone offline; see the Travla listing below):
 
-- [TAWA-T2240](https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=62)
-- [TAWA-T2241](https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=63)
-- [TAWA-T2242](https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=229)
-- [TAWA-T2280](https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=230)
-- [TAWA-T2900](https://www.kiwatek.com/corp/index.php?route=product/product&path=75_78&product_id=256)
+- TAWA-T2240
+- TAWA-T2241
+- TAWA-T2242
+- TAWA-T2280
+- TAWA-T2900
 
 All these are also available under the "Travla" brand [here](https://www.mini-itx.com/store/?c=63).
 
@@ -128,7 +126,7 @@ internally. TAWA-T2900 has all front i/o which is unique.
 
 **Items**:
 
-- [Circotech RM-2270](https://www.circotech.com/rm-2270-2u-rackmount-case-for-dual-mini-itx-motherboard-system-14-deep.html)
+- [Circotech RM-2270](https://web.archive.org/web/20230605110953/https://www.circotech.com/rm-2270-2u-rackmount-case-for-dual-mini-itx-motherboard-system-14-deep.html)
 - [KRI RM-2270](https://www.amazon.com/KRI-Rackmount-Chassis-RM-2270-Mini-ITX/dp/B08JNFV99V)
 
 **Notes:** Deep but with no hotswap.
