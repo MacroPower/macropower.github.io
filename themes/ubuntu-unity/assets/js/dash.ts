@@ -378,6 +378,12 @@ export function initDash(): void {
   window.addEventListener("keyup", (e) => {
     if (e.key !== "Meta" || !superTap) return;
     superTap = false;
+    // Consume the tap before it descends to the focused element: xterm's
+    // textarea re-asserts focus on a Meta keyup, which would yank focus
+    // out of the Dash search input the instant open() set it — leaving
+    // keystrokes feeding the hidden shell and Escape unable to close.
+    e.preventDefault();
+    e.stopPropagation();
     toggle();
   }, true);
   window.addEventListener("pointerdown", () => { superTap = false; }, true);
