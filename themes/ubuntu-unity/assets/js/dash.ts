@@ -238,12 +238,15 @@ export function initDash(): void {
   bfb?.addEventListener("click", toggle);
 
   // Click-away: launcher / panel clicks land outside the dash root entirely.
+  // Capture phase, because the top panel's menu triggers stopPropagation()
+  // on their clicks — in the bubble phase a trigger click would open its
+  // dropdown on top of a still-open Dash instead of dismissing it.
   document.addEventListener("click", (e) => {
     if (!visible) return;
     const target = e.target as Element | null;
     if (!target || panel.contains(target) || target.closest("[data-dash-open]")) return;
     close();
-  });
+  }, true);
 
   // ---- keyboard ----------------------------------------------------------
 
