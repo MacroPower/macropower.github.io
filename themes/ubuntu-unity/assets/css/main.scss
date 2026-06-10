@@ -573,7 +573,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-naut-section-label{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#8A8175;padding:4px 14px 4px;
+  color:#5A554E;padding:4px 14px 4px;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
 .up-naut-item{
@@ -588,7 +588,7 @@ body.up-resizing *{ cursor:inherit !important; }
   &:hover{background:rgba(0,0,0,.045)}
   &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-3px}
   &.is-active{
-    background:linear-gradient(180deg, up-accent(95%, "orange-light") 0%, var(--orange) 100%);
+    background:linear-gradient(180deg, up-accent(95%, "orange-dark") 0%, var(--orange-darker) 100%);
     color:#fff;
     border-left-color:color-mix(in srgb, var(--orange-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
@@ -607,7 +607,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-naut-item-count{
   font-size:11px;font-variant-numeric:tabular-nums;
-  color:#9A938D;
+  color:#5A554E;
   padding:1px 7px;border-radius:9999px;
   background:rgba(0,0,0,.06);
   min-width:20px;text-align:center;
@@ -963,7 +963,7 @@ a.up-sponsor-card[href]:hover{
     border-color:var(--orange-light);
     box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px up-accent(22%, "orange-light");
   }
-  &::placeholder{color:#9A938D}
+  &::placeholder{color:var(--content-muted)}
 }
 .up-pathbar-search-count{
   font-size:11px;color:#7A7570;font-variant-numeric:tabular-nums;
@@ -1028,10 +1028,10 @@ a.up-sponsor-card[href]:hover{
     box-shadow:inset 0 0 0 1px up-accent(35%);
   }
   &.is-active{
-    background:var(--orange-light);color:#fff;
-    border-left-color:var(--orange);
-    .up-post-meta{color:rgba(255,255,255,.82)}
-    .up-post-date{color:rgba(255,255,255,.82)}
+    background:var(--orange-dark);color:#fff;
+    border-left-color:var(--orange-darker);
+    .up-post-meta{color:rgba(255,255,255,.95)}
+    .up-post-date{color:rgba(255,255,255,.95)}
   }
   &.is-active.is-focused{
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
@@ -1044,10 +1044,10 @@ a.up-sponsor-card[href]:hover{
 }
 .up-post-meta{
   display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;
-  font-size:11.5px;color:#8A8580;
+  font-size:11.5px;color:var(--content-muted);
 }
 .up-post-date{
-  font-size:11.5px;color:#8A8580;font-variant-numeric:tabular-nums;
+  font-size:11.5px;color:var(--content-muted);font-variant-numeric:tabular-nums;
   align-self:start;white-space:nowrap;
 }
 .up-post-empty{padding:24px 14px;color:var(--content-muted);font-size:13px}
@@ -1080,11 +1080,11 @@ a.up-sponsor-card[href]:hover{
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
 .up-reader-meta{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:#9A938D;letter-spacing:.04em;
+  font-size:11.5px;color:var(--content-muted);letter-spacing:.04em;
   display:flex;flex-wrap:wrap;gap:6px;align-items:center;
 }
 .up-reader-meta-sep{color:#C4BFB9}
-.up-reader-chip{color:#9A938D}
+.up-reader-chip{color:var(--content-muted)}
 .up-reader-title{
   font-size:30px;font-weight:500;line-height:1.2;letter-spacing:-.01em;
   margin:6px 0 22px;
@@ -1093,7 +1093,7 @@ a.up-sponsor-card[href]:hover{
 .up-reader-signoff{
   margin-top:26px;padding-top:14px;border-top:1px solid #ECE9E6;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:12px;color:#9A938D;
+  font-size:12px;color:var(--content-muted);
 }
 /* ---------- Markdown prose inside reader ---------- */
 .up-reader-body{
@@ -1411,7 +1411,7 @@ a.up-sponsor-card[href]:hover{
 .up-project-preview.up-empty-pane{padding:18px 22px;background:#FBFAF7}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:#9A938D;
+  color:var(--content-muted);
 }
 .up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
 .up-empty-pane-hint{
@@ -1420,7 +1420,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-empty-pane-tagline{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:#9A938D;letter-spacing:.02em;
+  font-size:11.5px;color:var(--content-muted);letter-spacing:.02em;
   padding:2px 8px;border-radius:2px;
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
@@ -2041,7 +2041,7 @@ body.up-reduce-motion *{
   flex:1;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:16px;
-  color:#8A8580;
+  color:var(--content-muted);
   // A class with an explicit `display` overrides the UA `[hidden]` rule, so
   // toggling `hidden` alone would leave it visible; restore the hide.
   &[hidden]{display:none}
