@@ -47,6 +47,14 @@ jobs:
           cache: npm
       - run: npm ci
 
+      - name: Typecheck
+        run: |
+          npm run typecheck
+          npm run typecheck:test
+
+      - name: Test
+        run: npm test
+
       - name: Build
         run: hugo --minify
 
