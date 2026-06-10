@@ -65,6 +65,7 @@ function buildToggleRow(): HTMLElement {
   toggle.type = "button";
   toggle.className = "up-pref-toggle";
   toggle.setAttribute("role", "switch");
+  toggle.setAttribute("aria-label", "Reduce motion");
   const sync = (): void => {
     const on = isReduceMotion();
     toggle.classList.toggle("is-on", on);
