@@ -12,6 +12,14 @@ function syncLauncherTile(open: boolean, focused: boolean): void {
   tile.classList.toggle("is-focused", open && focused);
 }
 
+let openImpl: (() => void) | null = null;
+
+// Open (or re-focus) the trash window. Mirrors daw.ts's openStudio: safe to
+// call before initTrash on pages without the partial — it just no-ops.
+export function openTrash(): void {
+  openImpl?.();
+}
+
 export function initTrash(): void {
   const stage = document.querySelector<HTMLElement>('[data-up-window="trash"]');
   if (!stage) return;
@@ -220,6 +228,15 @@ export function initTrash(): void {
   const drag = installTitlebarDrag(chrome, { spring: false, yMin: 24 });
   // 280x200 keeps two grid columns plus the pathbar and footer usable.
   installResize(chrome, { minW: 280, minH: 200, yMin: 24, handle: drag });
+
+  // Module-level opener (the Dash's Trash tile): open if hidden or
+  // minimized, otherwise just take focus — never minimize like the
+  // launcher-tile toggle does.
+  openImpl = () => {
+    if (!open || minimized) { show(); return; }
+    setTrashFocused(true);
+    render();
+  };
 
   subscribe(render);
   renderTrash();

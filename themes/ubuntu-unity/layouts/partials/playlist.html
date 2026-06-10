@@ -1,0 +1,12 @@
+{{- /*
+  The bundled MIDI playlist, returned as a slice of published URLs. Order
+  matters: it defines the anonymous "Track N" labels the player and the Dash
+  show — what each one actually is stays a surprise until someone presses
+  play. Shared by top-panel.html (data-vol-playlist) and dash.html (the Music
+  category) so the two can never disagree about the track count.
+*/ -}}
+{{- $playlist := slice -}}
+{{- range slice "midi/nggyu.midi" "midi/rasp.midi" "midi/mii.midi" "midi/numb.midi" "midi/yes.midi" -}}
+  {{- with resources.Get . }}{{ $playlist = $playlist | append .RelPermalink }}{{ end -}}
+{{- end -}}
+{{- return $playlist -}}

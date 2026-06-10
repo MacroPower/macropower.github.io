@@ -27,10 +27,20 @@ const SECTIONS: ShortcutSection[] = [
   {
     title: "Desktop",
     rows: [
+      { combos: [["Super"]], desc: "Open the Dash (or click the Ubuntu button)" },
       { combos: [["Esc"]], desc: "Dismiss menus and dialogs" },
       { combos: [["Enter"]], desc: "Confirm the focused dialog" },
       { combos: [["Drag"]], desc: "Move a window or dialog (titlebar)", gesture: true },
       { combos: [["Double-click"]], desc: "Maximize or restore (titlebar)", gesture: true },
+    ],
+  },
+  {
+    title: "Dash",
+    hint: "Esc clears the search first, then closes.",
+    rows: [
+      { combos: [["Arrows"]], desc: "Move between results" },
+      { combos: [["Enter"]], desc: "Open the best match" },
+      { combos: [["Tab"]], desc: "Jump to the expanders and lens bar" },
     ],
   },
   {

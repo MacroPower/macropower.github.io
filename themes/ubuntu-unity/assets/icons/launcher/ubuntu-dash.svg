@@ -1,0 +1,33 @@
+<svg viewBox="0 0 48 48" width="100%" height="100%">
+  <defs>
+  <linearGradient id="ai-bfb-plate" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#4A1140"/>
+  <stop offset="55%" stop-color="#2C0524"/>
+  <stop offset="100%" stop-color="#1A0214"/>
+  </linearGradient>
+  <radialGradient id="ai-bfb-disc" cx=".38" cy=".3" r=".9">
+  <stop offset="0%" stop-color="#F58B4E"/>
+  <stop offset="55%" stop-color="#E95420"/>
+  <stop offset="100%" stop-color="#A33410"/>
+  </radialGradient>
+  <linearGradient id="ai-bfb-sheen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="rgba(255,255,255,.22)"/>
+  <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+  </linearGradient>
+  </defs>
+  <ellipse cx="24" cy="44.5" rx="17" ry="1.1" fill="rgba(0,0,0,.35)"/>
+  <rect x="4" y="4" width="40" height="40" rx="8" fill="url(#ai-bfb-plate)" stroke="#0E0009" stroke-width=".9"/>
+  <rect x="5" y="5" width="38" height="38" rx="7" fill="none" stroke="rgba(255,255,255,.14)" stroke-width=".7"/>
+  <path d="M6 11 Q6 6 11 6 H37 Q42 6 42 11 V20 Q24 26 6 20 Z" fill="url(#ai-bfb-sheen)"/>
+  <circle cx="24" cy="24.6" r="14.8" fill="rgba(0,0,0,.4)"/>
+  <circle cx="24" cy="24" r="14.5" fill="url(#ai-bfb-disc)" stroke="#5A1606" stroke-width=".8"/>
+  <path d="M12.6 18.6 Q16.5 11.6 24 11.5" fill="none" stroke="rgba(255,233,210,.55)" stroke-width="1" stroke-linecap="round"/>
+  <g fill="#fff">
+  <path d="M27.16 17.53 A7.2 7.2 0 0 1 31.18 24.50" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <path d="M28.03 29.97 A7.2 7.2 0 0 1 19.97 29.97" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <path d="M16.82 24.50 A7.2 7.2 0 0 1 20.84 17.53" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <circle cx="24" cy="14.6" r="2"/>
+  <circle cx="32.14" cy="28.7" r="2"/>
+  <circle cx="15.86" cy="28.7" r="2"/>
+  </g>
+</svg>

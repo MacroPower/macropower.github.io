@@ -1,0 +1,195 @@
+{{- /*
+  The Unity Dash: a translucent search overlay anchored under the top panel at
+  the launcher's right edge, opened from the launcher's BFB (the Ubuntu button)
+  or a Super tap. Everything searchable is SSR'd here as tiles; dash.ts only
+  filters, ranks, and dispatches — it never invents content.
+
+  Categories:
+    apps     — site pages plus the desktop "applications" (Studio, Trash,
+               Appearance, ...). Page tiles are real <a>; app tiles are
+               <button data-dash-action> dispatched by dash.ts.
+    files    — blog posts (newest first), real <a>.
+    projects — site.Data.projects, real <a> to GitHub (new tab, like the
+               projects grid's open behavior).
+    music    — the bundled playlist as anonymous "Track N" buttons
+               (music:<i> selects the track, opens the Studio, and plays).
+
+  DOM contract (read by dash.ts): [data-up-dash], [data-dash-backdrop],
+  [data-dash-search], [data-dash-results], [data-dash-section],
+  [data-dash-grid], [data-dash-more], [data-dash-cap], [data-dash-tile],
+  [data-dash-action], data-keywords, [data-dash-lens], [data-dash-empty],
+  [data-dash-status] — plus [data-dash-open] on the launcher's BFB tile.
+
+  Sections with data-dash-cap collapse to that many matches behind a Unity
+  "See N more results" expander; the rest always show every match.
+*/ -}}
+{{- $apps := slice
+  (dict "label" "Terminal" "icon" "launcher/terminal" "url" (relURL "")
+        "kw" "terminal shell bash console neofetch prompt tty home start")
+  (dict "label" "Blog" "icon" "launcher/blog" "url" (relURL "posts/")
+        "kw" "blog posts articles writing files notes")
+  (dict "label" "CV" "icon" "launcher/cv" "url" (relURL "cv/")
+        "kw" "cv resume curriculum vitae pdf work experience career history")
+  (dict "label" "Projects" "icon" "launcher/projects" "url" (relURL "projects/")
+        "kw" "projects repositories repos github code open source software")
+  (dict "label" "Sponsors" "icon" "launcher/heart" "url" (relURL "sponsors/")
+        "kw" "sponsors sponsorship support donate heart thanks")
+  (dict "label" "Icons" "icon" "launcher/image-viewer" "url" (relURL "icons/")
+        "kw" "icons gallery artwork svg viewer images eye of gnome")
+  (dict "label" "Studio" "icon" "launcher/piano" "action" "studio"
+        "kw" "studio daw music midi sequencer synth piano roll lmms audio")
+  (dict "label" "Trash" "icon" "launcher/trash" "action" "trash"
+        "kw" "trash rubbish bin wastebasket deleted files")
+  (dict "label" "Appearance" "icon" "launcher/paint" "action" "prefs"
+        "kw" "appearance preferences settings theme accent color colour motion animations")
+  (dict "label" "Shortcuts" "icon" "launcher/typewriter-key" "action" "shortcuts"
+        "kw" "keyboard shortcuts keys bindings hotkeys help reference")
+  (dict "label" "Lock Screen" "icon" "launcher/padlock" "action" "lock"
+        "kw" "lock screen security password greeter lightdm")
+  (dict "label" "Log Out" "icon" "launcher/doorway" "action" "logout"
+        "kw" "log out logout session quit exit leave goodbye")
+-}}
+{{- $posts := where .Site.RegularPages "Section" "posts" -}}
+{{- $playlist := partial "playlist.html" . -}}
+<div class="up-dash" data-up-dash hidden>
+  <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
+  <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="Dash search">
+    {{ partial "page/icons/lang-symbols.html" . }}
+    <div class="up-dash-searchbar">
+      <span class="up-dash-search-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>
+      <input class="up-dash-search" data-dash-search type="text"
+             placeholder="Search your computer" aria-label="Search your computer"
+             autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="up-dash-results" data-dash-results>
+
+      <section class="up-dash-section" data-dash-section="apps" aria-label="Applications">
+        <header class="up-dash-cat">
+          <span class="up-dash-cat-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/>
+              <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
+              <circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/>
+            </svg>
+          </span>
+          <span class="up-dash-cat-label">Applications</span>
+          <button class="up-dash-more" data-dash-more type="button" hidden></button>
+        </header>
+        <div class="up-dash-grid" data-dash-grid>
+          {{- range $apps }}
+          {{- if .url }}
+          <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
+             data-keywords="{{ .kw }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" .icon }}</span>
+            <span class="up-dash-tile-label">{{ .label }}</span>
+          </a>
+          {{- else }}
+          <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
+                  data-dash-action="{{ .action }}" data-keywords="{{ .kw }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" .icon }}</span>
+            <span class="up-dash-tile-label">{{ .label }}</span>
+          </button>
+          {{- end }}
+          {{- end }}
+        </div>
+      </section>
+
+      <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="Files and folders">
+        <header class="up-dash-cat">
+          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
+          <span class="up-dash-cat-label">Files &amp; Folders</span>
+          <button class="up-dash-more" data-dash-more type="button" hidden></button>
+        </header>
+        <div class="up-dash-grid" data-dash-grid>
+          {{- range $posts }}
+          <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
+             title="{{ .Title }}"
+             data-keywords="post blog article {{ delimit (.Params.categories | default slice) " " }} {{ .Date.Format "2006 January" }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
+            <span class="up-dash-tile-label">{{ .Title }}</span>
+          </a>
+          {{- end }}
+        </div>
+      </section>
+
+      <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="Projects">
+        <header class="up-dash-cat">
+          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
+          <span class="up-dash-cat-label">Projects</span>
+          <button class="up-dash-more" data-dash-more type="button" hidden></button>
+        </header>
+        <div class="up-dash-grid" data-dash-grid>
+          {{- range .Site.Data.projects }}
+          <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
+             target="_blank" rel="noopener" title="{{ .description }}"
+             data-keywords="project repository github {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
+            <span class="up-dash-tile-label">{{ .name }}</span>
+          </a>
+          {{- end }}
+        </div>
+      </section>
+
+      {{- with $playlist }}
+      <section class="up-dash-section" data-dash-section="music" aria-label="Music">
+        <header class="up-dash-cat">
+          <span class="up-dash-cat-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6.3 12.5 V3.8 L12.3 2.5 V11.2"/>
+              <circle cx="4.5" cy="12.5" r="1.8" fill="currentColor" stroke="none"/>
+              <circle cx="10.5" cy="11.2" r="1.8" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span class="up-dash-cat-label">Music</span>
+          <button class="up-dash-more" data-dash-more type="button" hidden></button>
+        </header>
+        <div class="up-dash-grid" data-dash-grid>
+          {{- range $i, $u := . }}
+          <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
+                  data-dash-action="music:{{ $i }}"
+                  data-keywords="music track song tune play audio midi tape mystery">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
+            <span class="up-dash-tile-label">Track {{ add $i 1 }}</span>
+          </button>
+          {{- end }}
+        </div>
+      </section>
+      {{- end }}
+
+      <div class="up-dash-empty" data-dash-empty hidden>
+        <span class="up-dash-empty-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>
+        <p>Sorry, there is nothing that matches your search.</p>
+      </div>
+    </div>
+
+    <div class="up-dash-lenses" role="group" aria-label="Filter results">
+      <button class="up-dash-lens is-active" data-dash-lens="home" type="button" aria-pressed="true" title="Home">
+        {{ partial "icon.html" "glyphs/home" }}
+      </button>
+      <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="Applications">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/>
+          <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
+          <circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/>
+        </svg>
+      </button>
+      <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="Files &amp; Folders">
+        {{ partial "icon.html" "glyphs/folder" }}
+      </button>
+      <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="Projects">
+        {{ partial "icon.html" "glyphs/code" }}
+      </button>
+      {{- with $playlist }}
+      <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="Music">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6.3 12.5 V3.8 L12.3 2.5 V11.2"/>
+          <circle cx="4.5" cy="12.5" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="10.5" cy="11.2" r="1.8" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      {{- end }}
+    </div>
+
+    <div class="up-sr-only" data-dash-status role="status"></div>
+  </section>
+</div>

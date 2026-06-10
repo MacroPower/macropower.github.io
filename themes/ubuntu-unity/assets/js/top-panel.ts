@@ -311,7 +311,10 @@ async function handleHotspot(): Promise<void> {
   }
 }
 
-async function dispatchAction(action: string): Promise<void> {
+// Exported for dash.ts: the Dash's app tiles reuse the panel's action
+// vocabulary (dlg:prefs, dlg:lock, dlg:logout, ...) so both surfaces always
+// run the identical flow. Module-level by design — no initTopPanel state.
+export async function dispatchAction(action: string): Promise<void> {
   if (action.startsWith("nav:")) { navigate(action.slice(4)); return; }
   if (action === "reload") { window.location.reload(); return; }
   if (action === "fullscreen") {

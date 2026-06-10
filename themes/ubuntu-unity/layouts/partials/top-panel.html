@@ -2,13 +2,9 @@
 {{- $longDate := now.Format "Monday, 2 January 2006" -}}
 {{- $time := now.Format "15:04" -}}
 {{- $shortDate := now.Format "Mon, Jan 2" -}}
-{{- /* The bundled MIDI playlist. Order matters: it defines the anonymous
-     "Track N" labels the player shows — what each one actually is stays a
-     surprise until someone presses play. */ -}}
-{{- $playlist := slice -}}
-{{- range slice "midi/nggyu.midi" "midi/rasp.midi" "midi/mii.midi" "midi/numb.midi" "midi/yes.midi" -}}
-  {{- with resources.Get . }}{{ $playlist = $playlist | append .RelPermalink }}{{ end -}}
-{{- end -}}
+{{- /* The bundled MIDI playlist (see partials/playlist.html; shared with the
+     Dash's Music category so the track count can't drift). */ -}}
+{{- $playlist := partial "playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}

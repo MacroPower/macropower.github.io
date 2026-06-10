@@ -17,6 +17,15 @@
   (dict "key" "sponsors" "label" "Sponsors" "icon" "launcher/heart"    "url" $sponsors "active" $sponsorsActive)
 -}}
 <aside class="up-launcher" aria-label="Launcher">
+  {{/* BFB ("big friendly button") — the Ubuntu mark that opens the Dash.
+       Deliberately not .is-active/.is-focused (those classes are page-window
+       contracts); dash.ts toggles .is-open while the Dash is up. */}}
+  <button class="up-launcher-tile up-launcher-bfb" data-dash-open type="button"
+          aria-label="Search your computer" aria-haspopup="dialog" aria-expanded="false">
+    <span class="up-launcher-icon">{{ partial "icon.html" "launcher/ubuntu-dash" }}</span>
+    <span class="up-tooltip" aria-hidden="true">Search your computer</span>
+  </button>
+
   {{- range $tiles }}
   {{ partial "ui/launcher-tile.html" . }}
   {{- end }}
