@@ -1615,9 +1615,11 @@ a.up-sponsor-card[href]:hover{
 }
 
 /* No-JS projects fallback: the only project links in the document when the
-   gesture engine cannot run. */
+   gesture engine cannot run. Replaces the hidden .up-projects-grid as the
+   article's filling flex child, scrolling on overflow. */
 .up-projects-noscript{
   margin:0;padding:14px 22px;list-style:none;
+  flex:1;min-height:0;overflow:auto;
   background:var(--content-bg);
   li{padding:5px 0;border-bottom:1px dashed var(--content-line)}
   a{color:#2B4E8E;text-decoration:none}

@@ -36,7 +36,10 @@
     </div>
     <noscript>
       {{- /* The grid tiles are JS-gestured <button>s; without JS the page
-            would contain zero links to any project. */}}
+            would contain zero links to any project. The grid's chrome
+            (sidebar, preview pane) is inert without JS and its collapsed
+            flow height would otherwise overlap this list, so hide it. */}}
+      <style>.up-projects-grid{display:none}</style>
       <ul class="up-projects-noscript">
         {{- range site.Data.projects }}
         <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
