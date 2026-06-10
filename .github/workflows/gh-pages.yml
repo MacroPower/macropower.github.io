@@ -7,13 +7,19 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: gh-pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       # Keep hugo-version in sync with devbox.json.
       - name: Setup Hugo
@@ -35,7 +41,7 @@ jobs:
 
       # Keep node-version in sync with devbox.json (nodejs@22). The committed
       # package-lock.json must match package.json or npm ci hard-fails.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -44,9 +50,31 @@ jobs:
       - name: Build
         run: hugo --minify
 
+      # upload-artifact excludes hidden files by default. public/ contains no
+      # dotfiles today, and peaceiris/actions-gh-pages creates .nojekyll itself
+      # at publish time. If the build ever emits dotfiles into public/, set
+      # include-hidden-files: true here or they will be silently dropped.
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: public
+          path: public/
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download site artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: public
+          path: public
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
-        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
