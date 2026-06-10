@@ -46,9 +46,7 @@ disable404     = false
   dateformNum     = "2006-01-02"
   dateformNumTime = "2006-01-02 15:04"
 
-  description = "Nice theme for homepages and blogs"
-  keywords    = ""
-  images      = [""]
+  description = "Jacob Colvin is a Site Reliability Engineer writing about Kubernetes, observability, and open source infrastructure."
 
   # Home subtitle of the index page.
   homeSubtitle = "Site Reliability Engineer"
@@ -183,8 +181,6 @@ disable404     = false
   [languages.en]
     weight    = 1
     copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
-  [languages.en.params]
-    subtitle = "My Website"
 
 [menu]
   [[menu.main]]

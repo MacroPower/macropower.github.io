@@ -1,6 +1,7 @@
 +++
 title = "CV"
 date = "2021-08-26"
+description = "CV of Jacob Colvin, Site Reliability Engineer."
 aliases = ["resume"]
 pdf = "/files/ColvinJacobCV.pdf"
 +++
