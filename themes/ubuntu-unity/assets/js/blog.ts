@@ -106,10 +106,9 @@ interface SortState {
       }
       return (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
     };
-    let scroller = findScroller(reader);
     let ticking = false;
     const updateProgress = (): void => {
-      scroller = findScroller(reader);
+      const scroller = findScroller(reader);
       const max = scroller.scrollHeight - scroller.clientHeight;
       const pct = max > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / max)) : 0;
       progressBar.style.transform = `scaleX(${pct.toFixed(4)})`;
@@ -118,12 +117,10 @@ interface SortState {
     const onScroll = (): void => {
       if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); }
     };
-    const bindScroll = (): void => {
-      scroller = findScroller(reader);
-      (scroller === document.scrollingElement ? window : scroller)
-        .addEventListener("scroll", onScroll, { passive: true });
-    };
-    bindScroll();
+    // Capture-phase so element scroll events from any container reach us:
+    // the real scroller can change identity after init (the reader pane
+    // only becomes scrollable once images load).
+    document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     window.addEventListener("resize", updateProgress);
     updateProgress();
   }
