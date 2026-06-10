@@ -100,19 +100,15 @@ function infoLines(
   return { lines, links };
 }
 
-function colorizeArt(art: string, mask: string, width: number): string {
-  // Truncate before colorizing so the visible art never exceeds `width` and
-  // wraps; ANSI codes added by colorizeLine carry no display width.
-  return bold(colorizeLine(art.slice(0, width), mask.slice(0, width)));
-}
-
-const MIN_VALUE = 12; // value column narrower than this -> stack instead
+const MIN_VALUE = 12; // value column narrower than this -> drop the art
 
 /**
  * Renders the neofetch banner as an array of ANSI lines sized to `cols`.
- * Side-by-side (art left, info right) when wide enough; otherwise stacked
- * (art, blank, info). Either way the info value column is truncated so no line
- * wraps, which would break alignment.
+ * Side-by-side (art left, info right) when wide enough; otherwise the art is
+ * skipped entirely -- clipping it to `cols` would slice glyphs mid-character
+ * (the old SSR design likewise hid the art under 560px) -- and the info block
+ * renders alone at full width. Either way the info value column is truncated
+ * so no line wraps, which would break alignment.
  */
 export function renderBanner(data: ShellData, cols: number): { lines: string[]; links: BannerLink[] } {
   const artLines = data.ascii.replace(/\n+$/, "").split("\n");
@@ -122,13 +118,9 @@ export function renderBanner(data: ShellData, cols: number): { lines: string[]; 
 
   const sideRoom = cols - artWidth - GAP - labelWidth - 2;
   if (sideRoom < MIN_VALUE) {
-    // Stacked: art (clipped to cols) above the full-width info block.
+    // Too narrow for the art: info block only, using the full width.
     const valueWidth = Math.max(MIN_VALUE, cols - labelWidth - 2);
-    const info = infoLines(data, labelWidth, valueWidth);
-    const out = artLines.map((art, r) => colorizeArt(art, maskLines[r] ?? "", cols));
-    out.push("");
-    out.push(...info.lines);
-    return { lines: out, links: info.links };
+    return infoLines(data, labelWidth, valueWidth);
   }
 
   const info = infoLines(data, labelWidth, sideRoom);
