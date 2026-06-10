@@ -83,29 +83,44 @@ function installDialogDrag(d: DialogEntry): void {
   if (!titlebar) return;
   let ox = 0;
   let oy = 0;
-  titlebar.addEventListener("mousedown", (e) => {
+  let activeId: number | null = null;
+  titlebar.addEventListener("pointerdown", (e) => {
+    // Primary button/finger only: a right-mousedown opens the context menu,
+    // which swallows the matching up and would leave the dialog gliding.
+    if (e.button !== 0 || !e.isPrimary || activeId !== null) return;
     const target = e.target;
     if (!(target instanceof Element)) return;
     if (target.closest("button")) return;
     e.preventDefault();
+    const id = e.pointerId;
+    activeId = id;
     const sx = e.clientX;
     const sy = e.clientY;
     const startOx = ox;
     const startOy = oy;
     d.dialog.classList.add("is-dragging");
-    const move = (ev: MouseEvent): void => {
+    const move = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
       ox = startOx + (ev.clientX - sx);
       oy = startOy + (ev.clientY - sy);
       d.dialog.style.setProperty("--ox", ox + "px");
       d.dialog.style.setProperty("--oy", oy + "px");
     };
-    const up = (): void => {
+    // pointerup and pointercancel release alike: the offset applied so far
+    // stays in --ox/--oy, only the gesture state comes off.
+    const finish = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      activeId = null;
       d.dialog.classList.remove("is-dragging");
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      try { titlebar.releasePointerCapture(id); } catch { /* not captured */ }
     };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+    try { titlebar.setPointerCapture(id); } catch { /* unsupported */ }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
   });
 }
 

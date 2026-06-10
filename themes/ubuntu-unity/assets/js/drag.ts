@@ -15,6 +15,27 @@ export interface DragHandle {
   setOffset(x: number, y: number): void;
 }
 
+// Canceling a pointerdown suppresses its compatibility mousedown, but the
+// chrome-level focus handlers (trash.ts, page-window.ts) rely on a bubbling
+// mousedown to raise their window. Gesture starts that preventDefault their
+// pointerdown re-dispatch a synthetic mousedown so focus-on-press survives
+// the Pointer Events port. Untrusted events trigger no default actions, so
+// the selection/focus suppression the preventDefault buys is preserved.
+export function dispatchCompatMousedown(e: PointerEvent): void {
+  if (!(e.target instanceof Element)) return;
+  e.target.dispatchEvent(new MouseEvent("mousedown", {
+    bubbles: true,
+    cancelable: true,
+    view: window,
+    clientX: e.clientX,
+    clientY: e.clientY,
+    screenX: e.screenX,
+    screenY: e.screenY,
+    button: e.button,
+    buttons: e.buttons,
+  }));
+}
+
 const damp = (d: number): number => {
   const s = Math.sign(d);
   const a = Math.abs(d);
@@ -32,6 +53,7 @@ export function installTitlebarDrag(
   let springRaf: number | null = null;
   let baseX = 0;
   let baseY = 0;
+  let activeId: number | null = null;
 
   const cancelSpring = (): void => {
     if (springRaf != null) {
@@ -46,7 +68,11 @@ export function installTitlebarDrag(
       : `translate3d(${dx}px, ${dy}px, 0)`;
   };
 
-  const onMouseDown = (e: MouseEvent): void => {
+  const onPointerDown = (e: PointerEvent): void => {
+    // Primary button only: a right-mousedown opens the context menu, which
+    // swallows the matching up and would leave the window glued to the
+    // pointer. A non-primary touch is a second finger mid-gesture.
+    if (e.button !== 0 || !e.isPrimary || activeId !== null) return;
     const target = e.target;
     if (!(target instanceof Element)) return;
     if (opts.gate && !opts.gate()) return;
@@ -54,8 +80,11 @@ export function installTitlebarDrag(
     if (!tb || !el.contains(tb)) return;
     if (target.closest("button")) return;
     e.preventDefault();
+    dispatchCompatMousedown(e);
     cancelSpring();
 
+    const id = e.pointerId;
+    activeId = id;
     const startX = e.clientX;
     const startY = e.clientY;
     const originX = baseX;
@@ -64,7 +93,8 @@ export function installTitlebarDrag(
     const untransformedTop = rect.top - originY;
 
     let cur = { dx: originX, dy: originY };
-    const move = (ev: MouseEvent): void => {
+    const move = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
       let dx: number;
       let dy: number;
       if (spring) {
@@ -82,9 +112,15 @@ export function installTitlebarDrag(
       apply(dx, dy);
     };
 
-    const up = (): void => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
+    // pointerup and pointercancel land here alike: a cancelled gesture
+    // (e.g. the browser reclaiming the touch) releases exactly like a drop.
+    const finish = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      activeId = null;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      try { el.releasePointerCapture(id); } catch { /* not captured */ }
       if (!spring) {
         baseX = cur.dx;
         baseY = cur.dy;
@@ -122,15 +158,17 @@ export function installTitlebarDrag(
       springRaf = requestAnimationFrame(step);
     };
 
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+    try { el.setPointerCapture(id); } catch { /* unsupported */ }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
   };
 
-  el.addEventListener("mousedown", onMouseDown);
+  el.addEventListener("pointerdown", onPointerDown);
 
   return {
     dispose: () => {
-      el.removeEventListener("mousedown", onMouseDown);
+      el.removeEventListener("pointerdown", onPointerDown);
       cancelSpring();
     },
     getOffset: () => ({ x: baseX, y: baseY }),

@@ -596,7 +596,7 @@ svg[hidden]{ display:none; }
 /* Invisible edge/corner hit zones appended by resize.ts (trash + studio).
    Edge strips inset 10px so the corners win at the ends; the chrome's
    overflow:hidden clips them flush to the borders. */
-.up-resize-handle{ position:absolute; z-index:6; }
+.up-resize-handle{ position:absolute; z-index:6; touch-action:none; }
 .up-resize-n{ top:0; left:10px; right:10px; height:6px; cursor:n-resize; }
 .up-resize-s{ bottom:0; left:10px; right:10px; height:6px; cursor:s-resize; }
 .up-resize-w{ top:10px; bottom:10px; left:0; width:6px; cursor:w-resize; }
@@ -605,6 +605,19 @@ svg[hidden]{ display:none; }
 .up-resize-ne{ top:0; right:0; width:10px; height:10px; cursor:nesw-resize; }
 .up-resize-sw{ bottom:0; left:0; width:10px; height:10px; cursor:nesw-resize; }
 .up-resize-se{ bottom:0; right:0; width:10px; height:10px; cursor:nwse-resize; }
+/* Coarse pointers get fatter resize zones — generous on the bottom/right
+   where nothing competes, modest on the top so the titlebar beads (which the
+   zones overlay) stay tappable. */
+@media (pointer:coarse){
+  .up-resize-n{ height:8px; left:18px; right:18px; }
+  .up-resize-s{ height:14px; left:18px; right:18px; }
+  .up-resize-w,
+  .up-resize-e{ width:12px; top:18px; bottom:18px; }
+  .up-resize-nw,
+  .up-resize-ne{ width:14px; height:14px; }
+  .up-resize-sw,
+  .up-resize-se{ width:18px; height:18px; }
+}
 /* Active resize: lock the direction cursor (set on body by resize.ts) so it
    doesn't flicker when the pointer overshoots the thin strip. */
 body.up-resizing{ user-select:none; }
@@ -618,6 +631,7 @@ body.up-resizing *{ cursor:inherit !important; }
   background:linear-gradient(180deg,#4D4A47 0%,#3B3835 100%);
   border-bottom:1px solid rgba(0,0,0,.4);
   cursor:default;
+  touch-action:none; /* drag surface (drag.ts) — never a scroll gesture */
 }
 .up-tl-group{
   display:flex; align-items:center; gap:4px;
@@ -1371,6 +1385,9 @@ a.up-sponsor-card[href]:hover{
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   gap:8px;padding:12px 10px 10px;
   border-radius:5px;text-align:center;
+  /* manipulation: double-tap-to-open runs through projects-desktop's manual
+     pointerup detector — don't let the browser's double-tap zoom race it */
+  touch-action:manipulation;
   @include up-tile-states;
 }
 
@@ -1901,6 +1918,7 @@ a.up-sponsor-card[href]:hover{
   display:flex; align-items:center;
   cursor:grab;
   user-select:none;
+  touch-action:none; /* drag surface (dialogs.ts) — never a scroll gesture */
 }
 .up-dlg-close{
   @include up-bead;
@@ -2269,6 +2287,9 @@ body.up-reduce-motion *{
 .up-trash-tile{
   display:flex; flex-direction:column; align-items:center; gap:6px;
   padding:8px 4px; border-radius:4px; text-align:center;
+  /* manipulation: double-tap-to-open runs through projects-desktop's manual
+     pointerup detector — don't let the browser's double-tap zoom race it */
+  touch-action:manipulation;
   @include up-tile-states;
 }
 .up-trash-files.is-dragging{cursor:default; user-select:none}
@@ -2419,7 +2440,7 @@ body.up-reduce-motion *{
   border:1px solid rgba(0,0,0,.6); border-radius:2px;
   box-shadow:inset 0 0 6px rgba(0,0,0,.7);
   text-shadow:0 0 4px var(--daw-lcd-glow);
-  &.is-spin{cursor:ns-resize}
+  &.is-spin{cursor:ns-resize; touch-action:none} /* BPM drag-spinbox (daw.ts) */
   &.is-trk{min-width:28px; text-align:center}
   &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
 }
@@ -2645,6 +2666,7 @@ body.up-reduce-motion *{
   position:relative;
   width:30px; height:30px; border-radius:50%;
   cursor:ns-resize;
+  touch-action:none; /* dial drag (daw.ts makeKnob) — never a scroll gesture */
   background:radial-gradient(circle at 38% 30%, #4A5058 0%, #33383F 55%, #23262B 100%);
   border:1px solid var(--daw-edge);
   box-shadow:0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14);

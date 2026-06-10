@@ -171,23 +171,42 @@ function makeKnob(spec: KnobSpec): HTMLElement {
     return Math.max(base, spec.step / (spec.max - spec.min));
   };
 
-  dial.addEventListener("mousedown", (e) => {
+  // Pointer Events so the dial turns under touch too (the dial carries
+  // touch-action:none in main.scss). Primary button only — a right-mousedown
+  // opens the context menu, which swallows the matching up and would leave
+  // the knob turning with no button held. The window-focus and patch-menu
+  // side effects ride the real pointerdown's bubble, so canceling the compat
+  // mousedown here loses nothing.
+  let turning = false;
+  dial.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !e.isPrimary || turning) return;
     e.preventDefault();
     dial.focus();
+    turning = true;
+    const id = e.pointerId;
     let lastY = e.clientY;
     document.body.classList.add("up-daw-turning");
-    const move = (ev: MouseEvent): void => {
+    const move = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
       const dy = lastY - ev.clientY;
       lastY = ev.clientY;
       if (dy !== 0) nudge(dy * 0.006);
     };
-    const up = (): void => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
+    // pointercancel releases exactly like pointerup: the value turned so far
+    // stays, only the gesture state and cursor lock come off.
+    const finish = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      turning = false;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      try { dial.releasePointerCapture(id); } catch { /* not captured */ }
       document.body.classList.remove("up-daw-turning");
     };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+    try { dial.setPointerCapture(id); } catch { /* unsupported */ }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
   });
   dial.addEventListener("dblclick", () => set(spec.preset));
   dial.addEventListener("wheel", (e) => {
@@ -360,7 +379,11 @@ export function initDaw(): void {
     render();
   });
 
-  chrome.addEventListener("mousedown", () => {
+  // pointerdown, not mousedown: the knob/BPM/roll gesture starts cancel
+  // their pointerdown (which suppresses the compat mousedown), but the real
+  // pointerdown always bubbles — so focus-on-press works for mouse and touch
+  // alike, including presses that begin a drag.
+  chrome.addEventListener("pointerdown", () => {
     if (!getStudioFocused() && open && !minimized) {
       setStudioFocused(true);
       render();
@@ -619,7 +642,11 @@ export function initDaw(): void {
     patchMenu = null;
     patchMenuAnchor = null;
   };
-  document.addEventListener("mousedown", (e) => {
+  // pointerdown (house style, see projects-desktop's menu closer): unlike the
+  // compat mousedown it fires for touch presses and for gesture starts that
+  // preventDefault their pointerdown, so grabbing a knob or titlebar anywhere
+  // still dismisses the menu.
+  document.addEventListener("pointerdown", (e) => {
     if (!patchMenu) return;
     const t = e.target;
     if (t instanceof Node && (patchMenu.contains(t) || patchMenuAnchor?.contains(t))) return;
@@ -793,13 +820,18 @@ export function initDaw(): void {
   if (bpmLcd) {
     bpmLcd.setAttribute("aria-valuemin", "40");
     bpmLcd.setAttribute("aria-valuemax", "240");
-    bpmLcd.addEventListener("mousedown", (e) => {
+    // Pointer Events so the spinbox drags under touch too (the LCD carries
+    // touch-action:none in main.scss); primary button only, like the knobs.
+    bpmLcd.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || !e.isPrimary || bpmDragging) return;
       e.preventDefault();
       bpmDragging = true;
+      const id = e.pointerId;
       let lastY = e.clientY;
       let acc = 0;
       document.body.classList.add("up-daw-turning");
-      const move = (ev: MouseEvent): void => {
+      const move = (ev: PointerEvent): void => {
+        if (ev.pointerId !== id) return;
         acc += (lastY - ev.clientY) / 3; // 3px per BPM
         lastY = ev.clientY;
         const step = Math.trunc(acc);
@@ -809,15 +841,22 @@ export function initDaw(): void {
           bpmLcd.textContent = String(Math.round(audio.bpm()));
         }
       };
-      const up = (): void => {
+      // pointercancel ends the gesture like pointerup: the tempo set so far
+      // stays, the LCD re-syncs to the engine.
+      const finish = (ev: PointerEvent): void => {
+        if (ev.pointerId !== id) return;
         bpmDragging = false;
         document.body.classList.remove("up-daw-turning");
-        window.removeEventListener("mousemove", move);
-        window.removeEventListener("mouseup", up);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", finish);
+        window.removeEventListener("pointercancel", finish);
+        try { bpmLcd.releasePointerCapture(id); } catch { /* not captured */ }
         syncTransport();
       };
-      window.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up);
+      try { bpmLcd.setPointerCapture(id); } catch { /* unsupported */ }
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", finish);
+      window.addEventListener("pointercancel", finish);
     });
     bpmLcd.addEventListener("dblclick", () => audio.setBpm(audio.songBpm()));
     bpmLcd.addEventListener("wheel", (e) => {
@@ -1149,85 +1188,25 @@ export function initDaw(): void {
     if (statusEl) statusEl.textContent = text;
   }
 
-  scroller.addEventListener("mousedown", (e) => {
-    if (e.button !== 0 || !song) return;
-    const { cx, cy, vx, vy } = pointInfo(e);
+  // The scroller is the roll's only scroll mechanism on touch, so the note
+  // grid must keep its native pan (no touch-action lockdown here). Presses
+  // are disambiguated by hit-test at pointerdown: only the ruler region —
+  // canvas-painted chrome, not an element — claims the pointer for every
+  // input type. Mouse presses keep all their old behaviors at pointerdown;
+  // touch/pen presses on the grid are left alone so the pan wins, and their
+  // taps come back as compatibility mouse events (handled further down).
+  let rollPointerType = ""; // pointerType of the scroller's last pointerdown
+  let rollGesture = false;  // a scrub or transpose drag is in flight
 
-    // Ruler: click (or scrub) to move the transport. Works paused too — the
-    // playhead becomes the resume point, so you can cue up a section.
-    if (vy < RULER_H && vx >= KEYS_W) {
-      e.preventDefault();
-      const beatAt = (clientX: number): number => {
-        const r = scroller!.getBoundingClientRect();
-        return (clientX - r.left + scroller!.scrollLeft - KEYS_W) / pxb();
-      };
-      let last = -1;
-      const scrub = (clientX: number): void => {
-        // Snap to the sixteenth grid the synth schedules on; skip no-op seeks
-        // so a scrub doesn't re-cut the voices every mousemove.
-        const b = Math.max(0, Math.round(beatAt(clientX) * 4) / 4);
-        if (b === last) return;
-        last = b;
-        audio.seek(b);
-        const bar = Math.floor(b / 4) + 1;
-        setStatus(`Bar ${bar} — ${audio.isPlaying() ? "playing from here" : "play starts here"}`);
-      };
-      scrub(e.clientX);
-      const move = (ev: MouseEvent): void => scrub(ev.clientX);
-      const up = (): void => {
-        window.removeEventListener("mousemove", move);
-        window.removeEventListener("mouseup", up);
-        setStatus(defaultStatus);
-      };
-      window.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up);
-      return;
-    }
+  // Drum hits audition but don't transpose (the kit rows are fixed
+  // mappings, not a pitch axis); right-click still mutes them.
+  const auditionDrumHit = (hit: Hit): void => {
+    audio.auditionNote(hit.note.pitch, 9);
+    setStatus(`Drums · ${drumLabel(hit.note.pitch)} — right-click to ${hit.note.dead ? "restore" : "mute"}`);
+  };
 
-    if (vx < KEYS_W || vy < RULER_H) return; // sticky key column / corner
-
-    const hit = noteAt(cx, cy);
-    if (hit && hit.note.channel === 9) {
-      // Drum hits audition but don't transpose (the kit rows are fixed
-      // mappings, not a pitch axis); right-click still mutes them.
-      audio.auditionNote(hit.note.pitch, 9);
-      setStatus(`Drums · ${drumLabel(hit.note.pitch)} — right-click to ${hit.note.dead ? "restore" : "mute"}`);
-      return;
-    }
-    if (hit) {
-      // Drag to transpose: the note object is the engine's, so the edit is
-      // audible on the scheduler's next pass — sculpt the melody while it loops.
-      e.preventDefault();
-      const startPitch = hit.note.pitch;
-      const startY = e.clientY;
-      let lastAudition = -1;
-      document.body.classList.add("up-daw-transposing");
-      const move = (ev: MouseEvent): void => {
-        const delta = Math.round((startY - ev.clientY) / ROW_H);
-        const next = Math.min(Math.max(startPitch + delta, pitchLo), pitchHi);
-        if (next !== hit.note.pitch) {
-          hit.note.pitch = next;
-          dirty = true;
-          if (next !== lastAudition) {
-            lastAudition = next;
-            audio.auditionNote(next, hit.note.channel);
-          }
-          const off = next - startPitch;
-          setStatus(`${hit.track.name}: ${noteName(startPitch)} → ${noteName(next)} (${off > 0 ? "+" : ""}${off} st)`);
-        }
-      };
-      const up = (): void => {
-        document.body.classList.remove("up-daw-transposing");
-        window.removeEventListener("mousemove", move);
-        window.removeEventListener("mouseup", up);
-        setStatus(defaultStatus);
-      };
-      window.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up);
-      return;
-    }
-
-    // Empty grid: audition the pitch (or drum) under the cursor.
+  // Empty grid: audition the pitch (or drum) under the press.
+  const auditionEmptyAt = (cy: number): void => {
     const py = cy - RULER_H;
     if (py >= 0 && py < rows() * ROW_H) {
       const pitch = pitchHi - Math.floor(py / ROW_H);
@@ -1241,6 +1220,147 @@ export function initDaw(): void {
         setStatus(DRUM_ROWS[di].label === "kck" ? "Kick" : DRUM_ROWS[di].label === "snr" ? "Snare" : "Hat");
       }
     }
+  };
+
+  // Ruler scrub: continuous seek until release, mouse and touch alike.
+  const beginRulerScrub = (e: PointerEvent): void => {
+    rollGesture = true;
+    const id = e.pointerId;
+    const beatAt = (clientX: number): number => {
+      const r = scroller!.getBoundingClientRect();
+      return (clientX - r.left + scroller!.scrollLeft - KEYS_W) / pxb();
+    };
+    let last = -1;
+    const scrub = (clientX: number): void => {
+      // Snap to the sixteenth grid the synth schedules on; skip no-op seeks
+      // so a scrub doesn't re-cut the voices every pointermove.
+      const b = Math.max(0, Math.round(beatAt(clientX) * 4) / 4);
+      if (b === last) return;
+      last = b;
+      audio.seek(b);
+      const bar = Math.floor(b / 4) + 1;
+      setStatus(`Bar ${bar} — ${audio.isPlaying() ? "playing from here" : "play starts here"}`);
+    };
+    scrub(e.clientX);
+    // Canceling pointerdown does not stop a touch pan — only canceling the
+    // raw touchmoves does. The scroller's touch-action must stay pannable for
+    // grid presses, so the block lives only for the scrub's duration.
+    const blockPan = (ev: TouchEvent): void => ev.preventDefault();
+    if (e.pointerType !== "mouse") {
+      window.addEventListener("touchmove", blockPan, { passive: false });
+    }
+    const move = (ev: PointerEvent): void => {
+      if (ev.pointerId === id) scrub(ev.clientX);
+    };
+    // pointercancel ends the scrub like pointerup: the transport stays where
+    // the last seek put it.
+    const finish = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      rollGesture = false;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      window.removeEventListener("touchmove", blockPan);
+      try { scroller!.releasePointerCapture(id); } catch { /* not captured */ }
+      setStatus(defaultStatus);
+    };
+    try { scroller!.setPointerCapture(id); } catch { /* unsupported */ }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+  };
+
+  // Drag to transpose (mouse-only — a vertical touch drag must pan the roll):
+  // the note object is the engine's, so the edit is audible on the
+  // scheduler's next pass — sculpt the melody while it loops.
+  const beginTranspose = (e: PointerEvent, hit: Hit): void => {
+    rollGesture = true;
+    const id = e.pointerId;
+    const startPitch = hit.note.pitch;
+    const startY = e.clientY;
+    let lastAudition = -1;
+    document.body.classList.add("up-daw-transposing");
+    const move = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      const delta = Math.round((startY - ev.clientY) / ROW_H);
+      const next = Math.min(Math.max(startPitch + delta, pitchLo), pitchHi);
+      if (next !== hit.note.pitch) {
+        hit.note.pitch = next;
+        dirty = true;
+        if (next !== lastAudition) {
+          lastAudition = next;
+          audio.auditionNote(next, hit.note.channel);
+        }
+        const off = next - startPitch;
+        setStatus(`${hit.track.name}: ${noteName(startPitch)} → ${noteName(next)} (${off > 0 ? "+" : ""}${off} st)`);
+      }
+    };
+    // pointercancel drops the drag like pointerup: the note keeps the pitch
+    // it was last dragged to.
+    const finish = (ev: PointerEvent): void => {
+      if (ev.pointerId !== id) return;
+      rollGesture = false;
+      document.body.classList.remove("up-daw-transposing");
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      try { scroller!.releasePointerCapture(id); } catch { /* not captured */ }
+      setStatus(defaultStatus);
+    };
+    try { scroller!.setPointerCapture(id); } catch { /* unsupported */ }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+  };
+
+  scroller.addEventListener("pointerdown", (e) => {
+    rollPointerType = e.pointerType;
+    if (e.button !== 0 || !e.isPrimary || rollGesture || !song) return;
+    const { cx, cy, vx, vy } = pointInfo(e);
+
+    // Ruler: press (or scrub) to move the transport — every pointer type.
+    // Works paused too: the playhead becomes the resume point, so you can
+    // cue up a section. Canceling the pointerdown also suppresses the compat
+    // mousedown, so the tap path below can't double-seek.
+    if (vy < RULER_H && vx >= KEYS_W) {
+      e.preventDefault();
+      beginRulerScrub(e);
+      return;
+    }
+
+    if (vx < KEYS_W || vy < RULER_H) return; // sticky key column / corner
+
+    if (e.pointerType !== "mouse") return; // grid press: let the pan/tap win
+
+    const hit = noteAt(cx, cy);
+    if (hit && hit.note.channel === 9) {
+      auditionDrumHit(hit);
+      return;
+    }
+    if (hit) {
+      e.preventDefault();
+      beginTranspose(e, hit);
+      return;
+    }
+    auditionEmptyAt(cy);
+  });
+
+  // Touch/pen taps on the grid arrive as compatibility mouse events after the
+  // finger lifts (a pan fires none, and the cancelled ruler pointerdown
+  // suppresses its own). Mouse presses were already handled at pointerdown
+  // above, so they're filtered out by the recorded pointer type.
+  scroller.addEventListener("mousedown", (e) => {
+    if (rollPointerType === "mouse") return;
+    if (e.button !== 0 || !song) return;
+    const { cx, cy, vx, vy } = pointInfo(e);
+    if (vx < KEYS_W || vy < RULER_H) return; // sticky chrome / ruler (pointer path)
+    const hit = noteAt(cx, cy);
+    if (hit && hit.note.channel === 9) {
+      auditionDrumHit(hit);
+      return;
+    }
+    if (hit) return; // transposing needs a mouse; the hover status already painted
+    auditionEmptyAt(cy);
   });
 
   scroller.addEventListener("mousemove", (e) => {

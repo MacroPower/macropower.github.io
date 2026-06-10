@@ -1,4 +1,4 @@
-import type { DragHandle } from "./drag";
+import { dispatchCompatMousedown, type DragHandle } from "./drag";
 
 export interface InstallResizeOptions {
   minW: number;
@@ -31,25 +31,32 @@ const DIRS: Dir[] = [
 // Drag-to-resize from all 8 edges/corners via thin invisible hit-zone divs
 // appended to the window chrome. Size is applied as inline width/height;
 // north/west resizes move the window origin through the shared DragHandle so
-// drag and resize never disagree about position. Mouse-only, matching drag.ts.
+// drag and resize never disagree about position. Pointer Events (capture +
+// pointercancel) so touch resizes too, matching drag.ts; the zones carry
+// touch-action:none in main.scss, with fatter coarse-pointer hit zones.
 export function installResize(
   el: HTMLElement,
   opts: InstallResizeOptions,
 ): () => void {
   const { minW, minH, yMin, handle } = opts;
   const zones: HTMLElement[] = [];
+  let active = false;
 
   for (const dir of DIRS) {
     const zone = document.createElement("div");
     zone.className = `up-resize-handle ${dir.cls}`;
-    // No stopPropagation: the chrome-level mousedown handlers rely on
-    // bubbling to set window focus.
-    zone.addEventListener("mousedown", (e) => {
-      if (e.button !== 0) return;
+    zone.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || !e.isPrimary || active) return;
       if (opts.gate && !opts.gate()) return;
       e.preventDefault();
+      // No stopPropagation, and canceling pointerdown suppresses the compat
+      // mousedown the chrome-level focus handlers rely on — re-dispatch it so
+      // grabbing a handle still focuses the window.
+      dispatchCompatMousedown(e);
       opts.onStart?.();
+      active = true;
 
+      const id = e.pointerId;
       const startRect = el.getBoundingClientRect();
       const start = handle.getOffset();
       const startX = e.clientX;
@@ -62,7 +69,8 @@ export function installResize(
       document.body.style.cursor = getComputedStyle(zone).cursor;
       document.body.classList.add("up-resizing");
 
-      const move = (ev: MouseEvent): void => {
+      const move = (ev: PointerEvent): void => {
+        if (ev.pointerId !== id) return;
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
         let ox = start.x;
@@ -91,22 +99,30 @@ export function installResize(
         if (dir.left || dir.top) handle.setOffset(ox, oy);
       };
 
-      const up = (): void => {
-        window.removeEventListener("mousemove", move);
-        window.removeEventListener("mouseup", up);
+      // pointercancel releases the same way pointerup does: the size applied
+      // so far stays, the cursor lock comes off.
+      const finish = (ev: PointerEvent): void => {
+        if (ev.pointerId !== id) return;
+        active = false;
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", finish);
+        window.removeEventListener("pointercancel", finish);
+        try { zone.releasePointerCapture(id); } catch { /* not captured */ }
         document.body.classList.remove("up-resizing");
         document.body.style.cursor = "";
       };
 
-      window.addEventListener("mousemove", move);
-      window.addEventListener("mouseup", up);
+      try { zone.setPointerCapture(id); } catch { /* unsupported */ }
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", finish);
+      window.addEventListener("pointercancel", finish);
     });
     el.appendChild(zone);
     zones.push(zone);
   }
 
-  // Removing the zones removes their mousedown handlers with them; a gesture
-  // already in flight keeps its window listeners until its own mouseup.
+  // Removing the zones removes their pointerdown handlers with them; a gesture
+  // already in flight keeps its window listeners until its own pointerup.
   return () => {
     for (const zone of zones) zone.remove();
     zones.length = 0;
