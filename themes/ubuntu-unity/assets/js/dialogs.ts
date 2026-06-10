@@ -11,6 +11,9 @@ interface DialogEntry {
   dialog: HTMLElement;
   buttons: UPDialogButton[];
   resolve: (value: string | null) => void;
+  // Focus returns here on dismiss (the control that opened the dialog; for
+  // stacked dialogs, a control inside the dialog below).
+  opener: HTMLElement | null;
 }
 
 const ICON_GLYPHS: Record<Exclude<UPDialogIcon, "none">, string> = {
@@ -33,10 +36,25 @@ function topDialog(): DialogEntry | null {
 function dismiss(id: number, value: string | null): void {
   const idx = stack.findIndex((d) => d.id === id);
   if (idx < 0) return;
+  const wasTop = idx === stack.length - 1;
   const [d] = stack.splice(idx, 1);
   if (!d) return;
   d.root.remove();
+  // Restore focus to the opener instead of dropping it on <body>; skip when
+  // the opener is gone or hidden (e.g. a since-closed panel dropdown).
+  if (wasTop && d.opener?.isConnected && d.opener.offsetParent !== null) {
+    d.opener.focus();
+  }
   d.resolve(value);
+}
+
+const FOCUSABLE =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+function focusables(d: DialogEntry): HTMLElement[] {
+  return Array.from(d.dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (el) => !el.hasAttribute("disabled") && el.offsetParent !== null,
+  );
 }
 
 function shake(d: DialogEntry): void {
@@ -160,6 +178,10 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
       dialog,
       buttons,
       resolve,
+      opener:
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null,
     };
 
     buttons.forEach((b, i) => {
@@ -202,7 +224,44 @@ export function initDialogs(): void {
       dismiss(top.id, null);
       return;
     }
+    if (e.key === "Tab") {
+      // aria-modal hides the page behind the backdrop from screen readers;
+      // contain Tab so DOM focus cannot wander out there either. Handles
+      // stacked dialogs, which sibling `inert` could not.
+      const els = focusables(top);
+      if (!els.length) {
+        e.preventDefault();
+        return;
+      }
+      const first = els[0]!;
+      const last = els[els.length - 1]!;
+      const active = document.activeElement;
+      if (!(active instanceof HTMLElement) || !top.dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+      return;
+    }
     if (e.key === "Enter") {
+      // Enter on a focused control activates that control natively; the
+      // confirm-the-primary binding only applies when focus is elsewhere
+      // (e.g. still on the dialog root after open). Without this, Tab to
+      // Cancel + Enter fired the primary -- destructive in the trash
+      // confirmations -- and Enter on the Preferences switch closed the
+      // dialog instead of toggling it.
+      const active = document.activeElement;
+      if (
+        active instanceof HTMLElement &&
+        active.matches("button, a[href], input, select, textarea, [tabindex]")
+      ) {
+        return;
+      }
       e.preventDefault();
       const primary = top.buttons.find((b) => b.primary)
         ?? top.buttons[top.buttons.length - 1];
