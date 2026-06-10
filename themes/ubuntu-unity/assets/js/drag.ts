@@ -120,7 +120,7 @@ export function installTitlebarDrag(
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
-      try { el.releasePointerCapture(id); } catch { /* not captured */ }
+      try { tb.releasePointerCapture(id); } catch { /* not captured */ }
       if (!spring) {
         baseX = cur.dx;
         baseY = cur.dy;
@@ -158,7 +158,12 @@ export function installTitlebarDrag(
       springRaf = requestAnimationFrame(step);
     };
 
-    try { el.setPointerCapture(id); } catch { /* unsupported */ }
+    // Capture on the titlebar, not the chrome: capture retargets the
+    // pointerup, and the browser synthesizes click/dblclick at that target.
+    // Capturing on the chrome would starve the titlebar's dblclick-to-
+    // maximize handlers (page-window.ts, daw.ts). Movement tracking is
+    // unaffected — move/finish listen on window.
+    try { tb.setPointerCapture(id); } catch { /* unsupported */ }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", finish);
     window.addEventListener("pointercancel", finish);
