@@ -9,6 +9,12 @@
 {{- with $description }}
 <meta name="description" content="{{ . | plainify | truncate 200 }}">
 {{- end }}
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+{{- with .Site.Params.favicon.color.theme }}
+<meta name="theme-color" content="{{ . }}">
+{{- end }}
 <link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:type" content="{{ cond .IsPage "article" "website" }}">

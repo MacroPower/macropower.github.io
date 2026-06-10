@@ -101,11 +101,9 @@ disable404     = false
       "Hosted on <a href=\"https://github.com/MacroPower/macropower.github.io\">Pages</a>"
     ]
 
-  # Favicon mask + theme colors.
+  # Browser UI color emitted as <meta name="theme-color">.
   [params.favicon.color]
-    mask          = "#1b1c1d"
-    msapplication = "#1b1c1d"
-    theme         = "#1b1c1d"
+    theme = "#1b1c1d"
 
   [params.logo]
     logoMark     = ">"
