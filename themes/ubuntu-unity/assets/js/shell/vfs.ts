@@ -233,9 +233,12 @@ export class Vfs {
   // Each mutator takes an absolute path (callers resolve through resolvePath)
   // and returns a bash-style failure reason (e.g. "Is a directory") or
   // undefined on success. Callers prepend their own `cmd: name:` prefix, the
-  // way `cat`/`ls` already format diagnostics. Writes are permissive: anything
-  // whose parent directory exists may be written; per-file permissions are not
-  // modeled, but bash's structural errors are reproduced.
+  // way `cat`/`ls` already format diagnostics -- except for a few lowercase
+  // sentinel reasons ("omitting directory", "same file", "into itself") whose
+  // GNU messages don't fit that shape; the cp/mv wrappers rephrase those.
+  // Writes are permissive: anything whose parent directory exists may be
+  // written; per-file permissions are not modeled, but bash's structural
+  // errors are reproduced.
 
   // Create, overwrite, or (with append) extend a file. The buffer is normalized
   // into stored lines like a pipeline capture; raw bytes (including ANSI) are
@@ -308,7 +311,10 @@ export class Vfs {
 
   // Copy src to dst (deep clone). A directory source needs `recursive`. When dst
   // is an existing directory, the copy is dropped under it by src's basename,
-  // like bash.
+  // like bash. Copying a node onto itself ("same file") or a directory into its
+  // own subtree ("into itself") is refused with a sentinel reason, matching GNU
+  // cp; the missing-parent check runs first because GNU reports ENOENT before
+  // the into-itself diagnostic.
   copy(srcAbs: string, dstAbs: string, opts: { recursive?: boolean } = {}): string | undefined {
     const src = this.lookup(srcAbs);
     if (!src) return "No such file or directory";
@@ -317,12 +323,20 @@ export class Vfs {
     const { parentPath, base } = splitPath(targetPath);
     const parent = this.lookup(parentPath);
     if (!parent || parent.kind !== "dir") return "No such file or directory";
+    if (targetPath === srcAbs) return "same file";
+    if (src.kind === "dir" && targetPath.startsWith(`${srcAbs}/`)) return "into itself";
     parent.children.set(base, cloneNode(src, base));
     return undefined;
   }
 
   // Move/rename src to dst by relinking (no clone). When dst is an existing
-  // directory, src is dropped under it by basename.
+  // directory, src is dropped under it by basename. Relinking a directory
+  // inside its own subtree would detach it into an unreachable self-cycle
+  // (silent data loss), so a target equal to src ("same file") or under it
+  // ("into itself") is refused before any mutation -- sentinel reasons the mv
+  // wrapper rephrases, like cp's "omitting directory". The subtree guard only
+  // applies to directory sources: a path under a *file* src falls through to
+  // the structural parent checks, as in GNU mv.
   move(srcAbs: string, dstAbs: string): string | undefined {
     const src = this.lookup(srcAbs);
     if (!src) return "No such file or directory";
@@ -333,6 +347,8 @@ export class Vfs {
     const { parentPath: dp, base: db } = splitPath(targetPath);
     const dstParent = this.lookup(dp);
     if (!dstParent || dstParent.kind !== "dir") return "No such file or directory";
+    if (targetPath === srcAbs) return "same file";
+    if (src.kind === "dir" && targetPath.startsWith(`${srcAbs}/`)) return "into itself";
     srcParent.children.delete(sb);
     src.name = db;
     dstParent.children.set(db, src);

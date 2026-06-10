@@ -134,6 +134,44 @@ describe("session write API", () => {
     expect(fs.lookup("/home/me/a")).toBeUndefined();
     expect(fs.lookup("/home/me/d/a")?.kind).toBe("file");
   });
+  it("copy and move refuse a target that resolves to the source", () => {
+    const fs = buildFs(TEST_DATA);
+    fs.writeFile("/home/me/f", "x\n");
+    expect(fs.copy("/home/me/f", "/home/me/f")).toBe("same file");
+    expect(fs.move("/home/me/f", "/home/me/f")).toBe("same file");
+    // dst spelled as the containing directory resolves to the same path
+    expect(fs.move("/home/me/f", "/home/me")).toBe("same file");
+    expect(content(fs.lookup("/home/me/f"))).toEqual(["x"]); // no mutation
+  });
+  it("move refuses to relocate a directory into its own subtree", () => {
+    const fs = buildFs(TEST_DATA);
+    fs.mkdir("/home/me/d");
+    fs.writeFile("/home/me/d/f", "keep\n");
+    // dst is the dir itself (target d/d) or an explicit path under it
+    expect(fs.move("/home/me/d", "/home/me/d")).toBe("into itself");
+    expect(fs.move("/home/me/d", "/home/me/d/x")).toBe("into itself");
+    // the subtree never detached into a self-cycle
+    expect(content(fs.lookup("/home/me/d/f"))).toEqual(["keep"]);
+  });
+  it("copy refuses to copy a directory into its own subtree", () => {
+    const fs = buildFs(TEST_DATA);
+    fs.mkdir("/home/me/d");
+    expect(fs.copy("/home/me/d", "/home/me/d", { recursive: true })).toBe("into itself");
+    expect(fs.lookup("/home/me/d/d")).toBeUndefined(); // nothing was created
+  });
+  it("the subtree guard applies only to directory sources", () => {
+    const fs = buildFs(TEST_DATA);
+    fs.writeFile("/home/me/f", "x\n");
+    // a path "under" a file fails the parent walk, as in GNU mv
+    expect(fs.move("/home/me/f", "/home/me/f/x")).toBe("No such file or directory");
+  });
+  it("a missing target parent wins over the subtree guard", () => {
+    // GNU reports ENOENT before the into-itself diagnostic
+    const fs = buildFs(TEST_DATA);
+    fs.mkdir("/home/me/d");
+    expect(fs.move("/home/me/d", "/home/me/d/nope/x")).toBe("No such file or directory");
+    expect(fs.copy("/home/me/d", "/home/me/d/nope/x", { recursive: true })).toBe("No such file or directory");
+  });
   it("touch creates an empty file and is a no-op when it exists", () => {
     const fs = buildFs(TEST_DATA);
     expect(fs.touch("/home/me/t")).toBeUndefined();

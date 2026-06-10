@@ -12,6 +12,17 @@ import { pathComplete, splitFlags } from "./text";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
+// The path cp/mv would write to, spelled the way GNU coreutils echoes it in
+// diagnostics: the DEST operand as typed, with src's last component appended
+// when DEST is an existing directory (`mv d d` reports the target as 'd/d',
+// `mv f .` as './f'). The VFS computes the same target in absolute form; the
+// operand spelling only the wrapper knows, so the display lives here.
+function targetDisplay(src: string, dest: string, destIsDir: boolean): string {
+  if (!destIsDir) return dest;
+  const base = src.replace(/\/+$/, "").split("/").pop() || src;
+  return `${dest.replace(/\/+$/, "")}/${base}`;
+}
+
 export const mkdir: Command = {
   name: "mkdir",
   summary: "make directories",
@@ -121,15 +132,20 @@ export const cp: Command = {
       ctx.errln(red(`cp: target '${dest}' is not a directory`));
       return 1;
     }
+    const destIsDir = destNode?.kind === "dir";
     let code = 0;
     for (const src of srcs) {
       const err = ctx.vfs.copy(ctx.vfs.resolvePath(ctx.cwd(), src), destAbs, { recursive });
+      if (!err) continue;
+      code = 1;
       if (err === "omitting directory") {
         ctx.errln(red(`cp: -r not specified; omitting directory '${src}'`));
-        code = 1;
-      } else if (err) {
+      } else if (err === "same file") {
+        ctx.errln(red(`cp: '${src}' and '${targetDisplay(src, dest, destIsDir)}' are the same file`));
+      } else if (err === "into itself") {
+        ctx.errln(red(`cp: cannot copy a directory, '${src}', into itself, '${targetDisplay(src, dest, destIsDir)}'`));
+      } else {
         ctx.errln(red(`cp: cannot stat '${src}': ${err}`));
-        code = 1;
       }
     }
     return code;
@@ -153,10 +169,19 @@ export const mv: Command = {
       ctx.errln(red(`mv: target '${dest}' is not a directory`));
       return 1;
     }
+    const destIsDir = destNode?.kind === "dir";
     let code = 0;
     for (const src of srcs) {
       const err = ctx.vfs.move(ctx.vfs.resolvePath(ctx.cwd(), src), destAbs);
-      if (err) { ctx.errln(red(`mv: cannot move '${src}': ${err}`)); code = 1; }
+      if (!err) continue;
+      code = 1;
+      if (err === "same file") {
+        ctx.errln(red(`mv: '${src}' and '${targetDisplay(src, dest, destIsDir)}' are the same file`));
+      } else if (err === "into itself") {
+        ctx.errln(red(`mv: cannot move '${src}' to a subdirectory of itself, '${targetDisplay(src, dest, destIsDir)}'`));
+      } else {
+        ctx.errln(red(`mv: cannot move '${src}': ${err}`));
+      }
     }
     return code;
   },

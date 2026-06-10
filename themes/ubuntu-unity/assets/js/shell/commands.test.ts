@@ -240,6 +240,58 @@ describe("file-mutation commands", () => {
     sh.run("mv a d");
     expect(sh.run("cat d/a").stdout).toBe("hi\n");
   });
+
+  // Self-move/self-copy guards. The messages below are byte-for-byte GNU
+  // coreutils 9.11 stderr (mv/cp mutate, so the conformance table's read-only
+  // runBash cannot diff them; the strings are verified against real bash by
+  // hand instead).
+  it("mv refuses to move a file onto itself", () => {
+    const sh = makeShell();
+    sh.run("echo hi > f");
+    const r = sh.run("mv f f");
+    expect(r.stderr).toBe("mv: 'f' and 'f' are the same file\n");
+    expect(r.status).toBe(1);
+    expect(sh.run("cat f").stdout).toBe("hi\n"); // no mutation
+  });
+  it("mv into the containing directory is the same file", () => {
+    const sh = makeShell();
+    sh.run("echo hi > f");
+    const r = sh.run("mv f .");
+    expect(r.stderr).toBe("mv: 'f' and './f' are the same file\n");
+    expect(r.status).toBe(1);
+  });
+  it("mv d d refuses without losing the subtree", () => {
+    const sh = makeShell();
+    sh.run("mkdir d");
+    sh.run("echo keep > d/f");
+    const r = sh.run("mv d d");
+    expect(r.stderr).toBe("mv: cannot move 'd' to a subdirectory of itself, 'd/d'\n");
+    expect(r.status).toBe(1);
+    expect(sh.run("cat d/f").stdout).toBe("keep\n"); // the subtree survived
+  });
+  it("mv d d/x reports the explicit target path", () => {
+    const sh = makeShell();
+    sh.run("mkdir d");
+    const r = sh.run("mv d d/x");
+    expect(r.stderr).toBe("mv: cannot move 'd' to a subdirectory of itself, 'd/x'\n");
+    expect(r.status).toBe(1);
+    expect(sh.run("ls").stdout).toContain("d/"); // d is still reachable
+  });
+  it("cp refuses to copy a file onto itself", () => {
+    const sh = makeShell();
+    sh.run("echo hi > f");
+    const r = sh.run("cp f f");
+    expect(r.stderr).toBe("cp: 'f' and 'f' are the same file\n");
+    expect(r.status).toBe(1);
+  });
+  it("cp -r refuses to copy a directory into itself", () => {
+    const sh = makeShell();
+    sh.run("mkdir d");
+    const r = sh.run("cp -r d d");
+    expect(r.stderr).toBe("cp: cannot copy a directory, 'd', into itself, 'd/d'\n");
+    expect(r.status).toBe(1);
+    expect(sh.run("ls d").stdout).toBe(""); // no d/d was created
+  });
 });
 
 describe("tee writes through the VFS", () => {
