@@ -1,28 +1,17 @@
-baseURL      = "https://jacobcolvin.com"
-title        = "Jacob Colvin"
-locale       = "en-us"
-theme        = "ubuntu-unity"
+baseURL = "https://jacobcolvin.com"
+title   = "Jacob Colvin"
+locale  = "en-us"
+theme   = "ubuntu-unity"
 
-# Maximum number of items in the RSS feed.
-rssLimit = 10
-
-# This message is only used by the RSS template.
-copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
-
-buildDrafts  = false
-buildFuture  = false
-buildExpired = false
+# Used by the RSS template (layouts/home.rss.xml).
+copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
 
 enableRobotsTXT = true
-enableGitInfo   = false
 enableEmoji     = true
-enableMissingTranslationPlaceholders = false
-disableRSS     = false
-disableSitemap = false
-disable404     = false
 
-[pagination]
-  pagerSize = 10
+[services.rss]
+  # Maximum number of items in the RSS feed.
+  limit = 10
 
 [permalinks]
   posts = "/posts/:year/:month/:title/"
@@ -40,10 +29,9 @@ disable404     = false
     title = true
 
 [params]
-  dateform        = "Jan 2, 2006"
-  dateformShort   = "Jan 2"
-  dateformNum     = "2006-01-02"
-  dateformNumTime = "2006-01-02 15:04"
+  # Long and numeric date formats (post reader and post list).
+  dateform    = "Jan 2, 2006"
+  dateformNum = "2006-01-02"
 
   description = "Jacob Colvin is a Site Reliability Engineer writing about Kubernetes, observability, and open source infrastructure."
 
@@ -54,35 +42,7 @@ disable404     = false
   # Home subtitle of the index page.
   homeSubtitle = "Site Reliability Engineer"
 
-  # Set a background for the homepage.
-  # backgroundImage = "assets/images/background.jpg"
-
-  # Prefix of link to the git commit detail page. GitInfo must be enabled.
-  # gitUrl = ""
-
-  # Hide the links to other posts when set to true.
-  disableReadOtherPosts = false
-
-  # Enable theme toggle. The theme respects prefers-color-scheme; with this
-  # option on, the user can also explicitly set the scheme.
-  enableThemeToggle = true
-
-  # Sharing buttons. Configure custom buttons at https://sharingbuttons.io
-  # and override layouts/partials/sharing-buttons.html.
-  enableSharingButtons = true
-
-  # Enables the global language menu.
-  enableGlobalLanguageMenu = false
-
-  # Set "text-align: justify" on .post-content. Rebuilding SCSS requires
-  # the extended version of Hugo.
-  justifyContent = false
-
   enableReadingTime = true
-
-  # Plausible analytics.
-  # plausibleDataDomain   = 'test.com'
-  # plausibleScriptSource = 'https://plausible.io/js/script.js'
 
   # Source repository for this site (linked from the "View source" dialog).
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
@@ -91,52 +51,9 @@ disable404     = false
     name = "Jacob Colvin"
     born = "1996-10-03"
 
-  # Override the default footer.
-  [params.footer]
-    trademark = 2024
-    rss       = true
-    copyright = true
-    author    = true
-
-    topText    = []
-    bottomText = [
-      "Made with <a href=\"https://gohugo.io\">Hugo</a> + ubuntu-unity",
-      "Hosted on <a href=\"https://github.com/MacroPower/macropower.github.io\">Pages</a>"
-    ]
-
   # Browser UI color emitted as <meta name="theme-color">.
   [params.favicon.color]
     theme = "#1b1c1d"
-
-  [params.logo]
-    logoMark     = ">"
-    logoText     = "$ cd /home/"
-    logoHomeLink = "/"
-    # Remove the logo cursor entirely.
-    # logoCursorDisabled = false
-    # Override the cursor color with any valid CSS color.
-    # logoCursorColor    = "#67a2c9"
-    # Override the animation duration; "0s" disables it.
-    # logoCursorAnimate  = "2s"
-    # Append the current URL pathname to logoText.
-    logoCursorPathname = true
-
-  # Portrait on the start page.
-  # [params.portrait]
-  #   path     = "/img/image.jpg"
-  #   alt      = "Portrait"
-  #   maxWidth = "50px"
-
-  # Commento comments widget. Uncomment to enable.
-  # [params.commento]
-  #   url = ""
-
-  # Utterances comments widget. See https://utteranc.es/ for documentation.
-  # [params.utterances]
-  #   repository = ""
-  #   label      = ""
-  #   issueTerm  = ""
-  #   theme      = ""
 
   # Social icons.
 
@@ -177,11 +94,6 @@ disable404     = false
   [[params.social]]
     name = "reddit"
     url  = "https://www.reddit.com/user/macropower"
-
-[languages]
-  [languages.en]
-    weight    = 1
-    copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
 
 [menu]
   [[menu.main]]

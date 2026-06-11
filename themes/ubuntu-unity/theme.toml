@@ -3,4 +3,4 @@ license = "MIT"
 description = "A personal-site theme styled after Ubuntu 14.04 Unity."
 tags = ["blog", "personal", "ubuntu", "unity", "retro", "playful"]
 features = ["blog", "shortcode", "syntax highlighting"]
-min_version = 0.161
+min_version = "0.161.0"

@@ -1,0 +1,6 @@
+# Theme configuration. The extended edition is required for the Dart Sass
+# pipeline in _partials/head.html; the version floor matches theme.toml.
+[module]
+  [module.hugoVersion]
+    extended = true
+    min      = "0.161.0"
