@@ -21,6 +21,6 @@
     <div class="up-reader-body" data-up-reader-body>
       {{ .Content }}
     </div>
-    <div class="up-reader-signoff">— jacob@unity:~/blog$</div>
+    <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" "~/blog") }}</div>
   </div>
 </article>

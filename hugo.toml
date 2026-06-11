@@ -48,8 +48,9 @@ enableEmoji     = true
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
 
   [params.author]
-    name = "Jacob Colvin"
-    born = "1996-10-03"
+    name  = "Jacob Colvin"
+    email = "me@jacobcolvin.com"
+    born  = "1996-10-03"
 
   # Browser UI color emitted as <meta name="theme-color">.
   [params.favicon.color]

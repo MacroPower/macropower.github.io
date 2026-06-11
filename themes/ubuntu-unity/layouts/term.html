@@ -24,7 +24,7 @@
             <p>{{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged
               <span class="up-reader-chip">#{{ .Title | lower }}</span>.</p>
           </div>
-          <div class="up-reader-signoff">— jacob@unity:~/blog$ grep -l "{{ .Title | lower }}" posts/*.md</div>
+          <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" "~/blog") }} grep -l "{{ .Title | lower }}" posts/*.md</div>
         </div>
       </div>
     </div>

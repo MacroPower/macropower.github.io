@@ -56,7 +56,7 @@
       <div class="up-dropdown-body">
         <div class="up-dropdown-empty">No new messages.</div>
         <div class="up-dropdown-row-buttons">
-          <a class="up-dropdown-btn" href="mailto:me@jacobcolvin.com">Compose</a>
+          {{ with site.Params.author.email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">Compose</a>{{ end }}
           <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">Subscribe to feed</button>
         </div>
       </div>

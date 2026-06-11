@@ -1,0 +1,7 @@
+{{- /*
+  The owner's unix-style handle: the author's first name, lowercased.
+  Shared by baseof.html's UP_SITE global and the terminal-prompt fiction
+  (ui/term-prompt.html) so the desktop never disagrees about who is
+  logged in.
+*/ -}}
+{{- return ((index (split (site.Params.author.name | default "user") " ") 0) | lower) -}}

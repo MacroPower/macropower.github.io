@@ -32,7 +32,7 @@
           "attrs" (dict "data-up-project-preview" "")
           "icon" (partial "icon.html" "flat/empty-folder")
           "hint" "No item selected"
-          "tagline" "jacob@unity:~/projects$ ls | head") }}
+          "tagline" (partial "ui/term-prompt.html" (dict "path" "~/projects" "cmd" "ls | head"))) }}
     </div>
     <noscript>
       {{- /* The grid tiles are JS-gestured <button>s; without JS the page

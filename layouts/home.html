@@ -1,14 +1,14 @@
 {{ define "main" }}
 {{- $user := "user" -}}
-{{- $host := "jacobcolvin.com" -}}
+{{- $host := (urls.Parse site.BaseURL).Host -}}
 {{- $birth := time.AsTime (printf "%sT00:00:00Z" .Site.Params.author.born) -}}
 {{- $tnow := now -}}
-{{- $bdThis := time.AsTime (printf "%04d-10-03T00:00:00Z" $tnow.Year) -}}
+{{- $bdThis := time.AsTime (printf "%04d-%02d-%02dT00:00:00Z" $tnow.Year $birth.Month $birth.Day) -}}
 {{- $years := sub $tnow.Year $birth.Year -}}
 {{- $bdLast := $bdThis -}}
 {{- if lt $tnow.Unix $bdThis.Unix -}}
   {{- $years = sub $years 1 -}}
-  {{- $bdLast = time.AsTime (printf "%04d-10-03T00:00:00Z" (sub $tnow.Year 1)) -}}
+  {{- $bdLast = time.AsTime (printf "%04d-%02d-%02dT00:00:00Z" (sub $tnow.Year 1) $birth.Month $birth.Day) -}}
 {{- end -}}
 {{- $days := div (sub $tnow.Unix $bdLast.Unix) 86400 -}}
 {{- $uptime := printf "%d years, %d days" $years $days -}}

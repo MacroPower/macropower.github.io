@@ -1,0 +1,11 @@
+{{- /*
+  A desktop-fiction shell prompt: "handle@unity:path$[ cmd]". The handle
+  derives from the site author's first name (ui/author-handle.html);
+  "unity" is the machine-name fiction, named for the desktop itself.
+
+  Args (dict): path — the prompt's cwd (e.g. "~/blog");
+               cmd  — optional command rendered after the prompt.
+*/ -}}
+{{- $prompt := printf "%s@unity:%s$" (partial "ui/author-handle.html" .) .path -}}
+{{- with .cmd }}{{ $prompt = printf "%s %s" $prompt . }}{{ end -}}
+{{- return $prompt -}}

@@ -18,7 +18,7 @@
   </div>
 
   {{ $gh := where .Site.Params.social "name" "github" }}
-  {{ $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower }}
+  {{ $handle := partial "ui/author-handle.html" . }}
   {{ $github := "" }}{{ with index $gh 0 }}{{ $github = .url }}{{ end }}
   {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
   {{ $repo := .Site.Params.repoUrl | default "" }}

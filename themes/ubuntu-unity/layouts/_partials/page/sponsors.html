@@ -36,9 +36,13 @@
             "ariaLabel" "No sponsors yet"
             "icon" $iconHeart
             "hint" "No sponsors yet"
-            "tagline" "jacob@unity:~$ ls ./sponsors") }}
+            "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" "ls ./sponsors"))) }}
       {{- end }}
-      <a class="up-open-btn" href="https://github.com/sponsors/MacroPower" target="_blank" rel="noopener">{{ $iconHeart }}<span>Become a sponsor</span></a>
+      {{- /* The sponsor link derives from the github social entry's handle. */ -}}
+      {{- $gh := "" -}}{{- range site.Params.social }}{{ if eq .name "github" }}{{ $gh = .url }}{{ end }}{{ end -}}
+      {{- with $gh }}
+      <a class="up-open-btn" href="https://github.com/sponsors/{{ path.Base . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>Become a sponsor</span></a>
+      {{- end }}
     </section>
   </div>
 </article>

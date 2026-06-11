@@ -33,7 +33,7 @@
   "sameAs" $sameAs
   | jsonify | safeJS }}</script>
 {{- else if and .IsPage (eq .Section "posts") }}
-<script type="application/ld+json">{{ dict
+{{- $ld := dict
   "@context" "https://schema.org"
   "@type" "BlogPosting"
   "headline" .Title
@@ -41,9 +41,13 @@
   "datePublished" (.Date.Format "2006-01-02")
   "dateModified" (.Lastmod.Format "2006-01-02")
   "description" ($description | plainify)
-  "image" (slice (absURL "/img/og-card.png"))
   "author" (dict "@type" "Person" "name" .Site.Params.author.name "url" .Site.BaseURL)
-  | jsonify | safeJS }}</script>
+-}}
+{{- /* Same share-image fallback chain as the Open Graph tags. */ -}}
+{{- with or .Params.images .Site.Params.images }}
+  {{- $ld = merge $ld (dict "image" (slice (absURL (index . 0)))) }}
+{{- end }}
+<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 {{- end }}
 {{- /* Fonts are self-hosted (@font-face in main.scss); preload the two
       faces nearly every view paints with: Ubuntu 400 for the chrome and

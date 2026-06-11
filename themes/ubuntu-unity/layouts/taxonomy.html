@@ -29,7 +29,7 @@
           "ariaLabel" "Post reader"
           "icon" (partial "icon.html" "flat/empty-file")
           "hint" "Select a post"
-          "tagline" "jacob@unity:~/blog$ ls posts/ | less") }}
+          "tagline" (partial "ui/term-prompt.html" (dict "path" "~/blog" "cmd" "ls posts/ | less"))) }}
     </div>
   </article>
 {{ end }}
