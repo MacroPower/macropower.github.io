@@ -379,7 +379,13 @@ export function initDash(): void {
   };
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Meta" && !e.repeat) { superTap = !overlayBlocked(); return; }
+    if (e.key === "Meta") {
+      // OS key auto-repeat (Windows repeats modifiers) must not cancel a
+      // held tap, and Meta landing on an already-held modifier is a chord.
+      if (e.repeat) return;
+      superTap = !overlayBlocked() && !e.ctrlKey && !e.shiftKey && !e.altKey;
+      return;
+    }
     superTap = false;
   }, true);
   window.addEventListener("keyup", (e) => {
