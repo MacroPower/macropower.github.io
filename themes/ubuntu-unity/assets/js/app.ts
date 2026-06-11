@@ -6,6 +6,7 @@ import { initDaw } from "./daw";
 import { initDash } from "./dash";
 import { initHud } from "./hud";
 import { installPageWindow } from "./page-window";
+import { initDesktopMarquee } from "./desktop-marquee";
 import { initLock } from "./lock";
 import { setReduceMotion } from "./prefs";
 
@@ -31,4 +32,5 @@ initDaw();
 initDash();
 initHud();
 installPageWindow();
+initDesktopMarquee();
 document.body.classList.add("up-ready");
