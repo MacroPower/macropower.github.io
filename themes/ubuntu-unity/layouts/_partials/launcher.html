@@ -1,21 +1,11 @@
 {{ $current := .RelPermalink }}
-{{ $home     := relURL "" }}
-{{ $cv       := relURL "cv/" }}
-{{ $blog     := relURL "posts/" }}
-{{ $projects := relURL "projects/" }}
-{{ $sponsors := relURL "sponsors/" }}
-{{- $homeActive     := eq $current $home -}}
-{{- $cvActive       := eq $current $cv -}}
-{{- $blogActive     := hasPrefix $current $blog -}}
-{{- $projectsActive := eq $current $projects -}}
-{{- $sponsorsActive := eq $current $sponsors -}}
-{{- $tiles := slice
-  (dict "key" "home"     "label" "Home"     "icon" "launcher/home"     "url" $home     "active" $homeActive)
-  (dict "key" "cv"       "label" "CV"       "icon" "launcher/cv"       "url" $cv       "active" $cvActive)
-  (dict "key" "projects" "label" "Projects" "icon" "launcher/projects" "url" $projects "active" $projectsActive)
-  (dict "key" "blog"     "label" "Blog"     "icon" "launcher/blog"     "url" $blog     "active" $blogActive)
-  (dict "key" "sponsors" "label" "Sponsors" "icon" "launcher/heart"    "url" $sponsors "active" $sponsorsActive)
--}}
+{{- $reg := partial "site-pages.html" . -}}
+{{- $tiles := slice -}}
+{{- range $reg.launcherOrder -}}
+  {{- $p := index $reg.pages . -}}
+  {{- $active := cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) -}}
+  {{- $tiles = $tiles | append (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" $active) -}}
+{{- end -}}
 <aside class="up-launcher" aria-label="Launcher">
   {{/* BFB ("big friendly button") — the orbit mark that opens the Dash.
        Deliberately not .is-active/.is-focused (those classes are page-window

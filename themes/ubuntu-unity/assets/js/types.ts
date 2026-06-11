@@ -31,6 +31,8 @@ export interface UPSite {
   github: string;
   repo: string;
   rss: string;
+  /** nav:<key> action targets, from the theme's site-pages.html registry. */
+  nav: Record<string, string>;
 }
 
 export interface UPPageWindowState {

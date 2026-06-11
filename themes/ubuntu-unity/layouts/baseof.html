@@ -22,8 +22,13 @@
   {{ $github := "" }}{{ with index $gh 0 }}{{ $github = .url }}{{ end }}
   {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
   {{ $repo := .Site.Params.repoUrl | default "" }}
+  {{- /* nav backs top-panel.ts's nav:<key> actions; one URL per page in
+        the site-pages.html registry, so the panel menus, the launcher,
+        and the Dash can never disagree about where a page lives. */}}
+  {{ $nav := dict }}
+  {{ range $k, $p := (partial "site-pages.html" .).pages }}{{ $nav = merge $nav (dict $k $p.url) }}{{ end }}
   <script>
-window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss) | jsonify | safeJS }};
+window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss "nav" $nav) | jsonify | safeJS }};
   </script>
 
   {{ $jsOpts := dict

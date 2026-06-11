@@ -1,0 +1,47 @@
+{{- /*
+  The canonical registry of the desktop's site pages — the single source of
+  truth for every chrome surface that presents them:
+    launcher.html — the dock tiles (launcherOrder)
+    hud.html      — the focused-app icon (launcherOrder, with a fallback)
+    dash.html     — the Applications category (dashOrder, kw haystacks)
+    baseof.html   — UP_SITE.nav, the URL map behind top-panel.ts nav:<key>
+
+  Per page: label, icon (launcher artwork path), url, match ("exact" or
+  "prefix" — how the page claims the current URL for active state), kw (the
+  Dash's search haystack), and optional dashLabel/dashIcon overrides where
+  the Dash presents the page differently (the home page is the Terminal).
+
+  Returns (dict "pages" <key->dict> "launcherOrder" ... "dashOrder" ...).
+*/ -}}
+{{- $pages := dict
+  "home" (dict
+    "label" "Home" "icon" "launcher/home"
+    "dashLabel" "Terminal" "dashIcon" "launcher/terminal"
+    "url" (relURL "") "match" "exact"
+    "kw" "terminal shell bash console neofetch prompt tty home start")
+  "cv" (dict
+    "label" "CV" "icon" "launcher/cv"
+    "url" (relURL "cv/") "match" "exact"
+    "kw" "cv resume curriculum vitae pdf work experience career history")
+  "blog" (dict
+    "label" "Blog" "icon" "launcher/blog"
+    "url" (relURL "posts/") "match" "prefix"
+    "kw" "blog posts articles writing files notes")
+  "projects" (dict
+    "label" "Projects" "icon" "launcher/projects"
+    "url" (relURL "projects/") "match" "exact"
+    "kw" "projects repositories repos github code open source software")
+  "sponsors" (dict
+    "label" "Sponsors" "icon" "launcher/heart"
+    "url" (relURL "sponsors/") "match" "exact"
+    "kw" "sponsors sponsorship support donate heart thanks")
+  "icons" (dict
+    "label" "Icons" "icon" "launcher/image-viewer"
+    "url" (relURL "icons/") "match" "exact"
+    "kw" "icons gallery artwork svg viewer images eye of gnome")
+-}}
+{{- return (dict
+  "pages" $pages
+  "launcherOrder" (slice "home" "cv" "projects" "blog" "sponsors")
+  "dashOrder" (slice "home" "blog" "cv" "projects" "sponsors" "icons")
+) -}}

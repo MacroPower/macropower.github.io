@@ -23,19 +23,19 @@
   Sections with data-dash-cap collapse to that many matches behind a Unity
   "See N more results" expander; the rest always show every match.
 */ -}}
-{{- $apps := slice
-  (dict "label" "Terminal" "icon" "launcher/terminal" "url" (relURL "")
-        "kw" "terminal shell bash console neofetch prompt tty home start")
-  (dict "label" "Blog" "icon" "launcher/blog" "url" (relURL "posts/")
-        "kw" "blog posts articles writing files notes")
-  (dict "label" "CV" "icon" "launcher/cv" "url" (relURL "cv/")
-        "kw" "cv resume curriculum vitae pdf work experience career history")
-  (dict "label" "Projects" "icon" "launcher/projects" "url" (relURL "projects/")
-        "kw" "projects repositories repos github code open source software")
-  (dict "label" "Sponsors" "icon" "launcher/heart" "url" (relURL "sponsors/")
-        "kw" "sponsors sponsorship support donate heart thanks")
-  (dict "label" "Icons" "icon" "launcher/image-viewer" "url" (relURL "icons/")
-        "kw" "icons gallery artwork svg viewer images eye of gnome")
+{{- /* Page tiles come from the shared site-pages.html registry; the
+       desktop "applications" (Studio, Trash, ...) are Dash-only. */ -}}
+{{- $reg := partial "site-pages.html" . -}}
+{{- $apps := slice -}}
+{{- range $reg.dashOrder -}}
+  {{- $p := index $reg.pages . -}}
+  {{- $apps = $apps | append (dict
+      "label" (or $p.dashLabel $p.label)
+      "icon" (or $p.dashIcon $p.icon)
+      "url" $p.url
+      "kw" $p.kw) -}}
+{{- end -}}
+{{- $apps = $apps | append (slice
   (dict "label" "Studio" "icon" "launcher/piano" "action" "studio"
         "kw" "studio daw music midi sequencer synth piano roll lmms audio")
   (dict "label" "Trash" "icon" "launcher/trash" "action" "trash"
@@ -48,7 +48,7 @@
         "kw" "lock screen security password greeter lightdm")
   (dict "label" "Log Out" "icon" "launcher/doorway" "action" "logout"
         "kw" "log out logout session quit exit leave goodbye")
--}}
+) -}}
 {{- $posts := where .Site.RegularPages "Section" "posts" -}}
 {{- $playlist := partial "playlist.html" . -}}
 <div class="up-dash" data-up-dash hidden>

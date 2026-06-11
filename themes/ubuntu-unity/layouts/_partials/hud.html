@@ -5,16 +5,17 @@
   mutations (the hotspot row's Enable/Disable flip) stay honest.
 
   The left tile shows the focused app's icon, like Unity: the page window is
-  the only "app", so mirror launcher.html's per-page icon mapping (keep the
-  two in sync) with a browser-window fallback for pages off the launcher.
+  the only "app", so map the current page through the site-pages.html
+  registry's launcher set (shared with launcher.html) with a browser-window
+  fallback for pages off the launcher.
 */ -}}
 {{- $current := .RelPermalink -}}
+{{- $reg := partial "site-pages.html" . -}}
 {{- $icon := "launcher/browser-window" -}}
-{{- if eq $current (relURL "") }}{{ $icon = "launcher/home" }}{{ end -}}
-{{- if eq $current (relURL "cv/") }}{{ $icon = "launcher/cv" }}{{ end -}}
-{{- if hasPrefix $current (relURL "posts/") }}{{ $icon = "launcher/blog" }}{{ end -}}
-{{- if eq $current (relURL "projects/") }}{{ $icon = "launcher/projects" }}{{ end -}}
-{{- if eq $current (relURL "sponsors/") }}{{ $icon = "launcher/heart" }}{{ end -}}
+{{- range $reg.launcherOrder -}}
+  {{- $p := index $reg.pages . -}}
+  {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}{{ $icon = $p.icon }}{{ end -}}
+{{- end -}}
 <div class="up-hud" data-up-hud hidden>
   <div class="up-hud-backdrop" data-hud-backdrop aria-hidden="true"></div>
   <section class="up-hud-panel" role="dialog" aria-modal="true" aria-label="HUD menu search">

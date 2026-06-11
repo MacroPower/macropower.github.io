@@ -8,19 +8,13 @@ import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
-const LAUNCHER_URLS: Record<string, string> = {
-  cv: "/cv/",
-  blog: "/posts/",
-  projects: "/projects/",
-  sponsors: "/sponsors/",
-  icons: "/icons/",
-};
-
-const EMPTY_SITE: UPSite = { handle: "", github: "", repo: "", rss: "" };
+const EMPTY_SITE: UPSite = { handle: "", github: "", repo: "", rss: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
+// nav:<key> targets are SSR'd into UP_SITE.nav from the site-pages.html
+// registry, so the URL map lives in one place on the Hugo side.
 function navigate(key: string): void {
-  const url = LAUNCHER_URLS[key];
+  const url = getSite().nav[key];
   if (!url) {
     console.warn("ubuntu-unity: no launcher URL for", key);
     return;
