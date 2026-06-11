@@ -1,5 +1,6 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
 import { WINDOW_STATE_EVENT } from "./page-window";
+import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
 import { showShortcuts } from "./shortcuts";
 import { showLock } from "./lock";
@@ -284,8 +285,10 @@ async function handleHotspot(): Promise<void> {
     indicator?.classList.remove("is-hotspot");
     body?.querySelector("[data-hotspot-status]")?.remove();
     if (trigger) trigger.textContent = "Enable hotspot";
-    await dlg({ icon: "info", title: "Hotspot disabled",
-      body: "Wi-Fi hotspot turned off. Other devices can no longer share this connection." });
+    // Passive state change, passive surface: a bubble, not a modal dialog —
+    // network-manager's own manners.
+    notify({ icon: "network", title: "Hotspot disabled",
+      body: "Other devices can no longer share this connection." });
     return;
   }
 
@@ -309,6 +312,8 @@ async function handleHotspot(): Promise<void> {
     status.textContent = "Hotspot active · personal-site (2 devices)";
     body.insertBefore(status, body.firstChild);
   }
+  notify({ icon: "network", title: "Hotspot active",
+    body: "Broadcasting 'personal-site'. Other devices can now share this connection." });
 }
 
 // Exported for dash.ts: the Dash's app tiles reuse the panel's action
@@ -377,20 +382,43 @@ async function netClick(row: HTMLElement): Promise<void> {
       body: "You're connected to " + name + "." });
     return;
   }
+  const current = document.querySelector<HTMLElement>(".up-net-row[data-net-on]")?.dataset.netName;
   const r = await dlg({
     icon: "question", title: "Connect to " + name + "?",
-    body: "This will disconnect you from café-do-bairro. Continue?",
+    body: current
+      ? "This will disconnect you from " + current + ". Continue?"
+      : "Continue?",
     buttons: [
       { id: "cancel", label: "Cancel" },
       { id: "connect", label: "Connect", primary: true },
     ],
   });
-  if (r === "connect") {
+  if (r !== "connect") return;
+  if (name === "(hidden)") {
+    // The one network you can never join; the gag survives the others
+    // becoming connectable.
     await dlg({
       icon: "warning", title: "Couldn't connect",
       body: "Authentication failed for " + name + ". Check the password and try again.",
     });
+    return;
   }
+  // Move the connection: the ●/○ dot, is-on, is-strong (the active-AP bold),
+  // and data-net-on always travel together (data-net-on is what netClick
+  // itself reads back).
+  for (const prev of Array.from(document.querySelectorAll<HTMLElement>(".up-net-row[data-net-on]"))) {
+    prev.removeAttribute("data-net-on");
+    prev.classList.remove("is-on", "is-strong");
+    const dot = prev.querySelector(".up-net-row-dot");
+    if (dot) dot.textContent = "○";
+  }
+  row.setAttribute("data-net-on", "");
+  row.classList.add("is-on", "is-strong");
+  const dot = row.querySelector(".up-net-row-dot");
+  if (dot) dot.textContent = "●";
+  // nm-applet's classic toast, verbatim phrasing.
+  notify({ icon: "network", title: "Connection Established",
+    body: "You are now connected to '" + name + "'." });
 }
 
 export function initTopPanel(): void {
@@ -659,8 +687,32 @@ export function initTopPanel(): void {
     vol.level = Number(slider.value);
     vol.muted = false;
     audio.setVolume(vol.level);
+    // The engine's mute flag gates its gain independently of the level;
+    // without this a drag while muted unmutes the UI but not the audio.
+    audio.setMuted(false);
     syncVolUI();
   });
+
+  // Unity's sound indicator takes the scroll wheel. The change reports
+  // through the synchronous notify-osd bubble, except while the sound menu
+  // is open — its own slider/readout already show the level, and the bubble
+  // would paint over the menu (mirroring the now-playing suppression below).
+  const volTrigger = panel.querySelector<HTMLElement>('[data-indicator="vol"]');
+  volTrigger?.addEventListener("wheel", (e) => {
+    // Horizontal trackpad swipes (deltaY 0) are not a volume gesture; let
+    // them through untouched rather than reading "not up" as "down".
+    if (e.deltaY === 0) return;
+    e.preventDefault();
+    const step = e.deltaY < 0 ? 5 : -5;
+    vol.level = Math.min(100, Math.max(0, vol.level + step));
+    vol.muted = false;
+    audio.setVolume(vol.level);
+    audio.setMuted(false);
+    syncVolUI();
+    if (openTrigger?.dataset.indicator !== "vol") {
+      notifyValue({ value: vol.level, icon: "volume", label: `Volume ${vol.level}%` });
+    }
+  }, { passive: false });
 
   panel.addEventListener("click", (e) => {
     const target = e.target as Element | null;
@@ -699,7 +751,25 @@ export function initTopPanel(): void {
   // Play state flows through the audio module's pub/sub (not the toggle()
   // promise) so the Studio transport and this panel always agree, whichever
   // one started or stopped playback.
-  audio.onChange(() => syncPlayUI(audio.isPlaying()));
+  //
+  // Playback starting or switching tracks also raises the Rhythmbox-style
+  // "now playing" bubble — except while the sound menu is open, where its own
+  // label already says so (and the bubble would paint over the menu). A track
+  // switch mid-playback emits stop+start back to back; notify()'s replace
+  // semantics fold those into one bubble.
+  let lastTrack = audio.trackIndex();
+  let lastPlaying = audio.isPlaying();
+  audio.onChange(() => {
+    const playing = audio.isPlaying();
+    const track = audio.trackIndex();
+    syncPlayUI(playing);
+    const volMenuOpen = openTrigger?.dataset.indicator === "vol";
+    if (playing && (!lastPlaying || track !== lastTrack) && !volMenuOpen) {
+      notify({ icon: "music", title: "Now playing", body: audio.trackName() });
+    }
+    lastTrack = track;
+    lastPlaying = playing;
+  });
 
   syncVolUI();
   syncTitle();

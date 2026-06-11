@@ -32,6 +32,7 @@ const SECTIONS: ShortcutSection[] = [
       { combos: [["Enter"]], desc: "Confirm the focused dialog" },
       { combos: [["Drag"]], desc: "Move a window or dialog (titlebar)", gesture: true },
       { combos: [["Double-click"]], desc: "Maximize or restore (titlebar)", gesture: true },
+      { combos: [["Scroll"]], desc: "Adjust the volume (sound indicator)", gesture: true },
     ],
   },
   {
