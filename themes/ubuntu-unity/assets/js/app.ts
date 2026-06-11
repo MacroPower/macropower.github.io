@@ -1,4 +1,5 @@
 import { initDialogs } from "./dialogs";
+import { initNotify } from "./notify";
 import { initTopPanel } from "./top-panel";
 import { initTrash } from "./trash";
 import { initDaw } from "./daw";
@@ -16,6 +17,9 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 }
 
 initDialogs();
+// Before initTopPanel so its bubbles are available the moment the volume
+// slider (or any other panel control) first fires one.
+initNotify();
 // Before initTopPanel so the lock overlay's window keydown listener is
 // registered first and can stopImmediatePropagation past the dropdown-close
 // handler when Esc unlocks.

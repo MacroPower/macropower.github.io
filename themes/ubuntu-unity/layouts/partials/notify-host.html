@@ -1,0 +1,22 @@
+{{/* NotifyOSD host — notify.ts mounts bubbles here (see the DOM contracts in
+     CLAUDE.md). The host is pointer-events:none so bubbles never take input,
+     exactly like the real daemon; aria-live announces additions. The template
+     ships every named icon a bubble can request: notify.ts clones entries by
+     data-icon key (the #up-project-icons pattern), so the bundle holds no
+     inline SVG strings and each clone keeps icon.html's namespaced ids. */}}
+<div class="up-notify-host" data-up-notify aria-live="polite">
+  <template data-notify-icons>
+    <span data-icon="info">{{ partial "icon.html" "glyphs/info" }}</span>
+    <span data-icon="warning">{{ partial "icon.html" "glyphs/warning" }}</span>
+    <span data-icon="question">{{ partial "icon.html" "glyphs/question" }}</span>
+    <span data-icon="success">{{ partial "icon.html" "glyphs/check-circle" }}</span>
+    <span data-icon="volume">{{ partial "icon.html" "glyphs/volume" }}</span>
+    <span data-icon="volume-muted">{{ partial "icon.html" "glyphs/volume-mute" }}</span>
+    <span data-icon="network">{{ partial "icon.html" "glyphs/panel-net" }}</span>
+    <span data-icon="battery">{{ partial "icon.html" "glyphs/battery" }}</span>
+    <span data-icon="heart">{{ partial "icon.html" "glyphs/heart" }}</span>
+    <span data-icon="lock">{{ partial "icon.html" "glyphs/lock" }}</span>
+    <span data-icon="terminal">{{ partial "icon.html" "glyphs/terminal" }}</span>
+    <span data-icon="music">{{ partial "icon.html" "launcher/music" }}</span>
+  </template>
+</div>

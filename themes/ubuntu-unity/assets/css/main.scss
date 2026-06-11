@@ -2432,6 +2432,67 @@ body.up-reduce-motion *{
   .up-dash-search{font-size:16px}
 }
 
+/* ---- notify-osd bubbles -------------------------------------------------- */
+/* Ubuntu's passive notification daemon: dark translucent bubbles in the
+   top-right, below the panel. The whole host is pointer-events:none — bubbles
+   never take a click — and notify.ts veils whichever bubble the pointer rests
+   on (.is-veiled) so the content underneath stays legible, the daemon's
+   signature move. z-index 1500 paints over dialogs (1000+) and context menus
+   (1100) the way real bubbles floated over everything; only the lock screen
+   (2000) covers them. */
+.up-notify-host{
+  position:fixed;
+  top:33px; right:12px;
+  z-index:1500;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:10px;
+  pointer-events:none;
+}
+.up-notify-bubble{
+  display:flex; align-items:center; gap:13px;
+  width:min(300px, calc(100vw - 24px));
+  padding:13px 15px;
+  background:rgba(22,21,20,.88);
+  border:1px solid rgba(0,0,0,.55);
+  border-radius:9px;
+  box-shadow:0 6px 22px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+  color:#fff;
+  opacity:0;
+  transition:opacity .25s ease;
+  &.is-visible{opacity:.97}
+  /* After .is-visible so the veil wins while both classes are on. */
+  &.is-veiled{opacity:.38}
+}
+.up-notify-icon{
+  flex:0 0 auto;
+  display:inline-flex;
+  color:rgba(255,255,255,.92);
+  svg{width:34px;height:34px}
+}
+.up-notify-text{
+  min-width:0;
+  overflow-wrap:break-word;
+}
+.up-notify-title{
+  font-size:14.5px; font-weight:500; line-height:1.3;
+}
+.up-notify-body{
+  margin-top:2px;
+  font-size:13px; line-height:1.35;
+  color:rgba(255,255,255,.78);
+}
+/* The synchronous (volume-style) bubble: icon + value bar, no text. The bar
+   is the battery dropdown's, so it follows the accent like everything else. */
+.up-notify-bar{
+  flex:1 1 auto;
+  height:8px; background:rgba(255,255,255,.12);
+  border-radius:2px; overflow:hidden;
+}
+.up-notify-bar-fill{
+  display:block; height:100%;
+  background:linear-gradient(90deg,var(--orange),var(--orange-light));
+}
+
 /* ---- lock screen ------------------------------------------------------- */
 /* Full-viewport Ubuntu greeter. z-index 2000 keeps it above a multi-dialog
    stack (dialogs sit at 1000 + depth*2). Fades in via the shared appear
