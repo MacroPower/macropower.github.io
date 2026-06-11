@@ -15,7 +15,7 @@ import {
 
 const GAP = 3; // columns between the ASCII art and the info block
 
-// Applies the color-mask (home-colors.txt) over a single ASCII art line,
+// Applies the color-mask (assets/home/colors.txt) over a single ASCII art line,
 // grouping same-colored runs into truecolor SGR sequences. Colored runs reset
 // only the foreground (FG_DEFAULT), never the full attributes, so a line-level
 // BOLD wrapper survives across every run -- the whole art renders semi-bold.

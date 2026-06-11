@@ -13,8 +13,8 @@
 {{- $days := div (sub $tnow.Unix $bdLast.Unix) 86400 -}}
 {{- $uptime := printf "%d years, %d days" $years $days -}}
 {{- /* Mask codes (O Y G B P C R M, space = no color) are mapped to truecolor in banner.ts. */ -}}
-{{- $ascii  := readFile "layouts/partials/page/home-ascii.txt" -}}
-{{- $colors := readFile "layouts/partials/page/home-colors.txt" -}}
+{{- $ascii  := (resources.Get "home/ascii.txt").Content -}}
+{{- $colors := (resources.Get "home/colors.txt").Content -}}
 {{- $socials := slice -}}
 {{- range .Site.Params.social -}}
   {{- $label := .short | default .name -}}

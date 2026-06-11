@@ -1,5 +1,5 @@
 // ANSI escape helpers and the One Dark palette shared by readline, banner,
-// and commands. Hex values mirror the swatches enumerated in layouts/index.html
+// and commands. Hex values mirror the swatches enumerated in layouts/home.html
 // and the --aod-* custom properties in main.scss; keep them in sync.
 
 const ESC = "\x1b[";
@@ -84,7 +84,7 @@ export const PALETTE_BRIGHT = {
   white: "#DCDFE4",
 } as const;
 
-// Maps neofetch color-mask letters (home-colors.txt) to palette hex values.
+// Maps neofetch color-mask letters (assets/home/colors.txt) to palette hex values.
 export const MASK_COLORS: Record<string, string> = {
   O: PALETTE.orange,
   Y: PALETTE.yellow,
