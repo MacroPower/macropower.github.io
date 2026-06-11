@@ -1,5 +1,36 @@
+{{- /*
+  Inlines assets/icons/<name>.svg by body. Icons that paint with their own
+  defs (gradients/filters referenced as url(#id), or in-file href="#id" uses)
+  get those ids suffixed with a per-call counter: the same icon is inlined
+  several times per page (launcher tile, dash tile, icon vault), id lookups
+  resolve to the first match in the whole document, and when that first copy
+  sits in a hidden subtree (e.g. the SSR-hidden Studio launcher tile) browsers
+  drop the paint and every later copy renders with transparent fills. Only
+  ids the file both defines and references are rewritten, so cross-file defs
+  (lang-symbols' #lang-* / #pf-folder-*, consumed by other partials via
+  <use href>) keep their stable names. Must stay a plain partial — caching it
+  would collapse the per-call suffixes back into duplicates.
+*/ -}}
 {{- with resources.Get (printf "icons/%s.svg" .) -}}
-  {{- .Content | safeHTML -}}
+  {{- $c := .Content -}}
+  {{- $ids := slice -}}
+  {{- range findRE `url\(#[^)]+\)` $c -}}
+    {{- $ids = $ids | append (. | strings.TrimPrefix "url(#" | strings.TrimSuffix ")") -}}
+  {{- end -}}
+  {{- range findRE `href="#[^"]+"` $c -}}
+    {{- $ids = $ids | append (. | strings.TrimPrefix `href="#` | strings.TrimSuffix `"`) -}}
+  {{- end -}}
+  {{- with $ids | uniq -}}
+    {{- $n := math.Counter -}}
+    {{- range . -}}
+      {{- if strings.Contains $c (printf `id="%s"` .) -}}
+        {{- $c = replace $c (printf `id="%s"` .) (printf `id="%s-%d"` . $n) -}}
+        {{- $c = replace $c (printf `url(#%s)` .) (printf `url(#%s-%d)` . $n) -}}
+        {{- $c = replace $c (printf `href="#%s"` .) (printf `href="#%s-%d"` . $n) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $c | safeHTML -}}
 {{- else -}}
   {{- errorf "icon.html: icons/%s.svg not found" . -}}
 {{- end -}}
