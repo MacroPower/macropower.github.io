@@ -2432,6 +2432,85 @@ body.up-reduce-motion *{
   .up-dash-search{font-size:16px}
 }
 
+/* ---- HUD (Alt-tap menu search) ------------------------------------------ */
+/* The Dash's sibling: same glass, same anchor under the panel, same overlay
+   tier (the two are mutually exclusive, so they share z-index 38). A narrower
+   panel — one search row over at most five result rows — because the HUD is
+   a command line for the menus, not a browse surface. */
+.up-hud{
+  position:fixed;
+  top:24px; left:var(--launcher-w); right:0; bottom:0;
+  z-index:38;
+  pointer-events:none;
+  /* Same .is-visible gate as the Dash: the closing fade must not eat input. */
+  &.is-visible > *{pointer-events:auto}
+  opacity:0;
+  transition:opacity .16s ease;
+  &[hidden]{display:none}
+  &.is-visible{opacity:1}
+}
+.up-hud-backdrop{
+  position:absolute; inset:0;
+  background:rgba(10,1,8,.25);
+}
+.up-hud-panel{
+  @include up-dash-glass;
+  position:absolute; top:0; left:0;
+  width:min(560px, 100%);
+}
+.up-hud.is-visible .up-hud-panel{transform:scale(1)}
+
+.up-hud-searchrow{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px;
+}
+.up-hud-appicon{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+  width:44px; height:44px;
+  background:rgba(0,0,0,.30);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:7px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
+  svg{width:32px;height:32px}
+}
+.up-hud-input{
+  @include up-dash-field;
+  flex:1 1 auto; min-width:0;
+  padding:9px 14px;
+  font:300 19px/1.3 "Ubuntu",sans-serif;
+}
+.up-hud-results{
+  list-style:none; margin:0; padding:0;
+  &.has-results{
+    padding:4px 0 8px;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+}
+.up-hud-row{
+  /* 14 (row padding) + 44 (app icon) + 12 (gap) + 14 (input padding) aligns
+     the row text with the query text above it. */
+  padding:8px 16px 8px 84px;
+  font-size:15px;
+  cursor:default;
+  &:hover{background:rgba(255,255,255,.07)}
+  &.is-selected{
+    background:linear-gradient(180deg,var(--orange-light),var(--orange-dark));
+    .up-hud-row-path{color:rgba(255,255,255,.78)}
+    .up-hud-row-label{color:#fff}
+  }
+}
+.up-hud-row-path{color:rgba(255,255,255,.52)}
+.up-hud-row-label{color:rgba(255,255,255,.92)}
+
+@media (max-width:560px){
+  .up-hud-panel{
+    width:100%;
+    border-bottom-right-radius:0;border-right:0;
+  }
+  .up-hud-input{font-size:16px}
+}
+
 /* ---- notify-osd bubbles -------------------------------------------------- */
 /* Ubuntu's passive notification daemon: dark translucent bubbles in the
    top-right, below the panel. The whole host is pointer-events:none — bubbles

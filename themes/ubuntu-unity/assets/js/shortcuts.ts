@@ -2,9 +2,11 @@
 // the desktop actually implements, rendered as native rows of keycap chips
 // (GNOME-shortcuts-window style) through the dialog `render` hook. Purely
 // presentational — every row documents a handler that lives elsewhere
-// (dialogs.ts, drag.ts, page-window.ts, filter-nav.ts, shell/readline.ts,
-// shell/terminal.ts for the Shift+Tab focus escape screenReaderMode enables);
-// keep the table in sync when bindings change.
+// (dialogs.ts, drag.ts, hud.ts for the Alt tap, top-panel.ts for the sound
+// indicator's scroll wheel, page-window.ts, filter-nav.ts,
+// projects-desktop.ts, shell/readline.ts, shell/terminal.ts for the Shift+Tab
+// focus escape screenReaderMode enables); keep the table in sync when
+// bindings change.
 
 interface ShortcutRow {
   /** Alternative combos; each combo is a list of keycap labels. */
@@ -28,6 +30,7 @@ const SECTIONS: ShortcutSection[] = [
     title: "Desktop",
     rows: [
       { combos: [["Super"]], desc: "Open the Dash (or click the launcher's top button)" },
+      { combos: [["Alt"]], desc: "Open the HUD and search the menus" },
       { combos: [["Esc"]], desc: "Dismiss menus and dialogs" },
       { combos: [["Enter"]], desc: "Confirm the focused dialog" },
       { combos: [["Drag"]], desc: "Move a window or dialog (titlebar)", gesture: true },
@@ -36,12 +39,12 @@ const SECTIONS: ShortcutSection[] = [
     ],
   },
   {
-    title: "Dash",
+    title: "Dash & HUD",
     hint: "Esc clears the search first, then closes.",
     rows: [
       { combos: [["Arrows"]], desc: "Move between results" },
       { combos: [["Enter"]], desc: "Open the best match" },
-      { combos: [["Tab"]], desc: "Jump to the expanders and lens bar" },
+      { combos: [["Tab"]], desc: "Jump to the expanders and lens bar (Dash)" },
     ],
   },
   {

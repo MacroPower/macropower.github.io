@@ -371,7 +371,11 @@ export function initDash(): void {
     const lock = document.querySelector<HTMLElement>("[data-up-lock]");
     if (lock && !lock.hidden) return true;
     const host = document.getElementById("up-dialog-host");
-    return Boolean(host && host.childElementCount > 0);
+    if (host && host.childElementCount > 0) return true;
+    // The HUD and the Dash are mutually exclusive overlays (hud.ts holds the
+    // mirror-image check); Esc out of one before tapping into the other.
+    const hud = document.querySelector<HTMLElement>("[data-up-hud]");
+    return Boolean(hud && !hud.hidden);
   };
 
   window.addEventListener("keydown", (e) => {
