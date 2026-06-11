@@ -1,5 +1,5 @@
 // The Unity Dash: the translucent search overlay behind the launcher's BFB
-// (the Ubuntu button) and a Super tap. Everything searchable is SSR'd into
+// (the Dash button) and a Super tap. Everything searchable is SSR'd into
 // partials/dash.html as tiles grouped in category sections; this module only
 // filters, ranks, and dispatches — it never invents content.
 //

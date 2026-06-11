@@ -448,23 +448,25 @@ svg[hidden]{ display:none; }
   -webkit-backdrop-filter:blur(8px);
 }
 .up-launcher-spacer{ flex:1 1 auto; }
-/* The BFB (Ubuntu button) opening the Dash. Deliberately never .is-active /
+/* The BFB (Dash button) opening the Dash. Deliberately never .is-active /
    .is-focused — those classes are page-window contracts on launcher tiles;
    dash.ts toggles .is-open instead. */
 .up-launcher-bfb{
-  margin-bottom:4px;
-  &::after{
-    /* faint separator between the BFB and the app tiles, like Unity */
-    content:"";
-    position:absolute; left:6px; right:6px; bottom:-3px;
-    height:1px;
-    background:rgba(255,255,255,.10);
-  }
   &.is-open .up-launcher-icon{
     filter:drop-shadow(0 0 7px up-accent(75%, "orange-light"));
   }
   /* while the Dash is up the tooltip would float over its search bar */
   &.is-open .up-tooltip{display:none}
+}
+/* Separator between the BFB and the app tiles, like Unity. A standalone
+   element rather than a ::after on the BFB so the tile's :active/:hover
+   scale transform can't drag the line along with the icon. */
+.up-launcher-sep{
+  flex:0 0 auto;
+  width:36px; height:1px;
+  margin:-3px 0;
+  background:rgba(255,255,255,.28);
+  box-shadow:0 1px 0 rgba(0,0,0,.45);
 }
 .up-launcher-tile{
   position:relative;
@@ -3116,6 +3118,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   }
   .up-launcher-arrow-left{ left:-6px; }
   .up-launcher-arrow-right{ right:-6px; }
+  .up-launcher-sep{ width:30px; }
   .up-window-stage{
     padding:12px 8px;
   }
