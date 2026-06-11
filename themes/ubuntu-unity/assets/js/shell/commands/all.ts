@@ -17,6 +17,7 @@ import { basename, dirname, realpath } from "./path";
 import { df, du, file, find, stat, tree } from "./find";
 import { arch, cal, groups, hostname, id, uname } from "./sysinfo";
 import { less, more } from "./pager";
+import { notifySend } from "./notify";
 import {
   alias, envCmd, exportCmd, man, setCmd, typeCmd, unalias, unset, which,
 } from "./builtins";
@@ -34,6 +35,7 @@ export const ALL_COMMANDS: Command[] = [
   less, more,
   alias, unalias, exportCmd, envCmd, setCmd, unset, which, typeCmd,
   social, links, date, uptime, history, clear,
+  notifySend,
   tru, fls,
   colon, test, testBracket, printf,
   sudo, exit,

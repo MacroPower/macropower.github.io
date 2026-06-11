@@ -464,3 +464,50 @@ describe("command resolution agrees with the filesystem", () => {
     expect(sh.run("[ -d /usr/bin ] && [ -d /bin ] && echo ok").stdout).toBe("ok\n");
   });
 });
+
+describe("notify-send", () => {
+  // The dispatch itself is fenced behind a typeof-window guard (headless Node
+  // has no notification daemon to reach), so these cover the CLI surface:
+  // argument validation and the quiet success contract.
+  it("succeeds quietly with a summary, body, and options", () => {
+    const sh = makeShell();
+    for (const line of [
+      "notify-send hello",
+      "notify-send 'Connection Established' \"You are now connected to 'café-do-bairro'.\"",
+      "notify-send -i info -t 3000 -u low hi there",
+      "notify-send --icon=music --expire-time=2000 --urgency=critical hi",
+    ]) {
+      const r = sh.run(line);
+      expect(r.stdout).toBe("");
+      expect(r.stderr).toBe("");
+      expect(r.status).toBe(0);
+    }
+  });
+  it("requires a summary", () => {
+    const r = makeShell().run("notify-send");
+    expect(r.stderr).toBe("notify-send: no summary specified\n");
+    expect(r.status).toBe(1);
+  });
+  it("treats everything after -- as operands", () => {
+    const sh = makeShell();
+    expect(sh.run("notify-send -- -dashed-summary").status).toBe(0);
+    expect(sh.run("notify-send -i info -- -t 'not an option'").status).toBe(0);
+    expect(sh.run("notify-send -- a b c").stderr).toBe("notify-send: invalid number of options\n");
+  });
+  it("rejects extra operands, unknown options, and bad values", () => {
+    const sh = makeShell();
+    expect(sh.run("notify-send a b c").stderr).toBe("notify-send: invalid number of options\n");
+    expect(sh.run("notify-send -x hi").stderr).toBe("notify-send: unknown option -x\n");
+    expect(sh.run("notify-send -t nope hi").stderr).toBe("notify-send: invalid expire time 'nope'\n");
+    expect(sh.run("notify-send -u loud hi").stderr).toBe(
+      "notify-send: unknown urgency loud specified, known urgency levels: low, normal, critical\n",
+    );
+    expect(sh.run("notify-send -i").stderr).toBe("notify-send: option '--icon' requires a value\n");
+    expect(sh.run("notify-send -u loud hi").status).toBe(1);
+  });
+  it("is a real program on PATH, not a builtin", () => {
+    const sh = makeShell();
+    expect(sh.run("which notify-send").stdout).toBe("/usr/bin/notify-send\n");
+    expect(sh.run("type notify-send").stdout).toBe("notify-send is /usr/bin/notify-send\n");
+  });
+});
