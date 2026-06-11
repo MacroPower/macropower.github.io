@@ -9,7 +9,7 @@
                Appearance, ...). Page tiles are real <a>; app tiles are
                <button data-dash-action> dispatched by dash.ts.
     files    — blog posts (newest first), real <a>.
-    projects — site.Data.projects, real <a> to GitHub (new tab, like the
+    projects — hugo.Data.projects, real <a> to GitHub (new tab, like the
                projects grid's open behavior).
     music    — the bundled playlist as anonymous "Track N" buttons
                (music:<i> selects the track, opens the Studio, and plays).
@@ -119,7 +119,7 @@
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
-          {{- range .Site.Data.projects }}
+          {{- range hugo.Data.projects }}
           <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
              target="_blank" rel="noopener" title="{{ .description }}"
              data-keywords="project repository github {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">

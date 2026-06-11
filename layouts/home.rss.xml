@@ -10,7 +10,7 @@
     <link>{{ .Permalink }}</link>
     <description>{{ site.Params.description }}</description>
     <generator>Hugo</generator>
-    <language>{{ site.Language.LanguageCode }}</language>
+    <language>{{ site.Language.Locale }}</language>
     {{- with site.Copyright }}
     <copyright>{{ . }}</copyright>
     {{- end }}

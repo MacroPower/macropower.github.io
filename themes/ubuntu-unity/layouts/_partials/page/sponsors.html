@@ -3,7 +3,7 @@
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
       (dict "label" "Home" "url" "/")
       (dict "label" "Sponsors" "url" .RelPermalink))) }}
-  {{- $sponsors := site.Data.sponsors -}}
+  {{- $sponsors := hugo.Data.sponsors -}}
   <div class="up-sponsors-grid">
     {{- $iconHeart := partial "icon.html" "glyphs/heart" -}}
     {{ partial "page/naut-sidebar.html" (dict

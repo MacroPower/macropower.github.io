@@ -1,6 +1,6 @@
 baseURL      = "https://jacobcolvin.com"
 title        = "Jacob Colvin"
-languageCode = "en-us"
+locale       = "en-us"
 theme        = "ubuntu-unity"
 
 # Maximum number of items in the RSS feed.
