@@ -13,9 +13,9 @@ mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put
 both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual
 mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I
 discovered.&lt;/p&gt;
-&lt;p&gt;As of writing, I have made a purchase (I went with the MyElectronics chassis)
-and am waiting for it to arrive. I will eventually be writing another article
-covering my exact setup.&lt;/p&gt;</description></item><item><title>Backups for K8s and Beyond</title><link>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</link><pubDate>Thu, 05 Jan 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</guid><description>&lt;h2 id="intro"&gt;Intro&lt;/h2&gt;
+&lt;p&gt;As of writing, I have made a purchase (I went with the MyElectronics chassis).&lt;/p&gt;
+&lt;h2 id="1u"&gt;1U&lt;/h2&gt;
+&lt;p&gt;1U chassis will not fit a Turing Pi. So, I did not evaluate these.&lt;/p&gt;</description></item><item><title>Backups for K8s and Beyond</title><link>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</link><pubDate>Thu, 05 Jan 2023 00:00:00 +0000</pubDate><guid>https://jacobcolvin.com/posts/2023/01/backups-for-k8s-and-beyond/</guid><description>&lt;h2 id="intro"&gt;Intro&lt;/h2&gt;
 &lt;p&gt;Recently I have been moving my &lt;a href="https://github.com/MacroPower/homelab"&gt;homelab&lt;/a&gt; to Kubernetes. This has
 presented the need for a backup solution for any persistent data I might have
 there. For quite some time, I have been using &lt;a href="https://github.com/duplicati/duplicati"&gt;Duplicati&lt;/a&gt; for my

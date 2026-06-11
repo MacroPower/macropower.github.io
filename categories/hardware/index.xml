@@ -3,6 +3,6 @@ mini-ITX cluster board), alongside a normal mini-ITX system. I wanted to put
 both of these in a single chassis to save space, which is possible with a &amp;ldquo;dual
 mini-itx&amp;rdquo;, or &amp;ldquo;twin-itx&amp;rdquo; chassis. This article covers most of the chassis I
 discovered.&lt;/p&gt;
-&lt;p&gt;As of writing, I have made a purchase (I went with the MyElectronics chassis)
-and am waiting for it to arrive. I will eventually be writing another article
-covering my exact setup.&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;As of writing, I have made a purchase (I went with the MyElectronics chassis).&lt;/p&gt;
+&lt;h2 id="1u"&gt;1U&lt;/h2&gt;
+&lt;p&gt;1U chassis will not fit a Turing Pi. So, I did not evaluate these.&lt;/p&gt;</description></item></channel></rss>
