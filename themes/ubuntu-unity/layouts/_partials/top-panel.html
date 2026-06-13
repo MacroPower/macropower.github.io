@@ -1,4 +1,4 @@
-{{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
+{{- $handle := partial "ui/author-handle.html" . -}}
 {{- $longDate := now.Format "Monday, 2 January 2006" -}}
 {{- $time := now.Format "15:04" -}}
 {{- $shortDate := now.Format "Mon, Jan 2" -}}

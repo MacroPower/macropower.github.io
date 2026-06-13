@@ -1,4 +1,4 @@
-{{- $handle := (index (split (.Site.Params.author.name | default "user") " ") 0) | lower -}}
+{{- $handle := partial "ui/author-handle.html" . -}}
 {{- $files := slice
   (dict "icon" "flat/empty-file"    "label" "old-resume-FINAL-v3.pdf")
   (dict "icon" "flat/empty-file"    "label" "passwords.txt")
