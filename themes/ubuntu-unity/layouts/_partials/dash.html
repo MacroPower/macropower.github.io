@@ -65,13 +65,7 @@
 
       <section class="up-dash-section" data-dash-section="apps" aria-label="Applications">
         <header class="up-dash-cat">
-          <span class="up-dash-cat-icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
-              <circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/>
-              <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
-              <circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/>
-            </svg>
-          </span>
+          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-apps" }}</span>
           <span class="up-dash-cat-label">Applications</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
@@ -133,13 +127,7 @@
       {{- with $playlist }}
       <section class="up-dash-section" data-dash-section="music" aria-label="Music">
         <header class="up-dash-cat">
-          <span class="up-dash-cat-icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6.3 12.5 V3.8 L12.3 2.5 V11.2"/>
-              <circle cx="4.5" cy="12.5" r="1.8" fill="currentColor" stroke="none"/>
-              <circle cx="10.5" cy="11.2" r="1.8" fill="currentColor" stroke="none"/>
-            </svg>
-          </span>
+          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-music" }}</span>
           <span class="up-dash-cat-label">Music</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
@@ -167,11 +155,7 @@
         {{ partial "icon.html" "glyphs/home" }}
       </button>
       <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="Applications">
-        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
-          <circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/>
-          <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
-          <circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/dash-apps" }}
       </button>
       <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="Files &amp; Folders">
         {{ partial "icon.html" "glyphs/folder" }}
@@ -181,11 +165,7 @@
       </button>
       {{- with $playlist }}
       <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="Music">
-        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M6.3 12.5 V3.8 L12.3 2.5 V11.2"/>
-          <circle cx="4.5" cy="12.5" r="1.8" fill="currentColor" stroke="none"/>
-          <circle cx="10.5" cy="11.2" r="1.8" fill="currentColor" stroke="none"/>
-        </svg>
+        {{ partial "icon.html" "glyphs/dash-music" }}
       </button>
       {{- end }}
     </div>
