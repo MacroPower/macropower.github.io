@@ -3,7 +3,6 @@
     <h1 class="up-sr-only">Posts</h1>
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
-          (dict "label" "Home" "url" "/")
           (dict "label" "Posts" "url" .RelPermalink))
         "search" true) }}
     <div class="up-blog-grid">

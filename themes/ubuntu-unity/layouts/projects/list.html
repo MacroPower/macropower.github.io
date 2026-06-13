@@ -18,7 +18,6 @@
     </template>
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
-          (dict "label" "Home" "url" "/")
           (dict "label" "Projects" "url" .RelPermalink))
         "search" true
         "searchNoun" "projects"

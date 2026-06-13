@@ -9,8 +9,7 @@
   <article class="up-blog selectable" data-blog-kind="post">
     {{ partial "page/nav-pathbar.html" (dict
         "segments" (slice
-          (dict "label" "Home" "url" "/")
-          (dict "label" "Posts" "url" "/posts/")
+          (dict "label" "Posts" "url" .CurrentSection.RelPermalink)
           (dict "label" .Title "url" .RelPermalink))
         "prevURL" $prevURL "prevTitle" $prevTitle
         "nextURL" $nextURL "nextTitle" $nextTitle) }}

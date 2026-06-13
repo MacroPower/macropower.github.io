@@ -2,9 +2,8 @@
   {{- $plural := .Data.Plural -}}
   <article class="up-blog selectable" data-blog-kind="term">
     {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-        (dict "label" "Home" "url" "/")
-        (dict "label" "Posts" "url" "/posts/")
-        (dict "label" (humanize $plural) "url" (printf "/%s/" $plural))
+        (dict "label" "Posts" "url" (site.GetPage "/posts").RelPermalink)
+        (dict "label" (humanize $plural) "url" .Parent.RelPermalink)
         (dict "label" .Title "url" .RelPermalink))) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}

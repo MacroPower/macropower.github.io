@@ -1,7 +1,7 @@
 {{- $dateFmt := site.Params.dateform | default "Jan 2, 2006" -}}
 
 <article class="up-reader" data-up-reader>
-  <a class="up-reader-up" href="/posts/" aria-label="Back to all posts">
+  <a class="up-reader-up" href="{{ (site.GetPage "/posts").RelPermalink }}" aria-label="Back to all posts">
     {{ partial "icon.html" "glyphs/pathbar-back" }}
     <span>All posts</span>
   </a>

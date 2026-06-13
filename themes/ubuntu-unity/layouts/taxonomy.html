@@ -5,8 +5,7 @@
   <article class="up-blog selectable" data-blog-kind="taxonomy">
     <h1 class="up-sr-only">{{ humanize $plural }}</h1>
     {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-        (dict "label" "Home" "url" "/")
-        (dict "label" "Posts" "url" "/posts/")
+        (dict "label" "Posts" "url" (site.GetPage "/posts").RelPermalink)
         (dict "label" (humanize $plural) "url" .RelPermalink))) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}

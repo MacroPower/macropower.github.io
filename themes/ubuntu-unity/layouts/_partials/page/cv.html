@@ -1,7 +1,6 @@
 <article class="up-cv-page selectable">
   <h1 class="up-sr-only">CV</h1>
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" "Home" "url" "/")
       (dict "label" "CV" "url" .RelPermalink))) }}
   <div class="up-cv-grid">
     {{- $iconCv := partial "icon.html" "glyphs/cv-doc" -}}

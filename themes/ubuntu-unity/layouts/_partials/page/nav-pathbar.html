@@ -1,4 +1,8 @@
-{{- $segments := .segments -}}
+{{- /* Every breadcrumb roots at Home, so prepend it here (its URL and, via the
+      render loop's i==0 case, its house icon) and let callers pass only the
+      trail below it. */ -}}
+{{- $segments := slice (dict "label" "Home" "url" site.Home.RelPermalink) -}}
+{{- range .segments }}{{ $segments = $segments | append . }}{{ end -}}
 {{- $prevURL := .prevURL -}}
 {{- $nextURL := .nextURL -}}
 {{- $prevTitle := .prevTitle -}}
