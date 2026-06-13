@@ -1,0 +1,12 @@
+{{- /*
+  Compiles a TypeScript entry through esbuild (IIFE; minified in production),
+  fingerprints it, and emits a deferred <script> with an SRI integrity hash.
+  baseof.html routes every bundle through here so the build options and the
+  script-tag shape are defined once.
+
+  Args (dict): entry  — source path under assets/ (e.g. "js/blog.ts")
+               target — emitted path (e.g. "js/blog.js")
+*/ -}}
+{{- $opts := dict "targetPath" .target "minify" hugo.IsProduction "format" "iife" -}}
+{{- $built := resources.Get .entry | js.Build $opts | resources.Fingerprint -}}
+<script defer src="{{ $built.RelPermalink }}" integrity="{{ $built.Data.Integrity }}"></script>

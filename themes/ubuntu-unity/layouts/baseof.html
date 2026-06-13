@@ -31,45 +31,21 @@
 window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss "nav" $nav) | jsonify | safeJS }};
   </script>
 
-  {{ $jsOpts := dict
-      "targetPath" "js/app.js"
-      "minify" hugo.IsProduction
-      "format" "iife"
-  }}
-  {{ $js := resources.Get "js/app.ts" | js.Build $jsOpts | resources.Fingerprint }}
-  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{ partial "ui/script.html" (dict "entry" "js/app.ts" "target" "js/app.js") }}
 
   {{/* blog.js and projects.js no-op without their root data attribute
        ([data-blog-kind] / [data-projects-kind]); ship each only to the
        layouts that emit it, mirroring the shell bundle's IsHome gate. */}}
   {{ if or (eq .Section "posts") (in (slice "taxonomy" "term") .Kind) }}
-  {{ $blogOpts := dict
-      "targetPath" "js/blog.js"
-      "minify" hugo.IsProduction
-      "format" "iife"
-  }}
-  {{ $blog := resources.Get "js/blog.ts" | js.Build $blogOpts | resources.Fingerprint }}
-  <script defer src="{{ $blog.RelPermalink }}" integrity="{{ $blog.Data.Integrity }}"></script>
+  {{ partial "ui/script.html" (dict "entry" "js/blog.ts" "target" "js/blog.js") }}
   {{ end }}
 
   {{ if eq .Section "projects" }}
-  {{ $projectsOpts := dict
-      "targetPath" "js/projects.js"
-      "minify" hugo.IsProduction
-      "format" "iife"
-  }}
-  {{ $projects := resources.Get "js/projects.ts" | js.Build $projectsOpts | resources.Fingerprint }}
-  <script defer src="{{ $projects.RelPermalink }}" integrity="{{ $projects.Data.Integrity }}"></script>
+  {{ partial "ui/script.html" (dict "entry" "js/projects.ts" "target" "js/projects.js") }}
   {{ end }}
 
   {{ if .IsHome }}
-  {{ $shellOpts := dict
-      "targetPath" "js/shell.js"
-      "minify" hugo.IsProduction
-      "format" "iife"
-  }}
-  {{ $shell := resources.Get "js/shell/index.ts" | js.Build $shellOpts | resources.Fingerprint }}
-  <script defer src="{{ $shell.RelPermalink }}" integrity="{{ $shell.Data.Integrity }}"></script>
+  {{ partial "ui/script.html" (dict "entry" "js/shell/index.ts" "target" "js/shell.js") }}
   {{ end }}
 </body>
 </html>
