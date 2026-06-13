@@ -1,4 +1,4 @@
-{{- if not ($.Page.Scratch.Get "embed-pdf-count") -}}
+{{- if not ($.Page.Store.Get "embed-pdf-count") -}}
 
 <!--
 MIT License
@@ -111,10 +111,13 @@ SOFTWARE.
   </style>
 {{- end -}}
 
-{{- $.Page.Scratch.Add "embed-pdf-count" 1 -}}
-<div class="embed-pdf-container" id="embed-pdf-container-{{ substr (.Get "url" | md5) 0 8 }}">
-    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-{{ substr (.Get "url" | md5) 0 8 }}">
-        <div class="pdf-loading" id="pdf-loading-{{ substr (.Get "url" | md5) 0 8 }}"></div>
+{{- $.Page.Store.Add "embed-pdf-count" 1 -}}
+{{- /* All element ids in one instance share an 8-char hash of the PDF URL,
+      keeping multiple embeds on a page distinct. Computed once here. */ -}}
+{{- $id := substr (.Get "url" | md5) 0 8 -}}
+<div class="embed-pdf-container" id="embed-pdf-container-{{ $id }}">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-{{ $id }}">
+        <div class="pdf-loading" id="pdf-loading-{{ $id }}"></div>
     </div>
     <div id="overlayText">
       <a href="{{ .Get "url" }}" aria-label="Download" download>
@@ -123,23 +126,23 @@ SOFTWARE.
         </svg>
       </a>
     </div>
-    <canvas class="pdf-canvas" id="pdf-canvas-{{ substr (.Get "url" | md5) 0 8 }}"></canvas>
-    <div class="pdf-error" id="pdf-error-{{ substr (.Get "url" | md5) 0 8 }}" style="display:none; padding: 1em; text-align: center;">
+    <canvas class="pdf-canvas" id="pdf-canvas-{{ $id }}"></canvas>
+    <div class="pdf-error" id="pdf-error-{{ $id }}" style="display:none; padding: 1em; text-align: center;">
       The PDF preview could not be loaded. Please use the &quot;Open PDF&quot; link instead.
     </div>
 </div>
 
-<div class="pdf-paginator" id="pdf-paginator-{{ substr (.Get "url" | md5) 0 8 }}">
-    <button id="pdf-prev-{{ substr (.Get "url" | md5) 0 8 }}">Previous</button>
-    <button id="pdf-next-{{ substr (.Get "url" | md5) 0 8 }}">Next</button> &nbsp; &nbsp;
+<div class="pdf-paginator" id="pdf-paginator-{{ $id }}">
+    <button id="pdf-prev-{{ $id }}">Previous</button>
+    <button id="pdf-next-{{ $id }}">Next</button> &nbsp; &nbsp;
     <span>
-      <span class="pdf-pagenum" id="pdf-pagenum-{{ substr (.Get "url" | md5) 0 8 }}"></span> / <span class="pdf-pagecount" id="pdf-pagecount-{{ substr (.Get "url" | md5) 0 8 }}"></span>
+      <span class="pdf-pagenum" id="pdf-pagenum-{{ $id }}"></span> / <span class="pdf-pagecount" id="pdf-pagecount-{{ $id }}"></span>
     </span>
-    <a class="pdf-source" id="pdf-source-{{ substr (.Get "url" | md5) 0 8 }}" href="{{ .Get "url" }}">[pdf]</a>
+    <a class="pdf-source" id="pdf-source-{{ $id }}" href="{{ .Get "url" }}">[pdf]</a>
 </div>
 
 <noscript>
-View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get "url" | md5) 0 8 }}" href="{{ .Get "url" }}">here</a>.
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ $id }}" href="{{ .Get "url" }}">here</a>.
 </noscript>
 
 <script type="text/javascript">
@@ -167,10 +170,10 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
         pageRendering = false,
         pageNumPending = null,
         scale = 3,
-        canvas = document.getElementById('pdf-canvas-{{ substr (.Get "url" | md5) 0 8 }}'),
+        canvas = document.getElementById('pdf-canvas-{{ $id }}'),
         ctx = canvas.getContext('2d'),
-        paginator = document.getElementById("pdf-paginator-{{ substr (.Get "url" | md5) 0 8 }}"),
-        loadingWrapper = document.getElementById('pdf-loadingWrapper-{{ substr (.Get "url" | md5) 0 8 }}');
+        paginator = document.getElementById("pdf-paginator-{{ $id }}"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-{{ $id }}');
 
 
     // Attempt to show paginator and loader if enabled
@@ -210,7 +213,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
       }).catch(showError);
 
       // Update page counters
-      document.getElementById('pdf-pagenum-{{ substr (.Get "url" | md5) 0 8 }}').textContent = num;
+      document.getElementById('pdf-pagenum-{{ $id }}').textContent = num;
     }
 
     /**
@@ -221,7 +224,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
       pageRendering = false;
       loadingWrapper.style.display = 'none';
       canvas.style.display = 'none';
-      document.getElementById('pdf-error-{{ substr (.Get "url" | md5) 0 8 }}').style.display = 'block';
+      document.getElementById('pdf-error-{{ $id }}').style.display = 'block';
       if (window.console && console.error) console.error('PDF embed failed:', err);
     }
 
@@ -272,7 +275,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
       pageNum--;
       queueRenderPage(pageNum);
     }
-    document.getElementById('pdf-prev-{{ substr (.Get "url" | md5) 0 8 }}').addEventListener('click', onPrevPage);
+    document.getElementById('pdf-prev-{{ $id }}').addEventListener('click', onPrevPage);
 
     /**
      * Displays next page.
@@ -284,7 +287,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
       pageNum++;
       queueRenderPage(pageNum);
     }
-    document.getElementById('pdf-next-{{ substr (.Get "url" | md5) 0 8 }}').addEventListener('click', onNextPage);
+    document.getElementById('pdf-next-{{ $id }}').addEventListener('click', onNextPage);
 
     /**
      * Asynchronously downloads PDF.
@@ -292,7 +295,7 @@ View the PDF file <a class="pdf-source" id="pdf-source-noscript-{{ substr (.Get 
     pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
       pdfDoc = pdfDoc_;
       var numPages = pdfDoc.numPages;
-      document.getElementById('pdf-pagecount-{{ substr (.Get "url" | md5) 0 8 }}').textContent = numPages;
+      document.getElementById('pdf-pagecount-{{ $id }}').textContent = numPages;
 
       // If the user passed in a number that is out of range, render the last page.
       if(pageNum > numPages) {

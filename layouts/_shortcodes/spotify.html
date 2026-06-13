@@ -6,20 +6,20 @@ Parameters:
     id - (Required) Target ID
     width - (Optional) width
     height - (Optional) height
--->
 
-{{ if .IsNamedParams }}
-<iframe src="https://open.spotify.com/embed/{{ .Get "type" }}/{{ .Get "id" }}"
-    width="{{ default "100%" (.Get "width") }}"
-    height="{{ default "380" (.Get "height") }}"
+Both named (type="album" id="…") and positional ("album" "…") call styles
+are accepted; resolve the four values from whichever style was used, then
+render the iframe once.
+-->
+{{- $type := "" }}{{ $id := "" }}{{ $width := "" }}{{ $height := "" -}}
+{{- if .IsNamedParams -}}
+  {{- $type = .Get "type" }}{{ $id = .Get "id" }}{{ $width = .Get "width" }}{{ $height = .Get "height" -}}
+{{- else -}}
+  {{- $type = .Get 0 }}{{ $id = .Get 1 }}{{ $width = .Get 2 }}{{ $height = .Get 3 -}}
+{{- end -}}
+<iframe src="https://open.spotify.com/embed/{{ $type }}/{{ $id }}"
+    width="{{ $width | default "100%" }}"
+    height="{{ $height | default "380" }}"
     frameborder="0"
     allowtransparency="true"
     allow="encrypted-media"></iframe>
-{{ else }}
-<iframe src="https://open.spotify.com/embed/{{ .Get 0 }}/{{ .Get 1 }}"
-    width="{{ default "100%" (.Get 2) }}"
-    height="{{ default "380" (.Get 3) }}"
-    frameborder="0"
-    allowtransparency="true"
-    allow="encrypted-media"></iframe>
-{{ end }}
