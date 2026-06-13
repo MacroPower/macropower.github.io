@@ -1,0 +1,11 @@
+{{- /*
+  Returns the URL of the social entry whose "name" matches the argument, or
+  "" if none is configured. Centralizes the by-name lookup over
+  site.Params.social shared by baseof.html (github), head.html (twitter),
+  sponsors.html (github), and projects-sidebar.html (github).
+
+  Arg: the social name key (e.g. "github", "twitter").
+*/ -}}
+{{- $url := "" -}}
+{{- with index (where site.Params.social "name" .) 0 }}{{ $url = .url }}{{ end -}}
+{{- return $url -}}

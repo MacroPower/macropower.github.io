@@ -39,8 +39,7 @@
             "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" "ls ./sponsors"))) }}
       {{- end }}
       {{- /* The sponsor link derives from the github social entry's handle. */ -}}
-      {{- $gh := "" -}}{{- range site.Params.social }}{{ if eq .name "github" }}{{ $gh = .url }}{{ end }}{{ end -}}
-      {{- with $gh }}
+      {{- with partial "ui/social-url.html" "github" }}
       <a class="up-open-btn" href="https://github.com/sponsors/{{ path.Base . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>Become a sponsor</span></a>
       {{- end }}
     </section>

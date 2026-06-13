@@ -3,10 +3,7 @@
 {{- $starred := where $projects "stars" "ge" 100 -}}
 {{- $recent := where $projects "updated" "gt" $cutoff -}}
 {{- $forks := where $projects "forks" "gt" 5 -}}
-{{- $github := "" -}}
-{{- with index (where site.Params.social "name" "github") 0 -}}
-  {{- $github = .url -}}
-{{- end -}}
+{{- $github := partial "ui/social-url.html" "github" -}}
 
 {{- $iconAll := partial "icon.html" "glyphs/sidebar-all" -}}
 {{- $iconStarred := partial "icon.html" "glyphs/star" -}}

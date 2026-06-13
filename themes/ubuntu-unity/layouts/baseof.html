@@ -17,9 +17,8 @@
     {{ partial "lock-screen.html" . }}
   </div>
 
-  {{ $gh := where .Site.Params.social "name" "github" }}
   {{ $handle := partial "ui/author-handle.html" . }}
-  {{ $github := "" }}{{ with index $gh 0 }}{{ $github = .url }}{{ end }}
+  {{ $github := partial "ui/social-url.html" "github" }}
   {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
   {{ $repo := .Site.Params.repoUrl | default "" }}
   {{- /* nav backs top-panel.ts's nav:<key> actions; one URL per page in

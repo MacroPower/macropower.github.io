@@ -18,9 +18,9 @@
 <link rel="canonical" href="{{ .Permalink }}">
 {{ partial "opengraph.html" . }}
 {{ partial "twitter_cards.html" . }}
-{{- range .Site.Params.social }}{{ if eq .name "twitter" }}
-<meta name="twitter:site" content="@{{ path.Base .url }}">
-{{- end }}{{ end }}
+{{- with partial "ui/social-url.html" "twitter" }}
+<meta name="twitter:site" content="@{{ path.Base . }}">
+{{- end }}
 {{- if .IsHome }}
 {{- $sameAs := slice }}
 {{- range .Site.Params.social }}{{ $sameAs = $sameAs | append .url }}{{ end }}
