@@ -5,10 +5,11 @@
         <span class="up-empty-pane-icon" aria-hidden="true">{{ partial "icon.html" "flat/empty-folder" }}</span>
         <h1 class="up-empty-pane-hint">This page does not exist</h1>
         <div class="up-empty-pane-tagline" aria-hidden="true">bash: cd: 404: No such file or directory</div>
+        {{- $nav := (partial "site-pages.html" .).pages -}}
         <nav class="up-404-links" aria-label="Places to go instead">
-          <a href="/">Home</a>
-          <a href="/posts/">Blog</a>
-          <a href="/projects/">Projects</a>
+          {{- range slice "home" "blog" "projects" }}{{ with index $nav . }}
+          <a href="{{ .url }}">{{ .label }}</a>
+          {{- end }}{{ end }}
         </nav>
       </div>
     </div>

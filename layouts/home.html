@@ -77,11 +77,14 @@
     </ul>
     <nav aria-label="Site">
       <h2>Explore</h2>
+      {{- /* Same launcher pages as the dock, in the same order, minus Home
+            (this is the home page) — sourced from the site-pages registry so
+            this fallback nav can never drift from the desktop chrome. */ -}}
+      {{- $reg := partial "site-pages.html" . -}}
       <ul>
-        <li><a href="{{ relURL "cv/" }}">CV</a></li>
-        <li><a href="{{ relURL "projects/" }}">Projects</a></li>
-        <li><a href="{{ relURL "posts/" }}">Blog</a></li>
-        <li><a href="{{ relURL "sponsors/" }}">Sponsors</a></li>
+        {{- range $reg.launcherOrder }}{{ if ne . "home" }}{{ $p := index $reg.pages . }}
+        <li><a href="{{ $p.url }}">{{ $p.label }}</a></li>
+        {{- end }}{{ end }}
       </ul>
     </nav>
     <h2>Posts</h2>
