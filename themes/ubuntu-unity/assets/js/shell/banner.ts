@@ -81,6 +81,7 @@ function infoLines(
   const links: BannerLink[] = [];
   lines.push(row("name", data.name, PALETTE.fg));
   lines.push(row("title", data.title, PALETTE.fg));
+  lines.push(row("focus", data.focus, PALETTE.fg));
   lines.push(row("uptime", data.uptime, PALETTE.fg));
   lines.push("");
   for (const s of data.socials) {

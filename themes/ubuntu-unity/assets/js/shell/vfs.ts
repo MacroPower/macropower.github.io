@@ -530,6 +530,7 @@ export function buildFs(data: ShellData): Vfs {
         content: () => [
           infoRow("name", data.name),
           infoRow("title", data.title),
+          infoRow("focus", data.focus),
           infoRow("uptime", data.uptime),
         ],
       }),

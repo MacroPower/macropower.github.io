@@ -50,6 +50,7 @@
     "host" $host
     "name" .Site.Params.author.name
     "title" .Site.Params.homeSubtitle
+    "focus" .Site.Params.homeFocus
     "uptime" $uptime
     "socials" $socials
     "posts" $posts
@@ -69,6 +70,7 @@
   <div class="up-sr-only">
     <h1>{{ $payload.name }}</h1>
     <p>{{ $payload.title }}</p>
+    <p>{{ $payload.focus }}</p>
     <h2>Links</h2>
     <ul>
       {{- range $socials }}

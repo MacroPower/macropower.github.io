@@ -33,14 +33,16 @@ enableEmoji     = true
   dateform    = "Jan 2, 2006"
   dateformNum = "2006-01-02"
 
-  description = "Jacob Colvin is a Site Reliability Engineer writing about Kubernetes, observability, and open source infrastructure."
+  description = "Jacob Colvin is a Lead Software Engineer working on developer platforms and infrastructure, writing about Kubernetes, observability, and open source."
 
   # Default share image for Open Graph / Twitter cards (a screenshot of
   # the desktop home page); pages can override via front-matter images.
   images = ["/img/og-card.png"]
 
-  # Home subtitle of the index page.
-  homeSubtitle = "Site Reliability Engineer"
+  # Home subtitle of the index page (the terminal banner's "title" row) and
+  # the focus line shown beneath it.
+  homeSubtitle = "Lead Software Engineer"
+  homeFocus    = "Developer Platforms & Infrastructure"
 
   enableReadingTime = true
 

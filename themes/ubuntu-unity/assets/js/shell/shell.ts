@@ -43,6 +43,7 @@ export interface ShellData {
   host: string;
   name: string;
   title: string;
+  focus: string;
   uptime: string;
   socials: SocialLink[];
   posts: PostMeta[];

@@ -34,6 +34,7 @@ export const TEST_DATA: ShellData = {
   host: "example.com",
   name: "Me Example",
   title: "Tinkerer",
+  focus: "Tinkering & General Mischief",
   uptime: "3 days, 4 hours",
   socials: [
     { label: "github", url: "github.com/me", display: "github.com/me" },
