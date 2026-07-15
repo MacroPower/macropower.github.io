@@ -158,6 +158,11 @@
      stage's left edge (so centering spans the desktop, not the viewport).
      The phone media query narrows it. */
   --launcher-w:64px;
+  /* Bottom-dock height. 0 on desktop (the launcher is a left rail); the
+     phone media query zeroes --launcher-w and gives this a real height, and
+     every full-height surface (window stages, Dash, HUD) reserves it via
+     bottom:var(--dock-h) so nothing hides under the dock. */
+  --dock-h:0px;
 }
 
 /* =========================================================================
@@ -584,7 +589,7 @@ svg[hidden]{ display:none; }
      below centers the window over the desktop area, not the viewport. The
      overlay stages (trash, daw) reset this with inset:0 and place their
      chrome absolutely instead. */
-  top:24px; left:var(--launcher-w); right:0; bottom:0;
+  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
   z-index:20;
   pointer-events:none;
   > *{pointer-events:auto}
@@ -1693,9 +1698,17 @@ a.up-sponsor-card[href]:hover{
 
 /* ---------- Responsive collapse ---------- */
 @media (max-width:980px){
-  .up-blog-grid{grid-template-columns:1fr;height:auto}
-  .up-cv-grid{grid-template-columns:1fr}
-  .up-sponsors-grid{grid-template-columns:1fr}
+  /* Stacked one-column layouts. Rows are pinned explicitly because the grids
+     fill their window (flex:1): with implicit auto rows, leftover height is
+     stretched evenly across every row, inflating the sidebar band and opening
+     voids between panes. The last pane takes the remainder instead. */
+  .up-blog-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr;
+    height:auto;
+  }
+  .up-cv-grid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .up-sponsors-grid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
   .up-projects-grid{
     grid-template-columns:1fr;
     grid-template-rows:auto auto 1fr;
@@ -1708,18 +1721,54 @@ a.up-sponsor-card[href]:hover{
   }
   .up-naut-section + .up-naut-section{margin-top:0;margin-left:10px}
   .up-naut-section-label{padding:0 4px;display:none}
-  .up-naut-item{padding:4px 8px;display:inline-flex;gap:4px}
+  /* width:auto: the base rail rule's width:100% would stack each chip on its
+     own full-width line instead of flowing them inline. */
+  .up-naut-item{padding:4px 8px;display:inline-flex;gap:4px;width:auto}
   .up-post-list{border-right:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
   .up-pathbar-label{max-width:180px}
   .up-pathbar-search-input{font-size:16px}
   .up-neofetch{grid-template-columns:1fr;padding:22px 24px;gap:18px}
 }
 @media (max-width:560px){
+  /* Leave breathing room between the window title and the File menu. */
+  .up-panel-title{max-width:32vw}
   .up-pathbar{padding:5px 8px 5px 4px;gap:4px}
   .up-pathbar-btn{font-size:11.5px}
   .up-pathbar-label{max-width:120px}
   .up-reader-inner{padding:24px 18px 40px}
-  .up-neofetch{padding:16px;font-size:12pt}
+  .up-reader-title{font-size:24px}
+  .up-neofetch{padding:14px;font-size:12pt}
+  .up-page{padding:24px 18px}
+  .up-sponsors-main{padding:18px 16px}
+  /* The blog's decorative empty pane is display:none here (below), so the
+     ≤980px auto/auto/1fr rows collapse to sidebar + list. */
+  .up-blog-grid{grid-template-rows:auto 1fr}
+  /* On a phone even wrapped chip rows push the content below the fold —
+     one horizontally scrollable row instead. */
+  .up-naut-sidebar{
+    flex-wrap:nowrap;
+    overflow-x:auto;overflow-y:hidden;
+    padding:6px 8px;
+    scrollbar-width:thin;
+  }
+  .up-naut-section{display:flex;flex:0 0 auto}
+  .up-naut-item{flex:0 0 auto;white-space:nowrap}
+  /* Two folder columns instead of one 190px-min column. */
+  .up-project-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;padding:14px}
+  /* Post titles: two wrapped lines read better than a mid-title ellipsis
+     when the column is this narrow. */
+  .up-post-title{
+    white-space:normal;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  }
+  /* Let the whole window scroll instead of nesting a capped inner scroller. */
+  .up-post-list{max-height:none}
+  /* The decorative "Select a post / no item selected" panes are dead space
+     on a phone — the selection targets are the content itself. blog.ts and
+     projects.ts strip/replace these on selection, so only the empty state
+     disappears. */
+  .up-blog-grid > .up-empty-pane{display:none}
+  .up-project-preview.up-empty-pane{display:none}
 }
 
 /* ---- top-panel dropdowns ------------------------------------------------ */
@@ -2243,7 +2292,7 @@ body.up-reduce-motion *{
    still cover it. */
 .up-dash{
   position:fixed;
-  top:24px; left:var(--launcher-w); right:0; bottom:0;
+  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
   z-index:38;
   pointer-events:none;
   /* Gated on .is-visible: close() drops the class immediately but leaves
@@ -2439,7 +2488,7 @@ body.up-reduce-motion *{
    a command line for the menus, not a browse surface. */
 .up-hud{
   position:fixed;
-  top:24px; left:var(--launcher-w); right:0; bottom:0;
+  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
   z-index:38;
   pointer-events:none;
   /* Same .is-visible gate as the Dash: the closing fade must not eat input. */
@@ -2768,7 +2817,7 @@ body.up-reduce-motion *{
      maximized (drag and resize are gated, and the inline values survive so
      restore puts the window back at its dragged + resized geometry). */
   &.is-maximized .up-window-chrome{
-    inset:24px 0 0 0;
+    inset:24px 0 var(--dock-h) 0;
     width:auto !important; height:auto !important;
     border-radius:0;
     transform:none !important;
@@ -3176,10 +3225,12 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-daw-rack{flex-basis:170px}
 }
 @media (max-width:560px){
+  /* Bottom-dock phone layout: the launcher no longer owns the left edge, so
+     the Studio spans the full width and stops above the dock. */
   .up-daw-stage .up-window-chrome{
-    left:60px; top:32px;
-    width:calc(100vw - 66px);
-    height:calc(100vh - 44px);
+    left:8px; top:32px;
+    width:calc(100vw - 16px);
+    height:calc(100% - 40px - var(--dock-h));
   }
 }
 
@@ -3194,9 +3245,9 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 }
 @media (max-width:560px){
   .up-trash-stage .up-window-chrome{
-    left:60px; top:32px;
-    width:calc(100vw - 66px);
-    max-height:calc(100vh - 44px);
+    left:8px; top:32px;
+    width:calc(100vw - 16px);
+    max-height:calc(100% - 40px - var(--dock-h));
   }
 }
 
@@ -3260,21 +3311,59 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 }
 
 /* =========================================================================
-   responsive: narrower launcher on phones, gentler window padding
+   responsive: phone layout. The left launcher rail costs ~15% of a portrait
+   phone's width, so it becomes a bottom dock (--launcher-w goes to 0 and
+   --dock-h reserves the strip; every stage/overlay already offsets by both
+   vars) and the page window fills the freed desktop edge-to-edge.
    ========================================================================= */
 @media (max-width:560px){
-  :root{ --launcher-w:56px; }
-  .up-launcher-tile{
-    width:40px; height:40px;
-    &:active .up-launcher-arrow-left{ left:-9px; }
-    &:active .up-launcher-arrow-right{ right:-9px; }
+  :root{ --launcher-w:0px; --dock-h:54px; }
+  .up-launcher{
+    top:auto; bottom:0; left:0; right:0;
+    width:auto; height:var(--dock-h);
+    flex-direction:row; align-items:center;
+    padding:0 10px; gap:8px;
+    border-right:0;
+    border-top:1px solid rgba(255,255,255,.08);
   }
-  .up-launcher-arrow-left{ left:-6px; }
-  .up-launcher-arrow-right{ right:-6px; }
-  .up-launcher-sep{ width:30px; }
-  .up-window-stage{
-    padding:12px 8px;
+  .up-launcher-tile{ width:40px; height:40px; }
+  .up-launcher-sep{ width:1px; height:28px; margin:0 -2px; }
+  /* Hover tooltips have no hover to anchor to on touch, and they'd overflow
+     the viewport from a bottom dock. */
+  .up-tooltip{ display:none; }
+  /* The running/focused triangles hang off the tiles' left/right edges,
+     which the horizontal dock doesn't have. Collapse both indicators into a
+     macOS-dock-style pip under the tile: visible when the window is open
+     (.is-active), solid white when it also has focus (.is-focused). */
+  .up-launcher-arrow{
+    border:0; width:4px; height:4px; border-radius:50%;
+    transform:none;
   }
-  .up-pathbar-arrow,
-  .up-pathbar-icon-btn{ width:24px; height:24px; }
+  .up-launcher-arrow-left{
+    left:50%; top:auto; bottom:-6px; margin-left:-2px;
+    background:rgba(255,255,255,.6);
+  }
+  .up-launcher-tile:active .up-launcher-arrow-left{ left:50%; }
+  .up-launcher-tile.is-focused .up-launcher-arrow-left{
+    display:block; background:#fff;
+  }
+  .up-launcher-arrow-right{ display:none !important; }
+  /* Page window: near-full-bleed so content gets the width. The overlay
+     stages (trash, Studio) keep their own absolute chrome geometry below. */
+  .up-window-stage:not(.up-trash-stage):not(.up-daw-stage){
+    padding:8px 6px;
+    .up-window-chrome{
+      width:100%; max-height:100%; height:100%;
+    }
+  }
+  /* The desktop watermark sits at the wallpaper's bottom-right; keep it
+     above the dock. */
+  .up-desktop-label{ right:12px; bottom:calc(var(--dock-h) + 8px); }
+}
+
+/* Landscape phones: height is the scarce axis — the left rail stays, but the
+   window sheds its tall gutters and fills the shorter stage. */
+@media (max-height:500px){
+  .up-window-stage{ padding:8px 12px; }
+  .up-window-chrome{ max-height:100%; }
 }
