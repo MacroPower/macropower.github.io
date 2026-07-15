@@ -43,6 +43,12 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $
   {{ partial "ui/script.html" (dict "entry" "js/projects.ts" "target" "js/projects.js") }}
   {{ end }}
 
+  {{/* cv.js no-ops without [data-cv-viewer], emitted only by the CV page's
+       bespoke partial (see single.html's allowlist dispatch). */}}
+  {{ if and .File (eq .File.BaseFileName "cv") }}
+  {{ partial "ui/script.html" (dict "entry" "js/cv.ts" "target" "js/cv.js") }}
+  {{ end }}
+
   {{ if .IsHome }}
   {{ partial "ui/script.html" (dict "entry" "js/shell/index.ts" "target" "js/shell.js") }}
   {{ end }}

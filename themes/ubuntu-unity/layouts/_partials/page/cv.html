@@ -1,21 +1,105 @@
+{{- /*
+  The CV page as an Evince-style document viewer: pathbar, a secondary
+  toolbar (page nav + zoom + document actions), a thumbnail rail, and the
+  dark page well cv.ts renders the PDF into. Front matter drives the chrome:
+    pdf          (required) the PDF the viewer renders
+    pdfPrintable (optional) A4-compatible variant, offered as "Print"
+    sourceUrl    (optional) the document's source repository, offered as "Source"
+  The viewer JS ships only on this page (see baseof.html); pdf.js itself is
+  the vendored build under the parent site's static/js/pdf-js/.
+*/ -}}
 <article class="up-cv-page selectable">
   <h1 class="up-sr-only">CV</h1>
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
       (dict "label" "CV" "url" .RelPermalink))) }}
-  <div class="up-cv-grid">
-    {{- $iconCv := partial "icon.html" "glyphs/cv-doc" -}}
-    {{ partial "page/naut-sidebar.html" (dict
-        "sections" (slice
-          (dict "label" "Places" "items" (slice
-            (dict "label" "CV" "url" .RelPermalink "icon" $iconCv "active" true))))) }}
-    <section class="up-cv-main">
-      {{- with .Params.pdf }}
-        <a class="up-cv-pdf-fallback" href="{{ . }}" target="_blank" rel="noopener" aria-label="Open PDF in a new tab">
-          {{ partial "icon.html" "glyphs/pdf" }}
-          <span>Open PDF</span>
-        </a>
+  {{- with .Params.pdf }}
+  <div class="up-docv" data-cv-viewer
+       data-pdf-url="{{ . }}"
+       data-pdfjs-worker="/js/pdf-js/build/pdf.worker.min.js">
+    <script src="/js/pdf-js/build/pdf.min.js" defer data-docv-pdfjs></script>
+    <div class="up-docv-toolbar" role="toolbar" aria-label="Document controls">
+      <div class="up-docv-group">
+        <button type="button" class="up-docv-btn" data-docv-prev disabled
+                title="Previous page" aria-label="Previous page">
+          {{- partial "icon.html" "glyphs/chevron-up" -}}
+        </button>
+        <button type="button" class="up-docv-btn" data-docv-next disabled
+                title="Next page" aria-label="Next page">
+          {{- partial "icon.html" "glyphs/chevron-down" -}}
+        </button>
+      </div>
+      <div class="up-docv-pageentry">
+        <input class="up-docv-pagenum" data-docv-pagenum type="text"
+               inputmode="numeric" value="1" disabled
+               aria-label="Page number" autocomplete="off">
+        <span class="up-docv-pagecount">of <span data-docv-pagecount>…</span></span>
+      </div>
+      <span class="up-docv-sep" aria-hidden="true"></span>
+      <div class="up-docv-group">
+        <button type="button" class="up-docv-btn" data-docv-zoom-out disabled
+                title="Zoom out" aria-label="Zoom out">
+          {{- partial "icon.html" "glyphs/minus" -}}
+        </button>
+        <button type="button" class="up-docv-btn up-docv-zoom-readout" data-docv-zoom-fit disabled
+                title="Fit page width" aria-pressed="true">
+          <span data-docv-zoom-readout>Fit</span>
+        </button>
+        <button type="button" class="up-docv-btn" data-docv-zoom-in disabled
+                title="Zoom in" aria-label="Zoom in">
+          {{- partial "icon.html" "glyphs/plus" -}}
+        </button>
+      </div>
+      <span class="up-docv-spacer"></span>
+      {{- with $.Params.sourceUrl }}
+      <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
+         title="CV source code (LaTeX)">
+        {{- partial "icon.html" "glyphs/code" -}}
+        <span class="up-docv-action-label">Source</span>
+      </a>
       {{- end }}
-      {{ .Content }}
-    </section>
+      {{- with $.Params.pdfPrintable }}
+      <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
+         title="A4-compatible PDF for printing">
+        {{- partial "icon.html" "glyphs/pdf" -}}
+        <span class="up-docv-action-label">Print</span>
+      </a>
+      {{- end }}
+      <a class="up-docv-btn up-docv-action" href="{{ . }}" download
+         title="Download PDF">
+        {{- partial "icon.html" "glyphs/download" -}}
+        <span class="up-docv-action-label">Download</span>
+      </a>
+    </div>
+    <div class="up-docv-body">
+      <aside class="up-docv-side" aria-label="Page thumbnails">
+        <div class="up-docv-side-head">Thumbnails</div>
+        <div class="up-docv-thumbs" data-docv-thumbs></div>
+      </aside>
+      <div class="up-docv-view" data-docv-view tabindex="0">
+        <div class="up-docv-status" data-docv-loading>
+          <span class="up-docv-spinner" aria-hidden="true"></span>
+          <span>Loading document…</span>
+        </div>
+        <div class="up-docv-status" data-docv-error hidden>
+          <span>The PDF preview could not be loaded.</span>
+          <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
+            {{- partial "icon.html" "glyphs/pdf" -}}
+            <span>Open PDF</span>
+          </a>
+        </div>
+        <div class="up-docv-pages" data-docv-pages></div>
+        <noscript>
+          <style>.up-docv-status[data-docv-loading]{display:none}</style>
+          <div class="up-docv-status">
+            <span>Viewing the CV inline needs JavaScript.</span>
+            <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
+              {{- partial "icon.html" "glyphs/pdf" -}}
+              <span>Open PDF</span>
+            </a>
+          </div>
+        </noscript>
+      </div>
+    </div>
   </div>
+  {{- end }}
 </article>
