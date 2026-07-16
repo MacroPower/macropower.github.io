@@ -1,0 +1,32 @@
+# Projects shown on /projects/ (and searchable in the Dash). One entry per
+# repository. name, description, language, updated, and url are required;
+# stars, forks, topics, and license are optional. language must be one of
+# the icon set's known languages — see the check in layouts/projects/list.html.
+- name: sample-cli
+  description: A command-line tool that does one thing well.
+  language: Go
+  stars: 128
+  forks: 9
+  updated: "2024-05-20"
+  topics:
+    - cli
+    - productivity
+  url: https://github.com/jane/sample-cli
+- name: dotfiles
+  description: Declarative workstation configuration.
+  language: Shell
+  stars: 42
+  forks: 3
+  updated: "2024-04-11"
+  topics: []
+  url: https://github.com/jane/dotfiles
+- name: unity-widgets
+  description: Small TypeScript UI experiments.
+  language: TypeScript
+  stars: 17
+  forks: 1
+  updated: "2024-02-28"
+  topics:
+    - typescript
+    - ui
+  url: https://github.com/jane/unity-widgets

@@ -1,0 +1,5 @@
+# Sponsors shown on /sponsors/. Add one entry per sponsor.
+# name is required; url and avatar are optional.
+- name: Ada Lovelace
+  url: https://example.org/ada
+- name: Grace Hopper

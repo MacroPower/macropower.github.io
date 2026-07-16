@@ -1,0 +1,117 @@
+# Example site for the ubuntu-unity theme. Run it from the theme directory:
+#
+#   hugo server -s exampleSite --themesDir ../..
+#
+# The home page's terminal needs the xterm npm packages. From the site that
+# consumes the theme, either run `hugo mod npm pack && npm install` (Hugo
+# modules) or copy the dependencies block from the theme's package.hugo.json
+# into your site's package.json and `npm install` (git submodules).
+
+baseURL = "https://example.org/"
+title   = "Jane Doe"
+locale  = "en-us"
+theme   = "ubuntu-unity"
+
+# Used by the RSS template (the theme's home.rss.xml renders posts only).
+copyright = "Jane Doe"
+
+enableRobotsTXT = true
+enableEmoji     = true
+
+[services.rss]
+  # Maximum number of items in the RSS feed.
+  limit = 10
+
+[permalinks]
+  # Optional; the theme works with any permalink shape.
+  posts = "/posts/:year/:month/:title/"
+
+[taxonomies]
+  # The blog sidebar offers category and series lenses.
+  category = "categories"
+  series   = "series"
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+
+[params]
+  # Long and numeric date formats (post reader and post list).
+  dateform    = "Jan 2, 2006"
+  dateformNum = "2006-01-02"
+
+  # Site description for <meta name="description"> and the feeds.
+  description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."
+
+  # Home subtitle (the terminal banner's "title" row) and the focus line
+  # beneath it. Both optional; absent rows drop out of the banner.
+  homeSubtitle = "Software Engineer"
+  homeFocus    = "Distributed Systems"
+
+  # Show "N min read" in the post reader.
+  enableReadingTime = true
+
+  # Source repository, linked from Help > "View source on github".
+  # repoUrl = "https://github.com/jane/janedoe.example"
+
+  [params.author]
+    name = "Jane Doe"
+    # email backs the Messages indicator's Compose button.
+    email = "jane@example.org"
+    # Optional: the terminal banner's uptime is your age when set,
+    # otherwise the time since your first post.
+    # born = "1990-01-31"
+
+  # Browser UI color emitted as <meta name="theme-color">.
+  [params.favicon.color]
+    theme = "#1b1c1d"
+
+  # Social links: terminal banner rows, footer icons, JSON-LD sameAs.
+  # `short` overrides the terminal label. A "github" entry also powers the
+  # session menu's profile link and the sponsors page's sponsor button;
+  # a "twitter" entry becomes the twitter:site card metadata.
+
+  [[params.social]]
+    name = "github"
+    url  = "https://github.com/jane"
+
+  [[params.social]]
+    name = "linkedin"
+    url  = "https://www.linkedin.com/in/jane/"
+
+  [[params.social]]
+    name  = "stackoverflow"
+    short = "so"
+    url   = "https://stackoverflow.com/users/1/jane"
+
+# menu.main drives the theme's site-pages registry: the launcher dock, the
+# Dash's Applications category, the top panel's File menu, and the nav:<key>
+# actions. Home is implicit and always first. Optional [menu.main.params]:
+#   icon      — launcher artwork under the theme's assets/icons/
+#   match     — "exact" or "prefix" URL matching for active state
+#   kw        — Dash search keywords
+#   dashLabel — Dash tile label override
+#   dashIcon  — Dash tile icon override
+#   launcher  — false keeps the page off the dock (still in the Dash)
+#   dash      — false keeps the page out of the Dash
+[menu]
+  [[menu.main]]
+    identifier = "cv"
+    name       = "CV"
+    url        = "cv/"
+    weight     = 2
+  [[menu.main]]
+    identifier = "projects"
+    name       = "Projects"
+    url        = "projects/"
+    weight     = 3
+  [[menu.main]]
+    identifier = "blog"
+    name       = "Blog"
+    url        = "posts/"
+    weight     = 4
+  [[menu.main]]
+    identifier = "sponsors"
+    name       = "Sponsors"
+    url        = "sponsors/"
+    weight     = 5
