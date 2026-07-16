@@ -6,7 +6,7 @@
     pdfPrintable (optional) A4-compatible variant, offered as "Print"
     sourceUrl    (optional) the document's source repository, offered as "Source"
   The viewer JS ships only on this page (see baseof.html); pdf.js itself is
-  the vendored build under the parent site's static/js/pdf-js/.
+  the vendored build under the theme's static/js/pdf-js/.
 */ -}}
 <article class="up-cv-page selectable">
   <h1 class="up-sr-only">CV</h1>
@@ -15,8 +15,8 @@
   {{- with .Params.pdf }}
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ . }}"
-       data-pdfjs-worker="/js/pdf-js/build/pdf.worker.min.js">
-    <script src="/js/pdf-js/build/pdf.min.js" defer data-docv-pdfjs></script>
+       data-pdfjs-worker="{{ "js/pdf-js/build/pdf.worker.min.js" | relURL }}">
+    <script src="{{ "js/pdf-js/build/pdf.min.js" | relURL }}" defer data-docv-pdfjs></script>
     <div class="up-docv-toolbar" role="toolbar" aria-label="Document controls">
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-prev disabled
