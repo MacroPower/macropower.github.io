@@ -10,14 +10,16 @@
     {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
   </div>
 
-  {{ partial "ui/panel-menu.html" (dict "menu" "file" "label" "File" "items" (slice
-    (dict "label" "Open blog" "action" "nav:blog")
-    (dict "label" "Open CV" "action" "nav:cv")
-    (dict "label" "Open projects" "action" "nav:projects")
-    (dict "label" "Open sponsors" "action" "nav:sponsors")
-    (dict "sep" true)
-    (dict "label" "Close window" "disabled" true "shortcut" "Ctrl+W")
-  )) }}
+  {{- /* One "Open <page>" row per launcher page (minus Home), straight from
+       the site-pages registry so the File menu, dock, and Dash agree. */ -}}
+  {{- $reg := partial "site-pages.html" . -}}
+  {{- $fileItems := slice -}}
+  {{- range $reg.launcherOrder }}{{ if ne . "home" }}
+    {{- $p := index $reg.pages . -}}
+    {{- $fileItems = $fileItems | append (dict "label" (printf "Open %s" $p.label) "action" (printf "nav:%s" .)) -}}
+  {{- end }}{{ end -}}
+  {{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" "Close window" "disabled" true "shortcut" "Ctrl+W") -}}
+  {{ partial "ui/panel-menu.html" (dict "menu" "file" "label" "File" "items" $fileItems) }}
 
   {{ partial "ui/panel-menu.html" (dict "menu" "edit" "label" "Edit" "items" (slice
     (dict "label" "Undo" "disabled" true "shortcut" "Ctrl+Z")
@@ -38,12 +40,17 @@
     (dict "label" "Show top panel" "check" true)
   )) }}
 
-  {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" "Help" "items" (slice
+  {{- $helpItems := slice
     (dict "label" "Keyboard shortcuts" "action" "dlg:shortcuts")
     (dict "sep" true)
     (dict "label" "View source on github" "action" "dlg:github")
-    (dict "label" "Icon vault" "action" "nav:icons")
-  )) }}
+  -}}
+  {{- /* The icon vault is a hidden page; offer it only when the site
+       registers it (an "icons" menu entry, typically dash/launcher=false). */ -}}
+  {{- if index $reg.pages "icons" -}}
+    {{- $helpItems = $helpItems | append (dict "label" "Icon vault" "action" "nav:icons") -}}
+  {{- end -}}
+  {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" "Help" "items" $helpItems) }}
 
   <div class="up-panel-spacer"></div>
 

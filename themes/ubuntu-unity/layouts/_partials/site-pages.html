@@ -1,47 +1,83 @@
 {{- /*
   The canonical registry of the desktop's site pages — the single source of
   truth for every chrome surface that presents them:
-    launcher.html — the dock tiles (launcherOrder)
-    hud.html      — the focused-app icon (launcherOrder, with a fallback)
-    dash.html     — the Applications category (dashOrder, kw haystacks)
-    baseof.html   — UP_SITE.nav, the URL map behind top-panel.ts nav:<key>
+    launcher.html  — the dock tiles (launcherOrder)
+    hud.html       — the focused-app icon (launcherOrder, with a fallback)
+    dash.html      — the Applications category (dashOrder, kw haystacks)
+    top-panel.html — the File menu's "Open <page>" rows (launcherOrder)
+    baseof.html    — UP_SITE.nav, the URL map behind top-panel.ts nav:<key>
 
-  Per page: label, icon (launcher artwork path), url, match ("exact" or
-  "prefix" — how the page claims the current URL for active state), kw (the
-  Dash's search haystack), and optional dashLabel/dashIcon overrides where
-  the Dash presents the page differently (the home page is the Terminal).
+  The registry is driven by the site's [menu.main] configuration: one entry
+  per page, ordered by weight, keyed by identifier (falling back to the
+  anchorized name). Home is implicit and always first. Per-entry
+  [menu.main.params] tune the desktop presentation:
+
+    icon      — launcher artwork under assets/icons/ (e.g. "launcher/cv");
+                defaults by identifier below, generic browser window otherwise
+    match     — "exact" or "prefix": how the page claims the current URL for
+                launcher active state (default "prefix")
+    kw        — the Dash's search haystack (defaults by identifier, else the
+                lowercased name)
+    dashLabel — Dash tile label override (the home page shows as "Terminal")
+    dashIcon  — Dash tile icon override
+    launcher  — set false to keep the page off the dock (still in the Dash)
+    dash      — set false to keep the page out of the Dash
 
   Returns (dict "pages" <key->dict> "launcherOrder" ... "dashOrder" ...).
 */ -}}
-{{- $pages := dict
-  "home" (dict
-    "label" "Home" "icon" "launcher/home"
-    "dashLabel" "Terminal" "dashIcon" "launcher/terminal"
-    "url" (relURL "") "match" "exact"
-    "kw" "terminal shell bash console neofetch prompt tty home start")
+{{- $defaults := dict
   "cv" (dict
-    "label" "CV" "icon" "launcher/cv"
-    "url" (relURL "cv/") "match" "exact"
+    "icon" "launcher/cv"
     "kw" "cv resume curriculum vitae pdf work experience career history")
   "blog" (dict
-    "label" "Blog" "icon" "launcher/blog"
-    "url" (relURL "posts/") "match" "prefix"
+    "icon" "launcher/blog"
+    "kw" "blog posts articles writing files notes")
+  "posts" (dict
+    "icon" "launcher/blog"
     "kw" "blog posts articles writing files notes")
   "projects" (dict
-    "label" "Projects" "icon" "launcher/projects"
-    "url" (relURL "projects/") "match" "exact"
+    "icon" "launcher/projects"
     "kw" "projects repositories repos github code open source software")
   "sponsors" (dict
-    "label" "Sponsors" "icon" "launcher/heart"
-    "url" (relURL "sponsors/") "match" "exact"
+    "icon" "launcher/heart"
     "kw" "sponsors sponsorship support donate heart thanks")
   "icons" (dict
-    "label" "Icons" "icon" "launcher/image-viewer"
-    "url" (relURL "icons/") "match" "exact"
+    "icon" "launcher/image-viewer"
     "kw" "icons gallery artwork svg viewer images eye of gnome")
+  "about" (dict
+    "icon" "launcher/about"
+    "kw" "about bio contact person profile")
 -}}
-{{- return (dict
-  "pages" $pages
-  "launcherOrder" (slice "home" "cv" "projects" "blog" "sponsors")
-  "dashOrder" (slice "home" "blog" "cv" "projects" "sponsors" "icons")
-) -}}
+{{- $home := dict
+  "label" "Home" "icon" "launcher/home"
+  "dashLabel" "Terminal" "dashIcon" "launcher/terminal"
+  "url" (relURL "") "match" "exact"
+  "kw" "terminal shell bash console neofetch prompt tty home start"
+-}}
+{{- $pages := dict -}}
+{{- $launcher := slice "home" -}}
+{{- $dash := slice "home" -}}
+{{- range site.Menus.main -}}
+  {{- $key := .Identifier | default (anchorize .Name) -}}
+  {{- $def := index $defaults $key | default dict -}}
+  {{- $u := .URL -}}
+  {{- if not (or (hasPrefix $u "http://") (hasPrefix $u "https://")) -}}{{- $u = relURL $u -}}{{- end -}}
+  {{- $p := dict
+      "label" .Name
+      "icon" (or .Params.icon $def.icon "launcher/browser-window")
+      "url" $u
+      "match" (or .Params.match "prefix")
+      "kw" (or .Params.kw $def.kw (lower .Name))
+  -}}
+  {{- with .Params.dashLabel }}{{ $p = merge $p (dict "dashLabel" .) }}{{ end -}}
+  {{- with .Params.dashIcon }}{{ $p = merge $p (dict "dashIcon" .) }}{{ end -}}
+  {{- if eq $key "home" -}}
+    {{- $home = merge $home $p -}}
+  {{- else -}}
+    {{- $pages = merge $pages (dict $key $p) -}}
+    {{- if ne .Params.launcher false }}{{ $launcher = $launcher | append $key }}{{ end -}}
+    {{- if ne .Params.dash false }}{{ $dash = $dash | append $key }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- $pages = merge $pages (dict "home" $home) -}}
+{{- return (dict "pages" $pages "launcherOrder" $launcher "dashOrder" $dash) -}}
