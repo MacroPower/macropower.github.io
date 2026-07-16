@@ -7,5 +7,5 @@
   Arg: the social name key (e.g. "github", "twitter").
 */ -}}
 {{- $url := "" -}}
-{{- with index (where site.Params.social "name" .) 0 }}{{ $url = .url }}{{ end -}}
+{{- with index (where (site.Params.social | default slice) "name" .) 0 }}{{ $url = .url }}{{ end -}}
 {{- return $url -}}

@@ -30,6 +30,6 @@
 </aside>
 
 <div class="up-desktop-label">
-  {{ with .Site.Params.author }}{{ .name | lower | replaceRE " +" "-" }}{{ end }}/personal-site<br>
+  {{ (.Site.Params.author.name | default .Site.Title) | lower | replaceRE " +" "-" }}/personal-site<br>
   v1.0 · "aubergine" · {{ now.Year }}
 </div>
