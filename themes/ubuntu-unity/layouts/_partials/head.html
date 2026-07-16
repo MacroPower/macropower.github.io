@@ -52,9 +52,9 @@
 {{- /* Fonts are self-hosted (@font-face in main.scss); preload the two
       faces nearly every view paints with: Ubuntu 400 for the chrome and
       Ubuntu Mono 400 for the home terminal. */}}
-<link rel="preload" as="font" type="font/woff2" href="/fonts/ubuntu-400-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ "fonts/ubuntu-400-latin.woff2" | relURL }}" crossorigin>
 {{- if .IsHome }}
-<link rel="preload" as="font" type="font/woff2" href="/fonts/ubuntu-mono-400-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ "fonts/ubuntu-mono-400-latin.woff2" | relURL }}" crossorigin>
 {{- end }}
 {{ $css := resources.Get "css/main.scss"
   | css.Sass (dict "transpiler" "dartsass" "outputStyle" "expanded" "enableSourceMap" (not hugo.IsProduction))
