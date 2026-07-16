@@ -41,7 +41,7 @@ jobs:
 
       # Keep node-version in sync with devbox.json (nodejs@22). The committed
       # package-lock.json must match package.json or npm ci hard-fails.
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
