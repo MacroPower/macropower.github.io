@@ -527,12 +527,13 @@ export function buildFs(data: ShellData): Vfs {
       file("about.txt", {
         mtime: "2024-11-02",
         size: 256,
-        content: () => [
-          infoRow("name", data.name),
-          infoRow("title", data.title),
-          infoRow("focus", data.focus),
-          infoRow("uptime", data.uptime),
-        ],
+        content: () =>
+          [
+            infoRow("name", data.name),
+            data.title ? infoRow("title", data.title) : "",
+            data.focus ? infoRow("focus", data.focus) : "",
+            infoRow("uptime", data.uptime),
+          ].filter(Boolean),
       }),
       ...pageNodes,
       dir("posts", {

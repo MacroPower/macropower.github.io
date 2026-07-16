@@ -79,9 +79,11 @@ function infoLines(
 
   const lines: string[] = [header, rule];
   const links: BannerLink[] = [];
+  // title/focus come from optional site params; absent ones drop out
+  // instead of rendering a labeled blank.
   lines.push(row("name", data.name, PALETTE.fg));
-  lines.push(row("title", data.title, PALETTE.fg));
-  lines.push(row("focus", data.focus, PALETTE.fg));
+  if (data.title) lines.push(row("title", data.title, PALETTE.fg));
+  if (data.focus) lines.push(row("focus", data.focus, PALETTE.fg));
   lines.push(row("uptime", data.uptime, PALETTE.fg));
   lines.push("");
   for (const s of data.socials) {
