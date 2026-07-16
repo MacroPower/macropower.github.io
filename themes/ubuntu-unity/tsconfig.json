@@ -20,7 +20,7 @@
     "verbatimModuleSyntax": false
   },
   "include": [
-    "themes/ubuntu-unity/assets/js/**/*"
+    "assets/js/**/*"
   ],
   "exclude": [
     "**/*.test.ts",

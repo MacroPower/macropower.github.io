@@ -5,7 +5,7 @@
   },
   "exclude": [],
   "include": [
-    "themes/ubuntu-unity/assets/js/**/*.test.ts",
-    "themes/ubuntu-unity/assets/js/shell/testkit.ts"
+    "assets/js/**/*.test.ts",
+    "assets/js/shell/testkit.ts"
   ]
 }

@@ -1,12 +1,12 @@
 {
   "name": "jacobcolvin-com",
   "private": true,
-  "description": "Personal Hugo site for jacobcolvin.com. Type-checks the ubuntu-unity theme's TypeScript sources; Hugo's esbuild does the actual bundling.",
+  "description": "Personal Hugo site for jacobcolvin.com. The xterm dependencies mirror the theme's package.hugo.json (Hugo's esbuild resolves them from this root node_modules); the scripts delegate to the theme's own configs.",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "typecheck": "tsc -p themes/ubuntu-unity --noEmit",
+    "typecheck:test": "tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit",
+    "test": "vitest run --config themes/ubuntu-unity/vitest.config.ts",
+    "test:watch": "vitest --config themes/ubuntu-unity/vitest.config.ts"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",
