@@ -1,0 +1,6 @@
+{{- /* The Evince-style CV document viewer. Select it from a page's front
+     matter with `layout = "cv"`; the pdf/pdfPrintable/sourceUrl params are
+     documented in _partials/page/cv.html. */ -}}
+{{ define "main" }}
+  {{ partial "page/cv.html" . }}
+{{ end }}

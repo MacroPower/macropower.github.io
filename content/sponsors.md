@@ -1,5 +1,6 @@
 +++
 title = "Sponsors"
+layout = "sponsors"
 date = "2026-05-31"
 +++
 

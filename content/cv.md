@@ -1,5 +1,6 @@
 +++
 title = "CV"
+layout = "cv"
 date = "2021-08-26"
 description = "CV of Jacob Colvin, Lead Software Engineer."
 aliases = ["resume"]
