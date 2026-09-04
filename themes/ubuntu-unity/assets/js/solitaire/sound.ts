@@ -31,7 +31,10 @@ export class Sfx {
       if (!Ctor) return;
       const ctx = new Ctor();
       const master = ctx.createGain();
-      master.gain.value = this.muted ? 0 : 0.6;
+      // Scheduled rather than assigned: the mute toggle goes through the
+      // automation timeline, and this keeps the startup level on the same
+      // path.
+      master.gain.setValueAtTime(this.muted ? 0 : 0.6, 0);
       const comp = ctx.createDynamicsCompressor();
       comp.threshold.value = -18;
       comp.ratio.value = 6;
