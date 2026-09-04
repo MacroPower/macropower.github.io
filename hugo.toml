@@ -32,11 +32,8 @@ mainSections = ["posts"]
     block = true
     title = true
 
+# Date formats and enableReadingTime keep the theme's defaults.
 [params]
-  # Long and numeric date formats (post reader and post list).
-  dateform    = "Jan 2, 2006"
-  dateformNum = "2006-01-02"
-
   description = "Jacob Colvin is a Lead Software Engineer working on developer platforms and infrastructure, writing about Kubernetes, observability, and open source."
 
   # Default share image for Open Graph / Twitter cards (a screenshot of
@@ -47,8 +44,6 @@ mainSections = ["posts"]
   # the focus line shown beneath it.
   homeSubtitle = "Lead Software Engineer"
   homeFocus    = "Developer Platforms & Infrastructure"
-
-  enableReadingTime = true
 
   # Source repository for this site (linked from the "View source" dialog).
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
