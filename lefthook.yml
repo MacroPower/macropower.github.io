@@ -4,9 +4,16 @@
 pre-commit:
   parallel: true
   commands:
+    # A glob rooted deeper than themes/ubuntu-unity/** never matches in
+    # lefthook 2.x, so both commands match the whole theme tree and list
+    # the tsconfig files separately.
     typecheck:
-      glob: "themes/ubuntu-unity/{tsconfig.json,assets/js/**/*.{ts,tsx}}"
+      glob:
+        - "themes/ubuntu-unity/**/*.ts"
+        - "themes/ubuntu-unity/tsconfig.json"
       run: npx --no-install tsc -p themes/ubuntu-unity --noEmit
     typecheck-test:
-      glob: "themes/ubuntu-unity/{tsconfig.json,tsconfig.test.json,assets/js/**/*.{ts,tsx}}"
+      glob:
+        - "themes/ubuntu-unity/**/*.ts"
+        - "themes/ubuntu-unity/tsconfig*.json"
       run: npx --no-install tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit
