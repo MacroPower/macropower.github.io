@@ -17,6 +17,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
+- `head.html` renders `_partials/extend-head.html` last and appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`. Both hook partials ship empty and are the documented override points, so keep them.
 
 ## DOM contracts
 
