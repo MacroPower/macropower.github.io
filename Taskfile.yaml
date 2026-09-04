@@ -49,7 +49,7 @@ tasks:
       GITHUB_USER: '{{.GITHUB_USER | default "MacroPower"}}'
       REPO_LIMIT: '{{.REPO_LIMIT | default "200"}}'
       MIN_STARS: '{{.MIN_STARS | default "0"}}'
-      # Keep in sync with themes/ubuntu-unity/layouts/projects/list.html ($known).
+      # Keep in sync with themes/ubuntu-unity/layouts/_partials/page/projects.html ($known).
       LANG_ALLOW: '["Go","Python","TypeScript","JavaScript","Rust","Shell","C","HTML","Ruby","Lua"]'
     preconditions:
       - sh: command -v gh >/dev/null

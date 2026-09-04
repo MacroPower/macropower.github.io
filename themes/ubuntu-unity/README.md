@@ -139,9 +139,9 @@ icons and keywords automatically.
   `pdf` (required), `pdfPrintable`, `sourceUrl`.
 - `content/sponsors.md` with `layout = "sponsors"` — cards from
   `data/sponsors.yaml` (`name` required; `url`, `avatar` optional).
-- `content/projects/_index.md` — the projects grid, from
-  `data/projects.yaml` (see `exampleSite/data/projects.yaml` for the
-  schema).
+- `content/projects.md` with `layout = "projects"` — the projects grid,
+  from `data/projects.yaml` (see `exampleSite/data/projects.yaml` for
+  the schema); the markdown body only shows in the home terminal.
 - `content/solitaire.md` with `layout = "solitaire"` -- the solitaire
   table; the markdown body only shows in the home terminal (`cat
   solitaire.md`), and the terminal's `solitaire` command opens the page.

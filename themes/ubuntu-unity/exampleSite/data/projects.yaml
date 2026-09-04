@@ -1,7 +1,7 @@
 # Projects shown on /projects/ (and searchable in the Dash). One entry per
 # repository. name, description, language, updated, and url are required;
 # stars, forks, topics, and license are optional. language must be one of
-# the icon set's known languages — see the check in layouts/projects/list.html.
+# the icon set's known languages — see the check in _partials/page/projects.html.
 - name: sample-cli
   description: A command-line tool that does one thing well.
   language: Go

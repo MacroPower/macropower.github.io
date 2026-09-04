@@ -1,0 +1,7 @@
+{{- /* The projects page, a file-manager grid over data/projects.yaml.
+     Select it from a page's front matter with `layout = "projects"` (a
+     single content/projects.md works; so does a section _index.md); the
+     grid itself is _partials/page/projects.html. */ -}}
+{{ define "main" }}
+  {{ partial "page/projects.html" . }}
+{{ end }}

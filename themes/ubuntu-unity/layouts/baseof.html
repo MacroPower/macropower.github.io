@@ -39,7 +39,7 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $
   {{ partial "ui/script.html" (dict "entry" "js/blog.ts" "target" "js/blog.js") }}
   {{ end }}
 
-  {{ if eq .Section "projects" }}
+  {{ if eq .Layout "projects" }}
   {{ partial "ui/script.html" (dict "entry" "js/projects.ts" "target" "js/projects.js") }}
   {{ end }}
 

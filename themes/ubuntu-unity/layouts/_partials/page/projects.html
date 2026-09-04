@@ -1,0 +1,59 @@
+{{- /*
+  The projects page body: an icon-view grid over hugo.Data.projects (the
+  site's data/projects.yaml; the page renders empty without it) with the
+  Places/Languages sidebar and the preview pane projects.ts paints.
+  Rendered by layouts/projects.html for pages with `layout = "projects"`.
+*/ -}}
+{{- $cutoff := (now.AddDate 0 -6 0).Format "2006-01-02" -}}
+{{- $known := slice "Go" "Python" "TypeScript" "JavaScript" "Rust" "Shell" "C" "HTML" "Ruby" "Lua" -}}
+{{- range hugo.Data.projects -}}
+  {{- if not (in $known .language) -}}
+    {{ errorf "projects.yaml: unknown language %q in project %q (allowed: %v)" .language .name $known }}
+  {{- end -}}
+{{- end -}}
+<article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
+  <h1 class="up-sr-only">Projects</h1>
+  {{ partial "page/icons/lang-symbols.html" . }}
+  <template id="up-project-icons">
+    <div data-icon="star">{{ partial "icon.html" "glyphs/star" }}</div>
+    <div data-icon="fork">{{ partial "icon.html" "glyphs/fork" }}</div>
+    <div data-icon="license">{{ partial "icon.html" "glyphs/stat-license" }}</div>
+    <div data-icon="clock">{{ partial "icon.html" "glyphs/clock" }}</div>
+    <div data-icon="github">{{ partial "icon.html" "glyphs/github" }}</div>
+  </template>
+  {{ partial "page/nav-pathbar.html" (dict
+      "segments" (slice
+        (dict "label" "Projects" "url" .RelPermalink))
+      "search" true
+      "searchNoun" "projects"
+      "searchPlaceholder" "Filter projects by name or topic…") }}
+  <div class="up-projects-grid">
+    {{ partial "page/projects-sidebar.html" (dict "projects" hugo.Data.projects "cutoff" $cutoff) }}
+    {{ partial "page/projects-grid.html" (dict "projects" hugo.Data.projects) }}
+    {{ partial "page/empty-pane.html" (dict
+        "class" "up-project-preview"
+        "ariaLabel" "Project preview"
+        "attrs" (dict "data-up-project-preview" "")
+        "icon" (partial "icon.html" "flat/empty-folder")
+        "hint" "No item selected"
+        "tagline" (partial "ui/term-prompt.html" (dict "path" "~/projects" "cmd" "ls | head"))) }}
+  </div>
+  <noscript>
+    {{- /* The grid tiles are JS-gestured <button>s; without JS the page
+          would contain zero links to any project. The grid's chrome
+          (sidebar, preview pane) is inert without JS and its collapsed
+          flow height would otherwise overlap this list, so hide it.
+          display:contents lifts the list out of the noscript box and
+          into the article's flex layout, so its flex:1 + overflow:auto
+          sizing (main.scss) can actually constrain and scroll it. */}}
+    <style>
+      .up-projects-grid{display:none}
+      .up-projects noscript{display:contents}
+    </style>
+    <ul class="up-projects-noscript">
+      {{- range hugo.Data.projects }}
+      <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
+      {{- end }}
+    </ul>
+  </noscript>
+</article>
