@@ -8,7 +8,7 @@ import { cat, cd, ls, open, pwd } from "./fs";
 import {
   clear, date, echo, help, history, links, neofetch, social, uptime, whoami,
 } from "./meta";
-import { exit, sudo } from "./eggs";
+import { exit, solitaire, sudo } from "./eggs";
 import {
   cut, fls, grep, head, nl, rev, seq, sort, tac, tail, tee, tr, tru, uniq, wc,
 } from "./text";
@@ -38,7 +38,7 @@ export const ALL_COMMANDS: Command[] = [
   notifySend,
   tru, fls,
   colon, test, testBracket, printf,
-  sudo, exit,
+  sudo, solitaire, exit,
 ];
 
 export function registerAll(shell: Shell): void {

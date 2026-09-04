@@ -1,0 +1,7 @@
+{{- /* The solitaire table. Select it from a page's front matter with
+     `layout = "solitaire"`; the game itself is the solitaire bundle
+     (assets/js/solitaire/) over the canvas _partials/page/solitaire.html
+     emits. */ -}}
+{{ define "main" }}
+  {{ partial "page/solitaire.html" . }}
+{{ end }}

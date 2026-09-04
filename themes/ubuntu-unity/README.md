@@ -26,6 +26,11 @@ or run the bundled [example site](#example-site).
   file, with drag-to-reorder, rubber-band selection, and a preview pane.
 - **CV page** — an Evince-style PDF document viewer (vendored pdf.js) with
   thumbnails, zoom, and print/source actions from front matter.
+- **Solitaire page** -- Klondike in a Balatro-style pixel-art table:
+  a low-resolution canvas upscaled with nearest-neighbor sampling, a
+  bitmap font, synthesized sound effects, drag or click-to-move, draw
+  one or three, undo, hints, auto-complete, and the bouncing-card
+  finish. Rules are a tested, DOM-free module.
 - **Sponsors page**, hidden icon-vault page, spotify shortcode, Open
   Graph/Twitter/JSON-LD metadata, self-hosted Ubuntu fonts, and a
   MIDI-playing synth "Studio" easter egg behind the sound indicator.
@@ -118,8 +123,8 @@ navigation actions. Home is implicit and always first. Per-entry
 matching), `kw` (Dash search keywords), `dashLabel`/`dashIcon`
 overrides, and `launcher`/`dash` booleans to keep a page off the dock
 or out of the Dash. Known identifiers (`cv`, `blog`, `posts`,
-`projects`, `sponsors`, `icons`, `about`) get fitting icons and
-keywords automatically.
+`projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting
+icons and keywords automatically.
 
 ### Content
 
@@ -132,6 +137,9 @@ keywords automatically.
 - `content/projects/_index.md` — the projects grid, from
   `data/projects.yaml` (see `exampleSite/data/projects.yaml` for the
   schema).
+- `content/solitaire.md` with `layout = "solitaire"` -- the solitaire
+  table; the markdown body only shows in the home terminal (`cat
+  solitaire.md`), and the terminal's `solitaire` command opens the page.
 - `content/icons.md` with `layout = "icons"` — the hidden icon vault.
 - Any other top-level page renders in a plain window — and appears in
   the home terminal's filesystem, where `cat` prints its markdown.

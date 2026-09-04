@@ -57,6 +57,21 @@ const SECTIONS: ShortcutSection[] = [
     ],
   },
   {
+    title: "Solitaire",
+    hint: "Click a card to send it to the first place it fits.",
+    rows: [
+      { combos: [["Drag"]], desc: "Move a card or a run", gesture: true },
+      { combos: [["Space"], ["Enter"]], desc: "Draw from the stock" },
+      { combos: [["Z"], ["Ctrl", "Z"]], desc: "Undo" },
+      { combos: [["H"]], desc: "Show a hint (again for the next one)" },
+      { combos: [["N"]], desc: "New game" },
+      { combos: [["A"]], desc: "Finish a won game automatically" },
+      { combos: [["D"]], desc: "Switch between draw one and draw three" },
+      { combos: [["M"]], desc: "Toggle sound" },
+      { combos: [["Esc"]], desc: "Drop a held run back, or clear the hint" },
+    ],
+  },
+  {
     title: "Terminal",
     hint: "The usual bash/readline bindings.",
     rows: [

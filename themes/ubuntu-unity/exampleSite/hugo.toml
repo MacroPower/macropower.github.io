@@ -115,3 +115,8 @@ enableEmoji     = true
     name       = "Sponsors"
     url        = "sponsors/"
     weight     = 5
+  [[menu.main]]
+    identifier = "solitaire"
+    name       = "Solitaire"
+    url        = "solitaire/"
+    weight     = 6

@@ -1052,6 +1052,47 @@ a.up-sponsor-card[href]:hover{
   .up-empty-pane-icon svg{width:44px;height:44px}
 }
 
+/* ---------- Solitaire page ---------- */
+/* The table is a canvas the solitaire bundle sizes to the stage, so the
+   window holds its full height like the projects page; the script picks an
+   integer upscale that fits and the stage scrolls only when even 1x cannot.
+   image-rendering keeps the browser from blurring the nearest-neighbor
+   upscale a second time. */
+.up-window-chrome:has(.up-sol-page){height:85vh}
+.up-sol-page{padding:0;display:flex;flex-direction:column;min-height:0;flex:1}
+.up-sol{
+  flex:1;min-height:0;position:relative;
+  display:flex;flex-direction:column;
+  background:#184A3A;
+  /* CRT scanlines and a vignette over the whole table. Sits on the
+     non-scrolling parent so it never scrolls with an overflowing stage. */
+  &::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+    background:
+      repeating-linear-gradient(180deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at center, transparent 62%, rgba(0,0,0,.32) 100%);
+  }
+}
+.up-sol-stage{
+  flex:1;min-height:0;position:relative;overflow:auto;
+  display:flex;align-items:flex-start;justify-content:center;
+  scrollbar-width:thin;
+}
+.up-sol-canvas{
+  display:block;flex:none;
+  image-rendering:pixelated;
+  touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+  &:focus-visible{outline:2px solid var(--orange);outline-offset:-2px}
+}
+.up-sol-noscript{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+  font-family:"Ubuntu Mono",monospace;font-size:13px;color:#DCE8E2;
+}
+
 /* ---------- Neofetch (home) ---------- */
 /* Scoped via :has so only the home page drops the opaque window body;
    other pages keep it. The panel's own alpha lets the wallpaper through. */

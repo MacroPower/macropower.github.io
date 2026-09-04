@@ -1,0 +1,41 @@
+{{- /*
+  The solitaire page: pathbar, then the game stage. The whole table is one
+  canvas the solitaire bundle paints at a low logical resolution and
+  upscales with nearest-neighbor sampling (the chunky pixel look); the
+  script sizes it to the stage and re-fits on resize and maximize.
+
+  DOM contract read by assets/js/solitaire/index.ts:
+    [data-solitaire]            root; the bundle no-ops without it
+    [data-sol-stage]            the sized area the canvas fills
+    [data-sol-canvas]           the display canvas (focusable)
+    [data-sol-live]             aria-live status line for announcements
+    [data-sol-action="<id>"]    screen-reader toolbar mirroring the
+                                on-canvas buttons: new, draw-stock, undo,
+                                hint, auto (revealed when available), draw
+                                (the one/three switch), sound
+*/ -}}
+<article class="up-sol-page">
+  <h1 class="up-sr-only">Solitaire</h1>
+  {{ partial "page/nav-pathbar.html" (dict "segments" (slice
+      (dict "label" "Solitaire" "url" .RelPermalink))) }}
+  <div class="up-sol" data-solitaire>
+    <div class="up-sol-stage" data-sol-stage>
+      <canvas class="up-sol-canvas" data-sol-canvas tabindex="0" role="application"
+              width="242" height="220"
+              aria-label="Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: N new game, Z undo, H hint, Space draw, A finish, M sound."></canvas>
+      <noscript>
+        <div class="up-sol-noscript">Solitaire needs JavaScript to deal the cards.</div>
+      </noscript>
+    </div>
+    <div class="up-sr-only" role="toolbar" aria-label="Game controls">
+      <button type="button" data-sol-action="new">New game</button>
+      <button type="button" data-sol-action="draw-stock">Draw from the stock</button>
+      <button type="button" data-sol-action="undo" disabled>Undo</button>
+      <button type="button" data-sol-action="hint">Hint</button>
+      <button type="button" data-sol-action="auto" hidden>Finish the game</button>
+      <button type="button" data-sol-action="draw">Draw one (switch)</button>
+      <button type="button" data-sol-action="sound" aria-pressed="true">Sound</button>
+    </div>
+    <p class="up-sr-only" data-sol-live aria-live="polite"></p>
+  </div>
+</article>

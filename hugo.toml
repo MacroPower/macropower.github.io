@@ -125,10 +125,15 @@ enableEmoji     = true
     url        = "sponsors/"
     weight     = 5
   [[menu.main]]
+    identifier = "solitaire"
+    name       = "Solitaire"
+    url        = "solitaire/"
+    weight     = 6
+  [[menu.main]]
     identifier = "icons"
     name       = "Icons"
     url        = "icons/"
-    weight     = 6
+    weight     = 7
     [menu.main.params]
       # The hidden icon vault: searchable in the Dash and linked from
       # Help > Icon vault, but never a dock tile.
