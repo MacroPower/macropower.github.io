@@ -18,6 +18,12 @@ copyright = "Jane Doe"
 enableRobotsTXT = true
 enableEmoji     = true
 
+# The blog section. The post browser, the taxonomy pages, the RSS feed,
+# the Dash's Files category, and the home terminal's posts directory all
+# read it from here, so content/blog/ works as well as content/posts/.
+# Hugo defaults this to the section with the most pages.
+mainSections = ["posts"]
+
 [services.rss]
   # Maximum number of items in the RSS feed.
   limit = 10

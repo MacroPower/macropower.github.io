@@ -33,7 +33,7 @@
 }}
 {{- with .Site.Params.homeSubtitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
 <script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
-{{- else if and .IsPage (eq .Section "posts") }}
+{{- else if and .IsPage (in site.MainSections .Section) }}
 {{- $ld := dict
   "@context" "https://schema.org"
   "@type" "BlogPosting"

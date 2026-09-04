@@ -9,6 +9,10 @@ copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_
 enableRobotsTXT = true
 enableEmoji     = true
 
+# The blog section: the theme's post browser, feed, and terminal posts
+# directory all resolve it from mainSections.
+mainSections = ["posts"]
+
 [services.rss]
   # Maximum number of items in the RSS feed.
   limit = 10

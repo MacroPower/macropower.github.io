@@ -1,0 +1,15 @@
+{{- /*
+  The blog section page, or nothing when the site has none. The theme
+  reads Hugo's mainSections for it: by default the section holding the
+  most pages, or whatever the site's `mainSections` setting names. Every
+  blog surface resolves the section through here (the post list and
+  reader, the taxonomy crumbs, the Dash's Files category, the RSS feed,
+  the home terminal's posts directory), so renaming content/posts/ to
+  content/blog/ is a config change rather than a template edit. Call it
+  through partialCached; the result is the same for every page.
+*/ -}}
+{{- $page := "" -}}
+{{- with index site.MainSections 0 -}}
+  {{- with site.GetPage (printf "/%s" .) }}{{ $page = . }}{{ end -}}
+{{- end -}}
+{{- return $page -}}

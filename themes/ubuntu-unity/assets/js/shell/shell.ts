@@ -16,8 +16,8 @@ export interface SocialLink {
   display: string;
 }
 
-// A blog post, emitted by Hugo from content/posts/ so the VFS need not
-// hardcode the list. `url` is the real permalink; `date` is "YYYY-MM-DD".
+// A blog post, emitted by Hugo from the site's blog section so the VFS need
+// not hardcode the list. `url` is the real permalink; `date` is "YYYY-MM-DD".
 // Posts carry only metadata (rendered as a card) -- their bodies would bloat
 // the inline data island.
 export interface PostMeta {
@@ -37,6 +37,14 @@ export interface PageMeta {
   content: string;
 }
 
+// The blog section the posts live in: `dir` is its content directory name
+// (the VFS directory under ~), `url` its permalink. Absent when the site has
+// no blog section.
+export interface BlogMeta {
+  dir: string;
+  url: string;
+}
+
 // Single source of truth parsed from the JSON data island in index.html.
 export interface ShellData {
   handle: string;
@@ -48,6 +56,7 @@ export interface ShellData {
   socials: SocialLink[];
   posts: PostMeta[];
   pages: PageMeta[];
+  blog?: BlogMeta;
   ascii: string;
   colors: string;
 }

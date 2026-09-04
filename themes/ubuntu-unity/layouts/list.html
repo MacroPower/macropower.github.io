@@ -1,5 +1,12 @@
+{{- /* Section lists. The blog section (see _partials/blog-section.html)
+     gets the Nautilus-style post browser; every other section renders as
+     a plain page listing its children. */ -}}
 {{ define "main" }}
-  {{- $children := slice -}}
-  {{- range .Pages }}{{ $children = $children | append (dict "url" .RelPermalink "title" .Title) }}{{ end -}}
-  {{ partial "ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
+  {{- if in site.MainSections .Section -}}
+    {{ partial "page/blog-list.html" . }}
+  {{- else -}}
+    {{- $children := slice -}}
+    {{- range .Pages }}{{ $children = $children | append (dict "url" .RelPermalink "title" .Title) }}{{ end -}}
+    {{ partial "ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
+  {{- end -}}
 {{ end }}

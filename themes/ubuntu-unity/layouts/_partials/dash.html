@@ -49,7 +49,7 @@
   (dict "label" "Log Out" "icon" "launcher/doorway" "action" "logout"
         "kw" "log out logout session quit exit leave goodbye")
 ) -}}
-{{- $posts := where .Site.RegularPages "Section" "posts" -}}
+{{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
 {{- $playlist := partial "playlist.html" . -}}
 <div class="up-dash" data-up-dash hidden>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>

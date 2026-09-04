@@ -1,0 +1,21 @@
+{{- /* The blog index: pathbar with search, the Places/Series sidebar, the
+     filterable post list, and the empty reader pane. Rendered by
+     list.html for the blog section. */ -}}
+<article class="up-blog selectable" data-blog-kind="section">
+  <h1 class="up-sr-only">{{ .Title }}</h1>
+  {{ partial "page/nav-pathbar.html" (dict
+      "segments" (slice
+        (dict "label" .Title "url" .RelPermalink))
+      "search" true) }}
+  <div class="up-blog-grid">
+    {{ partial "page/post-sidebar.html" . }}
+    {{ partial "page/post-list.html" (dict
+        "pages" .RegularPages
+        "here" "") }}
+    {{ partial "page/empty-pane.html" (dict
+        "ariaLabel" "Post reader"
+        "icon" (partial "icon.html" "flat/empty-file")
+        "hint" "Select a post"
+        "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" .Section)))) }}
+  </div>
+</article>

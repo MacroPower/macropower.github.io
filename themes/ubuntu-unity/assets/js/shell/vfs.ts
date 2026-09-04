@@ -479,6 +479,7 @@ export function globToRegExp(pat: string, opts: { leadingDot?: boolean } = {}): 
 export function buildFs(data: ShellData): Vfs {
   const homePath = `/home/${data.handle}`;
   const host = data.host;
+  const blogDir = data.blog?.dir ?? "posts";
 
   const postNodes = data.posts.map((post) =>
     file(`${post.slug}.md`, {
@@ -492,7 +493,7 @@ export function buildFs(data: ShellData): Vfs {
           `Posted ${post.date} - ${post.categories.join(", ")}`,
         ),
         `${color(PALETTE.red, "Read: ")}${color(PALETTE.blue, `https://${host}${post.url}`)}`,
-        color(PALETTE.muted, `(run \`open posts/${post.slug}.md\` to read it)`),
+        color(PALETTE.muted, `(run \`open ${blogDir}/${post.slug}.md\` to read it)`),
       ],
     }),
   );
@@ -520,7 +521,7 @@ export function buildFs(data: ShellData): Vfs {
           color(PALETTE.fg, `Welcome to ${data.name}'s terminal.`),
           color(
             PALETTE.muted,
-            "Try: ls, cd posts, cat about.txt, open github, help.",
+            `Try: ls, cd ${blogDir}, cat about.txt, open github, help.`,
           ),
         ],
       }),
@@ -536,25 +537,15 @@ export function buildFs(data: ShellData): Vfs {
           ].filter(Boolean),
       }),
       ...pageNodes,
-      dir("posts", {
-        mtime: "2025-07-13",
-        url: "/posts/",
-        children: postNodes,
-      }),
-      dir("projects", {
-        mtime: "2023-04-03",
-        url: "/projects/",
-        children: [
-          file("README.md", {
-            mtime: "2023-04-03",
-            size: 220,
-            content: () => [
-              color(PALETTE.fg, `Projects live at https://${host}/projects/`),
-              color(PALETTE.muted, "Run `open projects` to browse them."),
-            ],
-          }),
-        ],
-      }),
+      ...(data.blog
+        ? [
+            dir(blogDir, {
+              mtime: "2025-07-13",
+              url: data.blog.url,
+              children: postNodes,
+            }),
+          ]
+        : []),
       file(".social", {
         mtime: "2024-01-10",
         size: 320,

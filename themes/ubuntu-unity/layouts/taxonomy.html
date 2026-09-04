@@ -2,11 +2,12 @@
   {{- $plural := .Data.Plural -}}
   {{- $singular := .Data.Singular -}}
   {{- $terms := .Data.Terms.Alphabetical -}}
+  {{- $segments := slice -}}
+  {{- with partialCached "blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
+  {{- $segments = $segments | append (dict "label" (humanize $plural) "url" .RelPermalink) -}}
   <article class="up-blog selectable" data-blog-kind="taxonomy">
     <h1 class="up-sr-only">{{ humanize $plural }}</h1>
-    {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-        (dict "label" "Posts" "url" (site.GetPage "/posts").RelPermalink)
-        (dict "label" (humanize $plural) "url" .RelPermalink))) }}
+    {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}
       <section class="up-post-list" aria-label="{{ humanize $plural }}">
@@ -28,7 +29,7 @@
           "ariaLabel" "Post reader"
           "icon" (partial "icon.html" "flat/empty-file")
           "hint" "Select a post"
-          "tagline" (partial "ui/term-prompt.html" (dict "path" "~/blog" "cmd" "ls posts/ | less"))) }}
+          "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" $plural)))) }}
     </div>
   </article>
 {{ end }}

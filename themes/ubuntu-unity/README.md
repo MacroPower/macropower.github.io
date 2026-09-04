@@ -131,7 +131,10 @@ icons and keywords automatically.
 ### Content
 
 - `content/posts/*.md` — blog posts; `categories` and `series` front
-  matter feed the sidebar lenses.
+  matter feed the sidebar lenses. The theme finds the blog section
+  through Hugo's `mainSections` (by default the section with the most
+  pages), so `content/blog/` works too; set `mainSections = ["blog"]`
+  when another section outgrows it.
 - `content/cv.md` with `layout = "cv"` — the PDF viewer; front matter:
   `pdf` (required), `pdfPrintable`, `sourceUrl`.
 - `content/sponsors.md` with `layout = "sponsors"` — cards from

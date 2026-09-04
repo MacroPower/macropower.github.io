@@ -1,5 +1,5 @@
 {{- $here := .RelPermalink -}}
-{{- $postsPage := site.GetPage "/posts" -}}
+{{- $postsPage := partialCached "blog-section.html" . -}}
 {{- $rssURL := "" -}}
 {{- with and $postsPage ($postsPage.OutputFormats.Get "rss") -}}
   {{- $rssURL = .RelPermalink -}}

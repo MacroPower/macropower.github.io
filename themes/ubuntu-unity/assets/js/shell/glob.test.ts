@@ -14,7 +14,7 @@ describe("Vfs.glob", () => {
     expect(vfs.glob(HOME, "*.md")).toEqual(["README.md", "cv.md"]);
   });
   it("matches all non-dot entries with *", () => {
-    expect(vfs.glob(HOME, "*")).toEqual(["README.md", "about.txt", "cv.md", "posts", "projects"]);
+    expect(vfs.glob(HOME, "*")).toEqual(["README.md", "about.txt", "cv.md", "posts"]);
   });
   it("descends path segments", () => {
     expect(vfs.glob(HOME, "posts/*")).toEqual(["posts/hello-world.md", "posts/second-post.md"]);
@@ -24,7 +24,7 @@ describe("Vfs.glob", () => {
     expect(vfs.glob(HOME, "a?.md")).toEqual([]);
   });
   it("honors character classes", () => {
-    expect(vfs.glob(HOME, "[Rp]*")).toEqual(["README.md", "posts", "projects"]);
+    expect(vfs.glob(HOME, "[Rp]*")).toEqual(["README.md", "posts"]);
   });
   it("preserves the input shape for absolute patterns", () => {
     expect(vfs.glob(HOME, "/etc/*")).toEqual(["/etc/motd"]);

@@ -38,9 +38,11 @@
       content; adding a post or page flows through automatically. Posts carry
       only metadata (the VFS renders a card) -- their full bodies would bloat
       this inline island -- while top-level pages carry RawContent so `cat`
-      prints the markdown. */ -}}
+      prints the markdown. The blog section itself (see
+      _partials/blog-section.html) names the directory the posts live in. */ -}}
+{{- $blogSection := partialCached "blog-section.html" . -}}
 {{- $posts := slice -}}
-{{- range where .Site.RegularPages "Section" "posts" -}}
+{{- range where .Site.RegularPages "Section" "in" site.MainSections -}}
   {{- $posts = $posts | append (dict
       "slug" .File.ContentBaseName
       "title" .Title
@@ -71,6 +73,9 @@
     "ascii" $ascii
     "colors" $colors
 -}}
+{{- with $blogSection -}}
+  {{- $payload = merge $payload (dict "blog" (dict "dir" .Section "url" .RelPermalink)) -}}
+{{- end -}}
 <section class="up-shell up-neofetch selectable" data-shell aria-label="Terminal">
   {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
         would double-encode the JSON. jsonify already \u-escapes < > & so the
@@ -106,12 +111,14 @@
         {{- end }}{{ end }}
       </ul>
     </nav>
+    {{- with $posts }}
     <h2>Posts</h2>
     <ul>
-      {{- range $posts }}
+      {{- range . }}
       <li><a href="{{ .url }}">{{ .title }}</a> ({{ .date }})</li>
       {{- end }}
     </ul>
+    {{- end }}
   </div>
   <div class="up-shell-term" data-shell-mount></div>
   <noscript>

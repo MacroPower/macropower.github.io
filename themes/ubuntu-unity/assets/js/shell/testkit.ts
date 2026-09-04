@@ -47,6 +47,7 @@ export const TEST_DATA: ShellData = {
   pages: [
     { slug: "cv", date: "2024-02-02", url: "/cv/", content: "# CV\n\nA short resume.\n" },
   ],
+  blog: { dir: "posts", url: "/posts/" },
   ascii: "ME",
   colors: "",
 };

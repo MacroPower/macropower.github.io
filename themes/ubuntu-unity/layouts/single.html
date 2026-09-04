@@ -1,3 +1,12 @@
+{{- /* Regular pages. Posts in the blog section (see
+     _partials/blog-section.html) open in the post reader; bespoke pages
+     select their own template through `layout` front matter (cv,
+     sponsors, projects, solitaire, icons); everything else renders in a
+     plain window. */ -}}
 {{ define "main" }}
-  {{ partial "ui/page.html" (dict "title" .Title "content" .Content) }}
+  {{- if in site.MainSections .Section -}}
+    {{ partial "page/blog-post.html" . }}
+  {{- else -}}
+    {{ partial "ui/page.html" (dict "title" .Title "content" .Content) }}
+  {{- end -}}
 {{ end }}
