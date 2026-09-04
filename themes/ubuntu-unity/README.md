@@ -122,7 +122,9 @@ navigation actions. Home is implicit and always first. Per-entry
 `assets/icons/`), `match` (`"exact"`/`"prefix"` active-state URL
 matching), `kw` (Dash search keywords), `dashLabel`/`dashIcon`
 overrides, and `launcher`/`dash` booleans to keep a page off the dock
-or out of the Dash. Known identifiers (`cv`, `blog`, `posts`,
+or out of the Dash. `launcher = "running"` docks a page only while it
+is open, like the Studio's running-app tile, and keeps it off the File
+menu; the Dash still finds it. Known identifiers (`cv`, `blog`, `posts`,
 `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting
 icons and keywords automatically.
 
@@ -140,6 +142,8 @@ icons and keywords automatically.
 - `content/solitaire.md` with `layout = "solitaire"` -- the solitaire
   table; the markdown body only shows in the home terminal (`cat
   solitaire.md`), and the terminal's `solitaire` command opens the page.
+  The example site hides it as an easter egg (`launcher = "running"`,
+  `noindex`, sitemap disabled).
 - `content/icons.md` with `layout = "icons"` — the hidden icon vault.
 - Any other top-level page renders in a plain window — and appears in
   the home terminal's filesystem, where `cat` prints its markdown.

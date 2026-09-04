@@ -101,8 +101,9 @@ enableEmoji     = true
 # menu.main drives the theme's site-pages registry: the launcher dock, the
 # Dash's Applications category, the File menu, and the nav:<key> actions.
 # Home is implicit. Per-entry [menu.main.params]: icon, match, kw, dashLabel,
-# dashIcon, launcher (false keeps a page off the dock), dash (false keeps it
-# out of the Dash). See the theme's _partials/site-pages.html.
+# dashIcon, launcher (false keeps a page off the dock, "running" docks it only
+# while it is open), dash (false keeps it out of the Dash). See the theme's
+# _partials/site-pages.html.
 [menu]
   [[menu.main]]
     identifier = "cv"
@@ -129,6 +130,10 @@ enableEmoji     = true
     name       = "Solitaire"
     url        = "solitaire/"
     weight     = 6
+    [menu.main.params]
+      # Hidden like the Studio: docked only while open, off the File menu,
+      # found through the Dash or the terminal's `solitaire` command.
+      launcher = "running"
   [[menu.main]]
     identifier = "icons"
     name       = "Icons"

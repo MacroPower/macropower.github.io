@@ -21,6 +21,16 @@
   {{ partial "ui/launcher-tile.html" . }}
   {{- end }}
 
+  {{/* Running-page tiles (launcher = "running" in menu.main.params): docked
+       only while the page is open, so the tile is rendered only when it is
+       the current page, where it also carries data-page-current. */}}
+  {{- range $reg.runningOrder -}}
+    {{- $p := index $reg.pages . -}}
+    {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}
+  {{ partial "ui/launcher-tile.html" (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" true) }}
+    {{- end -}}
+  {{- end }}
+
   {{/* Running-app tile: hidden until daw.ts opens the Studio window. */}}
   {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" "Studio" "icon" "launcher/piano" "hidden" true) }}
 

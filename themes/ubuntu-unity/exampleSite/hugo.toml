@@ -92,7 +92,8 @@ enableEmoji     = true
 #   kw        — Dash search keywords
 #   dashLabel — Dash tile label override
 #   dashIcon  — Dash tile icon override
-#   launcher  — false keeps the page off the dock (still in the Dash)
+#   launcher  — false keeps the page off the dock (still in the Dash);
+#               "running" docks it only while it is the current page
 #   dash      — false keeps the page out of the Dash
 [menu]
   [[menu.main]]
@@ -120,3 +121,7 @@ enableEmoji     = true
     name       = "Solitaire"
     url        = "solitaire/"
     weight     = 6
+    [menu.main.params]
+      # An easter egg like the Studio: docked only while open, reachable
+      # from the Dash or the terminal's `solitaire` command.
+      launcher = "running"

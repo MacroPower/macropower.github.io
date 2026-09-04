@@ -20,10 +20,14 @@
                 lowercased name)
     dashLabel — Dash tile label override (the home page shows as "Terminal")
     dashIcon  — Dash tile icon override
-    launcher  — set false to keep the page off the dock (still in the Dash)
+    launcher  — set false to keep the page off the dock (still in the Dash);
+                set "running" to dock it only while it is the current page,
+                like the Studio's running-app tile (also off the File menu)
     dash      — set false to keep the page out of the Dash
 
-  Returns (dict "pages" <key->dict> "launcherOrder" ... "dashOrder" ...).
+  Returns (dict "pages" <key->dict> "launcherOrder" ... "runningOrder" ...
+  "dashOrder" ...): launcherOrder is the dock and File menu, runningOrder
+  the pages docked only while current, dashOrder the Dash's Applications.
 */ -}}
 {{- $defaults := dict
   "cv" (dict
@@ -59,6 +63,7 @@
 -}}
 {{- $pages := dict -}}
 {{- $launcher := slice "home" -}}
+{{- $running := slice -}}
 {{- $dash := slice "home" -}}
 {{- range site.Menus.main -}}
   {{- $key := .Identifier | default (anchorize .Name) -}}
@@ -78,9 +83,10 @@
     {{- $home = merge $home $p -}}
   {{- else -}}
     {{- $pages = merge $pages (dict $key $p) -}}
-    {{- if ne .Params.launcher false }}{{ $launcher = $launcher | append $key }}{{ end -}}
+    {{- if eq .Params.launcher "running" }}{{ $running = $running | append $key }}
+    {{- else if ne .Params.launcher false }}{{ $launcher = $launcher | append $key }}{{ end -}}
     {{- if ne .Params.dash false }}{{ $dash = $dash | append $key }}{{ end -}}
   {{- end -}}
 {{- end -}}
 {{- $pages = merge $pages (dict "home" $home) -}}
-{{- return (dict "pages" $pages "launcherOrder" $launcher "dashOrder" $dash) -}}
+{{- return (dict "pages" $pages "launcherOrder" $launcher "runningOrder" $running "dashOrder" $dash) -}}

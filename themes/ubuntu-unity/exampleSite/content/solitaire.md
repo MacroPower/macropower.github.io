@@ -3,6 +3,9 @@ title = "Solitaire"
 layout = "solitaire"
 date = "2024-01-01"
 description = "Klondike solitaire, pixel-art style, with sound."
+noindex = true
+[sitemap]
+  disable = true
 +++
 
 # Solitaire

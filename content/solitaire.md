@@ -3,6 +3,11 @@ title = "Solitaire"
 layout = "solitaire"
 date = "2026-09-04"
 description = "Klondike solitaire, pixel-art style, with sound. Draw one or three, undo, hints, and the classic bouncing-card finish."
+# An easter egg: kept out of search engines and the sitemap, but still a
+# listed page so the home terminal's `solitaire` command can find it.
+noindex = true
+[sitemap]
+  disable = true
 +++
 
 # Solitaire

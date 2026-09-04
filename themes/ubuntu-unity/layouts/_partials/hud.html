@@ -12,8 +12,7 @@
 {{- $current := .RelPermalink -}}
 {{- $reg := partial "site-pages.html" . -}}
 {{- $icon := "launcher/browser-window" -}}
-{{- range $reg.launcherOrder -}}
-  {{- $p := index $reg.pages . -}}
+{{- range $k, $p := $reg.pages -}}
   {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}{{ $icon = $p.icon }}{{ end -}}
 {{- end -}}
 <div class="up-hud" data-up-hud hidden>
