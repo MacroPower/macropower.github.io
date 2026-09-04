@@ -136,5 +136,5 @@ Apache-2.0. See [LICENSE.md](LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
 - [xterm.js](https://xtermjs.org/) (MIT).
-- [pdf.js](https://mozilla.github.io/pdf.js/) (Apache-2.0), vendored under `static/js/pdf-js/`.
+- [pdf.js](https://mozilla.github.io/pdf.js/) 3.7.107 (Apache-2.0), vendored under `assets/vendor/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.

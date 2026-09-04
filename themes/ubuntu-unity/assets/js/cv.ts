@@ -1,8 +1,9 @@
 // The CV page's Evince-style document viewer. Renders the PDF named by
 // [data-cv-viewer]'s data-pdf-url through the vendored pdf.js build under
-// static/js/pdf-js/ (the parent site vendors it; _partials/page/cv.html emits
-// its deferred <script> tag): every page becomes a sheet in the scrollable
-// page well, plus a clickable thumbnail rail and a toolbar with page-number /
+// assets/vendor/pdf-js/ (_partials/page/cv.html emits its deferred <script>
+// tag and names the worker in data-pdfjs-worker): every page becomes a
+// sheet in the scrollable page well, plus a clickable thumbnail rail and a
+// toolbar with page-number /
 // zoom controls. Zoom is fit-to-width until the user zooms explicitly; the
 // fit relayouts on view resizes (window maximize, phone rotation) via a
 // ResizeObserver. Session-only; no persistence.
@@ -338,9 +339,9 @@ interface PdfJsModule {
 
   pdfjs()
     .then((mod) => {
-      if (mod.GlobalWorkerOptions.workerSrc === "") {
-        mod.GlobalWorkerOptions.workerSrc =
-          root.dataset.pdfjsWorker ?? "/js/pdf-js/build/pdf.worker.min.js";
+      const worker = root.dataset.pdfjsWorker;
+      if (mod.GlobalWorkerOptions.workerSrc === "" && worker) {
+        mod.GlobalWorkerOptions.workerSrc = worker;
       }
       return mod.getDocument(url).promise;
     })
