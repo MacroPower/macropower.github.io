@@ -731,6 +731,33 @@ function formatTime(ms: number): string {
     requestFrame();
   }
 
+  /** Debug rigs behind `?rig=`: "auto" lays every card face up on the
+   *  tableau, one suit per column, so the AUTO button appears at once;
+   *  "won" fills the foundations and starts the win. Both skip playing
+   *  the 52 cards it otherwise takes to reach the endgame. */
+  function applyRig(kind: "auto" | "won"): void {
+    const all = game.cards();
+    game.stock = [];
+    game.waste = [];
+    game.foundations = [[], [], [], []];
+    game.tableau = [[], [], [], [], [], [], []];
+    game.history = [];
+    for (const card of all) {
+      card.faceUp = true;
+      viewOf(card).faceUp = true;
+      if (kind === "won") game.foundations[card.suit].push(card);
+      else game.tableau[card.suit].push(card);
+    }
+    for (const f of game.foundations) f.sort((a, b) => a.rank - b.rank);
+    for (const t of game.tableau) t.sort((a, b) => b.rank - a.rank);
+    tweens = [];
+    flips = [];
+    dealing = false;
+    sync({ animate: false });
+    announce(kind === "won" ? "Rigged a won game." : "Rigged a finished tableau.");
+    if (kind === "won") startWin();
+  }
+
   function launchBouncer(card: Card): void {
     const v = viewOf(card);
     bouncers.push({
@@ -1507,5 +1534,7 @@ function formatTime(ms: number): string {
 
   resize();
   newGame();
+  const rig = new URLSearchParams(window.location.search).get("rig");
+  if (rig === "auto" || rig === "won") applyRig(rig);
   root.dataset.solReady = "";
 })();
