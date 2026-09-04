@@ -544,7 +544,6 @@ function formatTime(ms: number): string {
     const landed = (): void => {
       if (to.kind === "foundation") foundationEffects(card, to);
       else sfx.play("place");
-      if (game.won() && !won) startWin();
     };
     sync();
     const lead = tweenOf(card.id);
@@ -643,10 +642,7 @@ function formatTime(ms: number): string {
       const card = game.pile(record.to)[game.pile(record.to).length - 1];
       sync();
       const t = tweenOf(card.id);
-      const landed = (): void => {
-        foundationEffects(card, record.to);
-        if (game.won() && !won) startWin();
-      };
+      const landed = (): void => foundationEffects(card, record.to);
       if (t) t.onDone = landed;
       else landed();
       bumpScore();
@@ -1095,6 +1091,10 @@ function formatTime(ms: number): string {
       tweens = tweens.filter((t) => !finished.includes(t));
       for (const t of finished) t.onDone?.();
     }
+    // The model is won the moment the last move is applied, which during
+    // auto-complete is while earlier cards are still flying; wait for
+    // every card to land before the cascade takes over the frame.
+    if (game.won() && !won && tweens.length === 0) startWin();
     for (const f of flips) {
       if (now >= f.t0 + f.dur) views[f.id].faceUp = f.to;
     }
