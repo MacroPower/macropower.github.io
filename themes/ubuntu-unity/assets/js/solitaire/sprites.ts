@@ -89,7 +89,7 @@ export function blit(
 export function pxRoundRect(
   ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, color: string,
 ): void {
-  const insets = r <= 0 ? [] : r === 1 ? [1] : r === 2 ? [2, 1] : [3, 2, 1, 1];
+  const insets = roundInsets(r);
   ctx.fillStyle = color;
   for (let j = 0; j < h; j++) {
     const edge = Math.min(j, h - 1 - j);
@@ -98,15 +98,35 @@ export function pxRoundRect(
   }
 }
 
-/** A 1px pixel-rounded outline (the fill minus its inner fill). */
+function roundInsets(r: number): number[] {
+  return r <= 0 ? [] : r === 1 ? [1] : r === 2 ? [2, 1] : [3, 2, 1, 1];
+}
+
+/** A 1px pixel-rounded outline. Paints only the border pixels, so it is
+ *  safe over a live frame (a punch-out would leave transparent holes that
+ *  let the previous frame bleed through the upscale). */
 export function pxRoundOutline(
   ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, color: string,
 ): void {
-  pxRoundRect(ctx, x, y, w, h, r, color);
-  ctx.save();
-  ctx.globalCompositeOperation = "destination-out";
-  pxRoundRect(ctx, x + 1, y + 1, w - 2, h - 2, Math.max(0, r - 1), "#000");
-  ctx.restore();
+  const outer = roundInsets(r);
+  const inner = roundInsets(Math.max(0, r - 1));
+  ctx.fillStyle = color;
+  for (let j = 0; j < h; j++) {
+    const edge = Math.min(j, h - 1 - j);
+    const oi = edge < outer.length ? outer[edge] : 0;
+    const left = x + oi;
+    const right = x + w - oi;
+    if (j === 0 || j === h - 1) {
+      ctx.fillRect(left, y + j, right - left, 1);
+      continue;
+    }
+    const innerEdge = Math.min(j - 1, h - 2 - j);
+    const ii = innerEdge < inner.length ? inner[innerEdge] : 0;
+    const innerLeft = x + 1 + ii;
+    const innerRight = x + w - 1 - ii;
+    ctx.fillRect(left, y + j, Math.max(1, innerLeft - left), 1);
+    ctx.fillRect(Math.min(innerRight, right - 1), y + j, Math.max(1, right - innerRight), 1);
+  }
 }
 
 export function makeCanvas(w: number, h: number): HTMLCanvasElement {
