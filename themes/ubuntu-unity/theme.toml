@@ -1,5 +1,5 @@
 name = "ubuntu-unity"
-license = "MIT"
+license = "Apache-2.0"
 licenselink = "https://github.com/MacroPower/macropower.github.io/blob/main/themes/ubuntu-unity/LICENSE.md"
 description = "A personal-site theme styled after the Ubuntu 14.04 Unity desktop, with an interactive terminal home page."
 homepage = "https://github.com/MacroPower/macropower.github.io/tree/main/themes/ubuntu-unity"

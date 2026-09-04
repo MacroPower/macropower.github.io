@@ -130,7 +130,7 @@ The bash-conformance suite skips itself where bash is absent.
 
 ## License
 
-MIT. See [LICENSE.md](LICENSE.md).
+Apache-2.0. See [LICENSE.md](LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
 - [xterm.js](https://xtermjs.org/) (MIT).
