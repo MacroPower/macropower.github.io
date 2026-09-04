@@ -57,6 +57,12 @@ mainSections = ["posts"]
   # Show "N min read" in the post reader.
   enableReadingTime = true
 
+  # The home terminal is an SSH session into the site as a guest login.
+  # Both default from the site: "user" and the host of baseURL.
+  # [params.terminal]
+  #   user = "guest"
+  #   host = "example.org"
+
   # Source repository, linked from Help > "View source on github".
   # repoUrl = "https://github.com/jane/janedoe.example"
 

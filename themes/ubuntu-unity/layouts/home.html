@@ -1,6 +1,8 @@
 {{ define "main" }}
-{{- $user := "user" -}}
-{{- $host := (urls.Parse site.BaseURL).Host | default "localhost" -}}
+{{- /* The terminal plays an SSH session into the site's host as a guest
+      login. params.terminal.user and params.terminal.host rename both. */ -}}
+{{- $user := .Site.Params.terminal.user | default "user" -}}
+{{- $host := .Site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
 {{- /* uptime: the owner's age when params.author.born is set, otherwise the
       time since the oldest content page, otherwise zero. Anniversary math
       (not day division) keeps the "N years, N days" shape leap-year exact. */ -}}
