@@ -131,3 +131,12 @@ mainSections = ["posts"]
       # An easter egg like the Studio: docked only while open, reachable
       # from the Dash or the terminal's `solitaire` command.
       launcher = "running"
+  [[menu.main]]
+    identifier = "icons"
+    name       = "Icons"
+    url        = "icons/"
+    weight     = 7
+    [menu.main.params]
+      # The icon vault: searchable in the Dash and linked from
+      # Help > Icon vault, but never a dock tile.
+      launcher = false

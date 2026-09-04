@@ -20,3 +20,11 @@ func main() {
 ```
 
 > Blockquotes, lists, and images all render inside the page window.
+
+Images load lazily through the theme's render hook:
+
+![The theme's touch icon](/apple-touch-icon.png "A 180px Ubuntu roundel")
+
+The `spotify` shortcode embeds an album, track, playlist, or artist:
+
+{{< spotify type="album" id="4aawyAB9vmqN3uQ7FjRGTy" >}}
