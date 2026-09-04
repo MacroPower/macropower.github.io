@@ -40,7 +40,7 @@ const WASTE: Loc = { kind: "waste", pile: 0 };
 interface View {
   x: number;
   y: number;
-  /** Radians; only the dragged run and the hovered run tilt. */
+  /** Radians; only the dragged run tilts. */
   rot: number;
   /** Which side the card currently shows (lags the model during a flip). */
   faceUp: boolean;
@@ -1147,13 +1147,14 @@ function formatTime(ms: number): string {
         const run = game.runAt(hover.loc, hover.index);
         if (run) for (const c of run) hovered.add(c.id);
       }
-      const tilt = hovered.size && !reduceMotion() ? Math.sin(now / 170) * 0.035 : 0;
+      // The hovered run lifts straight up; a rotation this small only
+      // shears the sprite's rows at the logical resolution.
       for (const p of placements) {
         if (flying.has(p.card.id) || held.has(p.card.id)) continue;
         const v = viewOf(p.card);
         const f = flipScale(p.card.id, now);
         const lift = hovered.has(p.card.id) ? 2 : 0;
-        drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y - lift, hovered.has(p.card.id) ? tilt : 0, f.sx, 1);
+        drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y - lift, 0, f.sx, 1);
       }
       drawHints(now);
       if (dropTarget) {
@@ -1182,7 +1183,7 @@ function formatTime(ms: number): string {
     hi.drawImage(lo, 0, 0, canvas.width, canvas.height);
 
     const animating = tweens.length > 0 || flips.length > 0 || particles.length > 0 || popups.length > 0
-      || press?.dragging || hover !== null || hint !== null || scoreShake > 0 || Math.abs(scoreGap) >= 0.5
+      || press?.dragging || hint !== null || scoreShake > 0 || Math.abs(scoreGap) >= 0.5
       || buttons.some((b) => b.pulse);
     if (animating) requestFrame();
   }
