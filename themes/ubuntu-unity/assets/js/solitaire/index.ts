@@ -20,6 +20,7 @@ import {
   makeCanvas, pxRoundRect, pxRoundOutline, renderFelt, slotSprite, textWidth, ICONS,
 } from "./sprites";
 import { Sfx } from "./sound";
+import { locate, solve, type SolverMove } from "./solver";
 
 const GAP = 4;
 const TABLEAU_W = 7 * CARD_W + 6 * GAP;
@@ -429,7 +430,7 @@ function formatTime(ms: number): string {
     hint = null;
   }
 
-  function newGame(): void {
+  function newGame(prebuilt?: Klondike): void {
     window.clearTimeout(autoTimer);
     autoRunning = false;
     won = false;
@@ -450,7 +451,7 @@ function formatTime(ms: number): string {
     startedAt = 0;
     frozenElapsed = 0;
     scoreShown = 0;
-    game = new Klondike(drawMode);
+    game = prebuilt ?? new Klondike(drawMode);
     // Every card starts on the stock, face down, and the tableau deals out
     // row by row from there.
     const stock = slotPos(STOCK);
@@ -576,11 +577,16 @@ function formatTime(ms: number): string {
 
   function draw(): void {
     if (autoRunning || won) return;
+    drawCard();
+  }
+
+  /** Turn the stock (or recycle the waste). False when both are empty. */
+  function drawCard(): boolean {
     const wasteBefore = game.waste.length;
     const record = game.draw();
     if (!record) {
       sfx.play("invalid");
-      return;
+      return false;
     }
     touch();
     clearHint();
@@ -593,6 +599,7 @@ function formatTime(ms: number): string {
       sync({ stagger: (p) => (p.loc.kind === "stock" ? (record.count - 1 - p.index) * 12 : 0) });
       announce("Waste returned to the stock.");
     }
+    return true;
   }
 
   function undo(): void {
@@ -702,8 +709,10 @@ function formatTime(ms: number): string {
   // ---- win ----------------------------------------------------------------------
 
   function startWin(): void {
-    won = true;
+    // Freeze the clock before raising the flag: elapsed() reports the
+    // frozen value once won.
     frozenElapsed = elapsed();
+    won = true;
     window.clearTimeout(autoTimer);
     autoRunning = false;
     clearHint();
@@ -727,28 +736,53 @@ function formatTime(ms: number): string {
     requestFrame();
   }
 
-  /** Debug rig behind `?rig=auto`: lays every card face up on the
-   *  tableau, one suit per column, so the AUTO button appears at once and
-   *  the endgame (auto-complete, cascade, banner) can be checked without
-   *  playing the 52 cards it otherwise takes. */
-  function applyAutoRig(): void {
-    const all = game.cards();
-    game.stock = [];
-    game.waste = [];
-    game.foundations = [[], [], [], []];
-    game.tableau = [[], [], [], [], [], [], []];
-    game.history = [];
-    for (const card of all) {
-      card.faceUp = true;
-      viewOf(card).faceUp = true;
-      game.tableau[card.suit].push(card);
+  /** The `?rig=auto` demo: deal until the solver finds a winning line
+   *  (draw one; a deal that blows the search budget is dealt again), then
+   *  play it out card by card once the deal has landed, drawing through
+   *  the stock whenever the next card is buried there. */
+  function playRig(): void {
+    drawMode = 1;
+    let deal = game;
+    let solution: SolverMove[] | null = null;
+    for (let attempt = 0; attempt < 12 && !solution; attempt++) {
+      if (attempt > 0) deal = new Klondike(1);
+      solution = solve(deal);
     }
-    for (const t of game.tableau) t.sort((a, b) => b.rank - a.rank);
-    tweens = [];
-    flips = [];
-    dealing = false;
-    sync({ animate: false });
-    announce("Rigged a finished tableau.");
+    if (!solution) {
+      announce("No winnable deal found.");
+      return;
+    }
+    if (deal !== game) newGame(deal);
+    const moves = solution;
+    autoRunning = true;
+    syncControls();
+    let next = 0;
+    const step = (): void => {
+      if (dealing) {
+        autoTimer = window.setTimeout(step, 100);
+        return;
+      }
+      if (won || next >= moves.length) {
+        autoRunning = false;
+        syncControls();
+        return;
+      }
+      const move = moves[next];
+      const at = locate(game, move);
+      if (!at) {
+        if (move.from !== "stock" || !drawCard()) {
+          autoRunning = false;
+          syncControls();
+          return;
+        }
+        autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 90);
+        return;
+      }
+      applyMove(at.from, at.index, move.to, "auto");
+      next++;
+      autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 260);
+    };
+    step();
   }
 
   function launchBouncer(card: Card): void {
@@ -1532,6 +1566,6 @@ function formatTime(ms: number): string {
 
   resize();
   newGame();
-  if (new URLSearchParams(window.location.search).get("rig") === "auto") applyAutoRig();
+  if (new URLSearchParams(window.location.search).get("rig") === "auto") playRig();
   root.dataset.solReady = "";
 })();
