@@ -2,7 +2,13 @@
 // Audio (no samples to ship). The AudioContext is created lazily by
 // `unlock()` inside a user gesture so browser autoplay policy is satisfied,
 // and every effect degrades to silence when the context is missing or
-// suspended. Session-only: mute resets on reload.
+// suspended. Browsers disagree on which gesture counts: Chrome accepts a
+// mouse pointerdown but not a touch one, and WebKit wants mousedown,
+// touchend, click, or keydown and may leave a resume() from anything else
+// pending forever. So the table calls `unlock()` from every one of those,
+// `unlock()` also starts a silent buffer inside the gesture (the classic
+// iOS trick), and `play()` keeps retrying resume() until the context
+// reports running. Session-only: mute resets on reload.
 
 export type SfxName =
   | "pickup" | "place" | "flip" | "invalid" | "foundation" | "deal"
@@ -17,7 +23,8 @@ export class Sfx {
   private lastBounce = 0;
   muted = false;
 
-  /** Create (or resume) the context. Call from a pointer or key handler. */
+  /** Create the context, or nudge a suspended one awake. Call from any
+   *  gesture handler; repeated calls are cheap. */
   unlock(): void {
     if (!this.ctx) {
       const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -32,7 +39,22 @@ export class Sfx {
       this.ctx = ctx;
       this.master = master;
     }
-    if (this.ctx.state === "suspended") void this.ctx.resume();
+    if (this.ctx.state === "running") return;
+    this.wake(this.ctx);
+  }
+
+  /** resume() plus a one-frame silent source started inside the gesture,
+   *  which is what actually opens the audio session on iOS. */
+  private wake(ctx: AudioContext): void {
+    void ctx.resume().catch(() => undefined);
+    try {
+      const src = ctx.createBufferSource();
+      src.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch {
+      // Older WebKit throws on start() outside a gesture; nothing to do.
+    }
   }
 
   setMuted(muted: boolean): void {
@@ -45,7 +67,13 @@ export class Sfx {
   play(name: SfxName, arg = 0): void {
     const ctx = this.ctx;
     const out = this.master;
-    if (!ctx || !out || this.muted || ctx.state !== "running") return;
+    if (!ctx || !out || this.muted) return;
+    if (ctx.state !== "running") {
+      // Still locked: the page has been interacted with by now, so a fresh
+      // resume() usually succeeds and the next effect plays.
+      this.wake(ctx);
+      return;
+    }
     const t = ctx.currentTime;
     // A touch of pitch drift keeps repeated effects from sounding stamped.
     const drift = 1 + (Math.random() - 0.5) * 0.08;

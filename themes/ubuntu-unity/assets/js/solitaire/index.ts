@@ -1548,6 +1548,12 @@ function formatTime(ms: number): string {
     }
   });
   canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+  // Every gesture type a browser might accept for starting audio (see
+  // sound.ts); the pointer handlers above unlock too, but pointerdown alone
+  // is not enough for touch input or WebKit.
+  for (const type of ["pointerup", "mousedown", "touchend", "click", "keydown"] as const) {
+    root.addEventListener(type, () => sfx.unlock(), { capture: true, passive: true });
+  }
   root.addEventListener("keydown", onKeyDown);
   root.querySelectorAll<HTMLButtonElement>("[data-sol-action]").forEach((el) => {
     el.addEventListener("click", () => {
