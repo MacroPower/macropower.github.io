@@ -48,6 +48,11 @@ fresh desktop.
 
 ## Installation
 
+The theme lives in the `themes/ubuntu-unity` directory of the
+[macropower.github.io](https://github.com/MacroPower/macropower.github.io)
+repository and carries its own `go.mod`, so Hugo modules can import it
+from there.
+
 ### As a Hugo module
 
 ```bash
@@ -58,7 +63,7 @@ hugo mod init github.com/you/yoursite
 # hugo.toml
 [module]
   [[module.imports]]
-    path = "github.com/MacroPower/hugo-theme-ubuntu-unity"
+    path = "github.com/MacroPower/macropower.github.io/themes/ubuntu-unity"
 ```
 
 Then pull the theme's npm dependencies into your site and install them:
@@ -68,10 +73,14 @@ hugo mod npm pack
 npm install
 ```
 
-### As a git submodule
+Hugo's esbuild resolves the xterm packages from your site's
+`node_modules`; the theme's own directory is not on its search path.
+
+### As a copy under themes/
 
 ```bash
-git submodule add https://github.com/MacroPower/hugo-theme-ubuntu-unity themes/ubuntu-unity
+git clone --depth 1 https://github.com/MacroPower/macropower.github.io /tmp/mp
+cp -r /tmp/mp/themes/ubuntu-unity themes/ubuntu-unity
 echo 'theme = "ubuntu-unity"' >> hugo.toml
 ```
 
@@ -151,8 +160,18 @@ icons and keywords automatically.
 - Any other top-level page renders in a plain window — and appears in
   the home terminal's filesystem, where `cat` prints its markdown.
 
+The theme ships defaults for `params.dateform`, `params.dateformNum`,
+and `params.enableReadingTime`; a site's own values win.
+
+`hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`
+(title, date, description, categories, series); every other path gets
+`archetypes/default.md`.
+
 ### Customizing
 
+- **Favicons** — the theme ships a terminal-prompt `favicon.svg`,
+  `favicon.ico`, and `apple-touch-icon.png`; drop files with the same
+  names into your site's `static/` to replace them.
 - **Terminal ascii art** — override `assets/home/ascii.txt` (the art)
   and `assets/home/colors.txt` (a same-shape color mask: `O Y G B P C
   R M`, space = no color) in your site.

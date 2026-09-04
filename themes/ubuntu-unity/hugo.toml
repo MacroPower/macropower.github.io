@@ -4,3 +4,12 @@
   [module.hugoVersion]
     extended = true
     min      = "0.161.0"
+
+# Defaults a site inherits (Hugo deep-merges theme params under the
+# site's own). exampleSite/hugo.toml documents the full surface.
+[params]
+  # Long and numeric date formats (post reader and post list).
+  dateform    = "Jan 2, 2006"
+  dateformNum = "2006-01-02"
+  # Show "N min read" in the post reader.
+  enableReadingTime = true
