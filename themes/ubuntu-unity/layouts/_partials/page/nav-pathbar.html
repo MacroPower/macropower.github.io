@@ -1,27 +1,27 @@
 {{- /* Every breadcrumb roots at Home, so prepend it here (its URL and, via the
       render loop's i==0 case, its house icon) and let callers pass only the
       trail below it. */ -}}
-{{- $segments := slice (dict "label" "Home" "url" site.Home.RelPermalink) -}}
+{{- $segments := slice (dict "label" (T "home") "url" site.Home.RelPermalink) -}}
 {{- range .segments }}{{ $segments = $segments | append . }}{{ end -}}
 {{- $prevURL := .prevURL -}}
 {{- $nextURL := .nextURL -}}
 {{- $prevTitle := .prevTitle -}}
 {{- $nextTitle := .nextTitle -}}
 {{- $search := .search -}}
-{{- $searchNoun := .searchNoun | default "posts" -}}
-{{- $searchPlaceholder := .searchPlaceholder | default "Filter posts by name or tag…" -}}
+{{- $searchNoun := .searchNoun | default (T "posts_noun") -}}
+{{- $searchPlaceholder := .searchPlaceholder | default (T "filter_posts_placeholder") -}}
 <div class="up-pathbar-wrap">
-  <nav class="up-pathbar" aria-label="Path">
-    <div class="up-pathbar-nav" role="group" aria-label="History">
+  <nav class="up-pathbar" aria-label="{{ T "pathbar_path" }}">
+    <div class="up-pathbar-nav" role="group" aria-label="{{ T "pathbar_history" }}">
       <a class="up-pathbar-arrow{{ if not $prevURL }} is-disabled{{ end }}"
          href="{{ with $prevURL }}{{ . }}{{ else }}#{{ end }}"
-         {{- with $prevTitle }} title="Previous: {{ . }}" aria-label="Previous: {{ . }}"{{ else }} title="Back" aria-label="Back"{{ end -}}
+         {{- with $prevTitle }}{{ $t := T "pathbar_previous" (dict "Title" .) }} title="{{ $t }}" aria-label="{{ $t }}"{{ else }} title="{{ T "pathbar_back" }}" aria-label="{{ T "pathbar_back" }}"{{ end -}}
          {{- if not $prevURL }} aria-disabled="true" tabindex="-1"{{ end }}>
         {{ partial "icon.html" "glyphs/pathbar-back" }}
       </a>
       <a class="up-pathbar-arrow{{ if not $nextURL }} is-disabled{{ end }}"
          href="{{ with $nextURL }}{{ . }}{{ else }}#{{ end }}"
-         {{- with $nextTitle }} title="Next: {{ . }}" aria-label="Next: {{ . }}"{{ else }} title="Forward" aria-label="Forward"{{ end -}}
+         {{- with $nextTitle }}{{ $t := T "pathbar_next" (dict "Title" .) }} title="{{ $t }}" aria-label="{{ $t }}"{{ else }} title="{{ T "pathbar_forward" }}" aria-label="{{ T "pathbar_forward" }}"{{ end -}}
          {{- if not $nextURL }} aria-disabled="true" tabindex="-1"{{ end }}>
         {{ partial "icon.html" "glyphs/pathbar-forward" }}
       </a>
@@ -47,7 +47,7 @@
     </div>
     {{- if $search }}
       <button type="button" class="up-pathbar-icon-btn" data-up-search-toggle
-              title="Search {{ $searchNoun }} (Ctrl+F)" aria-label="Search {{ $searchNoun }}" aria-expanded="false">
+              title="{{ T "search_noun_title" (dict "Noun" $searchNoun) }}" aria-label="{{ T "search_noun" (dict "Noun" $searchNoun) }}" aria-expanded="false">
         {{ partial "icon.html" "glyphs/pathbar-search" }}
       </button>
     {{- end }}
@@ -59,10 +59,10 @@
       </span>
       <input type="search" class="up-pathbar-search-input" data-up-search-input
              placeholder="{{ $searchPlaceholder }}" autocomplete="off"
-             aria-label="Filter {{ $searchNoun }}">
+             aria-label="{{ T "filter_noun" (dict "Noun" $searchNoun) }}">
       <span class="up-pathbar-search-count" data-up-search-count aria-live="polite"></span>
       <button type="button" class="up-pathbar-search-close" data-up-search-close
-              title="Close search (Esc)" aria-label="Close search">×</button>
+              title="{{ T "close_search_title" }}" aria-label="{{ T "close_search" }}">×</button>
     </div>
   {{- end }}
 </div>

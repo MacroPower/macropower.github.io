@@ -11,7 +11,7 @@
   <section class="up-window-chrome">
     <div class="up-titlebar" data-titlebar>
       {{ partial "ui/window-controls.html" (dict) }}
-      <span class="up-titlebar-text">Trash</span>
+      <span class="up-titlebar-text">{{ T "trash" }}</span>
     </div>
     <div class="up-window-body">
       {{- /* Inline crumbs rather than page/nav-pathbar.html: the partial's
@@ -41,15 +41,15 @@
 
       <div class="up-trash-empty" hidden>
         {{ partial "icon.html" "flat/trash-empty" }}
-        <div class="up-trash-empty-headline">Trash is empty</div>
+        <div class="up-trash-empty-headline">{{ T "trash_is_empty" }}</div>
         <div class="up-trash-empty-detail">
-          Nothing thrown away yet.
+          {{ T "nothing_thrown_away" }}
         </div>
       </div>
 
       <div class="up-trash-footer">
-        <span class="up-trash-count" data-trash-count>{{ len $files }} items</span>
-        <button type="button" class="up-trash-empty-btn" data-trash-empty>Empty Trash</button>
+        <span class="up-trash-count" data-trash-count>{{ T "items_count" (len $files) }}</span>
+        <button type="button" class="up-trash-empty-btn" data-trash-empty>{{ T "empty_trash" }}</button>
       </div>
     </div>
   </section>

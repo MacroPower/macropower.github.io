@@ -76,7 +76,7 @@
 {{- with $blogSection -}}
   {{- $payload = merge $payload (dict "blog" (dict "dir" .Section "url" .RelPermalink)) -}}
 {{- end -}}
-<section class="up-shell up-neofetch selectable" data-shell aria-label="Terminal">
+<section class="up-shell up-neofetch selectable" data-shell aria-label="{{ T "terminal" }}">
   {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
         would double-encode the JSON. jsonify already \u-escapes < > & so the
         payload is safe to emit verbatim. Same pattern as UP_SITE in baseof.html. */ -}}
@@ -93,14 +93,14 @@
     {{- with $payload.focus }}
     <p>{{ . }}</p>
     {{- end }}
-    <h2>Links</h2>
+    <h2>{{ T "links" }}</h2>
     <ul>
       {{- range $socials }}
       <li><a href="{{ .url }}">{{ .label }}: {{ .display }}</a></li>
       {{- end }}
     </ul>
-    <nav aria-label="Site">
-      <h2>Explore</h2>
+    <nav aria-label="{{ T "site" }}">
+      <h2>{{ T "explore" }}</h2>
       {{- /* Same launcher pages as the dock, in the same order, minus Home
             (this is the home page) — sourced from the site-pages registry so
             this fallback nav can never drift from the desktop chrome. */ -}}
@@ -112,7 +112,7 @@
       </ul>
     </nav>
     {{- with $posts }}
-    <h2>Posts</h2>
+    <h2>{{ T "posts" }}</h2>
     <ul>
       {{- range . }}
       <li><a href="{{ .url }}">{{ .title }}</a> ({{ .date }})</li>
@@ -139,7 +139,7 @@
       [data-shell] .up-sr-only ul{padding-left:1.2em}
       [data-shell]{overflow:auto}
     </style>
-    <div class="up-shell-noscript">{{ $user }}@{{ $host }}: this terminal requires JavaScript.</div>
+    <div class="up-shell-noscript">{{ $user }}@{{ $host }}: {{ T "terminal_requires_js" }}</div>
   </noscript>
 </section>
 {{ end }}

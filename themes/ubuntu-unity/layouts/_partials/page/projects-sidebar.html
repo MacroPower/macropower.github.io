@@ -12,10 +12,10 @@
 {{- $iconGithub := partial "icon.html" "glyphs/github" -}}
 
 {{- $places := slice
-    (dict "tag" "button" "label" "All"     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))
-    (dict "tag" "button" "label" "Starred" "icon" $iconStarred "count" (len $starred)                 "attrs" (dict "data-projects-filter" "starred"))
-    (dict "tag" "button" "label" "Recent"  "icon" $iconRecent  "count" (len $recent)                  "attrs" (dict "data-projects-filter" "recent"))
-    (dict "tag" "button" "label" "Forks"   "icon" $iconForks   "count" (len $forks)                   "attrs" (dict "data-projects-filter" "forks"))
+    (dict "tag" "button" "label" (T "all")     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))
+    (dict "tag" "button" "label" (T "starred") "icon" $iconStarred "count" (len $starred)                 "attrs" (dict "data-projects-filter" "starred"))
+    (dict "tag" "button" "label" (T "recent")  "icon" $iconRecent  "count" (len $recent)                  "attrs" (dict "data-projects-filter" "recent"))
+    (dict "tag" "button" "label" (T "forks")   "icon" $iconForks   "count" (len $forks)                   "attrs" (dict "data-projects-filter" "forks"))
 -}}
 
 {{/* Build language histogram, then sort the keys into a stable alphabetical
@@ -45,13 +45,13 @@
 {{- end -}}
 
 {{- $sections := slice
-    (dict "label" "Places" "items" $places)
-    (dict "label" "Languages" "items" $langs)
+    (dict "label" (T "places") "items" $places)
+    (dict "label" (T "languages") "items" $langs)
 -}}
 
 {{- with $github -}}
   {{- $sections = $sections | append (dict
-      "label" "Devices"
+      "label" (T "devices")
       "items" (slice (dict
         "label" "github.com"
         "url" .
@@ -59,4 +59,4 @@
         "attrs" (dict "target" "_blank" "rel" "noopener")))) -}}
 {{- end -}}
 
-{{ partial "page/naut-sidebar.html" (dict "ariaLabel" "Filters" "sections" $sections) }}
+{{ partial "page/naut-sidebar.html" (dict "ariaLabel" (T "filters") "sections" $sections) }}

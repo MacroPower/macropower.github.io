@@ -1,12 +1,12 @@
 {{ define "main" }}
   <article class="up-404 selectable">
-    <div class="up-empty-pane" aria-label="Page not found">
+    <div class="up-empty-pane" aria-label="{{ T "page_not_found" }}">
       <div class="up-empty-pane-inner">
         <span class="up-empty-pane-icon" aria-hidden="true">{{ partial "icon.html" "flat/empty-folder" }}</span>
-        <h1 class="up-empty-pane-hint">This page does not exist</h1>
+        <h1 class="up-empty-pane-hint">{{ T "page_does_not_exist" }}</h1>
         <div class="up-empty-pane-tagline" aria-hidden="true">bash: cd: 404: No such file or directory</div>
         {{- $nav := (partial "site-pages.html" .).pages -}}
-        <nav class="up-404-links" aria-label="Places to go instead">
+        <nav class="up-404-links" aria-label="{{ T "places_instead" }}">
           {{- range slice "home" "blog" "projects" }}{{ with index $nav . }}
           <a href="{{ .url }}">{{ .label }}</a>
           {{- end }}{{ end }}

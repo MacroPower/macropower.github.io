@@ -11,9 +11,9 @@
   a distinct class dialogs.ts queries separately).
 */ -}}
 <div class="up-tl-group">
-  <button class="up-tl up-tl-close" type="button" aria-label="Close">{{ partial "icon.html" "glyphs/titlebar-close" }}</button>
-  <button class="up-tl up-tl-min" type="button" aria-label="Minimize">{{ partial "icon.html" "glyphs/titlebar-min" }}</button>
+  <button class="up-tl up-tl-close" type="button" aria-label="{{ T "close" }}">{{ partial "icon.html" "glyphs/titlebar-close" }}</button>
+  <button class="up-tl up-tl-min" type="button" aria-label="{{ T "minimize" }}">{{ partial "icon.html" "glyphs/titlebar-min" }}</button>
   {{- if .max }}
-  <button class="up-tl up-tl-max" type="button" aria-label="Maximize">{{ partial "icon.html" "glyphs/titlebar-max" }}</button>
+  <button class="up-tl up-tl-max" type="button" aria-label="{{ T "maximize" }}">{{ partial "icon.html" "glyphs/titlebar-max" }}</button>
   {{- end }}
 </div>

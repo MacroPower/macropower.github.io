@@ -12,7 +12,7 @@
   {{- end -}}
 {{- end -}}
 <article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
-  <h1 class="up-sr-only">Projects</h1>
+  <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/icons/lang-symbols.html" . }}
   <template id="up-project-icons">
     <div data-icon="star">{{ partial "icon.html" "glyphs/star" }}</div>
@@ -23,19 +23,19 @@
   </template>
   {{ partial "page/nav-pathbar.html" (dict
       "segments" (slice
-        (dict "label" "Projects" "url" .RelPermalink))
+        (dict "label" .Title "url" .RelPermalink))
       "search" true
-      "searchNoun" "projects"
-      "searchPlaceholder" "Filter projects by name or topic…") }}
+      "searchNoun" (T "projects_noun")
+      "searchPlaceholder" (T "filter_projects_placeholder")) }}
   <div class="up-projects-grid">
     {{ partial "page/projects-sidebar.html" (dict "projects" hugo.Data.projects "cutoff" $cutoff) }}
     {{ partial "page/projects-grid.html" (dict "projects" hugo.Data.projects) }}
     {{ partial "page/empty-pane.html" (dict
         "class" "up-project-preview"
-        "ariaLabel" "Project preview"
+        "ariaLabel" (T "project_preview")
         "attrs" (dict "data-up-project-preview" "")
         "icon" (partial "icon.html" "flat/empty-folder")
-        "hint" "No item selected"
+        "hint" (T "no_item_selected")
         "tagline" (partial "ui/term-prompt.html" (dict "path" "~/projects" "cmd" "ls | head"))) }}
   </div>
   <noscript>

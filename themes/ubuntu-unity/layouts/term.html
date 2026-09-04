@@ -17,12 +17,12 @@
           <div class="up-reader-meta">
             <span>{{ humanize $plural }}</span>
             <span class="up-reader-meta-sep">·</span>
-            <span>{{ len .Pages }} posts</span>
+            <span>{{ T "posts_count" (len .Pages) }}</span>
           </div>
           <h1 class="up-reader-title">{{ .Title }}</h1>
           <div class="up-reader-body">
             {{ .Content }}
-            <p>{{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }} tagged
+            <p>{{ T "posts_tagged" (len .Pages) }}
               <span class="up-reader-chip">#{{ .Title | lower }}</span>.</p>
           </div>
           <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ .Title | lower }}" {{ with partialCached "blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>

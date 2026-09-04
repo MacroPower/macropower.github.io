@@ -6,14 +6,14 @@
   {{- $active := cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) -}}
   {{- $tiles = $tiles | append (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" $active) -}}
 {{- end -}}
-<aside class="up-launcher" aria-label="Launcher">
+<aside class="up-launcher" aria-label="{{ T "launcher" }}">
   {{/* BFB ("big friendly button") — the orbit mark that opens the Dash.
        Deliberately not .is-active/.is-focused (those classes are page-window
        contracts); dash.ts toggles .is-open while the Dash is up. */}}
   <button class="up-launcher-tile up-launcher-bfb" data-dash-open type="button"
-          aria-label="Search your computer" aria-haspopup="dialog" aria-expanded="false">
+          aria-label="{{ T "search_your_computer" }}" aria-haspopup="dialog" aria-expanded="false">
     <span class="up-launcher-icon">{{ partial "icon.html" "launcher/dash" }}</span>
-    <span class="up-tooltip" aria-hidden="true">Search your computer</span>
+    <span class="up-tooltip" aria-hidden="true">{{ T "search_your_computer" }}</span>
   </button>
   <div class="up-launcher-sep" aria-hidden="true"></div>
 
@@ -32,11 +32,11 @@
   {{- end }}
 
   {{/* Running-app tile: hidden until daw.ts opens the Studio window. */}}
-  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" "Studio" "icon" "launcher/piano" "hidden" true) }}
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" (T "studio") "icon" "launcher/piano" "hidden" true) }}
 
   <div class="up-launcher-spacer"></div>
 
-  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" "Trash" "icon" "launcher/trash" "trash" true) }}
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" (T "trash") "icon" "launcher/trash" "trash" true) }}
 </aside>
 
 <div class="up-desktop-label">

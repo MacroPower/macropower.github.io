@@ -13,7 +13,7 @@
       <section class="up-post-list" aria-label="{{ humanize $plural }}">
         <header class="up-post-list-header">
           <span>{{ humanize $singular | title }}</span>
-          <span>Posts</span>
+          <span>{{ T "posts" }}</span>
         </header>
         {{- range $terms }}
           {{ partial "page/post-row.html" (dict
@@ -22,13 +22,13 @@
               "chips" (slice (.Page.Title | lower))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">No {{ $plural }} yet.</div>
+          <div class="up-post-empty">{{ T "no_terms_yet" (dict "Plural" $plural) }}</div>
         {{- end }}
       </section>
       {{ partial "page/empty-pane.html" (dict
-          "ariaLabel" "Post reader"
+          "ariaLabel" (T "post_reader")
           "icon" (partial "icon.html" "flat/empty-file")
-          "hint" "Select a post"
+          "hint" (T "select_a_post")
           "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" $plural)))) }}
     </div>
   </article>

@@ -169,6 +169,10 @@ and `params.enableReadingTime`; a site's own values win.
 
 ### Customizing
 
+- **Translations** — every server-rendered label reads from
+  `i18n/en.toml`; copy it to `i18n/<lang>.toml` in your site and
+  translate the values. Text the JavaScript writes at runtime (dialogs,
+  notifications, the terminal) stays in English.
 - **Favicons** — the theme ships a terminal-prompt `favicon.svg`,
   `favicon.ico`, and `apple-touch-icon.png`; drop files with the same
   names into your site's `static/` to replace them.

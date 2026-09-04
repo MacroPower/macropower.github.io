@@ -13,7 +13,7 @@
 {{- $places := slice -}}
 {{- with $postsPage -}}
   {{- $places = $places | append (dict
-      "label" "All"
+      "label" (T "all")
       "url" .RelPermalink
       "icon" $iconAll
       "count" (len .RegularPages)
@@ -28,7 +28,7 @@
       "active" (eq $here .Page.RelPermalink)) -}}
 {{- end -}}
 
-{{- $sections := slice (dict "label" "Places" "items" $places) -}}
+{{- $sections := slice (dict "label" (T "places") "items" $places) -}}
 
 {{- with site.Taxonomies.series.Alphabetical -}}
   {{- $items := slice -}}
@@ -40,13 +40,13 @@
         "count" .Count
         "active" (eq $here .Page.RelPermalink)) -}}
   {{- end -}}
-  {{- $sections = $sections | append (dict "label" "Series" "items" $items) -}}
+  {{- $sections = $sections | append (dict "label" (T "series") "items" $items) -}}
 {{- end -}}
 
 {{- with $rssURL -}}
   {{- $sections = $sections | append (dict
-      "label" "Feeds"
-      "items" (slice (dict "label" "RSS" "url" . "icon" $iconRss))) -}}
+      "label" (T "feeds")
+      "items" (slice (dict "label" (T "rss") "url" . "icon" $iconRss))) -}}
 {{- end -}}
 
-{{ partial "page/naut-sidebar.html" (dict "ariaLabel" "Filters" "sections" $sections) }}
+{{ partial "page/naut-sidebar.html" (dict "ariaLabel" (T "filters") "sections" $sections) }}

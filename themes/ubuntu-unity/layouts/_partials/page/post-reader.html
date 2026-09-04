@@ -1,16 +1,16 @@
 {{- $dateFmt := site.Params.dateform | default "Jan 2, 2006" -}}
 
 <article class="up-reader" data-up-reader>
-  <a class="up-reader-up" href="{{ .CurrentSection.RelPermalink }}" aria-label="Back to all posts">
+  <a class="up-reader-up" href="{{ .CurrentSection.RelPermalink }}" aria-label="{{ T "back_to_all_posts" }}">
     {{ partial "icon.html" "glyphs/pathbar-back" }}
-    <span>All posts</span>
+    <span>{{ T "all_posts" }}</span>
   </a>
   <div class="up-reader-inner selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
       {{- if site.Params.enableReadingTime }}
         <span class="up-reader-meta-sep">·</span>
-        <span>{{ .ReadingTime }} min read</span>
+        <span>{{ T "reading_time" .ReadingTime }}</span>
       {{- end }}
       {{- range .Params.categories }}
         <span class="up-reader-meta-sep">·</span>

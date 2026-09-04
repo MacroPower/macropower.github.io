@@ -16,131 +16,131 @@
   {{- $fileItems := slice -}}
   {{- range $reg.launcherOrder }}{{ if ne . "home" }}
     {{- $p := index $reg.pages . -}}
-    {{- $fileItems = $fileItems | append (dict "label" (printf "Open %s" $p.label) "action" (printf "nav:%s" .)) -}}
+    {{- $fileItems = $fileItems | append (dict "label" (T "open_page" (dict "Page" $p.label)) "action" (printf "nav:%s" .)) -}}
   {{- end }}{{ end -}}
-  {{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" "Close window" "disabled" true "shortcut" "Ctrl+W") -}}
-  {{ partial "ui/panel-menu.html" (dict "menu" "file" "label" "File" "items" $fileItems) }}
+  {{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" (T "close_window") "disabled" true "shortcut" "Ctrl+W") -}}
+  {{ partial "ui/panel-menu.html" (dict "menu" "file" "label" (T "menu_file") "items" $fileItems) }}
 
-  {{ partial "ui/panel-menu.html" (dict "menu" "edit" "label" "Edit" "items" (slice
-    (dict "label" "Undo" "disabled" true "shortcut" "Ctrl+Z")
-    (dict "label" "Redo" "disabled" true "shortcut" "Ctrl+Y")
+  {{ partial "ui/panel-menu.html" (dict "menu" "edit" "label" (T "menu_edit") "items" (slice
+    (dict "label" (T "undo") "disabled" true "shortcut" "Ctrl+Z")
+    (dict "label" (T "redo") "disabled" true "shortcut" "Ctrl+Y")
     (dict "sep" true)
-    (dict "label" "Cut" "disabled" true "shortcut" "Ctrl+X")
-    (dict "label" "Copy" "disabled" true "shortcut" "Ctrl+C")
-    (dict "label" "Paste" "disabled" true "shortcut" "Ctrl+V")
+    (dict "label" (T "cut") "disabled" true "shortcut" "Ctrl+X")
+    (dict "label" (T "copy") "disabled" true "shortcut" "Ctrl+C")
+    (dict "label" (T "paste") "disabled" true "shortcut" "Ctrl+V")
     (dict "sep" true)
-    (dict "label" "Preferences…" "action" "dlg:prefs")
+    (dict "label" (T "preferences") "action" "dlg:prefs")
   )) }}
 
-  {{ partial "ui/panel-menu.html" (dict "menu" "view" "label" "View" "items" (slice
-    (dict "label" "Reload" "action" "reload" "shortcut" "Ctrl+R")
-    (dict "label" "Toggle full window" "action" "fullscreen")
+  {{ partial "ui/panel-menu.html" (dict "menu" "view" "label" (T "menu_view") "items" (slice
+    (dict "label" (T "reload") "action" "reload" "shortcut" "Ctrl+R")
+    (dict "label" (T "toggle_full_window") "action" "fullscreen")
     (dict "sep" true)
-    (dict "label" "Show launcher" "action" "dlg:launcher-info" "check" true)
-    (dict "label" "Show top panel" "check" true)
+    (dict "label" (T "show_launcher") "action" "dlg:launcher-info" "check" true)
+    (dict "label" (T "show_top_panel") "check" true)
   )) }}
 
   {{- $helpItems := slice
-    (dict "label" "Keyboard shortcuts" "action" "dlg:shortcuts")
+    (dict "label" (T "keyboard_shortcuts") "action" "dlg:shortcuts")
     (dict "sep" true)
-    (dict "label" "View source on github" "action" "dlg:github")
+    (dict "label" (T "view_source") "action" "dlg:github")
   -}}
   {{- /* The icon vault is a hidden page; offer it only when the site
        registers it (an "icons" menu entry, typically dash/launcher=false). */ -}}
   {{- if index $reg.pages "icons" -}}
-    {{- $helpItems = $helpItems | append (dict "label" "Icon vault" "action" "nav:icons") -}}
+    {{- $helpItems = $helpItems | append (dict "label" (T "icon_vault") "action" "nav:icons") -}}
   {{- end -}}
-  {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" "Help" "items" $helpItems) }}
+  {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" (T "menu_help") "items" $helpItems) }}
 
   <div class="up-panel-spacer"></div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="Messages" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ T "messages" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-inbox" }}
     </button>
     <div class="up-dropdown" data-dropdown-for="inbox" data-align="right" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">Messages</div>
+      <div class="up-dropdown-header">{{ T "messages" }}</div>
       <div class="up-dropdown-body">
-        <div class="up-dropdown-empty">No new messages.</div>
+        <div class="up-dropdown-empty">{{ T "no_new_messages" }}</div>
         <div class="up-dropdown-row-buttons">
-          {{ with site.Params.author.email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">Compose</a>{{ end }}
-          <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">Subscribe to feed</button>
+          {{ with site.Params.author.email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">{{ T "compose" }}</a>{{ end }}
+          <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">{{ T "subscribe_to_feed" }}</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="Network" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ T "network" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-net" }}
     </button>
     <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">Network</div>
+      <div class="up-dropdown-header">{{ T "network" }}</div>
       <div class="up-dropdown-body">
         {{ partial "ui/net-row.html" (dict "name" "café-do-bairro" "on" true "strong" true) }}
         {{ partial "ui/net-row.html" (dict "name" "MEO-WiFi") }}
         {{ partial "ui/net-row.html" (dict "name" "ngrok-tunnel" "mono" true) }}
         {{ partial "ui/net-row.html" (dict "name" "(hidden)" "muted" true) }}
         <div class="up-dropdown-sep"></div>
-        {{ partial "ui/dropdown-row.html" (dict "label" "Wired connection" "action" "dlg:wired") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" "Enable hotspot" "action" "dlg:hotspot") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "wired_connection") "action" "dlg:wired") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_hotspot") "action" "dlg:hotspot") }}
       </div>
     </div>
   </div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="Volume" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="{{ T "volume" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-volume-on" }}
       {{ partial "icon.html" "glyphs/panel-volume-mute" }}
     </button>
     <div class="up-dropdown" data-dropdown-for="vol" data-align="right" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">Sound</div>
+      <div class="up-dropdown-header">{{ T "sound" }}</div>
       <div class="up-dropdown-body">
         <div class="up-dropdown-row-flex">
-          <button type="button" class="up-vol-toggle" data-action="vol-toggle" aria-label="Toggle mute">
+          <button type="button" class="up-vol-toggle" data-action="vol-toggle" aria-label="{{ T "toggle_mute" }}">
             {{ partial "icon.html" "glyphs/panel-volume-on" }}
             {{ partial "icon.html" "glyphs/panel-volume-mute" }}
           </button>
-          <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="Volume">
+          <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="{{ T "volume" }}">
           <span class="up-vol-readout" data-vol-readout>62</span>
         </div>
-        <div class="up-dropdown-meta">Output: <span class="up-dropdown-meta-strong">Built-in audio</span></div>
+        <div class="up-dropdown-meta">{{ T "output" }} <span class="up-dropdown-meta-strong">{{ T "built_in_audio" }}</span></div>
         <div class="up-dropdown-meta-em">
-          <button type="button" class="up-vol-play" data-action="vol-play" aria-label="Play/Pause">
+          <button type="button" class="up-vol-play" data-action="vol-play" aria-label="{{ T "play_pause" }}">
             {{ partial "icon.html" "glyphs/panel-play" }}
             {{ partial "icon.html" "glyphs/panel-pause" }}
           </button>
-          <span data-vol-nowplaying>Paused</span>
-          <button type="button" class="up-vol-next" data-action="vol-next" aria-label="Next track" title="Next track">
+          <span data-vol-nowplaying>{{ T "paused" }}</span>
+          <button type="button" class="up-vol-next" data-action="vol-next" aria-label="{{ T "next_track" }}" title="{{ T "next_track" }}">
             <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5l7 4.5-7 4.5v-9zM11 3h2v10h-2V3z" fill="currentColor"/></svg>
           </button>
         </div>
         <div class="up-dropdown-row-buttons">
-          <button type="button" class="up-dropdown-btn is-ghost" data-action="daw:open">Open in Studio…</button>
+          <button type="button" class="up-dropdown-btn is-ghost" data-action="daw:open">{{ T "open_in_studio" }}</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="Battery" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="{{ T "battery" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-battery" }}
       {{ partial "icon.html" "glyphs/panel-battery-charging" }}
     </button>
     <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">Battery</div>
+      <div class="up-dropdown-header">{{ T "battery" }}</div>
       <div class="up-dropdown-body">
         <div class="up-bat-headline" data-bat-headline>76% — discharging</div>
         <div class="up-bat-detail" data-bat-detail>About 3 hours 14 minutes remaining</div>
         <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill style="width:76%"></div></div>
-        {{ partial "ui/dropdown-row.html" (dict "label" "Enable power saver" "action" "dlg:power-saver") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" "Power settings…" "action" "dlg:power") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_power_saver") "action" "dlg:power-saver") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "power_settings") "action" "dlg:power") }}
       </div>
     </div>
   </div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="Clock" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="{{ T "clock" }}" aria-haspopup="true" aria-expanded="false">
       <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
       <span data-clock-narrow hidden>{{ $time }}</span>
     </button>
@@ -148,22 +148,22 @@
       <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
       <div class="up-dropdown-body">
         <div class="up-calendar" data-calendar></div>
-        {{ partial "ui/dropdown-row.html" (dict "label" "Open calendar" "action" "dlg:cal") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" "Time settings…" "action" "dlg:time") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "open_calendar") "action" "dlg:cal") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "time_settings") "action" "dlg:time") }}
       </div>
     </div>
   </div>
 
   <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="User" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ T "user" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-user" }}
     </button>
     <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ $handle }}</div>
       <div class="up-dropdown-body">
-        {{ partial "ui/dropdown-row.html" (dict "label" "Lock screen" "action" "dlg:lock") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" "Restart session" "action" "reload") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" "Log out…" "action" "dlg:logout" "danger" true) }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "lock_screen") "action" "dlg:lock") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "restart_session") "action" "reload") }}
+        {{ partial "ui/dropdown-row.html" (dict "label" (T "log_out") "action" "dlg:logout" "danger" true) }}
       </div>
     </div>
   </div>

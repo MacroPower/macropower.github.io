@@ -2,16 +2,16 @@
 {{- $here := .here -}}
 {{- $dateFmt := site.Params.dateformNum | default "2006-01-02" -}}
 
-<section class="up-post-list" aria-label="Posts" data-up-post-list>
+<section class="up-post-list" aria-label="{{ T "posts" }}" data-up-post-list>
   <header class="up-post-list-header">
     <button type="button" class="up-post-list-col" data-up-sort="name" aria-pressed="false">
-      <span>Name</span>
+      <span>{{ T "col_name" }}</span>
       <span class="up-sr-only" data-up-sort-sr></span>
       <span class="up-post-list-caret" aria-hidden="true"></span>
     </button>
     <button type="button" class="up-post-list-col is-sorted is-desc" data-up-sort="date" aria-pressed="true">
-      <span>Date</span>
-      <span class="up-sr-only" data-up-sort-sr>sorted descending</span>
+      <span>{{ T "col_date" }}</span>
+      <span class="up-sr-only" data-up-sort-sr>{{ T "sorted_descending" }}</span>
       <span class="up-post-list-caret" aria-hidden="true">▾</span>
     </button>
   </header>
@@ -30,6 +30,6 @@
           "datetime" $iso
           "filter" (dict "title" (lower .Title) "tags" (delimit $tagList " ") "date" $iso)) }}
     {{- end }}
-    <div class="up-post-empty" data-up-post-empty hidden>No posts match.</div>
+    <div class="up-post-empty" data-up-post-empty hidden>{{ T "no_posts_match" }}</div>
   </div>
 </section>

@@ -36,37 +36,37 @@
       "kw" $p.kw) -}}
 {{- end -}}
 {{- $apps = $apps | append (slice
-  (dict "label" "Studio" "icon" "launcher/piano" "action" "studio"
+  (dict "label" (T "studio") "icon" "launcher/piano" "action" "studio"
         "kw" "studio daw music midi sequencer synth piano roll lmms audio")
-  (dict "label" "Trash" "icon" "launcher/trash" "action" "trash"
+  (dict "label" (T "trash") "icon" "launcher/trash" "action" "trash"
         "kw" "trash rubbish bin wastebasket deleted files")
-  (dict "label" "Appearance" "icon" "launcher/paint" "action" "prefs"
+  (dict "label" (T "appearance") "icon" "launcher/paint" "action" "prefs"
         "kw" "appearance preferences settings theme accent color colour motion animations")
-  (dict "label" "Shortcuts" "icon" "launcher/typewriter-key" "action" "shortcuts"
+  (dict "label" (T "shortcuts") "icon" "launcher/typewriter-key" "action" "shortcuts"
         "kw" "keyboard shortcuts keys bindings hotkeys help reference")
-  (dict "label" "Lock Screen" "icon" "launcher/padlock" "action" "lock"
+  (dict "label" (T "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
         "kw" "lock screen security password greeter lightdm")
-  (dict "label" "Log Out" "icon" "launcher/doorway" "action" "logout"
+  (dict "label" (T "log_out_app") "icon" "launcher/doorway" "action" "logout"
         "kw" "log out logout session quit exit leave goodbye")
 ) -}}
 {{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
 {{- $playlist := partial "playlist.html" . -}}
 <div class="up-dash" data-up-dash hidden>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
-  <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="Dash search">
+  <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="{{ T "dash_search" }}">
     {{ partial "page/icons/lang-symbols.html" . }}
     <div class="up-dash-searchbar">
       <span class="up-dash-search-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>
       <input class="up-dash-search" data-dash-search type="text"
-             placeholder="Search your computer" aria-label="Search your computer"
+             placeholder="{{ T "search_your_computer" }}" aria-label="{{ T "search_your_computer" }}"
              autocomplete="off" autocapitalize="off" spellcheck="false">
     </div>
     <div class="up-dash-results" data-dash-results>
 
-      <section class="up-dash-section" data-dash-section="apps" aria-label="Applications">
+      <section class="up-dash-section" data-dash-section="apps" aria-label="{{ T "applications" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-apps" }}</span>
-          <span class="up-dash-cat-label">Applications</span>
+          <span class="up-dash-cat-label">{{ T "applications" }}</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
@@ -88,10 +88,10 @@
         </div>
       </section>
 
-      <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="Files and folders">
+      <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
-          <span class="up-dash-cat-label">Files &amp; Folders</span>
+          <span class="up-dash-cat-label">{{ T "files_and_folders" }}</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
@@ -106,10 +106,10 @@
         </div>
       </section>
 
-      <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="Projects">
+      <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
-          <span class="up-dash-cat-label">Projects</span>
+          <span class="up-dash-cat-label">{{ T "projects" }}</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
@@ -125,10 +125,10 @@
       </section>
 
       {{- with $playlist }}
-      <section class="up-dash-section" data-dash-section="music" aria-label="Music">
+      <section class="up-dash-section" data-dash-section="music" aria-label="{{ T "music" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-music" }}</span>
-          <span class="up-dash-cat-label">Music</span>
+          <span class="up-dash-cat-label">{{ T "music" }}</span>
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
@@ -137,7 +137,7 @@
                   data-dash-action="music:{{ $i }}"
                   data-keywords="music track song tune play audio midi tape mystery">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
-            <span class="up-dash-tile-label">Track {{ add $i 1 }}</span>
+            <span class="up-dash-tile-label">{{ T "track_n" (dict "N" (add $i 1)) }}</span>
           </button>
           {{- end }}
         </div>
@@ -146,25 +146,25 @@
 
       <div class="up-dash-empty" data-dash-empty hidden>
         <span class="up-dash-empty-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>
-        <p>Sorry, there is nothing that matches your search.</p>
+        <p>{{ T "dash_no_results" }}</p>
       </div>
     </div>
 
-    <div class="up-dash-lenses" role="group" aria-label="Filter results">
-      <button class="up-dash-lens is-active" data-dash-lens="home" type="button" aria-pressed="true" title="Home">
+    <div class="up-dash-lenses" role="group" aria-label="{{ T "filter_results" }}">
+      <button class="up-dash-lens is-active" data-dash-lens="home" type="button" aria-pressed="true" title="{{ T "home" }}">
         {{ partial "icon.html" "glyphs/home" }}
       </button>
-      <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="Applications">
+      <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="{{ T "applications" }}">
         {{ partial "icon.html" "glyphs/dash-apps" }}
       </button>
-      <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="Files &amp; Folders">
+      <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="{{ T "files_and_folders" }}">
         {{ partial "icon.html" "glyphs/folder" }}
       </button>
-      <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="Projects">
+      <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="{{ T "projects" }}">
         {{ partial "icon.html" "glyphs/code" }}
       </button>
       {{- with $playlist }}
-      <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="Music">
+      <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="{{ T "music" }}">
         {{ partial "icon.html" "glyphs/dash-music" }}
       </button>
       {{- end }}

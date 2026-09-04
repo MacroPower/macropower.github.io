@@ -17,17 +17,17 @@
 {{- end -}}
 <div class="up-hud" data-up-hud hidden>
   <div class="up-hud-backdrop" data-hud-backdrop aria-hidden="true"></div>
-  <section class="up-hud-panel" role="dialog" aria-modal="true" aria-label="HUD menu search">
+  <section class="up-hud-panel" role="dialog" aria-modal="true" aria-label="{{ T "hud_search" }}">
     <div class="up-hud-searchrow">
       <span class="up-hud-appicon" aria-hidden="true">{{ partial "icon.html" $icon }}</span>
       <input class="up-hud-input" data-hud-input type="text"
-             placeholder="Type your command" aria-label="Type your command"
+             placeholder="{{ T "type_your_command" }}" aria-label="{{ T "type_your_command" }}"
              autocomplete="off" autocapitalize="off" spellcheck="false"
              role="combobox" aria-expanded="false" aria-autocomplete="list"
              aria-controls="up-hud-list">
     </div>
     <ul class="up-hud-results" data-hud-results id="up-hud-list" role="listbox"
-        aria-label="Matching menu entries"></ul>
+        aria-label="{{ T "matching_menu_entries" }}"></ul>
     <div class="up-sr-only" data-hud-status role="status"></div>
   </section>
 </div>

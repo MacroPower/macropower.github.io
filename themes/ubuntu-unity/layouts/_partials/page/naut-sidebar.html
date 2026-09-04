@@ -28,7 +28,7 @@
                                 attribute sets where order doesn't matter.
 */ -}}
 {{- $class := .class -}}
-{{- $ariaLabel := .ariaLabel | default "Navigation" -}}
+{{- $ariaLabel := .ariaLabel | default (T "navigation") -}}
 {{- $sections := .sections -}}
 <aside class="up-naut-sidebar{{ with $class }} {{ . }}{{ end }}" aria-label="{{ $ariaLabel }}">
   {{- range $sections }}

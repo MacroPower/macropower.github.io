@@ -9,92 +9,92 @@
   the vendored build under the theme's static/js/pdf-js/.
 */ -}}
 <article class="up-cv-page selectable">
-  <h1 class="up-sr-only">CV</h1>
+  <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" "CV" "url" .RelPermalink))) }}
+      (dict "label" .Title "url" .RelPermalink))) }}
   {{- with .Params.pdf }}
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ . }}"
        data-pdfjs-worker="{{ "js/pdf-js/build/pdf.worker.min.js" | relURL }}">
     <script src="{{ "js/pdf-js/build/pdf.min.js" | relURL }}" defer data-docv-pdfjs></script>
-    <div class="up-docv-toolbar" role="toolbar" aria-label="Document controls">
+    <div class="up-docv-toolbar" role="toolbar" aria-label="{{ T "document_controls" }}">
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-prev disabled
-                title="Previous page" aria-label="Previous page">
+                title="{{ T "previous_page" }}" aria-label="{{ T "previous_page" }}">
           {{- partial "icon.html" "glyphs/chevron-up" -}}
         </button>
         <button type="button" class="up-docv-btn" data-docv-next disabled
-                title="Next page" aria-label="Next page">
+                title="{{ T "next_page" }}" aria-label="{{ T "next_page" }}">
           {{- partial "icon.html" "glyphs/chevron-down" -}}
         </button>
       </div>
       <div class="up-docv-pageentry">
         <input class="up-docv-pagenum" data-docv-pagenum type="text"
                inputmode="numeric" value="1" disabled
-               aria-label="Page number" autocomplete="off">
-        <span class="up-docv-pagecount">of <span data-docv-pagecount>…</span></span>
+               aria-label="{{ T "page_number" }}" autocomplete="off">
+        <span class="up-docv-pagecount">{{ T "page_count_of" }} <span data-docv-pagecount>…</span></span>
       </div>
       <span class="up-docv-sep" aria-hidden="true"></span>
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-zoom-out disabled
-                title="Zoom out" aria-label="Zoom out">
+                title="{{ T "zoom_out" }}" aria-label="{{ T "zoom_out" }}">
           {{- partial "icon.html" "glyphs/minus" -}}
         </button>
         <button type="button" class="up-docv-btn up-docv-zoom-readout" data-docv-zoom-fit disabled
-                title="Fit page width" aria-pressed="true">
-          <span data-docv-zoom-readout>Fit</span>
+                title="{{ T "fit_page_width" }}" aria-pressed="true">
+          <span data-docv-zoom-readout>{{ T "fit" }}</span>
         </button>
         <button type="button" class="up-docv-btn" data-docv-zoom-in disabled
-                title="Zoom in" aria-label="Zoom in">
+                title="{{ T "zoom_in" }}" aria-label="{{ T "zoom_in" }}">
           {{- partial "icon.html" "glyphs/plus" -}}
         </button>
       </div>
       <span class="up-docv-spacer"></span>
       {{- with $.Params.sourceUrl }}
       <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
-         title="CV source code (LaTeX)">
+         title="{{ T "document_source_title" }}">
         {{- partial "icon.html" "glyphs/code" -}}
-        <span class="up-docv-action-label">Source</span>
+        <span class="up-docv-action-label">{{ T "source" }}</span>
       </a>
       {{- end }}
       {{- with $.Params.pdfPrintable }}
       <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
-         title="A4-compatible PDF for printing">
+         title="{{ T "print_title" }}">
         {{- partial "icon.html" "glyphs/pdf" -}}
-        <span class="up-docv-action-label">Print</span>
+        <span class="up-docv-action-label">{{ T "print" }}</span>
       </a>
       {{- end }}
       <a class="up-docv-btn up-docv-action" href="{{ . }}" download
-         title="Download PDF">
+         title="{{ T "download_pdf" }}">
         {{- partial "icon.html" "glyphs/download" -}}
-        <span class="up-docv-action-label">Download</span>
+        <span class="up-docv-action-label">{{ T "download" }}</span>
       </a>
     </div>
     <div class="up-docv-body">
-      <aside class="up-docv-side" aria-label="Page thumbnails">
-        <div class="up-docv-side-head">Thumbnails</div>
+      <aside class="up-docv-side" aria-label="{{ T "page_thumbnails" }}">
+        <div class="up-docv-side-head">{{ T "thumbnails" }}</div>
         <div class="up-docv-thumbs" data-docv-thumbs></div>
       </aside>
       <div class="up-docv-view" data-docv-view tabindex="0">
         <div class="up-docv-status" data-docv-loading>
           <span class="up-docv-spinner" aria-hidden="true"></span>
-          <span>Loading document…</span>
+          <span>{{ T "loading_document" }}</span>
         </div>
         <div class="up-docv-status" data-docv-error hidden>
-          <span>The PDF preview could not be loaded.</span>
+          <span>{{ T "pdf_load_failed" }}</span>
           <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
             {{- partial "icon.html" "glyphs/pdf" -}}
-            <span>Open PDF</span>
+            <span>{{ T "open_pdf" }}</span>
           </a>
         </div>
         <div class="up-docv-pages" data-docv-pages></div>
         <noscript>
           <style>.up-docv-status[data-docv-loading]{display:none}</style>
           <div class="up-docv-status">
-            <span>Viewing the CV inline needs JavaScript.</span>
+            <span>{{ T "pdf_needs_js" }}</span>
             <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
               {{- partial "icon.html" "glyphs/pdf" -}}
-              <span>Open PDF</span>
+              <span>{{ T "open_pdf" }}</span>
             </a>
           </div>
         </noscript>

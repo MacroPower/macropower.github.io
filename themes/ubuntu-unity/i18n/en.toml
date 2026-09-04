@@ -1,0 +1,345 @@
+# English strings for every server-rendered label in the theme. Copy this
+# file to i18n/<lang>.toml in your site to translate the desktop; keys
+# with `one`/`other` are plural forms and receive `.Count`. The strings
+# JavaScript writes at runtime (dialogs, notifications, the terminal)
+# stay in English.
+
+# Shared
+[home]
+other = "Home"
+[terminal]
+other = "Terminal"
+[posts]
+other = "Posts"
+[projects]
+other = "Projects"
+[all]
+other = "All"
+[places]
+other = "Places"
+[navigation]
+other = "Navigation"
+[filters]
+other = "Filters"
+[close]
+other = "Close"
+[minimize]
+other = "Minimize"
+[maximize]
+other = "Maximize"
+[information]
+other = "Information"
+
+# Pathbar
+[pathbar_path]
+other = "Path"
+[pathbar_history]
+other = "History"
+[pathbar_back]
+other = "Back"
+[pathbar_forward]
+other = "Forward"
+[pathbar_previous]
+other = "Previous: {{ .Title }}"
+[pathbar_next]
+other = "Next: {{ .Title }}"
+[search_noun_title]
+other = "Search {{ .Noun }} (Ctrl+F)"
+[search_noun]
+other = "Search {{ .Noun }}"
+[filter_noun]
+other = "Filter {{ .Noun }}"
+[close_search_title]
+other = "Close search (Esc)"
+[close_search]
+other = "Close search"
+[posts_noun]
+other = "posts"
+[filter_posts_placeholder]
+other = "Filter posts by name or tag…"
+
+# Blog
+[post_reader]
+other = "Post reader"
+[select_a_post]
+other = "Select a post"
+[col_name]
+other = "Name"
+[col_date]
+other = "Date"
+[sorted_descending]
+other = "sorted descending"
+[no_posts_match]
+other = "No posts match."
+[no_terms_yet]
+other = "No {{ .Plural }} yet."
+[posts_count]
+one = "{{ .Count }} post"
+other = "{{ .Count }} posts"
+[posts_tagged]
+one = "{{ .Count }} post tagged"
+other = "{{ .Count }} posts tagged"
+[back_to_all_posts]
+other = "Back to all posts"
+[all_posts]
+other = "All posts"
+[reading_time]
+one = "{{ .Count }} min read"
+other = "{{ .Count }} min read"
+[series]
+other = "Series"
+[feeds]
+other = "Feeds"
+[rss]
+other = "RSS"
+
+# Home page (screen-reader and no-JS fallback)
+[links]
+other = "Links"
+[site]
+other = "Site"
+[explore]
+other = "Explore"
+[terminal_requires_js]
+other = "this terminal requires JavaScript."
+
+# 404
+[page_not_found]
+other = "Page not found"
+[page_does_not_exist]
+other = "This page does not exist"
+[places_instead]
+other = "Places to go instead"
+
+# Document viewer (cv layout)
+[document_controls]
+other = "Document controls"
+[previous_page]
+other = "Previous page"
+[next_page]
+other = "Next page"
+[page_number]
+other = "Page number"
+[page_count_of]
+other = "of"
+[zoom_out]
+other = "Zoom out"
+[zoom_in]
+other = "Zoom in"
+[fit_page_width]
+other = "Fit page width"
+[fit]
+other = "Fit"
+[document_source_title]
+other = "Source of this document"
+[source]
+other = "Source"
+[print_title]
+other = "A4-compatible PDF for printing"
+[print]
+other = "Print"
+[download_pdf]
+other = "Download PDF"
+[download]
+other = "Download"
+[page_thumbnails]
+other = "Page thumbnails"
+[thumbnails]
+other = "Thumbnails"
+[loading_document]
+other = "Loading document…"
+[pdf_load_failed]
+other = "The PDF preview could not be loaded."
+[open_pdf]
+other = "Open PDF"
+[pdf_needs_js]
+other = "Viewing the document inline needs JavaScript."
+
+# Sponsors
+[no_sponsors_yet]
+other = "No sponsors yet"
+[become_a_sponsor]
+other = "Become a sponsor"
+
+# Projects
+[projects_noun]
+other = "projects"
+[filter_projects_placeholder]
+other = "Filter projects by name or topic…"
+[project_preview]
+other = "Project preview"
+[no_item_selected]
+other = "No item selected"
+[no_projects_match]
+other = "No projects match."
+[starred]
+other = "Starred"
+[recent]
+other = "Recent"
+[forks]
+other = "Forks"
+[languages]
+other = "Languages"
+[devices]
+other = "Devices"
+
+# Solitaire
+[solitaire_canvas]
+other = "Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: N new game, Z undo, H hint, Space draw, A finish, M sound."
+[solitaire_needs_js]
+other = "Solitaire needs JavaScript to deal the cards."
+[game_controls]
+other = "Game controls"
+[new_game]
+other = "New game"
+[draw_from_stock]
+other = "Draw from the stock"
+[undo]
+other = "Undo"
+[hint]
+other = "Hint"
+[finish_the_game]
+other = "Finish the game"
+[draw_one_switch]
+other = "Draw one (switch)"
+[sound]
+other = "Sound"
+
+# Top panel
+[menu_file]
+other = "File"
+[menu_edit]
+other = "Edit"
+[menu_view]
+other = "View"
+[menu_help]
+other = "Help"
+[open_page]
+other = "Open {{ .Page }}"
+[close_window]
+other = "Close window"
+[redo]
+other = "Redo"
+[cut]
+other = "Cut"
+[copy]
+other = "Copy"
+[paste]
+other = "Paste"
+[preferences]
+other = "Preferences…"
+[reload]
+other = "Reload"
+[toggle_full_window]
+other = "Toggle full window"
+[show_launcher]
+other = "Show launcher"
+[show_top_panel]
+other = "Show top panel"
+[keyboard_shortcuts]
+other = "Keyboard shortcuts"
+[view_source]
+other = "View source on github"
+[icon_vault]
+other = "Icon vault"
+[messages]
+other = "Messages"
+[no_new_messages]
+other = "No new messages."
+[compose]
+other = "Compose"
+[subscribe_to_feed]
+other = "Subscribe to feed"
+[network]
+other = "Network"
+[wired_connection]
+other = "Wired connection"
+[enable_hotspot]
+other = "Enable hotspot"
+[volume]
+other = "Volume"
+[toggle_mute]
+other = "Toggle mute"
+[output]
+other = "Output:"
+[built_in_audio]
+other = "Built-in audio"
+[play_pause]
+other = "Play/Pause"
+[paused]
+other = "Paused"
+[next_track]
+other = "Next track"
+[open_in_studio]
+other = "Open in Studio…"
+[battery]
+other = "Battery"
+[enable_power_saver]
+other = "Enable power saver"
+[power_settings]
+other = "Power settings…"
+[clock]
+other = "Clock"
+[open_calendar]
+other = "Open calendar"
+[time_settings]
+other = "Time settings…"
+[user]
+other = "User"
+[lock_screen]
+other = "Lock screen"
+[restart_session]
+other = "Restart session"
+[log_out]
+other = "Log out…"
+
+# Launcher, Dash, HUD
+[launcher]
+other = "Launcher"
+[search_your_computer]
+other = "Search your computer"
+[studio]
+other = "Studio"
+[trash]
+other = "Trash"
+[dash_search]
+other = "Dash search"
+[applications]
+other = "Applications"
+[files_and_folders]
+other = "Files & Folders"
+[music]
+other = "Music"
+[track_n]
+other = "Track {{ .N }}"
+[dash_no_results]
+other = "Sorry, there is nothing that matches your search."
+[filter_results]
+other = "Filter results"
+[appearance]
+other = "Appearance"
+[shortcuts]
+other = "Shortcuts"
+[lock_screen_app]
+other = "Lock Screen"
+[log_out_app]
+other = "Log Out"
+[hud_search]
+other = "HUD menu search"
+[type_your_command]
+other = "Type your command"
+[matching_menu_entries]
+other = "Matching menu entries"
+
+# Trash window and lock screen
+[trash_is_empty]
+other = "Trash is empty"
+[nothing_thrown_away]
+other = "Nothing thrown away yet."
+[items_count]
+one = "{{ .Count }} item"
+other = "{{ .Count }} items"
+[empty_trash]
+other = "Empty Trash"
+[password]
+other = "Password"

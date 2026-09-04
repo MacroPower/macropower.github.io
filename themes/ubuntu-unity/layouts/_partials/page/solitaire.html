@@ -15,26 +15,26 @@
                                 (the one/three switch), sound
 */ -}}
 <article class="up-sol-page">
-  <h1 class="up-sr-only">Solitaire</h1>
+  <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" "Solitaire" "url" .RelPermalink))) }}
+      (dict "label" .Title "url" .RelPermalink))) }}
   <div class="up-sol" data-solitaire>
     <div class="up-sol-stage" data-sol-stage>
       <canvas class="up-sol-canvas" data-sol-canvas tabindex="0" role="application"
               width="242" height="220"
-              aria-label="Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: N new game, Z undo, H hint, Space draw, A finish, M sound."></canvas>
+              aria-label="{{ T "solitaire_canvas" }}"></canvas>
       <noscript>
-        <div class="up-sol-noscript">Solitaire needs JavaScript to deal the cards.</div>
+        <div class="up-sol-noscript">{{ T "solitaire_needs_js" }}</div>
       </noscript>
     </div>
-    <div class="up-sr-only" role="toolbar" aria-label="Game controls">
-      <button type="button" data-sol-action="new">New game</button>
-      <button type="button" data-sol-action="draw-stock">Draw from the stock</button>
-      <button type="button" data-sol-action="undo" disabled>Undo</button>
-      <button type="button" data-sol-action="hint">Hint</button>
-      <button type="button" data-sol-action="auto" hidden>Finish the game</button>
-      <button type="button" data-sol-action="draw">Draw one (switch)</button>
-      <button type="button" data-sol-action="sound" aria-pressed="true">Sound</button>
+    <div class="up-sr-only" role="toolbar" aria-label="{{ T "game_controls" }}">
+      <button type="button" data-sol-action="new">{{ T "new_game" }}</button>
+      <button type="button" data-sol-action="draw-stock">{{ T "draw_from_stock" }}</button>
+      <button type="button" data-sol-action="undo" disabled>{{ T "undo" }}</button>
+      <button type="button" data-sol-action="hint">{{ T "hint" }}</button>
+      <button type="button" data-sol-action="auto" hidden>{{ T "finish_the_game" }}</button>
+      <button type="button" data-sol-action="draw">{{ T "draw_one_switch" }}</button>
+      <button type="button" data-sol-action="sound" aria-pressed="true">{{ T "sound" }}</button>
     </div>
     <p class="up-sr-only" data-sol-live aria-live="polite"></p>
   </div>

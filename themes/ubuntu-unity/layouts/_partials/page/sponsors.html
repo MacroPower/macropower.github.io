@@ -1,14 +1,14 @@
 <article class="up-sponsors-page selectable">
-  <h1 class="up-sr-only">Sponsors</h1>
+  <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" "Sponsors" "url" .RelPermalink))) }}
+      (dict "label" .Title "url" .RelPermalink))) }}
   {{- $sponsors := hugo.Data.sponsors -}}
   <div class="up-sponsors-grid">
     {{- $iconHeart := partial "icon.html" "glyphs/heart" -}}
     {{ partial "page/naut-sidebar.html" (dict
         "sections" (slice
-          (dict "label" "Places" "items" (slice
-            (dict "label" "Sponsors" "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
+          (dict "label" (T "places") "items" (slice
+            (dict "label" .Title "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
     <section class="up-sponsors-main">
       {{- with $sponsors }}
         {{ $.Content }}
@@ -32,14 +32,14 @@
       {{- else }}
         {{ partial "page/empty-pane.html" (dict
             "class" "up-sponsors-empty-pane"
-            "ariaLabel" "No sponsors yet"
+            "ariaLabel" (T "no_sponsors_yet")
             "icon" $iconHeart
-            "hint" "No sponsors yet"
+            "hint" (T "no_sponsors_yet")
             "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" "ls ./sponsors"))) }}
       {{- end }}
       {{- /* The sponsor link derives from the github social entry's handle. */ -}}
       {{- with partial "ui/social-url.html" "github" }}
-      <a class="up-open-btn" href="https://github.com/sponsors/{{ path.Base . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>Become a sponsor</span></a>
+      <a class="up-open-btn" href="https://github.com/sponsors/{{ path.Base . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>{{ T "become_a_sponsor" }}</span></a>
       {{- end }}
     </section>
   </div>
