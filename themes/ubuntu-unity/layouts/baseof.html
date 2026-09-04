@@ -58,5 +58,7 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $
   {{ if .IsHome }}
   {{ partial "ui/script.html" (dict "entry" "js/shell/index.ts" "target" "js/shell.js") }}
   {{ end }}
+
+  {{ partial "extend-footer.html" . }}
 </body>
 </html>

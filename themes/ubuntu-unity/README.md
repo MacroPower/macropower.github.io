@@ -107,6 +107,8 @@ theme   = "ubuntu-unity"
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site and translate the values. Text the JavaScript writes at runtime stays in English.
 - **Favicons.** Drop `favicon.svg`, `favicon.ico`, and `apple-touch-icon.png` into your site's `static/` to replace the theme's.
 - **Terminal ascii art.** Override `assets/home/ascii.txt` (the art) and `assets/home/colors.txt` (a same-shape color mask using `O Y G B P C R M`, with space for no color).
+- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
+- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`, after its own bundles.
 - **Anything else.** Copy a file from the theme's `layouts/` into your site's `layouts/` at the same path and edit it.
 
 ## Example site

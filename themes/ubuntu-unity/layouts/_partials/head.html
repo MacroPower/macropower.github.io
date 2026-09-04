@@ -58,10 +58,15 @@
 <link rel="preload" as="font" type="font/woff2" href="{{ "fonts/ubuntu-mono-400-latin.woff2" | relURL }}" crossorigin>
 {{- end }}
 {{ $css := resources.Get "css/main.scss"
-  | css.Sass (dict "transpiler" "dartsass" "outputStyle" "expanded" "enableSourceMap" (not hugo.IsProduction))
-  | resources.Minify
-  | resources.Fingerprint }}
+  | css.Sass (dict "transpiler" "dartsass" "outputStyle" "expanded" "enableSourceMap" (not hugo.IsProduction)) }}
+{{- /* A site's assets/css/custom.css is appended after the theme's
+      stylesheet, so its rules win on equal specificity. */ -}}
+{{ with resources.Get "css/custom.css" }}
+  {{ $css = slice $css . | resources.Concat "css/main.css" }}
+{{ end }}
+{{ $css = $css | resources.Minify | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{ with .OutputFormats.Get "rss" -}}
 <link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
 {{- end }}
+{{ partial "extend-head.html" . }}
