@@ -2,6 +2,8 @@
   One file-manager tile in the projects grid. Receives a single project dict
   (from hugo.Data.projects) and emits the <button.up-project-tile> carrying the
   data-* attributes projects.ts reads to rebuild the preview pane on selection.
+  data-lang-symbol names the sprite symbol for the language, resolved here
+  so the script never needs the list of languages with artwork.
 
   Required keys: name, language, updated, topics, description, url.
   Optional keys: stars, forks, license (emitted only when present, matching the
@@ -13,6 +15,7 @@
         data-up-project-tile
         data-name="{{ $p.name }}"
         data-language="{{ $p.language }}"
+        data-lang-symbol="{{ partialCached "page/icons/lang-symbol.html" $p.language $p.language }}"
         {{ with $p.stars }}data-stars="{{ . }}"{{ end }}
         {{ with $p.forks }}data-forks="{{ . }}"{{ end }}
         data-updated="{{ $p.updated }}"

@@ -1,7 +1,8 @@
 # Projects shown on /projects/ (and searchable in the Dash). One entry per
 # repository. name, description, language, updated, and url are required;
-# stars, forks, topics, and license are optional. language must be one of
-# the icon set's known languages — see the check in _partials/page/projects.html.
+# stars, forks, topics, and license are optional. language is free text;
+# the theme ships emblems for Go, Python, TypeScript, JavaScript, Rust,
+# Shell, C, HTML, Ruby, and Lua, and shows a generic emblem for the rest.
 - name: sample-cli
   description: A command-line tool that does one thing well.
   language: Go
@@ -30,3 +31,11 @@
     - typescript
     - ui
   url: https://github.com/jane/unity-widgets
+- name: tiny-vm
+  description: A bytecode interpreter written to learn Zig.
+  language: Zig
+  stars: 5
+  updated: "2023-11-02"
+  topics:
+    - interpreter
+  url: https://github.com/jane/tiny-vm

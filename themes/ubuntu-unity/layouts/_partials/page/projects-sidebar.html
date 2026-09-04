@@ -34,7 +34,8 @@
 {{- $langNames = sort $langNames -}}
 {{- $langs := slice -}}
 {{- range $langNames -}}
-  {{- $icon := printf `<svg viewBox="0 0 24 24" width="14" height="14"><use href="#lang-%s"/></svg>` . -}}
+  {{- $sym := partialCached "page/icons/lang-symbol.html" . . -}}
+  {{- $icon := printf `<svg viewBox="0 0 24 24" width="14" height="14"><use href="#%s"/></svg>` $sym -}}
   {{- $langs = $langs | append (dict
       "tag" "button"
       "label" .

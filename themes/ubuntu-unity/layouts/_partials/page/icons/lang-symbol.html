@@ -1,0 +1,17 @@
+{{- /*
+  Resolves a language name to the id of its <symbol> in the lang-symbols
+  sprite, or to "lang-generic" when the sprite has no artwork for it. The
+  sprite is the only list of known languages, so adding a symbol there is
+  all it takes to give a language its own emblem. Call through
+  partialCached with the language as the variant key.
+
+  Arg: the language name as it appears in data/projects.yaml (e.g. "Go").
+*/ -}}
+{{- $id := "lang-generic" -}}
+{{- with resources.Get "icons/glyphs/lang-symbols.svg" -}}
+  {{- $want := printf "lang-%s" $ -}}
+  {{- if in (findRE `<symbol id="lang-[^"]+"` .Content) (printf `<symbol id="%s"` $want) -}}
+    {{- $id = $want -}}
+  {{- end -}}
+{{- end -}}
+{{- return $id -}}

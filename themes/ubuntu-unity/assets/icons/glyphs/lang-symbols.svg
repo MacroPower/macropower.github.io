@@ -55,5 +55,10 @@
       <circle cx="11.5" cy="8.5" r="3.4" fill="#000080"/>
       <circle cx="17" cy="17" r="2.4" fill="#fff"/>
     </symbol>
+    <!-- Fallback emblem for a language the sprite has no artwork for. -->
+    <symbol id="lang-generic" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="11.5" fill="#5E5C64"/>
+      <path d="M9.5 7.5 5 12l4.5 4.5M14.5 7.5 19 12l-4.5 4.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </defs>
 </svg>

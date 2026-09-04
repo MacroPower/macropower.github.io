@@ -105,12 +105,14 @@ import { installDesktop } from "./projects-desktop";
     return el;
   }
 
-  function buildFolderHeader(lang: string): HTMLElement | null {
+  // Tiles carry data-lang-symbol, resolved server-side against the sprite,
+  // so a language without artwork already points at the generic emblem.
+  function buildFolderHeader(symbol: string): HTMLElement | null {
     if (!folderTpl) return null;
     const clone = folderTpl.content.firstElementChild?.cloneNode(true) as HTMLElement | null;
     if (!clone) return null;
     const useEl = clone.querySelector<SVGUseElement>("[data-emblem-use]");
-    if (useEl) useEl.setAttribute("href", `#lang-${lang}`);
+    if (useEl) useEl.setAttribute("href", `#${symbol}`);
     return clone;
   }
 
@@ -120,6 +122,7 @@ import { installDesktop } from "./projects-desktop";
     const name = d.name ?? "";
     const desc = d.description ?? "";
     const lang = d.language ?? "";
+    const langSymbol = d.langSymbol ?? "lang-generic";
     const stars = d.stars ?? "";
     const forks = d.forks ?? "";
     const license = d.license ?? "";
@@ -132,7 +135,7 @@ import { installDesktop } from "./projects-desktop";
 
     const header = document.createElement("div");
     header.className = "up-project-preview-header";
-    const folder = buildFolderHeader(lang);
+    const folder = buildFolderHeader(langSymbol);
     if (folder) header.appendChild(folder);
     const headText = document.createElement("div");
     headText.className = "up-project-preview-header-text";
@@ -149,7 +152,7 @@ import { installDesktop } from "./projects-desktop";
       svg.setAttribute("width", "12");
       svg.setAttribute("height", "12");
       const use = document.createElementNS(SVG_NS, "use");
-      use.setAttribute("href", `#lang-${lang}`);
+      use.setAttribute("href", `#${langSymbol}`);
       svg.appendChild(use);
       pill.appendChild(svg);
       pill.appendChild(document.createTextNode(lang));
