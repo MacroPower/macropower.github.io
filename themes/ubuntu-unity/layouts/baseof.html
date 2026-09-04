@@ -55,6 +55,12 @@ window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $
   {{ partial "ui/script.html" (dict "entry" "js/solitaire/index.ts" "target" "js/solitaire.js") }}
   {{ end }}
 
+  {{/* icons.js no-ops without [data-icon-vault], emitted only by pages
+       that select the vault via `layout = "icons"`. */}}
+  {{ if eq .Layout "icons" }}
+  {{ partial "ui/script.html" (dict "entry" "js/icons.ts" "target" "js/icons.js") }}
+  {{ end }}
+
   {{ if .IsHome }}
   {{ partial "ui/script.html" (dict "entry" "js/shell/index.ts" "target" "js/shell.js") }}
   {{ end }}

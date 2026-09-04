@@ -1093,6 +1093,148 @@ a.up-sponsor-card[href]:hover{
   font-family:"Ubuntu Mono",monospace;font-size:13px;color:#DCE8E2;
 }
 
+/* ---------- Icon vault (icons layout) ---------- */
+/* The vault shows icons against solid backdrops, so the faint desktop
+   watermark behind the window would only add noise. */
+body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
+.up-icons{
+  flex:1 1 auto; min-height:0; overflow:auto;
+  background:var(--content-bg); color:var(--content-fg);
+  padding:0 0 64px;
+}
+.up-icons-head{
+  padding:28px 32px 18px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F6F5F4 100%);
+  border-bottom:1px solid var(--content-line);
+}
+.up-icons-kicker{
+  font-family:"Ubuntu Mono",monospace; font-size:11px;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--content-muted);
+}
+.up-icons-title{
+  margin:6px 0 0; font-size:28px; font-weight:300; letter-spacing:-.02em;
+  color:#1F1D1B;
+}
+.up-icons-lede{
+  margin:8px 0 0; max-width:620px; font-size:13.5px; line-height:1.6;
+  color:var(--content-muted);
+}
+.up-icons-ctl-label{
+  font-size:11.5px; font-weight:500; color:var(--content-muted);
+  letter-spacing:.02em;
+}
+.up-icons-seg{
+  display:inline-flex; border:1px solid var(--content-line);
+  border-radius:4px; overflow:hidden; background:#fff;
+}
+.up-icons-seg button{
+  all:unset; cursor:pointer; padding:4px 10px;
+  font-family:"Ubuntu Mono",monospace; font-size:11.5px; color:#2E2E2E;
+  border-right:1px solid var(--content-line);
+}
+.up-icons-seg button:last-child{ border-right:0; }
+.up-icons-seg button.is-active{ background:var(--orange); color:#fff; }
+
+.up-icons-section{ border-top:1px solid var(--content-line); }
+.up-icons-section:first-of-type{ border-top:0; }
+.up-icons-section-head{
+  padding:22px 32px 4px; display:flex; align-items:baseline; gap:12px;
+  flex-wrap:wrap;
+}
+.up-icons-no{
+  font-family:"Ubuntu Mono",monospace; font-size:11px; font-weight:700;
+  letter-spacing:.14em; color:var(--orange);
+}
+.up-icons-section-head h2{
+  margin:0; font-size:20px; font-weight:400; letter-spacing:-.01em;
+  color:#1F1D1B;
+}
+.up-icons-count{
+  font-family:"Ubuntu Mono",monospace; font-size:12px; color:var(--content-muted);
+}
+.up-icons-note{
+  margin-left:auto; font-family:"Ubuntu Mono",monospace; font-size:11px;
+  color:var(--content-muted); opacity:.8;
+}
+.up-icons-controls-row{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:8px 32px 4px;
+}
+
+.up-icons-grid{
+  padding:14px 32px 26px;
+  display:grid; gap:8px;
+}
+.up-icons-grid[data-kind="glyph"]{ grid-template-columns:repeat(auto-fill,minmax(108px,1fr)); }
+.up-icons-grid[data-kind="app"],
+.up-icons-grid[data-kind="flat"]{ grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); }
+
+.up-icons-cell{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  padding:14px 8px 10px;
+  border:1px solid var(--content-line); border-radius:4px;
+  background:#FFFFFF; color:#2E2E2E;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.up-icons-cell:hover{ border-color:var(--orange); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+.up-icons-cell:focus-visible{ border-color:var(--orange); box-shadow:0 0 0 2px rgba(221,72,20,.35); }
+.up-icons-cell.is-copied{ border-color:var(--orange); }
+
+.up-icons-art{
+  display:flex; align-items:center; justify-content:center;
+  height:76px; line-height:0;
+}
+.up-icons-grid[data-kind="glyph"] .up-icons-art svg{
+  width:var(--icp-size,24px); height:var(--icp-size,24px);
+}
+.up-icons-grid[data-kind="app"] .up-icons-art,
+.up-icons-grid[data-kind="flat"] .up-icons-art{
+  width:var(--icp-size,56px); height:var(--icp-size,56px);
+}
+.up-icons-grid[data-kind="app"] .up-icons-art svg,
+.up-icons-grid[data-kind="flat"] .up-icons-art svg{ width:100%; height:100%; }
+.up-icons-grid[data-kind="app"] .up-icons-art{ filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+
+/* Symbolic glyphs are authored monochrome (currentColor), so they follow
+   the tile's text colour: black on white, white on purple/black. */
+.up-icons-grid[data-kind="glyph"] .up-icons-art{ color:#1F1D1B; }
+.up-icons-grid[data-kind="glyph"][data-bg="launcher"] .up-icons-art,
+.up-icons-grid[data-kind="glyph"][data-bg="dark"] .up-icons-art{ color:#FFFFFF; }
+
+.up-icons-label{
+  font-family:"Ubuntu Mono",monospace; font-size:10.5px; line-height:1.25;
+  text-align:center; color:var(--content-muted); word-break:break-word;
+}
+
+/* Per-section backdrops: each grid's tiles take the chosen solid colour,
+   so the icons preview on white, purple, or black while the window
+   around the tiles stays normal. */
+.up-icons-grid[data-bg="launcher"] .up-icons-cell{
+  background:#2C001E; color:rgba(255,247,228,.92); border-color:rgba(255,255,255,.12);
+}
+.up-icons-grid[data-bg="dark"] .up-icons-cell{
+  background:#0A0306; color:rgba(255,247,228,.92); border-color:rgba(255,255,255,.08);
+}
+.up-icons-grid[data-bg="launcher"] .up-icons-label,
+.up-icons-grid[data-bg="dark"] .up-icons-label{ color:rgba(255,247,228,.6); }
+.up-icons-grid[data-bg="launcher"] .up-icons-cell:hover,
+.up-icons-grid[data-bg="dark"] .up-icons-cell:hover{
+  border-color:var(--orange); box-shadow:0 4px 14px rgba(0,0,0,.5);
+}
+
+.up-icons-toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px);
+  opacity:0; pointer-events:none; z-index:100;
+  background:rgba(31,14,26,.95); color:#fff;
+  padding:10px 16px; border-radius:6px;
+  font-family:"Ubuntu Mono",monospace; font-size:12.5px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.up-icons-toast.is-shown{ opacity:1; transform:translate(-50%,0); }
+
 /* ---------- Neofetch (home) ---------- */
 /* Scoped via :has so only the home page drops the opaque window body;
    other pages keep it. The panel's own alpha lets the wallpaper through. */

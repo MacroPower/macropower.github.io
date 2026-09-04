@@ -343,3 +343,36 @@ other = "{{ .Count }} items"
 other = "Empty Trash"
 [password]
 other = "Password"
+
+# Icon vault (icons layout)
+[icon_vault_title]
+other = "The icon vault"
+[icon_vault_lede]
+other = "Every SVG the theme ships with. Monoline symbolics for chrome, Humanity application icons for the launcher, and the bigger flat illustrations. Click a tile to copy its markup. Each section picks its own backdrop, so you can check the icons on white, purple, or black."
+[icon_vault_glyphs]
+other = "Symbolic glyphs"
+[icon_vault_glyphs_note]
+other = "currentColor · 16px monoline"
+[icon_vault_apps]
+other = "Humanity application icons"
+[icon_vault_apps_note]
+other = "gradient launcher art · paints its own body"
+[icon_vault_flat]
+other = "Flat illustrations"
+[icon_vault_flat_note]
+other = "larger flat-color desktop art"
+[icons_count]
+one = "{{ .Count }} icon"
+other = "{{ .Count }} icons"
+[size]
+other = "Size"
+[background]
+other = "Background"
+[bg_white]
+other = "White"
+[bg_purple]
+other = "Purple"
+[bg_black]
+other = "Black"
+[copy_svg]
+other = "Copy SVG markup"

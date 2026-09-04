@@ -16,7 +16,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - Templates never name the blog section. `_partials/blog-section.html` resolves it from `mainSections`, and `in site.MainSections .Section` is the "is this a post" test.
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
-- `baseof.html` ships the blog, projects, cv, solitaire, and shell bundles only to the pages that use them.
+- `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
 
 ## DOM contracts
 
