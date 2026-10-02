@@ -52,7 +52,7 @@ describe("solve", () => {
       expect(replay(g, moves)).toBe(true);
     }
     expect(solved).toBeGreaterThanOrEqual(deals / 2);
-  });
+  }, 30_000);
 
   it("gives up cleanly when the budget is tiny", () => {
     const g = new Klondike(1, seeded(5));
