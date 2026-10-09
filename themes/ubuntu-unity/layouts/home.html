@@ -3,28 +3,19 @@
       login. params.terminal.user and params.terminal.host rename both. */ -}}
 {{- $user := .Site.Params.terminal.user | default "user" -}}
 {{- $host := .Site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
-{{- /* uptime: the owner's age when params.author.born is set, otherwise the
-      time since the oldest content page, otherwise zero. Anniversary math
-      (not day division) keeps the "N years, N days" shape leap-year exact. */ -}}
-{{- $tnow := now -}}
-{{- $since := $tnow -}}
+{{- /* since: the date the banner's uptime counts from. It is the owner's
+      birth date when params.author.born is set, otherwise the date of the
+      oldest content page, otherwise empty. The shell bundle turns it into
+      the uptime on page load, so a page built days ago still shows the
+      current value. */ -}}
+{{- $since := "" -}}
 {{- with .Site.Params.author.born -}}
-  {{- $since = time.AsTime (printf "%sT00:00:00Z" .) -}}
+  {{- $since = . -}}
 {{- else -}}
   {{- with $.Site.RegularPages.ByDate -}}
-    {{- $since = (index . 0).Date -}}
+    {{- $since = (index . 0).Date.UTC.Format "2006-01-02" -}}
   {{- end -}}
 {{- end -}}
-{{- $annThis := time.AsTime (printf "%04d-%02d-%02dT00:00:00Z" $tnow.Year $since.Month $since.Day) -}}
-{{- $years := sub $tnow.Year $since.Year -}}
-{{- $annLast := $annThis -}}
-{{- if lt $tnow.Unix $annThis.Unix -}}
-  {{- $years = sub $years 1 -}}
-  {{- $annLast = time.AsTime (printf "%04d-%02d-%02dT00:00:00Z" (sub $tnow.Year 1) $since.Month $since.Day) -}}
-{{- end -}}
-{{- $days := div (sub $tnow.Unix $annLast.Unix) 86400 -}}
-{{- $uptime := printf "%d years, %d days" $years $days -}}
-{{- if lt $years 1 -}}{{- $uptime = printf "%d days" $days -}}{{- end -}}
 {{- /* Mask codes (O Y G B P C R M, space = no color) are mapped to truecolor
       in banner.ts. The theme ships defaults; a site overrides them by
       providing its own assets/home/ascii.txt + colors.txt. */ -}}
@@ -68,7 +59,7 @@
     "name" (.Site.Params.author.name | default .Site.Title)
     "title" (.Site.Params.homeSubtitle | default "")
     "focus" (.Site.Params.homeFocus | default "")
-    "uptime" $uptime
+    "since" $since
     "socials" $socials
     "posts" $posts
     "pages" $pages

@@ -1,10 +1,14 @@
 import { XtermTerminal, FONT_PROBES } from "./terminal";
 import { Shell, type ShellData } from "./shell";
 import { writeBanner } from "./banner";
+import { formatUptime } from "./uptime";
 import { color, PALETTE } from "./ansi";
 import { registerAll } from "./commands/all";
 
 const HISTORY_KEY = "up:shell-history";
+
+// The JSON data island as home.html emits it.
+type ShellIsland = Omit<ShellData, "uptime"> & { since?: string };
 
 function loadHistory(): string[] {
   try {
@@ -37,7 +41,10 @@ function saveHistory(items: readonly string[]): void {
 
   let data: ShellData;
   try {
-    data = JSON.parse(dataEl.textContent ?? "") as ShellData;
+    // The island carries the date the uptime counts from. Computing the
+    // uptime here keeps it current on a page built days ago.
+    const { since, ...rest } = JSON.parse(dataEl.textContent ?? "") as ShellIsland;
+    data = { ...rest, uptime: formatUptime(since ?? "", new Date()) };
   } catch {
     return;
   }

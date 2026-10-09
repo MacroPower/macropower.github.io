@@ -46,6 +46,8 @@ export interface BlogMeta {
 }
 
 // Single source of truth parsed from the JSON data island in index.html.
+// The island carries a `since` date in place of `uptime`, and the entrypoint
+// computes `uptime` from it on page load.
 export interface ShellData {
   handle: string;
   host: string;
