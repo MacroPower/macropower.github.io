@@ -16,55 +16,55 @@
   <section class="up-window-chrome up-daw-chrome">
     <div class="up-titlebar" data-titlebar>
       {{ partial "ui/window-controls.html" (dict "max" true) }}
-      <span class="up-titlebar-text" data-daw-title>Studio</span>
+      <span class="up-titlebar-text" data-daw-title>{{ T "studio" }}</span>
     </div>
     <div class="up-window-body up-daw-body">
 
       <div class="up-daw-toolbar">
         <div class="up-daw-transport">
-          <button type="button" class="up-daw-btn up-daw-btn-play" data-daw-play aria-label="Play/Pause">
+          <button type="button" class="up-daw-btn up-daw-btn-play" data-daw-play aria-label="{{ T "play_pause" }}">
             <span data-daw-play-glyph>{{ partial "icon.html" "glyphs/panel-play" }}</span>
             <span data-daw-play-glyph-playing hidden>{{ partial "icon.html" "glyphs/panel-pause" }}</span>
           </button>
-          <button type="button" class="up-daw-btn" data-daw-stop aria-label="Stop">
+          <button type="button" class="up-daw-btn" data-daw-stop aria-label="{{ T "stop" }}">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="8" height="8" fill="currentColor"/></svg>
           </button>
         </div>
 
         <div class="up-daw-trk">
-          <button type="button" class="up-daw-btn" data-daw-prev aria-label="Previous track" title="Previous track">
+          <button type="button" class="up-daw-btn" data-daw-prev aria-label="{{ T "previous_track" }}" title="{{ T "previous_track" }}">
             {{ partial "icon.html" "glyphs/chevron-left" }}
           </button>
           <div class="up-daw-lcdbox">
-            <span class="up-daw-lcd-label">trk</span>
+            <span class="up-daw-lcd-label">{{ T "studio_lcd_track" }}</span>
             <span class="up-daw-lcd is-trk" data-daw-trk>—</span>
           </div>
-          <button type="button" class="up-daw-btn" data-daw-next aria-label="Next track" title="Next track">
+          <button type="button" class="up-daw-btn" data-daw-next aria-label="{{ T "next_track" }}" title="{{ T "next_track" }}">
             {{ partial "icon.html" "glyphs/chevron-right" }}
           </button>
         </div>
 
         <div class="up-daw-lcdbox">
-          <span class="up-daw-lcd-label">pos</span>
+          <span class="up-daw-lcd-label">{{ T "studio_lcd_position" }}</span>
           <span class="up-daw-lcd" data-daw-pos>001.1</span>
         </div>
         <div class="up-daw-lcdbox">
-          <span class="up-daw-lcd-label">bpm</span>
+          <span class="up-daw-lcd-label">{{ T "studio_lcd_tempo" }}</span>
           <span class="up-daw-lcd is-spin" data-daw-bpm tabindex="0" role="slider"
-            aria-label="Tempo" title="Tempo — drag up/down, double-click to reset">—</span>
+            aria-label="{{ T "tempo" }}" title="{{ T "tempo_hint" }}">—</span>
         </div>
-        <span class="up-daw-led is-on" title="The song always loops">loop</span>
+        <span class="up-daw-led is-on" title="{{ T "loop_hint" }}">{{ T "loop" }}</span>
 
         <div class="up-daw-toolbar-spacer"></div>
 
         <button type="button" class="up-daw-btn is-toggle is-on" data-daw-follow aria-pressed="true"
-          title="Follow the playhead">
+          title="{{ T "follow_playhead" }}">
           {{ partial "icon.html" "glyphs/arrow-right" }}
         </button>
-        <button type="button" class="up-daw-btn" data-daw-zoom-out aria-label="Zoom out">
+        <button type="button" class="up-daw-btn" data-daw-zoom-out aria-label="{{ T "zoom_out" }}">
           {{ partial "icon.html" "glyphs/minus" }}
         </button>
-        <button type="button" class="up-daw-btn" data-daw-zoom-in aria-label="Zoom in">
+        <button type="button" class="up-daw-btn" data-daw-zoom-in aria-label="{{ T "zoom_in" }}">
           {{ partial "icon.html" "glyphs/plus" }}
         </button>
       </div>
@@ -72,19 +72,19 @@
       <div class="up-daw-main">
         <aside class="up-daw-rack">
           <div class="up-daw-section is-tracks">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>Tracks</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_tracks" }}</button>
             <div class="up-daw-tracks" data-daw-tracks></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>Synth</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_synth" }}</button>
             <div class="up-daw-synth" data-daw-synth></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>FX</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_fx" }}</button>
             <div class="up-daw-fx" data-daw-fx></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>Groove</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_groove" }}</button>
             <div class="up-daw-knobs" data-daw-groove></div>
           </div>
         </aside>
@@ -94,12 +94,12 @@
           <div class="up-daw-scroller" data-daw-scroller>
             <div class="up-daw-spacer" data-daw-spacer></div>
           </div>
-          <div class="up-daw-loading" data-daw-loading>Loading…</div>
+          <div class="up-daw-loading" data-daw-loading>{{ T "loading" }}</div>
         </div>
       </div>
 
       <div class="up-daw-status">
-        <span data-daw-status>Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets</span>
+        <span data-daw-status>{{ T "studio_status_hint" }}</span>
       </div>
 
     </div>

@@ -272,8 +272,14 @@ other = "Paused"
 other = "Next track"
 [open_in_studio]
 other = "Open in Studio…"
+[hidden_network]
+other = "(hidden)"
 [battery]
 other = "Battery"
+[battery_discharging]
+other = "{{ .Percent }}% — discharging"
+[battery_remaining]
+other = "About 3 hours 14 minutes remaining"
 [enable_power_saver]
 other = "Enable power saver"
 [power_settings]
@@ -330,6 +336,40 @@ other = "HUD menu search"
 other = "Type your command"
 [matching_menu_entries]
 other = "Matching menu entries"
+
+# Studio window
+[stop]
+other = "Stop"
+[previous_track]
+other = "Previous track"
+[studio_lcd_track]
+other = "trk"
+[studio_lcd_position]
+other = "pos"
+[studio_lcd_tempo]
+other = "bpm"
+[tempo]
+other = "Tempo"
+[tempo_hint]
+other = "Tempo — drag up/down, double-click to reset"
+[loop]
+other = "loop"
+[loop_hint]
+other = "The song always loops"
+[follow_playhead]
+other = "Follow the playhead"
+[studio_tracks]
+other = "Tracks"
+[studio_synth]
+other = "Synth"
+[studio_fx]
+other = "FX"
+[studio_groove]
+other = "Groove"
+[loading]
+other = "Loading…"
+[studio_status_hint]
+other = "Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets"
 
 # Trash window and lock screen
 [trash_is_empty]

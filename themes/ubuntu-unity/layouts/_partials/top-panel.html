@@ -78,7 +78,7 @@
         {{ partial "ui/net-row.html" (dict "name" "café-do-bairro" "on" true "strong" true) }}
         {{ partial "ui/net-row.html" (dict "name" "MEO-WiFi") }}
         {{ partial "ui/net-row.html" (dict "name" "ngrok-tunnel" "mono" true) }}
-        {{ partial "ui/net-row.html" (dict "name" "(hidden)" "muted" true) }}
+        {{ partial "ui/net-row.html" (dict "name" (T "hidden_network") "muted" true) }}
         <div class="up-dropdown-sep"></div>
         {{ partial "ui/dropdown-row.html" (dict "label" (T "wired_connection") "action" "dlg:wired") }}
         {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_hotspot") "action" "dlg:hotspot") }}
@@ -130,8 +130,8 @@
     <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ T "battery" }}</div>
       <div class="up-dropdown-body">
-        <div class="up-bat-headline" data-bat-headline>76% — discharging</div>
-        <div class="up-bat-detail" data-bat-detail>About 3 hours 14 minutes remaining</div>
+        <div class="up-bat-headline" data-bat-headline>{{ T "battery_discharging" (dict "Percent" 76) }}</div>
+        <div class="up-bat-detail" data-bat-detail>{{ T "battery_remaining" }}</div>
         <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill style="width:76%"></div></div>
         {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_power_saver") "action" "dlg:power-saver") }}
         {{ partial "ui/dropdown-row.html" (dict "label" (T "power_settings") "action" "dlg:power") }}
