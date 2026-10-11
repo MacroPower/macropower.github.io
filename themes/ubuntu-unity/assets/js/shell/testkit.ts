@@ -41,8 +41,8 @@ export const TEST_DATA: ShellData = {
     { label: "mastodon", url: "example.social/@me", display: "example.social/@me" },
   ],
   posts: [
-    { slug: "hello-world", title: "Hello World", date: "2024-01-01", categories: ["meta"], url: "/posts/2024/01/hello-world/" },
-    { slug: "second-post", title: "Second Post", date: "2024-03-15", categories: ["notes"], url: "/posts/2024/03/second-post/" },
+    { slug: "hello-world", title: "Hello World", date: "2024-01-01", categories: ["meta"], url: "/posts/2024/01/hello-world/", permalink: "https://example.org/posts/2024/01/hello-world/" },
+    { slug: "second-post", title: "Second Post", date: "2024-03-15", categories: ["notes"], url: "/posts/2024/03/second-post/", permalink: "https://example.org/posts/2024/03/second-post/" },
   ],
   pages: [
     { slug: "cv", date: "2024-02-02", url: "/cv/", content: "# CV\n\nA short resume.\n" },

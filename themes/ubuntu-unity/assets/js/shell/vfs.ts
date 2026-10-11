@@ -492,7 +492,7 @@ export function buildFs(data: ShellData): Vfs {
           PALETTE.muted,
           `Posted ${post.date} - ${post.categories.join(", ")}`,
         ),
-        `${color(PALETTE.red, "Read: ")}${color(PALETTE.blue, `https://${host}${post.url}`)}`,
+        `${color(PALETTE.red, "Read: ")}${color(PALETTE.blue, post.permalink)}`,
         color(PALETTE.muted, `(run \`open ${blogDir}/${post.slug}.md\` to read it)`),
       ],
     }),

@@ -42,6 +42,7 @@
       "date" (.Date.Format "2006-01-02")
       "categories" (.Params.categories | default slice)
       "url" .RelPermalink
+      "permalink" .Permalink
   ) -}}
 {{- end -}}
 {{- $pages := slice -}}

@@ -179,3 +179,10 @@ describe("session write API", () => {
     expect(fs.touch("/home/me/t")).toBeUndefined();
   });
 });
+
+describe("post cards", () => {
+  it("link to the post's permalink, not the terminal's login host", () => {
+    const card = content(vfs.lookup("/home/me/posts/hello-world.md")).join("\n");
+    expect(card).toContain("https://example.org/posts/2024/01/hello-world/");
+  });
+});

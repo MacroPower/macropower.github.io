@@ -26,6 +26,8 @@ export interface PostMeta {
   date: string;
   categories: string[];
   url: string;
+  /** The absolute permalink, printed as the post card's "Read:" line. */
+  permalink: string;
 }
 
 // A top-level content page (cv, sponsors, ...), emitted by Hugo with its raw
