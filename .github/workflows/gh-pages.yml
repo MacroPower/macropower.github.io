@@ -21,12 +21,13 @@ jobs:
         with:
           persist-credentials: false
 
-      # Keep hugo-version in sync with devbox.json.
+      # Keep hugo-version in sync with devbox.json. The standard edition
+      # proves the theme builds without extended-only features.
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: '0.166.0'
-          extended: true
+          extended: false
 
       # Keep node-version in sync with devbox.json (nodejs@22). The committed
       # package-lock.json must match package.json or npm ci hard-fails.
