@@ -90,6 +90,7 @@
         </div>
       </section>
 
+      {{- with $posts }}
       <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
@@ -97,7 +98,7 @@
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
-          {{- range $posts }}
+          {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
              title="{{ .Title }}"
              data-keywords="post blog article {{ delimit (.Params.categories | default slice) " " }} {{ .Date.Format "2006 January" }}">
@@ -107,7 +108,9 @@
           {{- end }}
         </div>
       </section>
+      {{- end }}
 
+      {{- with hugo.Data.projects }}
       <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
@@ -115,7 +118,7 @@
           <button class="up-dash-more" data-dash-more type="button" hidden></button>
         </header>
         <div class="up-dash-grid" data-dash-grid>
-          {{- range hugo.Data.projects }}
+          {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
              target="_blank" rel="noopener" title="{{ .description }}"
              data-keywords="project repository github {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
@@ -125,6 +128,7 @@
           {{- end }}
         </div>
       </section>
+      {{- end }}
 
       {{- with $playlist }}
       <section class="up-dash-section" data-dash-section="music" aria-label="{{ T "music" }}">
@@ -159,12 +163,16 @@
       <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="{{ T "applications" }}">
         {{ partial "icon.html" "glyphs/dash-apps" }}
       </button>
+      {{- if $posts }}
       <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="{{ T "files_and_folders" }}">
         {{ partial "icon.html" "glyphs/folder" }}
       </button>
+      {{- end }}
+      {{- if hugo.Data.projects }}
       <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="{{ T "projects" }}">
         {{ partial "icon.html" "glyphs/code" }}
       </button>
+      {{- end }}
       {{- with $playlist }}
       <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="{{ T "music" }}">
         {{ partial "icon.html" "glyphs/dash-music" }}
