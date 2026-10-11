@@ -25,7 +25,7 @@ interface PdfDocument {
 }
 interface PdfJsModule {
   GlobalWorkerOptions: { workerSrc: string };
-  getDocument(url: string): { promise: Promise<PdfDocument> };
+  getDocument(params: { url: string; isEvalSupported: boolean }): { promise: Promise<PdfDocument> };
 }
 
 (function (): void {
@@ -343,7 +343,10 @@ interface PdfJsModule {
       if (mod.GlobalWorkerOptions.workerSrc === "" && worker) {
         mod.GlobalWorkerOptions.workerSrc = worker;
       }
-      return mod.getDocument(url).promise;
+      // isEvalSupported:false closes CVE-2024-4367: the vendored pdf.js
+      // predates the fix, and with eval allowed a crafted font in the PDF
+      // can run script in the page.
+      return mod.getDocument({ url, isEvalSupported: false }).promise;
     })
     .then(async (d) => {
       doc = d;
