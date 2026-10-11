@@ -5,9 +5,9 @@
         <span class="up-empty-pane-icon" aria-hidden="true">{{ partial "icon.html" "flat/empty-folder" }}</span>
         <h1 class="up-empty-pane-hint">{{ T "page_does_not_exist" }}</h1>
         <div class="up-empty-pane-tagline" aria-hidden="true">bash: cd: 404: No such file or directory</div>
-        {{- $nav := (partialCached "site-pages.html" .).pages -}}
+        {{- $reg := partialCached "site-pages.html" . -}}
         <nav class="up-404-links" aria-label="{{ T "places_instead" }}">
-          {{- range slice "home" "blog" "projects" }}{{ with index $nav . }}
+          {{- range $reg.launcherOrder }}{{ with index $reg.pages . }}
           <a href="{{ .url }}">{{ .label }}</a>
           {{- end }}{{ end }}
         </nav>
