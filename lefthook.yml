@@ -1,19 +1,21 @@
 # Run `lefthook install -f` once after cloning, or enter `devbox shell` which
 # does it automatically.
 
+# The default gobwas matcher reads `dir/**/*.ts` as one or more directories
+# below `dir`, so it skips files sitting directly in `dir`. Doublestar
+# matches zero or more, which lets the globs mirror the tsconfig includes.
+glob_matcher: doublestar
+
 pre-commit:
   parallel: true
   commands:
-    # A glob rooted deeper than themes/ubuntu-unity/** never matches in
-    # lefthook 2.x, so both commands match the whole theme tree and list
-    # the tsconfig files separately.
     typecheck:
       glob:
-        - "themes/ubuntu-unity/**/*.ts"
+        - "themes/ubuntu-unity/assets/js/**/*.ts"
         - "themes/ubuntu-unity/tsconfig.json"
       run: npx --no-install tsc -p themes/ubuntu-unity --noEmit
     typecheck-test:
       glob:
-        - "themes/ubuntu-unity/**/*.ts"
+        - "themes/ubuntu-unity/assets/js/**/*.ts"
         - "themes/ubuntu-unity/tsconfig*.json"
       run: npx --no-install tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit
