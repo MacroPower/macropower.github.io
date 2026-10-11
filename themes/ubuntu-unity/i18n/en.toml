@@ -371,6 +371,10 @@ other = "Loading…"
 [studio_status_hint]
 other = "Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets"
 
+# Shortcodes
+[spotify_player]
+other = "Spotify {{ .Type }} player"
+
 # Trash window and lock screen
 [trash_is_empty]
 other = "Trash is empty"
