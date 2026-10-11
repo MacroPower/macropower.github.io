@@ -25,13 +25,13 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.165.0'
+          hugo-version: '0.166.0'
           extended: true
 
       # Keep DART_SASS_VERSION in sync with devbox.json.
       - name: Install Dart Sass
         env:
-          DART_SASS_VERSION: 1.99.0
+          DART_SASS_VERSION: 1.105.1
         run: |
           curl -fsSL -o dart-sass.tar.gz \
             "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
