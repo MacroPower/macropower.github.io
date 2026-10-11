@@ -4,6 +4,8 @@
   dark page well cv.ts renders the PDF into. Front matter drives the chrome:
     pdf          (required) the PDF the viewer renders
     pdfPrintable (optional) A4-compatible variant, offered as "Print"
+  Both PDF paths may name a file in the page bundle, under assets/, or
+  under static/, and resolve through ui/resolve-url.html.
     sourceUrl    (optional) the document's source repository, offered as "Source"
   The viewer JS ships only on this page (see baseof.html). pdf.js itself
   is the vendored build under the theme's assets/vendor/pdf-js/, published
@@ -14,10 +16,11 @@
   {{ partial "page/nav-pathbar.html" (dict "segments" (slice
       (dict "label" .Title "url" .RelPermalink))) }}
   {{- with .Params.pdf }}
+  {{- $pdf := partial "ui/resolve-url.html" (dict "page" $ "url" .) -}}
   {{- $pdfjs := resources.Get "vendor/pdf-js/build/pdf.min.js" | resources.Fingerprint -}}
   {{- $worker := resources.Get "vendor/pdf-js/build/pdf.worker.min.js" | resources.Fingerprint -}}
   <div class="up-docv" data-cv-viewer
-       data-pdf-url="{{ . }}"
+       data-pdf-url="{{ $pdf }}"
        data-pdfjs-worker="{{ $worker.RelPermalink }}">
     <script src="{{ $pdfjs.RelPermalink }}" integrity="{{ $pdfjs.Data.Integrity }}" defer data-docv-pdfjs></script>
     <div class="up-docv-toolbar" role="toolbar" aria-label="{{ T "document_controls" }}">
@@ -61,13 +64,13 @@
       </a>
       {{- end }}
       {{- with $.Params.pdfPrintable }}
-      <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
+      <a class="up-docv-btn up-docv-action" href="{{ partial "ui/resolve-url.html" (dict "page" $ "url" .) }}" target="_blank" rel="noopener"
          title="{{ T "print_title" }}">
         {{- partial "icon.html" "glyphs/pdf" -}}
         <span class="up-docv-action-label">{{ T "print" }}</span>
       </a>
       {{- end }}
-      <a class="up-docv-btn up-docv-action" href="{{ . }}" download
+      <a class="up-docv-btn up-docv-action" href="{{ $pdf }}" download
          title="{{ T "download_pdf" }}">
         {{- partial "icon.html" "glyphs/download" -}}
         <span class="up-docv-action-label">{{ T "download" }}</span>
@@ -85,7 +88,7 @@
         </div>
         <div class="up-docv-status" data-docv-error hidden>
           <span>{{ T "pdf_load_failed" }}</span>
-          <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
+          <a class="up-docv-open" href="{{ $pdf }}" target="_blank" rel="noopener">
             {{- partial "icon.html" "glyphs/pdf" -}}
             <span>{{ T "open_pdf" }}</span>
           </a>
@@ -95,7 +98,7 @@
           <style>.up-docv-status[data-docv-loading]{display:none}</style>
           <div class="up-docv-status">
             <span>{{ T "pdf_needs_js" }}</span>
-            <a class="up-docv-open" href="{{ . }}" target="_blank" rel="noopener">
+            <a class="up-docv-open" href="{{ $pdf }}" target="_blank" rel="noopener">
               {{- partial "icon.html" "glyphs/pdf" -}}
               <span>{{ T "open_pdf" }}</span>
             </a>
