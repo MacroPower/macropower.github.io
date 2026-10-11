@@ -16,6 +16,11 @@
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
 <link rel="canonical" href="{{ .Permalink }}">
+{{- if .IsTranslated }}
+{{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+{{- end }}
+{{- end }}
 {{ partial "opengraph.html" . }}
 {{ partial "twitter_cards.html" . }}
 {{- with partial "ui/social-url.html" "twitter" }}
