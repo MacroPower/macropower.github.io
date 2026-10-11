@@ -2,7 +2,7 @@
 
 A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pages render inside a draggable desktop window under a top panel with working indicator menus and a launcher dock, and the home page is an interactive terminal.
 
-![The home terminal inside the Unity desktop](images/screenshot.png)
+![The home terminal inside the Unity desktop](https://raw.githubusercontent.com/MacroPower/macropower.github.io/main/themes/ubuntu-unity/images/screenshot.png)
 
 **Demo:** [jacobcolvin.com](https://jacobcolvin.com), or run the bundled [example site](#example-site).
 
@@ -16,7 +16,7 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
 - **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
 
-Hugo partials server-render everything, and Hugo's esbuild bundles the TypeScript with no separate build step. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
+Hugo partials server-render everything, and Hugo's built-in esbuild bundles the TypeScript and the stylesheet, so a site needs nothing but Hugo: no Node, npm, or Dart Sass. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
 
 ## Requirements
 

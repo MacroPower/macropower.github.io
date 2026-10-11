@@ -5,6 +5,8 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 ## Constraints
 
 - A bare site with no params, menu, or data files must keep building. Guard every optional read. CI builds `exampleSite/` to check this.
+- A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
+- The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together.
 - All desktop state is session-only by design. Only the terminal's command history persists.
 - `main.css` is one file on purpose, and every selector is prefixed `up-`. Do not split it. It is plain CSS with native nesting, and `css.Build` in `_partials/head/css.html` lowers the nesting for the browser targets listed there.
 - `main.css` has no mixins, so shared looks repeat inline after a `/* recipe: <name> */` marker. Grep the marker and change every copy together.
@@ -17,6 +19,8 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - Templates never name the blog section. `_partials/blog-section.html` resolves it from `mainSections`, and `in site.MainSections .Section` is the "is this a post" test.
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
+- `_partials/playlist.html` resolves the Studio's MIDI files from the site. An empty playlist removes every Studio surface, so gate any new one on it.
+- The accent preset names appear in `main.css`, `ACCENTS` in `prefs.ts`, and the `params.accent` check in `baseof.html`. Change all three together.
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
 - `head.html` renders `_partials/extend-head.html` last, and `_partials/head/css.html` appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`; `page/post-reader.html` renders `_partials/extend-post.html` after a post's body. The hook partials ship empty and are the documented override points, so keep them.
 
