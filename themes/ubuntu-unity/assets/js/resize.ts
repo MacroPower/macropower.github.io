@@ -33,7 +33,7 @@ const DIRS: Dir[] = [
 // north/west resizes move the window origin through the shared DragHandle so
 // drag and resize never disagree about position. Pointer Events (capture +
 // pointercancel) so touch resizes too, matching drag.ts; the zones carry
-// touch-action:none in main.scss, with fatter coarse-pointer hit zones.
+// touch-action:none in main.css, with fatter coarse-pointer hit zones.
 export function installResize(
   el: HTMLElement,
   opts: InstallResizeOptions,

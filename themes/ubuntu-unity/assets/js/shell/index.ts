@@ -64,7 +64,7 @@ function saveHistory(items: readonly string[]): void {
   const FONT_TIMEOUT_MS = 1500;
 
   // Swap the disposed terminal for the reconnect overlay (.up-shell-reconnect
-  // styles live in main.scss): the closed-connection text `exit` printed plus
+  // styles live in main.css): the closed-connection text `exit` printed plus
   // a "[ Reconnect ]" line. Click or Enter/Space rebuilds the shell fresh.
   const showReconnect = (): void => {
     const overlay = document.createElement("div");

@@ -172,7 +172,7 @@ function makeKnob(spec: KnobSpec): HTMLElement {
   };
 
   // Pointer Events so the dial turns under touch too (the dial carries
-  // touch-action:none in main.scss). Primary button only — a right-mousedown
+  // touch-action:none in main.css). Primary button only — a right-mousedown
   // opens the context menu, which swallows the matching up and would leave
   // the knob turning with no button held. The window-focus and patch-menu
   // side effects ride the real pointerdown's bubble, so canceling the compat
@@ -821,7 +821,7 @@ export function initDaw(): void {
     bpmLcd.setAttribute("aria-valuemin", "40");
     bpmLcd.setAttribute("aria-valuemax", "240");
     // Pointer Events so the spinbox drags under touch too (the LCD carries
-    // touch-action:none in main.scss); primary button only, like the knobs.
+    // touch-action:none in main.css); primary button only, like the knobs.
     bpmLcd.addEventListener("pointerdown", (e) => {
       if (e.button !== 0 || !e.isPrimary || bpmDragging) return;
       e.preventDefault();

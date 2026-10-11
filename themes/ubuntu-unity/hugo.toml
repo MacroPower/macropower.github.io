@@ -1,9 +1,8 @@
-# Theme configuration. The extended edition is required for the Dart Sass
-# pipeline in _partials/head.html; the version floor matches theme.toml.
+# Theme configuration. The version floor matches theme.toml: css.Build
+# exposes the font artifacts _partials/head/css.html preloads from 0.165.0.
 [module]
   [module.hugoVersion]
-    extended = true
-    min      = "0.161.0"
+    min = "0.165.0"
 
 # Defaults a site inherits (Hugo deep-merges theme params under the
 # site's own). exampleSite/hugo.toml documents the full surface.

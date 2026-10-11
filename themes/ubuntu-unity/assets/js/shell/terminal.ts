@@ -44,7 +44,7 @@ export class XtermTerminal implements TerminalIO {
   constructor(mount: HTMLElement) {
     this.term = new Terminal({
       fontFamily: FONT_FAMILY,
-      // Matches the .up-neofetch font size in main.scss (12pt); keep in sync.
+      // Matches the .up-neofetch font size in main.css (12pt); keep in sync.
       fontSize: 16,
       lineHeight: 1.2,
       cursorBlink: true,

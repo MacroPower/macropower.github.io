@@ -20,7 +20,7 @@ Hugo partials server-render everything, and Hugo's esbuild bundles the TypeScrip
 
 ## Requirements
 
-- Hugo **extended** 0.161.0 or later, with [Dart Sass](https://gohugo.io/functions/css/sass/#dart-sass) on PATH.
+- Hugo 0.165.0 or later. The standard edition works.
 - Go, if you install the theme as a Hugo module.
 
 ## Installation
@@ -133,7 +133,7 @@ theme   = "ubuntu-unity"
 
 ## Customizing
 
-- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
+- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. It goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files under `assets/css/`. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`, after its own bundles.
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site and translate the values. Text the JavaScript writes at runtime stays in English.
 - **Favicons.** Drop `favicon.svg`, `favicon.ico`, and `apple-touch-icon.png` into your site's `static/` to replace the theme's.

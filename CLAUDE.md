@@ -4,7 +4,7 @@ Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only th
 
 ## Commands
 
-- `devbox shell` puts the pinned Hugo, Dart Sass, and Node on PATH and installs the git hooks.
+- `devbox shell` puts the pinned Hugo and Node on PATH and installs the git hooks.
 - `hugo server -D` serves the site locally with drafts. `hugo --minify` is the production build CI runs.
 - `npm test`, `npm run typecheck`, and `npm run typecheck:test` run the theme's Vitest and tsc passes from the repo root. CI runs all three before the Hugo build.
 - `task populate-projects` regenerates `data/projects.yaml` from GitHub.
@@ -12,7 +12,7 @@ Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only th
 ## Rules
 
 - Load the `prose` skill before writing any prose, including docs, comments, and commit messages.
-- Hugo, Dart Sass, and Node versions are pinned in both `devbox.json` and `.github/workflows/gh-pages.yml`. Bump both together.
+- Hugo and Node versions are pinned in both `devbox.json` and `.github/workflows/gh-pages.yml`. Bump both together.
 - Post URLs follow `/posts/:year/:month/:title/`, so changing a post's title or date breaks its URL. The `slug` front matter only names the post's file in the home terminal.
 - PRs build but do not deploy, and there is no preview environment. Validate changes with `hugo server`.
 - To customize a theme template or asset, copy it to the same path at the repo root. The theme's README lists the hooks that avoid copying: `assets/css/custom.css`, `layouts/_partials/extend-head.html`, and `layouts/_partials/extend-footer.html`.

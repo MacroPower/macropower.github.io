@@ -17,7 +17,7 @@ interface AccentDef {
 // Ubuntu-flavored palette. The four shades map to --orange / --orange-light /
 // --orange-dark / --orange-darker so accent gradients (e.g. the primary dialog
 // button) recolor on BOTH stops rather than fading into a fixed dark orange.
-// Orange is the default and matches the values baked into :root in main.scss.
+// Orange is the default and matches the values baked into :root in main.css.
 const ACCENTS: AccentDef[] = [
   { name: "orange", label: "Orange", base: "#DD4814", light: "#E95420", dark: "#B23B11", darker: "#922F0C" },
   { name: "green", label: "Green", base: "#3A7D2C", light: "#4E9E3A", dark: "#2E6322", darker: "#244F1B" },

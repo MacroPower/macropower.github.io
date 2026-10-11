@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Refreshes assets/vendor/xterm/ from the npm registry. Edit the versions
 // below, run `npm run vendor:xterm`, and commit the result. Bump the
-// structural xterm CSS in main.scss to the same @xterm/xterm version.
+// structural xterm CSS in main.css to the same @xterm/xterm version.
 import { execFileSync } from "node:child_process";
 import { copyFileSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

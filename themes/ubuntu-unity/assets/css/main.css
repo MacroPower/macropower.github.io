@@ -1,7 +1,7 @@
 /* =========================================================================
-   self-hosted fonts: the Ubuntu family, subset and served from the theme's
-   static/fonts/. URLs are relative to the published stylesheet (/css/...)
-   so sites deployed under a subpath keep working. Same faces, woff2 files, and
+   self-hosted fonts: the Ubuntu family, subset and stored in the theme's
+   assets/fonts/. css.Build publishes each file this stylesheet references
+   under a hashed name and rewrites the URL. Same faces, woff2 files, and
    unicode-ranges Google Fonts served, so rendering is byte-identical --
    minus the render-blocking third-party CSS fetch. font-display:swap keeps
    first paint unblocked; shell/index.ts still races Ubuntu Mono with a
@@ -166,198 +166,6 @@
   --dock-h:0px;
 }
 
-/* =========================================================================
-   reusable recipes: button + surface mixins shared across the Unity chrome.
-   Kept as @mixins (not @extend) so each consumer inlines the declarations at
-   its own source position — the cascade and specificity stay exactly as if
-   the properties were hand-written, only without the duplication.
-   ========================================================================= */
-
-/* Translucent accent ink — the runtime equivalent of rgba(accent, alpha).
-   Accent shades live in :root custom properties that prefs.ts swaps when the
-   user picks a new accent, so a literal rgba() would stay pinned to the seeded
-   orange; color-mix() re-resolves against the live var. $shade names one of
-   the accent properties ("orange", "orange-light", ...). Semantic reds (close
-   beads, .is-danger, the error icon) stay literal by design — danger doesn't
-   recolor with the accent. */
-@function up-accent($alpha, $shade: "orange") {
-  @return color-mix(in srgb, var(--#{$shade}) #{$alpha}, transparent);
-}
-
-/* Ambiance light "raised" button — the beige toolbar / dialog / link-button
-   skin (idle gradient, beige edge, inset highlight, hover lighten). $press
-   adds the momentary pressed state; sticky-toggle buttons that show state via
-   a class instead pass $press:false. */
-@mixin up-raised-button($radius: 2px, $press: true) {
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
-  border-radius:$radius;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
-  &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
-  }
-  @if $press {
-    &:active{
-      background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-      box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
-    }
-  }
-}
-
-/* The sticky checked/depressed state of up-raised-button — class- or
-   aria-toggled buttons that hold the pressed look (the pathbar's current
-   location, the search toggle while open). */
-@mixin up-raised-button-checked {
-  background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-  box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-  border-color:#9A958F;color:#1F1D1A;
-}
-
-/* GTK linked button group: members sit edge-to-edge sharing their 1px
-   borders, only the outer corners round (longhand corners so a lone child
-   rounds all four), and a hovered/focused member raises above its neighbor
-   so its highlighted border paints whole. Consumers pass $radius:0 to
-   up-raised-button and let this mixin shape the corners. */
-@mixin up-linked-group($radius: 3px) {
-  position:relative;
-  &:first-child{border-top-left-radius:$radius;border-bottom-left-radius:$radius}
-  &:last-child{border-top-right-radius:$radius;border-bottom-right-radius:$radius}
-  & + &{margin-left:-1px}
-  &:hover,&:focus-visible{z-index:1}
-}
-
-/* Titlebar "traffic-light" bead — shared geometry for the window controls and
-   the dialog close button. display and the radial face stay per-consumer
-   (the dialog close is a flex item; see up-bead-face for the colored fill). */
-@mixin up-bead($size: 14px) {
-  width:$size; height:$size;
-  border-radius:$size * .5;
-  border:0; padding:0;
-  align-items:center; justify-content:center;
-  cursor:default;
-}
-
-/* The bead's radial face. Same shape everywhere; only the three stops vary —
-   which is how the dialog close reuses the focused window-close colors. */
-@mixin up-bead-face($a, $b, $c) {
-  background:radial-gradient(circle at 38% 32%, #{$a} 0%, #{$b} 70%, #{$c} 100%);
-}
-
-/* Dark Unity popover surface — the top-panel dropdowns and the right-click
-   context menu. Sizing / position / border-radius stay per-consumer. */
-@mixin up-overlay-surface {
-  background:linear-gradient(180deg,
-    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
-  border:1px solid rgba(0,0,0,.6);
-  box-shadow:0 12px 32px rgba(0,0,0,.5),
-    inset 0 1px 0 rgba(255,255,255,.06);
-  color:#E8E5E2;
-  font-size:12.5px;
-  overflow:hidden;
-}
-
-/* The accent row-hover used inside the dark popover surface (dropdown rows,
-   context-menu items, and the File/Edit/View/Help menu items). Solid accent so
-   every popover row highlights alike and follows the Preferences accent swap.
-   The .is-danger override keeps its softer fill. */
-@mixin up-overlay-row-hover {
-  background:var(--orange-light);
-  color:#fff;
-}
-
-/* Aubergine dash glass — the Dash and HUD panels. The two are siblings by
-   design, so a tweak to one must reach the other; sizing / position / flex
-   stay per-consumer. */
-@mixin up-dash-glass {
-  background:linear-gradient(165deg,
-    rgba(53,12,44,.86) 0%, rgba(31,5,25,.92) 55%, rgba(20,2,16,.94) 100%);
-  border-right:1px solid rgba(255,255,255,.10);
-  border-bottom:1px solid rgba(255,255,255,.10);
-  border-bottom-right-radius:14px;
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.55),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  backdrop-filter:blur(20px) saturate(1.15);
-  -webkit-backdrop-filter:blur(20px) saturate(1.15);
-  color:#E8E5E2;
-  overflow:hidden;
-  transform-origin:top left;
-  transform:scale(.985);
-  transition:transform .16s ease;
-}
-
-/* The dark inset search field inside that glass (Dash search, HUD input).
-   Padding / font / flex sizing stay per-consumer. */
-@mixin up-dash-field {
-  color:#fff;
-  background:rgba(0,0,0,.30);
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:7px;
-  box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
-  outline:none;
-  &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
-  &:focus{
-    border-color:up-accent(60%, "orange-light");
-    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px up-accent(18%);
-  }
-}
-
-/* Single-line ellipsis truncation. */
-@mixin up-truncate {
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-/* Raised capsule badge — the beige bordered pill used for project topic chips
-   and the preview language tag. Fill / padding / type stay per-consumer. */
-@mixin up-pill {
-  display:inline-flex;
-  align-items:center;
-  border-radius:9999px;
-  border:1px solid #D4CCBC;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
-}
-
-/* Desktop icon-grid tile — the orange hover / keyboard-focus / selected /
-   anchor-ring / drag-lift vocabulary shared by the projects grid and the
-   trash window, which both run projects-desktop.ts over their tiles. Layout,
-   sizing, and label rules stay per-consumer. transform is deliberately not
-   transitioned: the drag's cursor-follow must stay crisp while displaced
-   neighbors get a per-element FLIP transition from the gesture engine. */
-@mixin up-tile-states {
-  background:transparent;border:1px solid transparent;
-  color:#3A3733;cursor:pointer;font:inherit;outline:none;
-  transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
-  &[hidden]{display:none}
-  &:hover{
-    background:up-accent(7%);
-    border-color:up-accent(18%);
-  }
-  &.is-focused{
-    background:up-accent(12%);
-    border-color:up-accent(55%);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px up-accent(12%);
-  }
-  &.is-active{
-    background:linear-gradient(180deg, up-accent(92%, "orange-light") 0%, up-accent(95%) 100%);
-    color:#fff;border-color:var(--orange-darker);
-    box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
-  }
-  &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
-  /* The anchor ring (the primary tile of a multi-selection) is declared after
-     .is-active.is-focused so its box-shadow wins when a tile is anchor,
-     active, and keyboard-focused at once. */
-  &.is-anchor.is-active{
-    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
-  }
-  &.is-dragging{
-    will-change:transform;cursor:grabbing;opacity:.92;
-    box-shadow:0 8px 20px rgba(0,0,0,.3), 0 2px 6px rgba(0,0,0,.22);
-  }
-}
-
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;
   font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
@@ -365,7 +173,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;
   background:#000;user-select:none;-webkit-user-select:none}
 body{font-size:13.5px;line-height:1.45}
 button{font-family:inherit}
-::selection{background:up-accent(35%)}
+::selection{background:color-mix(in srgb, var(--orange) 35%, transparent)}
 #root{height:100%}
 
 /* let normal text be selectable inside windows */
@@ -433,7 +241,10 @@ body{
   max-width:min(40vw, 280px);
   color:#fff;
   font-weight:700;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .up-panel-menu{
   /* real <button>; reset the user-agent chrome */
@@ -496,7 +307,7 @@ svg[hidden]{ display:none; }
    dash.ts toggles .is-open instead. */
 .up-launcher-bfb{
   &.is-open .up-launcher-icon{
-    filter:drop-shadow(0 0 7px up-accent(75%, "orange-light"));
+    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--orange-light) 75%, transparent));
   }
   /* while the Dash is up the tooltip would float over its search bar */
   &.is-open .up-tooltip{display:none}
@@ -590,26 +401,31 @@ svg[hidden]{ display:none; }
      below centers the window over the desktop area, not the viewport. The
      overlay stages (trash, daw) reset this with inset:0 and place their
      chrome absolutely instead. */
-  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
+  top:24px;
+  left:var(--launcher-w);
+  right:0;
+  bottom:var(--dock-h);
   z-index:20;
   pointer-events:none;
-  > *{pointer-events:auto}
-  display:flex; align-items:center; justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   padding:24px 16px;
   transition:opacity .18s ease, transform .25s ease;
+  > *{pointer-events:auto}
   &.is-focused{
     z-index:35;
   }
   &.is-maximized{
     padding:0;
-    // Redundant for the page stage (the base rule already starts at the
-    // launcher), but this two-class rule re-asserts left over the overlay
-    // stages' inset:0 for the maximized Studio.
+    /* Redundant for the page stage (the base rule already starts at the
+       launcher), but this two-class rule re-asserts left over the overlay
+       stages' inset:0 for the maximized Studio. */
     left:var(--launcher-w);
     .up-window-chrome{
-      // !important beats resize.ts's inline width/height on any window that
-      // is both resizable and maximizable (the inline values survive, so
-      // restore returns to the pre-maximize size).
+      /* !important beats resize.ts's inline width/height on any window that
+         is both resizable and maximizable (the inline values survive, so
+         restore returns to the pre-maximize size). */
       width:100% !important;
       max-width:none;
       max-height:none;
@@ -637,18 +453,22 @@ svg[hidden]{ display:none; }
       background:linear-gradient(180deg, var(--panel-grad-1) 0%, var(--chrome-2) 100%);
     }
     .up-tl-close{
-      @include up-bead-face(#F0664A, #C7391E, #8C2410);
+      /* recipe: bead-face */
+      background:radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%);
     }
     .up-tl-close:hover{
-      @include up-bead-face(#FF8060, #DC4824, #A02B12);
+      /* recipe: bead-face */
+      background:radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%);
     }
     .up-tl-min,
     .up-tl-max{
-      @include up-bead-face(#6E6963, #4A4540, #2A2622);
+      /* recipe: bead-face */
+      background:radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%);
     }
     .up-tl-min:hover,
     .up-tl-max:hover{
-      @include up-bead-face(#88837C, #5C5750, #34302C);
+      /* recipe: bead-face */
+      background:radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%);
     }
     .up-tl svg{ opacity:1; }
     .up-titlebar-text{
@@ -701,7 +521,12 @@ body.up-resizing *{ cursor:inherit !important; }
   margin-right:10px;
 }
 .up-tl{
-  @include up-bead;
+  /* recipe: bead */
+  width:14px; height:14px;
+  border-radius:7px;
+  border:0; padding:0;
+  align-items:center; justify-content:center;
+  cursor:default;
   display:inline-flex;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.25),
@@ -711,11 +536,13 @@ body.up-resizing *{ cursor:inherit !important; }
   svg{ transition:opacity .12s ease; opacity:.55; }
 }
 .up-tl-close{
-  @include up-bead-face(#6E4842, #4A2820, #2C140F);
+  /* recipe: bead-face */
+  background:radial-gradient(circle at 38% 32%, #6E4842 0%, #4A2820 70%, #2C140F 100%);
 }
 .up-tl-min,
 .up-tl-max{
-  @include up-bead-face(#514D48, #38342F, #1F1C18);
+  /* recipe: bead-face */
+  background:radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%);
 }
 .up-titlebar-text{
   flex:1;
@@ -724,7 +551,10 @@ body.up-resizing *{ cursor:inherit !important; }
   font-size:12px;
   font-weight:500;
   letter-spacing:.01em;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
   margin-right:60px;
 }
 .up-window-body{
@@ -812,13 +642,13 @@ body.up-resizing *{ cursor:inherit !important; }
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
-  &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-3px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-3px}
   &.is-active{
     /* The brand orange-light/orange gradient, deliberately kept over the
        AA-darker shades a contrast pass once swapped in: the active rows
        must match the tile-selection orange, and 13px bold white on it is
        borderline-large text the text-shadow further separates. */
-    background:linear-gradient(180deg, up-accent(95%, "orange-light") 0%, var(--orange) 100%);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 95%, transparent) 0%, var(--orange) 100%);
     color:#fff;
     border-left-color:color-mix(in srgb, var(--orange-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
@@ -832,7 +662,10 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-naut-item-icon svg{display:block}
 .up-naut-item.is-active .up-naut-item-icon{color:#fff}
 .up-naut-item-label{
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
   line-height:1.4;
 }
 .up-naut-item-count{
@@ -871,9 +704,21 @@ body.up-resizing *{ cursor:inherit !important; }
   min-width:26px;height:24px;padding:0 6px;
   font:inherit;font-size:12px;color:#3A3733;line-height:1;
   cursor:pointer;text-decoration:none;
-  @include up-raised-button($radius: 3px);
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
+  &:active{
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+  }
   svg{flex-shrink:0}
-  &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-3px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-3px}
   &:disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -881,14 +726,22 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-docv-group .up-docv-btn{
   border-radius:0;
-  @include up-linked-group;
+  /* recipe: linked-group */
+  position:relative;
+  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
+  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
+  & + &{margin-left:-1px}
+  &:hover,&:focus-visible{z-index:1}
 }
 .up-docv-zoom-readout{
   min-width:48px;
   font-variant-numeric:tabular-nums;
   /* the fit toggle holds the GTK checked look while fit-width is active */
   &[aria-pressed="true"]:not(:disabled){
-    @include up-raised-button-checked;
+    /* recipe: raised-button-checked */
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
+    border-color:#9A958F;color:#1F1D1A;
   }
 }
 .up-docv-pageentry{display:inline-flex;align-items:center;gap:6px;margin:0 2px}
@@ -901,7 +754,7 @@ body.up-resizing *{ cursor:inherit !important; }
   outline:none;
   &:focus{
     border-color:var(--orange-light);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px up-accent(22%, "orange-light");
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--orange-light) 22%, transparent);
   }
   &:disabled{color:#B4ADA7;background:#F1EFEC}
 }
@@ -942,13 +795,13 @@ body.up-resizing *{ cursor:inherit !important; }
   padding:7px 9px 5px;border-radius:3px;
   cursor:pointer;outline:none;
   &:hover .up-docv-thumb-frame{border-color:#8F8A84}
-  &:focus-visible{outline:1px dotted up-accent(70%);outline-offset:-2px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-2px}
   &.is-active .up-docv-thumb-frame{
     border-color:var(--orange);
-    box-shadow:0 0 0 2px up-accent(45%, "orange-light"),0 1px 3px rgba(0,0,0,.25);
+    box-shadow:0 0 0 2px color-mix(in srgb, var(--orange-light) 45%, transparent),0 1px 3px rgba(0,0,0,.25);
   }
   &.is-active .up-docv-thumb-num{
-    background:linear-gradient(180deg, up-accent(95%, "orange-light") 0%, var(--orange) 100%);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 95%, transparent) 0%, var(--orange) 100%);
     color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
 }
@@ -969,7 +822,7 @@ body.up-resizing *{ cursor:inherit !important; }
   box-shadow:inset 0 2px 4px rgba(0,0,0,.25);
   outline:none;
   &:focus-visible{
-    box-shadow:inset 0 0 0 2px up-accent(45%, "orange-light"),inset 0 2px 4px rgba(0,0,0,.25);
+    box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--orange-light) 45%, transparent),inset 0 2px 4px rgba(0,0,0,.25);
   }
 }
 .up-docv-pages{
@@ -1000,7 +853,15 @@ body.up-resizing *{ cursor:inherit !important; }
   display:inline-flex;align-items:center;gap:6px;
   padding:5px 12px;
   font-size:12.5px;color:#3A3733;text-decoration:none;text-shadow:none;
-  @include up-raised-button($press: false);
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
   &:hover{color:#1F1D1A}
   svg{flex-shrink:0;color:#A02B12}
 }
@@ -1027,7 +888,7 @@ body.up-resizing *{ cursor:inherit !important; }
   transition:border-color .1s linear, box-shadow .1s linear;
 }
 a.up-sponsor-card[href]:hover{
-  border-color:up-accent(55%);
+  border-color:color-mix(in srgb, var(--orange) 55%, transparent);
   box-shadow:0 1px 4px rgba(0,0,0,.08);
 }
 .up-sponsor-avatar{
@@ -1043,7 +904,10 @@ a.up-sponsor-card[href]:hover{
 }
 .up-sponsor-name{
   font-size:14px;font-weight:500;min-width:0;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .up-empty-pane.up-sponsors-empty-pane{
   min-height:240px;margin:18px 0 24px;
@@ -1443,7 +1307,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   padding:5px 10px 5px 6px;
   font-size:12px;min-height:30px;
 }
-/* GtkPathBar: two up-linked-groups, the history pair and the crumbs. The
+/* GtkPathBar: two linked groups (recipe: linked-group), the history pair and the crumbs. The
    current location is the GTK "checked" button — recessed, never hover-lit. */
 .up-pathbar-nav{
   display:inline-flex;align-items:stretch;align-self:stretch;
@@ -1460,8 +1324,25 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 }
 .up-pathbar-arrow{
   text-decoration:none;
-  @include up-raised-button($radius: 0);
-  @include up-linked-group;
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  /* recipe: linked-group */
+  position:relative;
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
+  &:active{
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+  }
+  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
+  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
+  & + &{margin-left:-1px}
+  &:hover,&:focus-visible{z-index:1}
   &.is-disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -1471,25 +1352,56 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   display:flex;align-items:center;flex-wrap:wrap;flex:1;min-width:0;
 }
 .up-pathbar-btn{
-  display:inline-flex;align-items:center;gap:5px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
   padding:3px 10px;
-  color:#3A3733;text-decoration:none;line-height:1.6;
-  @include up-raised-button($radius: 0, $press: false);
-  @include up-linked-group;
+  color:#3A3733;
+  text-decoration:none;
+  line-height:1.6;
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  /* recipe: linked-group */
+  position:relative;
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
+  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
+  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
+  & + &{margin-left:-1px}
+  &:hover,&:focus-visible{z-index:1}
   svg{width:12px;height:12px;flex-shrink:0}
   &.is-current{
-    @include up-raised-button-checked;
+    /* recipe: raised-button-checked */
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
+    border-color:#9A958F;color:#1F1D1A;
     font-weight:500;
   }
 }
-.up-pathbar-label{max-width:340px;@include up-truncate}
+.up-pathbar-label{max-width:340px;overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .up-pathbar-icon-btn{
   cursor:pointer;flex-shrink:0;align-self:stretch;
-  @include up-raised-button($radius: 3px, $press: false);
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
   &.is-active,
   &[aria-expanded="true"],
   &[aria-pressed="true"]{
-    @include up-raised-button-checked;
+    /* recipe: raised-button-checked */
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
+    border-color:#9A958F;color:#1F1D1A;
   }
 }
 
@@ -1518,7 +1430,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   outline:none;
   &:focus{
     border-color:var(--orange-light);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px up-accent(22%, "orange-light");
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--orange-light) 22%, transparent);
   }
   &::placeholder{color:var(--content-muted)}
 }
@@ -1578,11 +1490,11 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   border-left:3px solid transparent;
   outline:none;
   &[hidden]{display:none}
-  &:hover{background:up-accent(10%)}
+  &:hover{background:color-mix(in srgb, var(--orange) 10%, transparent)}
   &.is-focused{
-    background:up-accent(12%);
-    border-left-color:up-accent(55%);
-    box-shadow:inset 0 0 0 1px up-accent(35%);
+    background:color-mix(in srgb, var(--orange) 12%, transparent);
+    border-left-color:color-mix(in srgb, var(--orange) 55%, transparent);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--orange) 35%, transparent);
   }
   &.is-active{
     /* Brand orange-light, matching the tile-selection orange (see the
@@ -1600,7 +1512,10 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 .up-post-row-main{min-width:0}
 .up-post-title{
   font-weight:500;font-size:13.5px;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .up-post-meta{
   display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;
@@ -1625,7 +1540,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   transform-origin:0 50%;
   transform:scaleX(0);
   transition:transform .08s linear;
-  box-shadow:0 0 6px up-accent(45%, "orange-light");
+  box-shadow:0 0 6px color-mix(in srgb, var(--orange-light) 45%, transparent);
 }
 
 /* ---------- Reader pane ---------- */
@@ -1634,7 +1549,15 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   display:inline-flex;align-items:center;gap:5px;
   margin:14px 16px 0;padding:3px 8px 3px 6px;width:fit-content;
   font-size:12px;color:#3A3733;text-decoration:none;
-  @include up-raised-button($press: false);
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
   svg{color:#3A3733}
 }
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
@@ -1783,11 +1706,40 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   /* manipulation: double-tap-to-open runs through projects-desktop's manual
      pointerup detector — don't let the browser's double-tap zoom race it */
   touch-action:manipulation;
-  @include up-tile-states;
+  /* recipe: tile-states */
+  background:transparent;border:1px solid transparent;
+  color:#3A3733;cursor:pointer;font:inherit;outline:none;
+  transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
+  &[hidden]{display:none}
+  &:hover{
+    background:color-mix(in srgb, var(--orange) 7%, transparent);
+    border-color:color-mix(in srgb, var(--orange) 18%, transparent);
+  }
+  &.is-focused{
+    background:color-mix(in srgb, var(--orange) 12%, transparent);
+    border-color:color-mix(in srgb, var(--orange) 55%, transparent);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--orange) 12%, transparent);
+  }
+  &.is-active{
+    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 92%, transparent) 0%, color-mix(in srgb, var(--orange) 95%, transparent) 100%);
+    color:#fff;border-color:var(--orange-darker);
+    box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
+  }
+  &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
+  /* The anchor ring (the primary tile of a multi-selection) is declared after
+     .is-active.is-focused so its box-shadow wins when a tile is anchor,
+     active, and keyboard-focused at once. */
+  &.is-anchor.is-active{
+    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
+  }
+  &.is-dragging{
+    will-change:transform;cursor:grabbing;opacity:.92;
+    box-shadow:0 8px 20px rgba(0,0,0,.3), 0 2px 6px rgba(0,0,0,.22);
+  }
 }
 
 /* Drag-to-reorder: the grid suppresses text selection mid-drag; the lifted
-   tile's drag states come from up-tile-states. */
+   tile's drag states come from the tile-states recipe. */
 /* The descendant arm out-specifies `.selectable *` (which re-enables
    user-select:text on every label) so the icon drag cannot smear a native
    text selection across the grid. */
@@ -1797,8 +1749,8 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 /* Rubber-band marquee, positioned in grid-content space (see projects-desktop). */
 .up-marquee{
   position:absolute;z-index:5;pointer-events:none;
-  border:1px solid up-accent(80%);
-  background:up-accent(14%);
+  border:1px solid color-mix(in srgb, var(--orange) 80%, transparent);
+  background:color-mix(in srgb, var(--orange) 14%, transparent);
   border-radius:1px;
   &[hidden]{display:none}
 }
@@ -1806,7 +1758,15 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 /* Right-click menu: mirrors the Unity dropdown tokens but is a transient,
    position:fixed overlay parented to <body>. */
 .up-ctx-menu{
-  @include up-overlay-surface;
+  /* recipe: overlay-surface */
+  background:linear-gradient(180deg,
+    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
+  border:1px solid rgba(0,0,0,.6);
+  box-shadow:0 12px 32px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  color:#E8E5E2;
+  font-size:12.5px;
+  overflow:hidden;
   position:fixed;z-index:1100;min-width:170px;
   border-radius:4px;
   padding:6px 0;
@@ -1815,9 +1775,9 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 .up-ctx-item{
   padding:5px 16px;cursor:default;color:rgba(255,255,255,.86);white-space:nowrap;
   outline:none;
-  &:hover{@include up-overlay-row-hover}
+  &:hover{background:var(--orange-light); color:#fff;}
   /* keyboard-opened menus move real focus between items */
-  &:focus-visible{@include up-overlay-row-hover}
+  &:focus-visible{background:var(--orange-light); color:#fff;}
 }
 
 .up-project-folder{
@@ -1899,7 +1859,12 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   word-break:break-word;font-family:"Ubuntu",sans-serif;
 }
 .up-project-preview-lang{
-  @include up-pill;
+  /* recipe: pill */
+  display:inline-flex;
+  align-items:center;
+  border-radius:9999px;
+  border:1px solid #D4CCBC;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
   gap:6px;
   padding:2px 9px 2px 7px;
   background:rgba(255,255,255,.75);
@@ -1919,7 +1884,10 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   color:#3A3733;font-size:13px;line-height:1.55;
   border-bottom:1px dashed #D4CCBC;
   font-style:italic;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .up-project-preview-stats{
   display:grid;grid-template-columns:1fr 1fr;
@@ -1930,7 +1898,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   display:flex;align-items:center;gap:7px;min-width:0;
   font-size:12.5px;color:#2E2B28;font-variant-numeric:tabular-nums;
   svg{color:#8A7E60;flex-shrink:0}
-  > span{min-width:0;@include up-truncate}
+  > span{min-width:0;overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   &.up-project-preview-stat-wide{grid-column:1 / -1}
 }
 .up-project-preview-section-label{
@@ -1944,7 +1912,12 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   display:flex;flex-wrap:nowrap;gap:5px;overflow:hidden;
 }
 .up-project-chip{
-  @include up-pill;
+  /* recipe: pill */
+  display:inline-flex;
+  align-items:center;
+  border-radius:9999px;
+  border:1px solid #D4CCBC;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
   flex:none;
   padding:2px 8px;
   background:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
@@ -1958,7 +1931,19 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 .up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
   color:#2E2B28;font-size:12.5px;font-weight:500;text-decoration:none;
-  @include up-raised-button;
+  /* recipe: raised-button */
+  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  border:1px solid #B9B5B0;
+  border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  &:hover{
+    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+    border-color:#A8A39E;
+  }
+  &:active{
+    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+  }
   svg{color:#3A3733}
 }
 /* projects preview pins the open button to the left under the stats */
@@ -2105,7 +2090,15 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 /* ---- top-panel dropdowns ------------------------------------------------ */
 
 .up-dropdown{
-  @include up-overlay-surface;
+  /* recipe: overlay-surface */
+  background:linear-gradient(180deg,
+    rgba(38,36,33,.98) 0%, rgba(28,26,24,.98) 100%);
+  border:1px solid rgba(0,0,0,.6);
+  box-shadow:0 12px 32px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  color:#E8E5E2;
+  font-size:12.5px;
+  overflow:hidden;
   position:absolute; top:24px;
   min-width:248px; max-width:320px;
   border-radius:0 0 4px 4px;
@@ -2132,7 +2125,9 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   cursor:default;
   color:rgba(255,255,255,.86);
   &:hover{
-    @include up-overlay-row-hover;
+    /* recipe: overlay-row-hover */
+    background:var(--orange-light);
+    color:#fff;
   }
   &.is-danger{color:#F0B0A0}
   &.is-danger:hover{background:rgba(221,72,20,.5);color:#fff}
@@ -2187,7 +2182,9 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   color:rgba(255,255,255,.92);
   cursor:default;
   &:hover{
-    @include up-overlay-row-hover;
+    /* recipe: overlay-row-hover */
+    background:var(--orange-light);
+    color:#fff;
   }
   &.is-disabled{
     color:rgba(255,255,255,.35);
@@ -2273,7 +2270,10 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   &:hover{color:#fff}
 }
 [data-vol-nowplaying]{
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 /* ---- battery bar ------------------------------------------------------- */
@@ -2371,15 +2371,22 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   touch-action:none; /* drag surface (dialogs.ts) — never a scroll gesture */
 }
 .up-dlg-close{
-  @include up-bead;
+  /* recipe: bead */
+  width:14px; height:14px;
+  border-radius:7px;
+  border:0; padding:0;
+  align-items:center; justify-content:center;
+  cursor:default;
   display:flex;
-  @include up-bead-face(#F0664A, #C7391E, #8C2410);
+  /* recipe: bead-face */
+  background:radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%);
   box-shadow:
     inset 0 .5px 0 rgba(255,255,255,.35),
     inset 0 -.5px 0 rgba(0,0,0,.55),
     0 1px 1px rgba(0,0,0,.4);
   &:hover{
-    @include up-bead-face(#FF8060, #DC4824, #A02B12);
+    /* recipe: bead-face */
+    background:radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%);
   }
 }
 .up-dlg-title{
@@ -2401,8 +2408,8 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
     inset 0 1px 0 rgba(255,255,255,.35),
     0 1px 2px rgba(0,0,0,.25);
   flex-shrink:0;
-  // `display:flex` shadows the UA `[hidden]` rule; restore the hide so
-  // `icon:"none"` dialogs (e.g. Preferences) drop the icon gutter.
+  /* `display:flex` shadows the UA `[hidden]` rule; restore the hide so
+     `icon:"none"` dialogs (e.g. Preferences) drop the icon gutter. */
   &[hidden]{display:none}
 }
 .up-dlg-icon-glyph{transform:translateY(-1px)}
@@ -2586,7 +2593,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   border-bottom-color:#ABA7A2;
   border-radius:3px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(0,0,0,.08);
-  // Mouse gestures are not keys: flat pill, no keycap bevel.
+  /* Mouse gestures are not keys: flat pill, no keycap bevel. */
   &.is-gesture{
     font-family:"Ubuntu",sans-serif;
     background:#E8E5E2;
@@ -2623,15 +2630,18 @@ body.up-reduce-motion *{
    still cover it. */
 .up-dash{
   position:fixed;
-  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
+  top:24px;
+  left:var(--launcher-w);
+  right:0;
+  bottom:var(--dock-h);
   z-index:38;
   pointer-events:none;
+  opacity:0;
+  transition:opacity .16s ease;
   /* Gated on .is-visible: close() drops the class immediately but leaves
      the node un-hidden until the opacity fade ends, and the invisible
      overlay must not eat clicks/drags during that window. */
   &.is-visible > *{pointer-events:auto}
-  opacity:0;
-  transition:opacity .16s ease;
   &[hidden]{display:none}
   &.is-visible{opacity:1}
 }
@@ -2640,7 +2650,22 @@ body.up-reduce-motion *{
   background:rgba(10,1,8,.35);
 }
 .up-dash-panel{
-  @include up-dash-glass;
+  /* recipe: dash-glass */
+  background:linear-gradient(165deg,
+    rgba(53,12,44,.86) 0%, rgba(31,5,25,.92) 55%, rgba(20,2,16,.94) 100%);
+  border-right:1px solid rgba(255,255,255,.10);
+  border-bottom:1px solid rgba(255,255,255,.10);
+  border-bottom-right-radius:14px;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(20px) saturate(1.15);
+  -webkit-backdrop-filter:blur(20px) saturate(1.15);
+  color:#E8E5E2;
+  overflow:hidden;
+  transform-origin:top left;
+  transform:scale(.985);
+  transition:transform .16s ease;
   position:absolute; top:0; left:0;
   display:flex; flex-direction:column;
   width:min(700px, 100%);
@@ -2662,10 +2687,21 @@ body.up-reduce-motion *{
   svg{width:17px;height:17px}
 }
 .up-dash-search{
-  @include up-dash-field;
+  /* recipe: dash-field */
+  color:#fff;
+  background:rgba(0,0,0,.30);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:7px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
+  outline:none;
   width:100%;
   padding:10px 14px 10px 38px;
   font:300 17px/1.3 "Ubuntu",sans-serif;
+  &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
+  &:focus{
+    border-color:color-mix(in srgb, var(--orange-light) 60%, transparent);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent);
+  }
 }
 
 .up-dash-results{
@@ -2708,7 +2744,7 @@ body.up-reduce-motion *{
   border-radius:3px;
   &[hidden]{display:none}
   &:hover{color:#fff}
-  &:focus-visible{outline:none;border-color:up-accent(70%, "orange-light");color:#fff}
+  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--orange-light) 70%, transparent);color:#fff}
 }
 
 .up-dash-grid{
@@ -2734,9 +2770,9 @@ body.up-reduce-motion *{
   /* arrow-key navigation moves real focus; paint it like Unity's orange
      result ring whether or not the browser deems it :focus-visible */
   &:focus{
-    background:up-accent(14%);
-    border-color:up-accent(75%, "orange-light");
-    box-shadow:0 0 12px up-accent(25%), inset 0 1px 0 rgba(255,255,255,.08);
+    background:color-mix(in srgb, var(--orange) 14%, transparent);
+    border-color:color-mix(in srgb, var(--orange-light) 75%, transparent);
+    box-shadow:0 0 12px color-mix(in srgb, var(--orange) 25%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
   }
   &:active{transform:scale(.97)}
 }
@@ -2788,7 +2824,7 @@ body.up-reduce-motion *{
   cursor:pointer;
   svg{width:16px;height:16px}
   &:hover{color:#fff;background:rgba(255,255,255,.07)}
-  &:focus-visible{outline:none;border-color:up-accent(70%, "orange-light")}
+  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--orange-light) 70%, transparent)}
   &.is-active{
     color:#fff;
     background:rgba(255,255,255,.08);
@@ -2798,7 +2834,7 @@ body.up-reduce-motion *{
       content:"";position:absolute;top:-8px;left:6px;right:6px;height:2px;
       border-radius:1px;
       background:var(--orange-light);
-      box-shadow:0 0 8px up-accent(80%, "orange-light");
+      box-shadow:0 0 8px color-mix(in srgb, var(--orange-light) 80%, transparent);
     }
   }
 }
@@ -2819,13 +2855,16 @@ body.up-reduce-motion *{
    a command line for the menus, not a browse surface. */
 .up-hud{
   position:fixed;
-  top:24px; left:var(--launcher-w); right:0; bottom:var(--dock-h);
+  top:24px;
+  left:var(--launcher-w);
+  right:0;
+  bottom:var(--dock-h);
   z-index:38;
   pointer-events:none;
-  /* Same .is-visible gate as the Dash: the closing fade must not eat input. */
-  &.is-visible > *{pointer-events:auto}
   opacity:0;
   transition:opacity .16s ease;
+  /* Same .is-visible gate as the Dash: the closing fade must not eat input. */
+  &.is-visible > *{pointer-events:auto}
   &[hidden]{display:none}
   &.is-visible{opacity:1}
 }
@@ -2834,7 +2873,22 @@ body.up-reduce-motion *{
   background:rgba(10,1,8,.25);
 }
 .up-hud-panel{
-  @include up-dash-glass;
+  /* recipe: dash-glass */
+  background:linear-gradient(165deg,
+    rgba(53,12,44,.86) 0%, rgba(31,5,25,.92) 55%, rgba(20,2,16,.94) 100%);
+  border-right:1px solid rgba(255,255,255,.10);
+  border-bottom:1px solid rgba(255,255,255,.10);
+  border-bottom-right-radius:14px;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(20px) saturate(1.15);
+  -webkit-backdrop-filter:blur(20px) saturate(1.15);
+  color:#E8E5E2;
+  overflow:hidden;
+  transform-origin:top left;
+  transform:scale(.985);
+  transition:transform .16s ease;
   position:absolute; top:0; left:0;
   width:min(560px, 100%);
 }
@@ -2855,10 +2909,22 @@ body.up-reduce-motion *{
   svg{width:32px;height:32px}
 }
 .up-hud-input{
-  @include up-dash-field;
-  flex:1 1 auto; min-width:0;
+  /* recipe: dash-field */
+  color:#fff;
+  background:rgba(0,0,0,.30);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:7px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
+  outline:none;
+  flex:1 1 auto;
+  min-width:0;
   padding:9px 14px;
   font:300 19px/1.3 "Ubuntu",sans-serif;
+  &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
+  &:focus{
+    border-color:color-mix(in srgb, var(--orange-light) 60%, transparent);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent);
+  }
 }
 .up-hud-results{
   list-style:none; margin:0; padding:0;
@@ -3034,8 +3100,8 @@ body.up-reduce-motion *{
   display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:16px;
   color:var(--content-muted);
-  // A class with an explicit `display` overrides the UA `[hidden]` rule, so
-  // toggling `hidden` alone would leave it visible; restore the hide.
+  /* A class with an explicit `display` overrides the UA `[hidden]` rule, so
+     toggling `hidden` alone would leave it visible; restore the hide. */
   &[hidden]{display:none}
 }
 .up-trash-empty-headline{font-size:16px; color:#5A5550}
@@ -3078,7 +3144,36 @@ body.up-reduce-motion *{
   /* manipulation: double-tap-to-open runs through projects-desktop's manual
      pointerup detector — don't let the browser's double-tap zoom race it */
   touch-action:manipulation;
-  @include up-tile-states;
+  /* recipe: tile-states */
+  background:transparent;border:1px solid transparent;
+  color:#3A3733;cursor:pointer;font:inherit;outline:none;
+  transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
+  &[hidden]{display:none}
+  &:hover{
+    background:color-mix(in srgb, var(--orange) 7%, transparent);
+    border-color:color-mix(in srgb, var(--orange) 18%, transparent);
+  }
+  &.is-focused{
+    background:color-mix(in srgb, var(--orange) 12%, transparent);
+    border-color:color-mix(in srgb, var(--orange) 55%, transparent);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--orange) 12%, transparent);
+  }
+  &.is-active{
+    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 92%, transparent) 0%, color-mix(in srgb, var(--orange) 95%, transparent) 100%);
+    color:#fff;border-color:var(--orange-darker);
+    box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
+  }
+  &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
+  /* The anchor ring (the primary tile of a multi-selection) is declared after
+     .is-active.is-focused so its box-shadow wins when a tile is anchor,
+     active, and keyboard-focused at once. */
+  &.is-anchor.is-active{
+    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
+  }
+  &.is-dragging{
+    will-change:transform;cursor:grabbing;opacity:.92;
+    box-shadow:0 8px 20px rgba(0,0,0,.3), 0 2px 6px rgba(0,0,0,.22);
+  }
 }
 /* Descendant arm for the same reason as .up-project-grid.is-dragging:
    `.selectable *` would otherwise keep the labels text-selectable mid-drag. */
@@ -3170,21 +3265,6 @@ body.up-reduce-motion *{
   user-select:none;
 }
 
-/* raised dark control — the studio counterpart of up-raised-button */
-@mixin up-daw-raised{
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
-  border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
-  color:var(--daw-text);
-  cursor:default;
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
-  &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
-  }
-}
-
 /* ---- studio toolbar / transport ---- */
 
 .up-daw-toolbar{
@@ -3200,7 +3280,18 @@ body.up-reduce-motion *{
 .up-daw-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:28px; height:24px; padding:0;
-  @include up-daw-raised;
+  /* recipe: daw-raised */
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  color:var(--daw-text);
+  cursor:default;
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
   svg{width:13px; height:13px; display:block}
   span{display:inline-flex}
   span[hidden]{display:none}
@@ -3332,15 +3423,31 @@ body.up-reduce-motion *{
 .up-daw-track-name{
   flex:1; min-width:0;
   font-size:12px;
-  @include up-truncate;
+  /* recipe: truncate */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .up-daw-ms{
   flex-shrink:0;
-  width:16px; height:16px; padding:0;
-  font-size:9px; font-weight:700; line-height:1;
-  @include up-daw-raised;
+  width:16px;
+  height:16px;
+  padding:0;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+  /* recipe: daw-raised */
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  cursor:default;
   border-radius:2px;
   color:var(--daw-dim);
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
   &:hover{color:var(--daw-text)}
   &.is-mute{
     color:#FF9B6A; background:#3A2218; border-color:#5A2E1A;
@@ -3355,11 +3462,24 @@ body.up-reduce-motion *{
 /* per-strip instrument selector + its popover */
 .up-daw-patch{
   flex-shrink:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:24px; height:16px; padding:0;
-  @include up-daw-raised;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:16px;
+  padding:0;
+  /* recipe: daw-raised */
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  cursor:default;
   border-radius:2px;
   color:var(--daw-dim);
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
   svg{display:block}
   &:hover{color:var(--daw-text)}
   &.is-custom{
@@ -3401,10 +3521,24 @@ body.up-reduce-motion *{
   padding:0 10px 8px;
 }
 .up-daw-wave{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:32px; height:24px; padding:0;
-  @include up-daw-raised;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:32px;
+  height:24px;
+  padding:0;
+  /* recipe: daw-raised */
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  cursor:default;
   color:var(--daw-dim);
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
   svg{display:block}
   &:hover{color:var(--daw-text)}
   &.is-on{
@@ -3428,13 +3562,25 @@ body.up-reduce-motion *{
   margin-right:2px;
 }
 .up-daw-time{
-  display:inline-flex; align-items:center;
-  height:20px; padding:0 7px;
-  @include up-daw-raised;
+  display:inline-flex;
+  align-items:center;
+  height:20px;
+  padding:0 7px;
+  /* recipe: daw-raised */
+  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  border:1px solid var(--daw-edge);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  cursor:default;
   border-radius:2px;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:10px; line-height:1;
+  font-size:10px;
+  line-height:1;
   color:var(--daw-dim);
+  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:active{
+    background:#23262B;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+  }
   &:hover{color:var(--daw-text)}
   &.is-on{
     color:var(--daw-lcd);
@@ -3534,8 +3680,8 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   font-size:12px;
   color:var(--daw-dim);
   background:#1B1E23;
-  // The explicit display:flex would override the UA [hidden] rule (the
-  // trash-empty trap); restore the hide for track-switch toggling.
+  /* The explicit display:flex would override the UA [hidden] rule (the
+     trash-empty trap); restore the hide for track-switch toggling. */
   &[hidden]{display:none}
 }
 .up-daw-status{
@@ -3545,7 +3691,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   color:var(--daw-dim);
   background:linear-gradient(180deg,#272B31 0%,#22262B 100%);
   border-top:1px solid var(--daw-edge);
-  span{display:block; @include up-truncate}
+  span{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 }
 
 @media (max-width:820px){

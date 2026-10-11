@@ -5,7 +5,7 @@ My personal website, built with the in-tree [ubuntu-unity](themes/ubuntu-unity/R
 ## Development
 
 ```sh
-devbox shell     # pinned Hugo, Dart Sass, and Node on PATH
+devbox shell     # pinned Hugo and Node on PATH
 hugo server -D   # local dev server with drafts
 hugo --minify    # production build into public/
 ```

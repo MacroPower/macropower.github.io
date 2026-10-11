@@ -698,7 +698,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   function ctxItem(label: string, fn: () => void): HTMLElement {
     const el = document.createElement("div");
     el.className = "up-ctx-item";
-    // Stays a <div> (a <button> would need a UA-style reset in main.scss) but
+    // Stays a <div> (a <button> would need a UA-style reset in main.css) but
     // exposes menuitem semantics and takes programmatic focus from the menu's
     // keydown handler above.
     el.setAttribute("role", "menuitem");

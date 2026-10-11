@@ -1,14 +1,15 @@
 # CLAUDE.md
 
-A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity desktop. Hugo partials server-render everything, `assets/css/main.scss` styles it, and the TypeScript modules under `assets/js/` enhance the rendered DOM. Hugo Pipes bundles the TypeScript at site build time, so this directory has no build step of its own. README.md documents the surface a consuming site configures.
+A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity desktop. Hugo partials server-render everything, `assets/css/main.css` styles it, and the TypeScript modules under `assets/js/` enhance the rendered DOM. Hugo Pipes bundles the TypeScript at site build time, so this directory has no build step of its own. README.md documents the surface a consuming site configures.
 
 ## Constraints
 
 - A bare site with no params, menu, or data files must keep building. Guard every optional read. CI builds `exampleSite/` to check this.
 - All desktop state is session-only by design. Only the terminal's command history persists.
-- `main.scss` is one file on purpose, and every selector is prefixed `up-`. Do not split it.
+- `main.css` is one file on purpose, and every selector is prefixed `up-`. Do not split it. It is plain CSS with native nesting, and `css.Build` in `_partials/head/css.html` lowers the nesting for the browser targets listed there.
+- `main.css` has no mixins, so shared looks repeat inline after a `/* recipe: <name> */` marker. Grep the marker and change every copy together.
 - Every string a template renders goes through `T "<key>"` from `i18n/en.toml`. Strings JavaScript writes at runtime stay English.
-- A consuming site needs no npm. xterm.js is vendored under `assets/vendor/xterm/`, and `_partials/ui/script.html` shims the `@xterm/*` imports to those files. `npm run vendor:xterm` refreshes them from the versions in `scripts/vendor-xterm.mjs`. The structural CSS from `@xterm/xterm` is inlined in `main.scss` under a version pin, so bump it with the vendored copy.
+- A consuming site needs no npm. xterm.js is vendored under `assets/vendor/xterm/`, and `_partials/ui/script.html` shims the `@xterm/*` imports to those files. `npm run vendor:xterm` refreshes them from the versions in `scripts/vendor-xterm.mjs`. The structural CSS from `@xterm/xterm` is inlined in `main.css` under a version pin, so bump it with the vendored copy.
 
 ## Layouts
 
@@ -17,7 +18,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
-- `head.html` renders `_partials/extend-head.html` last and appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`. Both hook partials ship empty and are the documented override points, so keep them.
+- `head.html` renders `_partials/extend-head.html` last, and `_partials/head/css.html` appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`. Both hook partials ship empty and are the documented override points, so keep them.
 
 ## DOM contracts
 
