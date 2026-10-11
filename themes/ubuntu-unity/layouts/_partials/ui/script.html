@@ -1,5 +1,6 @@
 {{- /*
-  Compiles a TypeScript entry through esbuild (IIFE; minified in production),
+  Compiles a TypeScript entry through esbuild (IIFE; minified in production,
+  with inline source maps under hugo server),
   fingerprints it, and emits a deferred <script> with an SRI integrity hash.
   baseof.html routes every bundle through here so the build options and the
   script-tag shape are defined once.
@@ -16,5 +17,6 @@
   "@xterm/addon-web-links" "vendor/xterm/addon-web-links.mjs"
 -}}
 {{- $opts := dict "targetPath" .target "minify" hugo.IsProduction "format" "iife" "shims" $shims -}}
+{{- if hugo.IsDevelopment }}{{ $opts = merge $opts (dict "sourceMap" "inline") }}{{ end -}}
 {{- $built := resources.Get .entry | js.Build $opts | resources.Fingerprint -}}
 <script defer src="{{ $built.RelPermalink }}" integrity="{{ $built.Data.Integrity }}"></script>
