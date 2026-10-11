@@ -59,7 +59,7 @@
 {{- $home := dict
   "label" (T "home") "icon" "launcher/home"
   "dashLabel" (T "terminal") "dashIcon" "launcher/terminal"
-  "url" (relURL "") "match" "exact"
+  "url" site.Home.RelPermalink "match" "exact"
   "kw" "terminal shell bash console neofetch prompt tty home start"
 -}}
 {{- $pages := dict -}}
@@ -69,8 +69,15 @@
 {{- range site.Menus.main -}}
   {{- $key := .Identifier | default (anchorize .Name) -}}
   {{- $def := index $defaults $key | default dict -}}
+  {{- /* A pageRef entry resolves to its page, which already carries the
+        language prefix. A url entry gets the prefix from relLangURL unless
+        it points off-site. */ -}}
   {{- $u := .URL -}}
-  {{- if not (or (hasPrefix $u "http://") (hasPrefix $u "https://")) -}}{{- $u = relURL $u -}}{{- end -}}
+  {{- if .Page -}}
+    {{- $u = .Page.RelPermalink -}}
+  {{- else if not (or (hasPrefix $u "http://") (hasPrefix $u "https://")) -}}
+    {{- $u = relLangURL $u -}}
+  {{- end -}}
   {{- $p := dict
       "label" .Name
       "icon" (or .Params.icon $def.icon "launcher/browser-window")
