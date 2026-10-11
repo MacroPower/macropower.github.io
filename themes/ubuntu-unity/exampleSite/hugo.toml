@@ -52,6 +52,10 @@ mainSections = ["posts"]
   # Show "N min read" in the post reader.
   enableReadingTime = true
 
+  # The accent preset the desktop starts with: orange (the default), green,
+  # aubergine, or blue. Visitors can switch it in Edit > Preferences.
+  # accent = "aubergine"
+
   # Source repository, linked from Help > "View source on github".
   # repoUrl = "https://github.com/jane/janedoe.example"
 

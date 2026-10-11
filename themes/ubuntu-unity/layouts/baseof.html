@@ -6,7 +6,16 @@
   {{- errorf "The ubuntu-unity theme needs Hugo 0.165.0 or later, and this is Hugo %s." hugo.Version -}}
 {{- end -}}
 <!doctype html>
-<html lang="{{ site.Language.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}">
+{{- $accent := "" -}}
+{{- with site.Params.accent -}}
+  {{- if in (slice "orange" "green" "aubergine" "blue") . -}}
+    {{- $accent = . -}}
+  {{- else -}}
+    {{- warnf "ubuntu-unity: params.accent %q is not orange, green, aubergine, or blue" . -}}
+  {{- end -}}
+{{- end -}}
+<html lang="{{ site.Language.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}"
+  {{- with $accent }} data-up-accent="{{ . }}"{{ end }}>
 <head>{{ partial "head.html" . }}</head>
 <body>
   <div id="root">

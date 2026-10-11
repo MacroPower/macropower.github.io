@@ -166,6 +166,25 @@
   --dock-h:0px;
 }
 
+/* Accent presets. The Preferences dialog (prefs.ts) sets data-up-accent on
+   <html>, and params.accent picks the starting preset. Each swatch carries
+   the same attribute, so it paints in its own preset. These selectors
+   outrank a bare :root, so a site's custom.css can restyle the default
+   palette and the presets still apply over it. Keep the names in sync with
+   ACCENTS in prefs.ts and the list in baseof.html. */
+:root[data-up-accent="orange"], .up-accent-swatch[data-up-accent="orange"]{
+  --orange:#DD4814; --orange-light:#E95420; --orange-dark:#B23B11; --orange-darker:#922F0C;
+}
+:root[data-up-accent="green"], .up-accent-swatch[data-up-accent="green"]{
+  --orange:#3A7D2C; --orange-light:#4E9E3A; --orange-dark:#2E6322; --orange-darker:#244F1B;
+}
+:root[data-up-accent="aubergine"], .up-accent-swatch[data-up-accent="aubergine"]{
+  --orange:#77216F; --orange-light:#8B2A82; --orange-dark:#5E1A57; --orange-darker:#4A1444;
+}
+:root[data-up-accent="blue"], .up-accent-swatch[data-up-accent="blue"]{
+  --orange:#2A5F94; --orange-light:#3F87C9; --orange-dark:#224E79; --orange-darker:#1A3C5E;
+}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;
   font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
@@ -2546,6 +2565,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 }
 .up-accent-swatch{
   width:26px; height:26px; padding:0; border-radius:13px; cursor:default;
+  background:var(--orange-light);
   border:2px solid transparent;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.25);
   &.is-active{

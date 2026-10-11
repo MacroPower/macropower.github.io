@@ -1,34 +1,33 @@
 // Session-only preferences: reduce-motion and accent color. Nothing is
-// persisted — state lives in module scope and resets on reload. The apply
-// functions mutate the document directly (a `body` class for reduce-motion,
-// CSS custom properties on `:root` for the accent) so every selector reading
+// persisted, so both reset on reload. The apply functions mutate the
+// document directly (a `body` class for reduce-motion, a `data-up-accent`
+// attribute on `<html>` for the accent) so every selector reading
 // `var(--orange)` / `var(--orange-light)` or gated on `body.up-reduce-motion`
 // updates live.
 
 interface AccentDef {
   name: string;
   label: string;
-  base: string;
-  light: string;
-  dark: string;
-  darker: string;
 }
 
-// Ubuntu-flavored palette. The four shades map to --orange / --orange-light /
-// --orange-dark / --orange-darker so accent gradients (e.g. the primary dialog
-// button) recolor on BOTH stops rather than fading into a fixed dark orange.
-// Orange is the default and matches the values baked into :root in main.css.
+// The accent presets. main.css holds each one's four shades under a
+// [data-up-accent="<name>"] rule, and the site's params.accent picks the
+// one <html> starts with. Keep the names in sync with main.css and the
+// list in baseof.html.
 const ACCENTS: AccentDef[] = [
-  { name: "orange", label: "Orange", base: "#DD4814", light: "#E95420", dark: "#B23B11", darker: "#922F0C" },
-  { name: "green", label: "Green", base: "#3A7D2C", light: "#4E9E3A", dark: "#2E6322", darker: "#244F1B" },
-  { name: "aubergine", label: "Aubergine", base: "#77216F", light: "#8B2A82", dark: "#5E1A57", darker: "#4A1444" },
-  { name: "blue", label: "Blue", base: "#2A5F94", light: "#3F87C9", dark: "#224E79", darker: "#1A3C5E" },
+  { name: "orange", label: "Orange" },
+  { name: "green", label: "Green" },
+  { name: "aubergine", label: "Aubergine" },
+  { name: "blue", label: "Blue" },
 ];
 
 // The body class is the single source of truth for reduce-motion (the CSS
-// animation-kill keys off it); accent just needs the last-picked name for the
-// swatch row's active state.
-let activeAccent = "orange";
+// animation-kill keys off it), and the <html> attribute is the one for the
+// accent. A page without the attribute shows the :root palette, which is
+// orange unless the site's custom.css changes it.
+function activeAccent(): string {
+  return document.documentElement.dataset.upAccent ?? "orange";
+}
 
 export function isReduceMotion(): boolean {
   return document.body.classList.contains("up-reduce-motion");
@@ -39,14 +38,8 @@ export function setReduceMotion(on: boolean): void {
 }
 
 export function setAccent(name: string): void {
-  const accent = ACCENTS.find((a) => a.name === name);
-  if (!accent) return;
-  activeAccent = name;
-  const root = document.documentElement;
-  root.style.setProperty("--orange", accent.base);
-  root.style.setProperty("--orange-light", accent.light);
-  root.style.setProperty("--orange-dark", accent.dark);
-  root.style.setProperty("--orange-darker", accent.darker);
+  if (!ACCENTS.some((a) => a.name === name)) return;
+  document.documentElement.dataset.upAccent = name;
 }
 
 function buildToggleRow(): HTMLElement {
@@ -95,14 +88,16 @@ function buildAccentRow(): HTMLElement {
   const buttons = new Map<string, HTMLButtonElement>();
   const syncActive = (): void => {
     for (const [name, btn] of buttons) {
-      btn.classList.toggle("is-active", name === activeAccent);
+      btn.classList.toggle("is-active", name === activeAccent());
     }
   };
   for (const accent of ACCENTS) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "up-accent-swatch";
-    btn.style.background = accent.light;
+    // The swatch carries the preset's attribute, so the main.css rule paints
+    // it in that preset's shades.
+    btn.dataset.upAccent = accent.name;
     btn.setAttribute("aria-label", accent.label);
     btn.title = accent.label;
     btn.addEventListener("click", () => {
