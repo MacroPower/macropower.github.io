@@ -21,9 +21,14 @@ func main() {
 
 > Blockquotes, lists, and images all render inside the page window.
 
-Images load lazily through the theme's render hook:
+This post is a page bundle, so an image beside its `index.md` resolves
+by file name. The theme's render hook loads it lazily and gives it a
+width and height:
 
-![The theme's touch icon](/apple-touch-icon.png "A 180px Ubuntu roundel")
+![The Ubuntu roundel](roundel.png "A 180px Ubuntu roundel")
+
+Links to other content files resolve to their permalinks, so this one
+reaches [the first part of the series](/posts/series-part-1.md).
 
 The `spotify` shortcode embeds an album, track, playlist, or artist:
 
