@@ -21,7 +21,6 @@ Hugo partials server-render everything, and Hugo's esbuild bundles the TypeScrip
 ## Requirements
 
 - Hugo **extended** 0.161.0 or later, with [Dart Sass](https://gohugo.io/functions/css/sass/#dart-sass) on PATH.
-- Node.js and npm. The home terminal bundles xterm.js from your site's `node_modules`.
 - Go, if you install the theme as a Hugo module.
 
 ## Installation
@@ -43,11 +42,7 @@ hugo mod init github.com/you/yoursite
 
 ```bash
 hugo mod get -u
-hugo mod npm pack
-npm install
 ```
-
-`hugo mod npm pack` writes the theme's npm dependencies into a `packages/hugoautogen` workspace that `npm install` hoists into your site's `node_modules`. Run both again after `hugo mod get -u`.
 
 ### Git submodule
 
@@ -61,8 +56,6 @@ theme = "ubuntu-unity"
 themesDir = "themes/macropower/themes"
 ```
 
-Then copy the `dependencies` block from the theme's `package.hugo.json` into your site's `package.json` and run `npm install`.
-
 ### Copy
 
 ```bash
@@ -70,8 +63,6 @@ git clone --depth 1 https://github.com/MacroPower/macropower.github.io /tmp/mp
 cp -r /tmp/mp/themes/ubuntu-unity themes/ubuntu-unity
 echo 'theme = "ubuntu-unity"' >> hugo.toml
 ```
-
-Copy the `dependencies` block from `package.hugo.json` into your `package.json` and run `npm install`.
 
 ## Configuration
 
@@ -155,7 +146,6 @@ theme   = "ubuntu-unity"
 
 ```bash
 cd themes/ubuntu-unity
-npm install
 hugo server -s exampleSite --themesDir ../..
 ```
 
@@ -170,6 +160,8 @@ npm run typecheck:test   # test sources
 npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 ```
 
+The theme vendors xterm.js under `assets/vendor/xterm/`, so sites build the terminal without npm. To upgrade it, edit the versions in `scripts/vendor-xterm.mjs` and run `npm run vendor:xterm`.
+
 The bash-conformance suite skips itself where bash is absent.
 
 ## License
@@ -177,6 +169,6 @@ The bash-conformance suite skips itself where bash is absent.
 Apache-2.0. See [LICENSE.md](LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
-- [xterm.js](https://xtermjs.org/) (MIT).
+- [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/vendor/xterm/`.
 - [pdf.js](https://mozilla.github.io/pdf.js/) 3.7.107 (Apache-2.0), vendored under `assets/vendor/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.

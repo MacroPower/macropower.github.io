@@ -1,11 +1,6 @@
 # Example site for the ubuntu-unity theme. Run it from the theme directory:
 #
 #   hugo server -s exampleSite --themesDir ../..
-#
-# The home page's terminal needs the xterm npm packages. From the site that
-# consumes the theme, either run `hugo mod npm pack && npm install` (Hugo
-# modules) or copy the dependencies block from the theme's package.hugo.json
-# into your site's package.json and `npm install` (git submodules).
 
 baseURL = "https://example.org/"
 title   = "Jane Doe"

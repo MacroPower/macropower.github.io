@@ -8,7 +8,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - All desktop state is session-only by design. Only the terminal's command history persists.
 - `main.scss` is one file on purpose, and every selector is prefixed `up-`. Do not split it.
 - Every string a template renders goes through `T "<key>"` from `i18n/en.toml`. Strings JavaScript writes at runtime stay English.
-- Hugo's esbuild resolves the xterm packages from the consuming site's `node_modules`, never from this directory. `package.hugo.json` declares them for `hugo mod npm pack`. The structural CSS from `@xterm/xterm` is inlined in `main.scss` under a version pin, so bump it with the package.
+- A consuming site needs no npm. xterm.js is vendored under `assets/vendor/xterm/`, and `_partials/ui/script.html` shims the `@xterm/*` imports to those files. `npm run vendor:xterm` refreshes them from the versions in `scripts/vendor-xterm.mjs`. The structural CSS from `@xterm/xterm` is inlined in `main.scss` under a version pin, so bump it with the vendored copy.
 
 ## Layouts
 

@@ -2,17 +2,13 @@
   "name": "hugo-theme-ubuntu-unity",
   "version": "1.0.0",
   "private": true,
-  "description": "Dev tooling for the ubuntu-unity Hugo theme: type-checks the TypeScript sources and runs the shell-core/MIDI test suites. Hugo's esbuild does the actual bundling at site build time.",
+  "description": "Dev tooling for the ubuntu-unity Hugo theme: type-checks the TypeScript sources, runs the test suites, and refreshes the vendored xterm.js. Hugo's esbuild does the actual bundling at site build time.",
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
     "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@xterm/addon-fit": "^0.11.0",
-    "@xterm/addon-web-links": "^0.12.0",
-    "@xterm/xterm": "^6.0.0"
+    "test:watch": "vitest",
+    "vendor:xterm": "node scripts/vendor-xterm.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

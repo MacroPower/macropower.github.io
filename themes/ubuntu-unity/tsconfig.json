@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -17,7 +21,18 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "useDefineForClassFields": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "paths": {
+      "@xterm/xterm": [
+        "./assets/vendor/xterm/xterm.d.ts"
+      ],
+      "@xterm/addon-fit": [
+        "./assets/vendor/xterm/addon-fit.d.ts"
+      ],
+      "@xterm/addon-web-links": [
+        "./assets/vendor/xterm/addon-web-links.d.ts"
+      ]
+    }
   },
   "include": [
     "assets/js/**/*"
