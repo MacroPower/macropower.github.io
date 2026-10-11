@@ -11,7 +11,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - `main.css` is one file on purpose, and every selector is prefixed `up-`. Do not split it. It is plain CSS with native nesting, and `css.Build` in `_partials/head/css.html` lowers the nesting for the browser targets listed there.
 - `main.css` has no mixins, so shared looks repeat inline after a `/* recipe: <name> */` marker. Grep the marker and change every copy together.
 - Every string a template renders goes through `T "<key>"` from `i18n/en.toml`. Strings JavaScript writes at runtime stay English.
-- A consuming site needs no npm. xterm.js is vendored under `assets/vendor/xterm/`, and `_partials/ui/script.html` shims the `@xterm/*` imports to those files. `npm run vendor:xterm` refreshes them from the versions in `scripts/vendor-xterm.mjs`. The structural CSS from `@xterm/xterm` is inlined in `main.css` under a version pin, so bump it with the vendored copy.
+- A consuming site needs no npm. xterm.js and pdf.js are vendored under `assets/vendor/`, and `_partials/ui/script.html` shims the `@xterm/*` and `pdfjs-dist` imports to those files. `npm run vendor:xterm` and `npm run vendor:pdfjs` refresh them from the versions in `scripts/`. pdf.js ships no type declarations, so `assets/js/pdfjs.d.ts` declares the slice `cv.ts` uses. The structural CSS from `@xterm/xterm` is inlined in `main.css` under a version pin, so bump it with the vendored copy.
 
 ## Layouts
 

@@ -125,7 +125,7 @@ theme   = "ubuntu-unity"
 ## Content
 
 - `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
-- `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`.
+- `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`. The viewer runs on Chrome 125, Safari 18, Firefox ESR, and later. Older browsers get a link to the PDF.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.
 - `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
 - `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens it.
@@ -166,7 +166,7 @@ npm run typecheck:test   # test sources
 npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 ```
 
-The theme vendors xterm.js under `assets/vendor/xterm/`, so sites build the terminal without npm. To upgrade it, edit the versions in `scripts/vendor-xterm.mjs` and run `npm run vendor:xterm`.
+The theme vendors xterm.js and pdf.js under `assets/vendor/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
 The bash-conformance suite skips itself where bash is absent.
 
@@ -176,5 +176,5 @@ Apache-2.0. See [LICENSE.md](LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
 - [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/vendor/xterm/`.
-- [pdf.js](https://mozilla.github.io/pdf.js/) 3.7.107 (Apache-2.0), vendored under `assets/vendor/pdf-js/`.
+- [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/vendor/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.

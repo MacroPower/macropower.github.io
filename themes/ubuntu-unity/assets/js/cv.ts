@@ -1,32 +1,14 @@
 // The CV page's Evince-style document viewer. Renders the PDF named by
-// [data-cv-viewer]'s data-pdf-url through the vendored pdf.js build under
-// assets/vendor/pdf-js/ (_partials/page/cv.html emits its deferred <script>
-// tag and names the worker in data-pdfjs-worker): every page becomes a
-// sheet in the scrollable page well, plus a clickable thumbnail rail and a
-// toolbar with page-number /
-// zoom controls. Zoom is fit-to-width until the user zooms explicitly; the
+// [data-cv-viewer]'s data-pdf-url through the pdf.js build vendored under
+// assets/vendor/pdf-js/, which this bundle includes (_partials/page/cv.html
+// names the worker in data-pdfjs-worker): every page becomes a sheet in the
+// scrollable page well, plus a clickable thumbnail rail and a toolbar with
+// page-number / zoom controls. Zoom is fit-to-width until the user zooms explicitly; the
 // fit relayouts on view resizes (window maximize, phone rotation) via a
 // ResizeObserver. Session-only; no persistence.
 
-interface PdfViewport {
-  width: number;
-  height: number;
-}
-interface PdfPage {
-  getViewport(opts: { scale: number }): PdfViewport;
-  render(opts: {
-    canvasContext: CanvasRenderingContext2D;
-    viewport: PdfViewport;
-  }): { promise: Promise<void> };
-}
-interface PdfDocument {
-  numPages: number;
-  getPage(n: number): Promise<PdfPage>;
-}
-interface PdfJsModule {
-  GlobalWorkerOptions: { workerSrc: string };
-  getDocument(params: { url: string; isEvalSupported: boolean }): { promise: Promise<PdfDocument> };
-}
+import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
+import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 
 (function (): void {
   "use strict";
@@ -65,8 +47,8 @@ interface PdfJsModule {
   // screen cannot allocate absurd canvases.
   const MAX_RENDER_SCALE = 5;
 
-  let doc: PdfDocument | null = null;
-  let pdfPages: PdfPage[] = [];
+  let doc: PDFDocumentProxy | null = null;
+  let pdfPages: PDFPageProxy[] = [];
   let sheets: HTMLElement[] = [];
   let canvases: HTMLCanvasElement[] = [];
   let thumbs: HTMLButtonElement[] = [];
@@ -80,31 +62,6 @@ interface PdfJsModule {
 
   function reduceMotion(): boolean {
     return document.body.classList.contains("up-reduce-motion");
-  }
-
-  // pdf.min.js is a deferred UMD script emitted before this (also deferred)
-  // bundle, so its global normally exists by the time we run; the listener
-  // path only covers a still-pending tag.
-  function pdfjs(): Promise<PdfJsModule> {
-    const get = (): PdfJsModule | undefined =>
-      (window as unknown as Record<string, PdfJsModule | undefined>)[
-        "pdfjs-dist/build/pdf"
-      ];
-    const now = get();
-    if (now) return Promise.resolve(now);
-    return new Promise((resolve, reject) => {
-      const tag = document.querySelector<HTMLScriptElement>("script[data-docv-pdfjs]");
-      if (!tag) {
-        reject(new Error("pdf.js script tag missing"));
-        return;
-      }
-      tag.addEventListener("load", () => {
-        const mod = get();
-        if (mod) resolve(mod);
-        else reject(new Error("pdf.js loaded without its global"));
-      });
-      tag.addEventListener("error", () => reject(new Error("pdf.js failed to load")));
-    });
   }
 
   function availWidth(): number {
@@ -150,10 +107,8 @@ interface PdfJsModule {
       const off = document.createElement("canvas");
       off.width = Math.max(1, Math.floor(rvp.width));
       off.height = Math.max(1, Math.floor(rvp.height));
-      const ctx = off.getContext("2d");
-      if (!ctx) return;
       page
-        .render({ canvasContext: ctx, viewport: rvp })
+        .render({ canvas: off, viewport: rvp })
         .promise.then(() => {
           if (gen !== generation) return; // superseded by a newer layout
           canvas.width = off.width;
@@ -227,7 +182,7 @@ interface PdfJsModule {
     relayoutAnchored();
   }
 
-  function renderThumb(page: PdfPage, canvas: HTMLCanvasElement): void {
+  function renderThumb(page: PDFPageProxy, canvas: HTMLCanvasElement): void {
     const base = page.getViewport({ scale: 1 });
     const s = THUMB_WIDTH / Math.max(1, base.width);
     const out = Math.min(window.devicePixelRatio || 1, 3);
@@ -236,9 +191,7 @@ interface PdfJsModule {
     canvas.height = Math.max(1, Math.floor(vp.height));
     canvas.style.width = `${THUMB_WIDTH}px`;
     canvas.style.height = `${Math.floor(vp.height / out)}px`;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    page.render({ canvasContext: ctx, viewport: vp }).promise.catch(() => {
+    page.render({ canvas, viewport: vp }).promise.catch(() => {
       /* a blank thumbnail frame is an acceptable degradation */
     });
   }
@@ -337,18 +290,14 @@ interface PdfJsModule {
     });
   }).observe(view);
 
-  pdfjs()
-    .then((mod) => {
-      const worker = root.dataset.pdfjsWorker;
-      if (mod.GlobalWorkerOptions.workerSrc === "" && worker) {
-        mod.GlobalWorkerOptions.workerSrc = worker;
-      }
-      // isEvalSupported:false closes CVE-2024-4367: the vendored pdf.js
-      // predates the fix, and with eval allowed a crafted font in the PDF
-      // can run script in the page.
-      return mod.getDocument({ url, isEvalSupported: false }).promise;
-    })
-    .then(async (d) => {
+  const worker = root.dataset.pdfjsWorker;
+  if (GlobalWorkerOptions.workerSrc === "" && worker) {
+    GlobalWorkerOptions.workerSrc = worker;
+  }
+  // enableHWA keeps the GPU-backed canvases the viewer drew into before
+  // pdf.js took over creating the 2D context; pdf.js defaults to CPU ones.
+  getDocument({ url, enableHWA: true })
+    .promise.then(async (d) => {
       doc = d;
       pdfPages = await Promise.all(
         Array.from({ length: d.numPages }, (_, i) => d.getPage(i + 1)),

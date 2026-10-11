@@ -7,9 +7,10 @@
   Both PDF paths may name a file in the page bundle, under assets/, or
   under static/, and resolve through ui/resolve-url.html.
     sourceUrl    (optional) the document's source repository, offered as "Source"
-  The viewer JS ships only on this page (see baseof.html). pdf.js itself
-  is the vendored build under the theme's assets/vendor/pdf-js/, published
-  only when a page renders this partial.
+  The viewer JS ships only on this page (see baseof.html) and bundles the
+  pdf.js build vendored under the theme's assets/vendor/pdf-js/. The pdf.js
+  worker is a separate file, published only when a page renders this
+  partial.
 */ -}}
 <article class="up-cv-page selectable">
   <h1 class="up-sr-only">{{ .Title }}</h1>
@@ -17,12 +18,10 @@
       (dict "label" .Title "url" .RelPermalink))) }}
   {{- with .Params.pdf }}
   {{- $pdf := partial "ui/resolve-url.html" (dict "page" $ "url" .) -}}
-  {{- $pdfjs := resources.Get "vendor/pdf-js/build/pdf.min.js" | resources.Fingerprint -}}
-  {{- $worker := resources.Get "vendor/pdf-js/build/pdf.worker.min.js" | resources.Fingerprint -}}
+  {{- $worker := resources.Get "vendor/pdf-js/pdf.worker.min.mjs" | resources.Fingerprint -}}
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ $pdf }}"
        data-pdfjs-worker="{{ $worker.RelPermalink }}">
-    <script src="{{ $pdfjs.RelPermalink }}" integrity="{{ $pdfjs.Data.Integrity }}" defer data-docv-pdfjs></script>
     <div class="up-docv-toolbar" role="toolbar" aria-label="{{ T "document_controls" }}">
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-prev disabled

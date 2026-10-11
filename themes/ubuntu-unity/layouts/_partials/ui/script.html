@@ -8,13 +8,14 @@
   Args (dict): entry  — source path under assets/ (e.g. "js/blog.ts")
                target — emitted path (e.g. "js/blog.js")
 
-  The shims point the xterm package imports at the copies vendored under
-  assets/vendor/xterm/, so a site builds the terminal without npm.
+  The shims point the xterm and pdf.js package imports at the copies
+  vendored under assets/vendor/, so a site builds without npm.
 */ -}}
 {{- $shims := dict
   "@xterm/xterm" "vendor/xterm/xterm.mjs"
   "@xterm/addon-fit" "vendor/xterm/addon-fit.mjs"
   "@xterm/addon-web-links" "vendor/xterm/addon-web-links.mjs"
+  "pdfjs-dist" "vendor/pdf-js/pdf.min.mjs"
 -}}
 {{- $opts := dict "targetPath" .target "minify" hugo.IsProduction "format" "iife" "shims" $shims -}}
 {{- if hugo.IsDevelopment }}{{ $opts = merge $opts (dict "sourceMap" "inline") }}{{ end -}}
