@@ -14,7 +14,7 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Projects page.** An icon-grid file manager over a YAML data file, with drag-to-reorder, rubber-band selection, and a preview pane.
 - **CV page.** An Evince-style PDF viewer (vendored pdf.js) with thumbnails, zoom, and print and source actions.
 - **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
-- **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" behind the sound indicator.
+- **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
 
 Hugo partials server-render everything, and Hugo's esbuild bundles the TypeScript with no separate build step. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
 
@@ -109,6 +109,7 @@ theme   = "ubuntu-unity"
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
 | `social` | | A list of `{name, url, short}`. Rows in the banner, links in JSON-LD. A `github` entry also backs the session menu and sponsors button; a `twitter` entry sets the card metadata. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The login the home terminal presents. |
+| `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. |
 | `repoUrl` | | Linked from Help > View source. |
 | `dateform`, `dateformNum` | `Jan 2, 2006`, `2006-01-02` | Date formats in the post reader and post list. |
 | `enableReadingTime` | `true` | Shows "N min read" in the post reader. |
@@ -127,6 +128,7 @@ theme   = "ubuntu-unity"
 - `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
 - `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens it.
 - `content/icons.md` with `layout = "icons"` is the icon vault, a copy-to-clipboard catalogue of every SVG the theme ships.
+- `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio.
 - Any other top-level page renders in a plain window and appears in the terminal's filesystem, where `cat` prints its markdown.
 
 `hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`.

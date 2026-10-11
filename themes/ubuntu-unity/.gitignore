@@ -1,6 +1,6 @@
 # Dev tooling and build outputs; none of these belong in a consuming site.
 node_modules/
-assets/jsconfig.json
+**/assets/jsconfig.json
 exampleSite/public/
 exampleSite/resources/
 .hugo_build.lock

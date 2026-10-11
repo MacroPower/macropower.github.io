@@ -48,6 +48,17 @@ mainSections = ["posts"]
   # Source repository for this site (linked from the "View source" dialog).
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
 
+  # The Studio's tracks, in play order. The anonymous "Track N" labels
+  # follow this order.
+  [params.studio]
+    playlist = [
+      "midi/nggyu.midi",
+      "midi/rasp.midi",
+      "midi/mii.midi",
+      "midi/numb.midi",
+      "midi/yes.midi",
+    ]
+
   [params.author]
     name  = "Jacob Colvin"
     email = "me@jacobcolvin.com"

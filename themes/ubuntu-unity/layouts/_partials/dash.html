@@ -11,7 +11,7 @@
     files    — blog posts (newest first), real <a>.
     projects — hugo.Data.projects, real <a> to GitHub (new tab, like the
                projects grid's open behavior).
-    music    — the bundled playlist as anonymous "Track N" buttons
+    music    — the Studio playlist as anonymous "Track N" buttons
                (music:<i> selects the track, opens the Studio, and plays).
 
   DOM contract (read by dash.ts): [data-up-dash], [data-dash-backdrop],
@@ -35,9 +35,12 @@
       "url" $p.url
       "kw" $p.kw) -}}
 {{- end -}}
+{{- $playlist := partialCached "playlist.html" . -}}
+{{- with $playlist -}}
+  {{- $apps = $apps | append (dict "label" (T "studio") "icon" "launcher/piano" "action" "studio"
+        "kw" "studio daw music midi sequencer synth piano roll lmms audio") -}}
+{{- end -}}
 {{- $apps = $apps | append (slice
-  (dict "label" (T "studio") "icon" "launcher/piano" "action" "studio"
-        "kw" "studio daw music midi sequencer synth piano roll lmms audio")
   (dict "label" (T "trash") "icon" "launcher/trash" "action" "trash"
         "kw" "trash rubbish bin wastebasket deleted files")
   (dict "label" (T "appearance") "icon" "launcher/paint" "action" "prefs"
@@ -50,7 +53,6 @@
         "kw" "log out logout session quit exit leave goodbye")
 ) -}}
 {{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
-{{- $playlist := partial "playlist.html" . -}}
 <div class="up-dash" data-up-dash hidden>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
   <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="{{ T "dash_search" }}">

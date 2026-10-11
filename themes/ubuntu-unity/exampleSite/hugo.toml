@@ -52,14 +52,21 @@ mainSections = ["posts"]
   # Show "N min read" in the post reader.
   enableReadingTime = true
 
+  # Source repository, linked from Help > "View source on github".
+  # repoUrl = "https://github.com/jane/janedoe.example"
+
   # The home terminal is an SSH session into the site as a guest login.
   # Both default from the site: "user" and the host of baseURL.
   # [params.terminal]
   #   user = "guest"
   #   host = "example.org"
 
-  # Source repository, linked from Help > "View source on github".
-  # repoUrl = "https://github.com/jane/janedoe.example"
+  # The Studio plays MIDI files from the site's assets/. Without a
+  # playlist it plays every assets/midi/*.mid and *.midi file in file-name
+  # order, and a site with no MIDI files gets no Studio. This example ships
+  # two public-domain tunes under assets/midi/.
+  # [params.studio]
+  #   playlist = ["midi/ode-to-joy.mid", "midi/ah-vous-dirai-je.mid"]
 
   [params.author]
     name = "Jane Doe"

@@ -10,7 +10,7 @@
     {{ partial "window-frame-close.html" . }}
     {{ partial "dialog-host.html" . }}
     {{ partial "trash-window.html" . }}
-    {{ partial "daw-window.html" . }}
+    {{ if partialCached "playlist.html" . }}{{ partial "daw-window.html" . }}{{ end }}
     {{ partial "dash.html" . }}
     {{ partial "hud.html" . }}
     {{ partial "notify-host.html" . }}
