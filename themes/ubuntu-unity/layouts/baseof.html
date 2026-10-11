@@ -1,5 +1,12 @@
+{{- /* Hugo only warns when it is older than the theme's module.hugoVersion
+      floor, and the older build then fails somewhere less obvious. Fail
+      here with the reason instead. Keep the version in sync with
+      hugo.toml and theme.toml. */ -}}
+{{- if lt hugo.Version "0.165.0" -}}
+  {{- errorf "The ubuntu-unity theme needs Hugo 0.165.0 or later, and this is Hugo %s." hugo.Version -}}
+{{- end -}}
 <!doctype html>
-<html lang="{{ .Site.Language.Lang }}">
+<html lang="{{ site.Language.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}">
 <head>{{ partial "head.html" . }}</head>
 <body>
   <div id="root">
@@ -25,7 +32,7 @@
         the site-pages.html registry, so the panel menus, the launcher,
         and the Dash can never disagree about where a page lives. */}}
   {{ $nav := dict }}
-  {{ range $k, $p := (partial "site-pages.html" .).pages }}{{ $nav = merge $nav (dict $k $p.url) }}{{ end }}
+  {{ range $k, $p := (partialCached "site-pages.html" .).pages }}{{ $nav = merge $nav (dict $k $p.url) }}{{ end }}
   <script>
 window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss "nav" $nav) | jsonify | safeJS }};
   </script>

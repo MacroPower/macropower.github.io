@@ -25,7 +25,7 @@
 */ -}}
 {{- /* Page tiles come from the shared site-pages.html registry; the
        desktop "applications" (Studio, Trash, ...) are Dash-only. */ -}}
-{{- $reg := partial "site-pages.html" . -}}
+{{- $reg := partialCached "site-pages.html" . -}}
 {{- $apps := slice -}}
 {{- range $reg.dashOrder -}}
   {{- $p := index $reg.pages . -}}

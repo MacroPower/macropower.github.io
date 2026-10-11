@@ -97,7 +97,7 @@
       {{- /* Same launcher pages as the dock, in the same order, minus Home
             (this is the home page) — sourced from the site-pages registry so
             this fallback nav can never drift from the desktop chrome. */ -}}
-      {{- $reg := partial "site-pages.html" . -}}
+      {{- $reg := partialCached "site-pages.html" . -}}
       <ul>
         {{- range $reg.launcherOrder }}{{ if ne . "home" }}{{ $p := index $reg.pages . }}
         <li><a href="{{ $p.url }}">{{ $p.label }}</a></li>

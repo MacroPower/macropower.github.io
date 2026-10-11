@@ -10,7 +10,7 @@
 
   {{- /* One "Open <page>" row per launcher page (minus Home), straight from
        the site-pages registry so the File menu, dock, and Dash agree. */ -}}
-  {{- $reg := partial "site-pages.html" . -}}
+  {{- $reg := partialCached "site-pages.html" . -}}
   {{- $fileItems := slice -}}
   {{- range $reg.launcherOrder }}{{ if ne . "home" }}
     {{- $p := index $reg.pages . -}}

@@ -10,7 +10,7 @@
   fallback for pages off the launcher.
 */ -}}
 {{- $current := .RelPermalink -}}
-{{- $reg := partial "site-pages.html" . -}}
+{{- $reg := partialCached "site-pages.html" . -}}
 {{- $icon := "launcher/browser-window" -}}
 {{- range $k, $p := $reg.pages -}}
   {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}{{ $icon = $p.icon }}{{ end -}}

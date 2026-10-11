@@ -28,6 +28,7 @@
   Returns (dict "pages" <key->dict> "launcherOrder" ... "runningOrder" ...
   "dashOrder" ...): launcherOrder is the dock and File menu, runningOrder
   the pages docked only while current, dashOrder the Dash's Applications.
+  The result is the same on every page, so call it through partialCached.
 */ -}}
 {{- $defaults := dict
   "cv" (dict

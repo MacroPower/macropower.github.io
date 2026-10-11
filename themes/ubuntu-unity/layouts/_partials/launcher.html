@@ -1,5 +1,5 @@
 {{ $current := .RelPermalink }}
-{{- $reg := partial "site-pages.html" . -}}
+{{- $reg := partialCached "site-pages.html" . -}}
 {{- $tiles := slice -}}
 {{- range $reg.launcherOrder -}}
   {{- $p := index $reg.pages . -}}
