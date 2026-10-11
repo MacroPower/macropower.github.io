@@ -109,6 +109,7 @@ theme   = "ubuntu-unity"
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
 | `social` | | A list of `{name, url, short}`. Rows in the banner, links in JSON-LD. A `github` entry also backs the session menu and sponsors button; a `twitter` entry sets the card metadata. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The login the home terminal presents. |
+| `taxonomies.category`, `taxonomies.series` | `categories`, `series` | The taxonomies behind the blog's Places and Series lenses and the post chips. Set `category = "tags"` for a site that tags its posts. |
 | `accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
 | `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. |
 | `repoUrl` | | Linked from Help > View source. |
@@ -123,7 +124,7 @@ theme   = "ubuntu-unity"
 
 ## Content
 
-- `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
+- `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
 - `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.
 - `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.

@@ -16,7 +16,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 ## Layouts
 
 - `baseof.html` is the only base template. It wraps `{{ block "main" }}` in the page window, so a layout's `main` block emits inner content only and never its own outer wrapper or titlebar.
-- Templates never name the blog section. `_partials/blog-section.html` resolves it from `mainSections`, and `in site.MainSections .Section` is the "is this a post" test.
+- Templates never name the blog section or its taxonomies. `_partials/blog-section.html` resolves the section from `mainSections`, and `in site.MainSections .Section` is the "is this a post" test. `_partials/blog-taxonomies.html` names the category and series taxonomies.
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
 - `_partials/playlist.html` resolves the Studio's MIDI files from the site. An empty playlist removes every Studio surface, so gate any new one on it.

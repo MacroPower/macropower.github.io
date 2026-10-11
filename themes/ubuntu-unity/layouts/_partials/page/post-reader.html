@@ -1,4 +1,5 @@
 {{- $dateFmt := site.Params.dateform | default "Jan 2, 2006" -}}
+{{- $tax := partialCached "blog-taxonomies.html" . -}}
 
 <article class="up-reader" data-up-reader>
   <a class="up-reader-up" href="{{ .CurrentSection.RelPermalink }}" aria-label="{{ T "back_to_all_posts" }}">
@@ -12,7 +13,7 @@
         <span class="up-reader-meta-sep">·</span>
         <span>{{ T "reading_time" .ReadingTime }}</span>
       {{- end }}
-      {{- range .Params.categories }}
+      {{- range index .Params $tax.category }}
         <span class="up-reader-meta-sep">·</span>
         <span class="up-reader-chip">#{{ . }}</span>
       {{- end }}

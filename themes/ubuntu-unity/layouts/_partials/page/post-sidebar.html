@@ -1,5 +1,6 @@
 {{- $here := .RelPermalink -}}
 {{- $postsPage := partialCached "blog-section.html" . -}}
+{{- $tax := partialCached "blog-taxonomies.html" . -}}
 {{- $rssURL := "" -}}
 {{- with and $postsPage ($postsPage.OutputFormats.Get "rss") -}}
   {{- $rssURL = .RelPermalink -}}
@@ -19,7 +20,7 @@
       "count" (len .RegularPages)
       "active" (eq $here .RelPermalink)) -}}
 {{- end -}}
-{{- range site.Taxonomies.categories.Alphabetical -}}
+{{- range (index site.Taxonomies $tax.category).Alphabetical -}}
   {{- $places = $places | append (dict
       "label" .Page.Title
       "url" .Page.RelPermalink
@@ -30,7 +31,7 @@
 
 {{- $sections := slice (dict "label" (T "places") "items" $places) -}}
 
-{{- with site.Taxonomies.series.Alphabetical -}}
+{{- with (index site.Taxonomies $tax.series).Alphabetical -}}
   {{- $items := slice -}}
   {{- range . -}}
     {{- $items = $items | append (dict

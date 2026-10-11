@@ -1,0 +1,12 @@
+{{- /*
+  The two taxonomies the blog's lenses read, as a dict of plural taxonomy
+  names. "category" feeds the sidebar's Places lenses, the chips on each
+  post row and in the reader, the Dash's post keywords, and the home
+  terminal's post cards. "series" feeds the sidebar's Series lenses. A site
+  renames either through params.taxonomies, for example category = "tags"
+  for a site that tags its posts. Call it through partialCached.
+*/ -}}
+{{- return dict
+  "category" (site.Params.taxonomies.category | default "categories")
+  "series" (site.Params.taxonomies.series | default "series")
+-}}

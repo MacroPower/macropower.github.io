@@ -28,7 +28,8 @@ mainSections = ["posts"]
   posts = "/posts/:year/:month/:title/"
 
 [taxonomies]
-  # The blog sidebar offers category and series lenses.
+  # The blog sidebar offers category and series lenses. To drive them from
+  # other taxonomies, set params.taxonomies (see [params] below).
   category = "categories"
   series   = "series"
 
@@ -71,6 +72,12 @@ mainSections = ["posts"]
   # two public-domain tunes under assets/midi/.
   # [params.studio]
   #   playlist = ["midi/ode-to-joy.mid", "midi/ah-vous-dirai-je.mid"]
+
+  # The taxonomies behind the blog's lenses and post chips. These are the
+  # defaults; a site that tags its posts sets category = "tags".
+  # [params.taxonomies]
+  #   category = "categories"
+  #   series   = "series"
 
   [params.author]
     name = "Jane Doe"

@@ -34,13 +34,14 @@
       prints the markdown. The blog section itself (see
       _partials/blog-section.html) names the directory the posts live in. */ -}}
 {{- $blogSection := partialCached "blog-section.html" . -}}
+{{- $tax := partialCached "blog-taxonomies.html" . -}}
 {{- $posts := slice -}}
 {{- range where .Site.RegularPages "Section" "in" site.MainSections -}}
   {{- $posts = $posts | append (dict
       "slug" .File.ContentBaseName
       "title" .Title
       "date" (.Date.Format "2006-01-02")
-      "categories" (.Params.categories | default slice)
+      "categories" (index .Params $tax.category | default slice)
       "url" .RelPermalink
       "permalink" .Permalink
   ) -}}
