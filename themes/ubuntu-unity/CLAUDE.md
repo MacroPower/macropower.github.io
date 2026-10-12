@@ -6,7 +6,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 - A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds `exampleSite/` and small sites of other shapes with warnings fatal, then checks their output. The example site must use every template. Add a site to `scripts/build-sites.mjs` when a fix covers a site shape the others miss.
 - A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
-- The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together.
+- The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together, and the `theme-floor` CI job of the site that hosts the theme with them.
 - All desktop state is session-only by design. Only the terminal's command history persists.
 - `main.css` is one file on purpose, and every selector is prefixed `up-`. Do not split it. It is plain CSS with native nesting, and `css.Build` in `_partials/head/css.html` lowers the nesting for the browser targets listed there.
 - `main.css` has no mixins, so shared looks repeat inline after a `/* recipe: <name> */` marker. Grep the marker and change every copy together.

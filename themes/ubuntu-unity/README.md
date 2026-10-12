@@ -100,6 +100,16 @@ mainSections = ["posts"]
 
 The theme also reads two of Hugo's own settings: `copyright` fills each feed's copyright, and `services.rss.limit` caps how many posts a feed lists.
 
+### Site settings
+
+Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a theme's configuration, so the theme cannot set these for you:
+
+- `mainSections` names the blog section. Without it, Hugo picks the section with the most pages.
+- `[taxonomies]` must list `series` for the Series lens, because Hugo's defaults are `tags` and `categories`.
+- `enableRobotsTXT = true` publishes the theme's `robots.txt`, which points crawlers at the sitemap.
+- `[markup.goldmark.extensions.passthrough]` turns on math. See [Markdown](#markdown).
+- `[build] noJSConfigInAssets = true` stops Hugo from writing an `assets/jsconfig.json` into your site each time it bundles the theme's scripts. Leave it unset if your editor reads that file.
+
 ### Params
 
 | Param | Default | Purpose |
