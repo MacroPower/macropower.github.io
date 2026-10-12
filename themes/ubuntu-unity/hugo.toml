@@ -54,8 +54,8 @@
     ]
     # Access points in the network indicator; the first starts connected.
     networks = [
-      "café-do-bairro",
-      "MEO-WiFi",
+      "home-wifi",
+      "coffee-shop-guest",
       { name = "ngrok-tunnel", mono = true },
     ]
 

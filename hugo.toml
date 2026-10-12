@@ -46,6 +46,14 @@ mainSections = ["posts"]
   # Browser UI color emitted as <meta name="theme-color">.
   themeColor = "#1b1c1d"
 
+  # The network indicator's access points; the first starts connected.
+  [params.desktop]
+    networks = [
+      "café-do-bairro",
+      "MEO-WiFi",
+      { name = "ngrok-tunnel", mono = true },
+    ]
+
   # The Studio's tracks, in play order. The anonymous "Track N" labels
   # follow this order.
   [params.studio]
