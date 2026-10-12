@@ -3,7 +3,7 @@ title   = "Jacob Colvin"
 locale  = "en-us"
 theme   = "ubuntu-unity"
 
-# Used by the RSS template (layouts/home.rss.xml).
+# Used by the theme's RSS feeds.
 copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
 
 enableRobotsTXT = true

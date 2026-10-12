@@ -7,7 +7,7 @@ title   = "Jane Doe"
 locale  = "en-us"
 theme   = "ubuntu-unity"
 
-# Used by the RSS template (the theme's home.rss.xml renders posts only).
+# Used by the theme's RSS feeds. The home feed lists blog posts only.
 copyright = "Jane Doe"
 
 enableRobotsTXT = true
