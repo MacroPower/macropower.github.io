@@ -23,6 +23,6 @@
       {{ .Content }}
     </div>
     {{ partial "extend-post.html" . }}
-    <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" "~/blog") }}</div>
+    <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" (printf "~/%s" .Section)) }}</div>
   </div>
 </article>
