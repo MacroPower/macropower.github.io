@@ -11,9 +11,11 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Home terminal.** An xterm.js shell with a bash-like parser (pipes, redirections, globbing, command substitution, arithmetic), a writable virtual filesystem seeded from your content, about 60 commands, tab completion, history, and a neofetch banner built from your site params. A differential test suite checks the shell core against real bash.
 - **Desktop chrome.** Top panel menus and indicators, launcher dock, Dash search (Super), HUD menu search (Alt), lock screen, NotifyOSD bubbles, and a trash window.
 - **Blog.** A Nautilus-style post list with filtering, sorting, search, category and series lenses, a focused post reader, and a posts-only RSS feed.
-- **Projects page.** An icon-grid file manager over a YAML data file, with drag-to-reorder, rubber-band selection, and a preview pane.
+- **Projects page.** An icon-grid file manager over a YAML data file or your GitHub repositories, with drag-to-reorder, rubber-band selection, and a preview pane.
 - **CV page.** An Evince-style PDF viewer (vendored pdf.js) with thumbnails, zoom, and print and source actions.
 - **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
+- **Translations.** Every label, dialog, and notification goes through Hugo's i18n, dates follow the page's language, and a multilingual site gets a language indicator in the top panel.
+- **Markdown.** Heading anchors, GitHub-style alerts, build-time MathML math, and responsive images.
 - **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
 
 Hugo partials server-render everything, and Hugo's built-in esbuild bundles the TypeScript and the stylesheet, so a site needs nothing but Hugo: no Node, npm, or Dart Sass. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
@@ -25,7 +27,7 @@ Hugo partials server-render everything, and Hugo's built-in esbuild bundles the 
 
 ## Installation
 
-The theme lives under `themes/ubuntu-unity` in the [macropower.github.io](https://github.com/MacroPower/macropower.github.io) repository and carries its own `go.mod`, so Hugo can import it directly from that path.
+The theme lives under `themes/ubuntu-unity` in the [macropower.github.io](https://github.com/MacroPower/macropower.github.io) repository and carries its own `go.mod`, so Hugo can import it directly from that path. A Hugo module is the recommended route.
 
 ### Hugo module
 
@@ -44,22 +46,15 @@ hugo mod init github.com/you/yoursite
 hugo mod get -u
 ```
 
-### Git submodule
-
-```bash
-git submodule add https://github.com/MacroPower/macropower.github.io themes/macropower
-```
-
-```toml
-# hugo.toml
-theme = "ubuntu-unity"
-themesDir = "themes/macropower/themes"
-```
+Run `hugo mod get -u` again to update. The theme has no release tags yet, so Hugo pins the latest commit on `main`.
 
 ### Copy
 
+A sparse clone fetches only the theme's files, not the rest of the site around it:
+
 ```bash
-git clone --depth 1 https://github.com/MacroPower/macropower.github.io /tmp/mp
+git clone --depth 1 --filter=blob:none --sparse https://github.com/MacroPower/macropower.github.io /tmp/mp
+git -C /tmp/mp sparse-checkout set themes/ubuntu-unity
 cp -r /tmp/mp/themes/ubuntu-unity themes/ubuntu-unity
 echo 'theme = "ubuntu-unity"' >> hugo.toml
 ```
@@ -72,6 +67,10 @@ echo 'theme = "ubuntu-unity"' >> hugo.toml
 baseURL = "https://example.org/"
 title   = "Jane Doe"
 theme   = "ubuntu-unity"
+
+# The blog section. Without it, Hugo picks the section with the most
+# pages, which may not be the blog.
+mainSections = ["posts"]
 
 [taxonomies]
   category = "categories"
@@ -95,9 +94,11 @@ theme   = "ubuntu-unity"
   [[menu.main]]
     identifier = "blog"
     name       = "Blog"
-    url        = "posts/"
+    pageRef    = "/posts"
     weight     = 2
 ```
+
+The theme also reads two of Hugo's own settings: `copyright` fills each feed's copyright, and `services.rss.limit` caps how many posts a feed lists.
 
 ### Params
 
@@ -126,20 +127,21 @@ theme   = "ubuntu-unity"
 
 ### Menu
 
-`menu.main` drives the launcher dock, the Dash's Applications category, the File menu, and the panel's navigation actions. Home is implicit and always first. Per-entry `[menu.main.params]` accept `icon`, `match` (`"exact"` or `"prefix"`), `kw` (Dash keywords), `dashLabel`, `dashIcon`, and the `launcher` and `dash` booleans that keep a page off the dock or out of the Dash. `launcher = "running"` docks a page only while it is open. Known identifiers (`cv`, `blog`, `posts`, `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting icons and keywords automatically.
+`menu.main` drives the launcher dock, the Dash's Applications category, the File menu, and the panel's navigation actions. Home is implicit and always first. Point an entry at a page with `pageRef`, which follows the page's permalink and language, or at any other address with `url`. Per-entry `[menu.main.params]` accept `icon`, `match` (`"exact"` or `"prefix"`), `kw` (Dash keywords), `dashLabel`, `dashIcon`, and the `launcher` and `dash` booleans that keep a page off the dock or out of the Dash. `launcher = "running"` docks a page only while it is open. Known identifiers (`cv`, `blog`, `posts`, `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting icons and keywords automatically.
 
 ## Content
 
 - `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
+- Any page accepts `noindex = true`, which asks search engines to skip it, and `slug`, which also names the page's file in the home terminal.
 - `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`. The viewer runs on Chrome 125, Safari 18, Firefox ESR, and later. Older browsers get a link to the PDF.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.
-- `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Without that file, set `params.projects.github` to your GitHub account, and the build fetches its public repositories with a language, skipping forks and archived ones. Set the `HUGO_GITHUB_TOKEN` environment variable to lift the GitHub API's rate limit for anonymous requests. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
-- `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens it.
+- `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Without that file, set `params.projects.github` to your GitHub account, and the build fetches up to 100 of its public repositories with a language, skipping forks and archived ones. Set the `HUGO_GITHUB_TOKEN` environment variable to lift the GitHub API's rate limit for anonymous requests. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
+- `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens the first page with that layout.
 - `content/icons.md` with `layout = "icons"` is the icon vault, a copy-to-clipboard catalogue of every SVG the theme ships.
 - `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio.
 - Any other top-level page renders in a plain window and appears in the terminal's filesystem, where `cat` prints its markdown.
 
-`hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`.
+`hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`. For a blog section with another name, copy that file to `archetypes/<section>.md` in your site.
 
 ### Markdown
 
@@ -175,7 +177,7 @@ The theme's render hooks extend Hugo's Markdown:
 - **Favicons.** Drop `favicon.svg`, `favicon.ico`, and `apple-touch-icon.png` into your site's `static/` to replace the theme's.
 - **Terminal ascii art.** Override `assets/home/ascii.txt` (the art) and `assets/home/colors.txt` (a same-shape color mask using `O Y G B P C R M`, with space for no color).
 - **Terminal login.** The prompt reads `user@<host of baseURL>`. Set `params.terminal.user` and `params.terminal.host` to change either half.
-- **Language emblems.** Add a `<symbol id="lang-<Name>">` to `assets/icons/glyphs/lang-symbols.svg` in your site to give a project language its own emblem.
+- **Language emblems.** Copy the theme's `assets/icons/glyphs/lang-symbols.svg` to the same path in your site and add a `<symbol id="lang-<Name>">` to give a project language its own emblem. Your copy replaces the theme's whole sprite, so start from the theme's file.
 - **Anything else.** Copy a file from the theme's `layouts/` into your site's `layouts/` at the same path and edit it.
 
 ## Example site
@@ -203,7 +205,7 @@ The bash-conformance suite skips itself where bash is absent.
 
 ## License
 
-Apache-2.0. See [LICENSE.md](LICENSE.md).
+Apache-2.0. See [LICENSE.md](https://github.com/MacroPower/macropower.github.io/blob/main/themes/ubuntu-unity/LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
 - [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/third_party/xterm/`.

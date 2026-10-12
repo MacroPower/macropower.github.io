@@ -5,7 +5,7 @@ description = "A personal-site theme styled after the Ubuntu 14.04 Unity desktop
 homepage = "https://github.com/MacroPower/macropower.github.io/tree/main/themes/ubuntu-unity"
 demosite = "https://jacobcolvin.com"
 tags = ["blog", "personal", "portfolio", "ubuntu", "unity", "retro", "playful", "terminal", "dark"]
-features = ["blog", "rss", "shortcode", "syntax highlighting", "projects", "cv", "search", "terminal"]
+features = ["blog", "rss", "shortcode", "syntax highlighting", "projects", "cv", "search", "terminal", "multilingual", "math", "alerts", "responsive images"]
 min_version = "0.165.0"
 
 [author]

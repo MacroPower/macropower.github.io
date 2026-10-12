@@ -20,6 +20,8 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/author.html` normalizes `params.author`, which a site may set as a table or a plain name, so read the owner through it.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
+- `_partials/projects-data.html` resolves the projects from `data/projects` or, without it, the GitHub API. The projects page and the Dash read projects only through it.
+- `_partials/lang-indicator.html` renders nothing on a monolingual site, so a bare site's panel stays unchanged.
 - `_partials/playlist.html` resolves the Studio's MIDI files from the site. An empty playlist removes every Studio surface, so gate any new one on it.
 - The accent preset names appear in `main.css`, `ACCENTS` in `prefs.ts`, and the `params.desktop.accent` check in `baseof.html`. Change all three together.
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
