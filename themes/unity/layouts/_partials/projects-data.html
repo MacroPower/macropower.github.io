@@ -1,0 +1,60 @@
+{{- /*
+  The projects the projects page and the Dash show, as a slice of dicts
+  with name, description, language, stars, forks, updated, topics, url,
+  and license. They come from the site's data/projects file, where every
+  key but name is optional: description and language default to "", and
+  topics to an empty list. An entry without a name warns and drops out.
+  Without that
+  file, a site that sets params.projects.github gets that account's
+  public repositories from the GitHub API at build time: sources with a
+  language, no forks or archived repositories, most starred first. Set the
+  HUGO_GITHUB_TOKEN environment variable to lift the API's rate limit for
+  anonymous requests. A failed request warns and yields no projects
+  rather than failing the build.
+
+  The result is the same on every page, so call it through partialCached.
+*/ -}}
+{{- $projects := slice -}}
+{{- with hugo.Data.projects -}}
+  {{- range . -}}
+    {{- if not .name -}}
+      {{- warnf "unity: data/projects has an entry without a name: %v" . -}}
+      {{- continue -}}
+    {{- end -}}
+    {{- $projects = $projects | append (merge . (dict
+        "description" (.description | default "")
+        "language" (.language | default "")
+        "topics" (.topics | default slice))) -}}
+  {{- end -}}
+{{- else -}}
+  {{- with site.Params.projects.github -}}
+    {{- $url := printf "https://api.github.com/users/%s/repos?per_page=100&type=owner&sort=pushed" (urlquery .) -}}
+    {{- $headers := dict "Accept" "application/vnd.github+json" "X-GitHub-Api-Version" "2022-11-28" -}}
+    {{- with os.Getenv "HUGO_GITHUB_TOKEN" }}{{ $headers = merge $headers (dict "Authorization" (printf "Bearer %s" .)) }}{{ end -}}
+    {{- with try (resources.GetRemote $url (dict "headers" $headers)) -}}
+      {{- with .Err -}}
+        {{- warnf "unity: cannot fetch the GitHub repositories for params.projects.github: %s" . -}}
+      {{- else with .Value -}}
+        {{- range . | transform.Unmarshal -}}
+          {{- if or .fork .archived (not .language) }}{{ continue }}{{ end -}}
+          {{- $p := dict
+              "name" .name
+              "description" (.description | default "")
+              "language" .language
+              "stars" .stargazers_count
+              "forks" .forks_count
+              "updated" ((time.AsTime .pushed_at).Format "2006-01-02")
+              "topics" (.topics | default slice)
+              "url" .html_url
+          -}}
+          {{- with .license }}{{ with .spdx_id }}{{ if ne . "NOASSERTION" }}{{ $p = merge $p (dict "license" .) }}{{ end }}{{ end }}{{ end -}}
+          {{- $projects = $projects | append $p -}}
+        {{- end -}}
+        {{- $projects = sort (sort $projects "name") "stars" "desc" -}}
+      {{- else -}}
+        {{- warnf "unity: GitHub has no account %q for params.projects.github" site.Params.projects.github -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $projects -}}

@@ -1,6 +1,6 @@
 # jacobcolvin.com
 
-My personal website, built with the in-tree [ubuntu-unity](themes/ubuntu-unity/README.md) Hugo theme.
+My personal website, built with the in-tree [unity](themes/unity/README.md) Hugo theme.
 
 ## Development
 

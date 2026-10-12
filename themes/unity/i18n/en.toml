@@ -1,0 +1,1161 @@
+# English strings for every label in the theme. Copy this file to
+# i18n/<lang>.toml in your site to translate the desktop; keys with
+# `one`/`other` are plural forms and receive `.Count`. The js_ keys at the
+# end hold the text the scripts write at runtime and follow their own
+# placeholder rules, described there. The home terminal's output stays in
+# English, like the bash it imitates.
+
+# Shared
+[home]
+other = "Home"
+[terminal]
+other = "Terminal"
+[posts]
+other = "Posts"
+[projects]
+other = "Projects"
+[all]
+other = "All"
+[places]
+other = "Places"
+[navigation]
+other = "Navigation"
+[filters]
+other = "Filters"
+[close]
+other = "Close"
+[minimize]
+other = "Minimize"
+[maximize]
+other = "Maximize"
+[information]
+other = "Information"
+
+# Pathbar
+[pathbar_path]
+other = "Path"
+[pathbar_history]
+other = "History"
+[pathbar_back]
+other = "Back"
+[pathbar_forward]
+other = "Forward"
+[pathbar_previous]
+other = "Previous: {{ .Title }}"
+[pathbar_next]
+other = "Next: {{ .Title }}"
+[search_noun_title]
+other = "Search {{ .Noun }} (Ctrl+F)"
+[search_noun]
+other = "Search {{ .Noun }}"
+[filter_noun]
+other = "Filter {{ .Noun }}"
+[close_search_title]
+other = "Close search (Esc)"
+[close_search]
+other = "Close search"
+[posts_noun]
+other = "posts"
+[filter_posts_placeholder]
+other = "Filter posts by name or tag…"
+
+# Blog
+[post_reader]
+other = "Post reader"
+[select_a_post]
+other = "Select a post"
+[col_name]
+other = "Name"
+[col_date]
+other = "Date"
+[sorted_descending]
+other = "sorted descending"
+[no_posts_match]
+other = "No posts match."
+[no_terms_yet]
+other = "No {{ .Plural }} yet."
+[posts_count]
+one = "{{ .Count }} post"
+other = "{{ .Count }} posts"
+[posts_tagged]
+one = "{{ .Count }} post tagged"
+other = "{{ .Count }} posts tagged"
+[contents]
+other = "Contents"
+[back_to_all_posts]
+other = "Back to all posts"
+[all_posts]
+other = "All posts"
+[reading_time]
+one = "{{ .Count }} min read"
+other = "{{ .Count }} min read"
+[series]
+other = "Series"
+[feeds]
+other = "Feeds"
+[rss]
+other = "RSS"
+
+# Dash search keywords. Each is a space-separated list of words that
+# find a tile when typed into the Dash; a translation can mix languages.
+[kw_home]
+other = "terminal shell bash console neofetch prompt tty home start"
+[kw_cv]
+other = "cv resume curriculum vitae pdf work experience career history"
+[kw_blog]
+other = "blog posts articles writing files notes"
+[kw_projects]
+other = "projects repositories repos github code open source software"
+[kw_sponsors]
+other = "sponsors sponsorship support donate heart thanks"
+[kw_icons]
+other = "icons gallery artwork svg viewer images eye of gnome"
+[kw_solitaire]
+other = "solitaire klondike cards card game patience aisleriot play deck"
+[kw_about]
+other = "about bio contact person profile"
+[kw_studio]
+other = "studio daw music midi sequencer synth piano roll lmms audio"
+[kw_trash]
+other = "trash rubbish bin wastebasket deleted files"
+[kw_appearance]
+other = "appearance preferences settings theme accent color colour motion animations"
+[kw_shortcuts]
+other = "keyboard shortcuts keys bindings hotkeys help reference"
+[kw_lock]
+other = "lock screen security password greeter lightdm"
+[kw_logout]
+other = "log out logout session quit exit leave goodbye"
+[kw_post]
+other = "post blog article"
+[kw_project]
+other = "project repository github"
+[kw_track]
+other = "music track song tune play audio midi tape mystery"
+
+# Markdown render hooks
+[link_to_section]
+other = "Link to {{ .Title }}"
+[alert_note]
+other = "Note"
+[alert_tip]
+other = "Tip"
+[alert_important]
+other = "Important"
+[alert_warning]
+other = "Warning"
+[alert_caution]
+other = "Caution"
+
+# Home page (screen-reader and no-JS fallback)
+[links]
+other = "Links"
+[site]
+other = "Site"
+[explore]
+other = "Explore"
+[terminal_requires_js]
+other = "this terminal requires JavaScript."
+
+# 404
+[page_not_found]
+other = "Page not found"
+[skip_to_content]
+other = "Skip to content"
+[page_does_not_exist]
+other = "This page does not exist"
+[places_instead]
+other = "Places to go instead"
+
+# Document viewer (cv layout)
+[document_controls]
+other = "Document controls"
+[previous_page]
+other = "Previous page"
+[next_page]
+other = "Next page"
+[page_number]
+other = "Page number"
+[page_count_of]
+other = "of"
+[zoom_out]
+other = "Zoom out"
+[zoom_in]
+other = "Zoom in"
+[fit_page_width]
+other = "Fit page width"
+[fit]
+other = "Fit"
+[document_source_title]
+other = "Source of this document"
+[source]
+other = "Source"
+[print_title]
+other = "A4-compatible PDF for printing"
+[print]
+other = "Print"
+[download_pdf]
+other = "Download PDF"
+[download]
+other = "Download"
+[page_thumbnails]
+other = "Page thumbnails"
+[thumbnails]
+other = "Thumbnails"
+[loading_document]
+other = "Loading document…"
+[pdf_load_failed]
+other = "The PDF preview could not be loaded."
+[open_pdf]
+other = "Open PDF"
+[pdf_needs_js]
+other = "Viewing the document inline needs JavaScript."
+
+# Sponsors
+[no_sponsors_yet]
+other = "No sponsors yet"
+[become_a_sponsor]
+other = "Become a sponsor"
+
+# Projects
+[projects_noun]
+other = "projects"
+[filter_projects_placeholder]
+other = "Filter projects by name or topic…"
+[project_preview]
+other = "Project preview"
+[no_item_selected]
+other = "No item selected"
+[no_projects_match]
+other = "No projects match."
+[starred]
+other = "Starred"
+[recent]
+other = "Recent"
+[forks]
+other = "Forks"
+[languages]
+other = "Languages"
+[devices]
+other = "Devices"
+
+# Solitaire
+[solitaire_canvas]
+other = "Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: N new game, Z undo, H hint, Space draw, A finish, M sound."
+[solitaire_needs_js]
+other = "Solitaire needs JavaScript to deal the cards."
+[game_controls]
+other = "Game controls"
+[new_game]
+other = "New game"
+[draw_from_stock]
+other = "Draw from the stock"
+[undo]
+other = "Undo"
+[hint]
+other = "Hint"
+[finish_the_game]
+other = "Finish the game"
+[draw_one_switch]
+other = "Draw one (switch)"
+[sound]
+other = "Sound"
+
+# Top panel
+[menu_file]
+other = "File"
+[menu_edit]
+other = "Edit"
+[menu_view]
+other = "View"
+[menu_help]
+other = "Help"
+[open_page]
+other = "Open {{ .Page }}"
+[close_window]
+other = "Close window"
+[redo]
+other = "Redo"
+[cut]
+other = "Cut"
+[copy]
+other = "Copy"
+[paste]
+other = "Paste"
+[preferences]
+other = "Preferences…"
+[reload]
+other = "Reload"
+[toggle_full_window]
+other = "Toggle full window"
+[show_launcher]
+other = "Show launcher"
+[show_top_panel]
+other = "Show top panel"
+[keyboard_shortcuts]
+other = "Keyboard shortcuts"
+[view_source]
+other = "View source"
+[icon_vault]
+other = "Icon vault"
+[language]
+other = "Language"
+[messages]
+other = "Messages"
+[no_new_messages]
+other = "No new messages."
+[compose]
+other = "Compose"
+[subscribe_to_feed]
+other = "Subscribe to feed"
+[network]
+other = "Network"
+[wired_connection]
+other = "Wired connection"
+[enable_hotspot]
+other = "Enable hotspot"
+[volume]
+other = "Volume"
+[toggle_mute]
+other = "Toggle mute"
+[output]
+other = "Output:"
+[built_in_audio]
+other = "Built-in audio"
+[play_pause]
+other = "Play/Pause"
+[paused]
+other = "Paused"
+[next_track]
+other = "Next track"
+[open_in_studio]
+other = "Open in Studio…"
+[hidden_network]
+other = "(hidden)"
+[battery]
+other = "Battery"
+[battery_discharging]
+other = "{{ .Percent }}% — discharging"
+[battery_remaining]
+other = "About 3 hours 14 minutes remaining"
+[enable_power_saver]
+other = "Enable power saver"
+[power_settings]
+other = "Power settings…"
+[clock]
+other = "Clock"
+[open_calendar]
+other = "Open calendar"
+[time_settings]
+other = "Time settings…"
+[user]
+other = "User"
+[lock_screen]
+other = "Lock screen"
+[restart_session]
+other = "Restart session"
+[log_out]
+other = "Log out…"
+
+# Launcher, Dash, HUD
+[launcher]
+other = "Launcher"
+[search_your_computer]
+other = "Search your computer"
+[studio]
+other = "Studio"
+[trash]
+other = "Trash"
+[dash_search]
+other = "Dash search"
+[applications]
+other = "Applications"
+[files_and_folders]
+other = "Files & Folders"
+[music]
+other = "Music"
+[track_n]
+other = "Track {{ .N }}"
+[dash_no_results]
+other = "Sorry, there is nothing that matches your search."
+[filter_results]
+other = "Filter results"
+[appearance]
+other = "Appearance"
+[shortcuts]
+other = "Shortcuts"
+[lock_screen_app]
+other = "Lock Screen"
+[log_out_app]
+other = "Log Out"
+[hud_search]
+other = "HUD menu search"
+[type_your_command]
+other = "Type your command"
+[matching_menu_entries]
+other = "Matching menu entries"
+
+# Studio window
+[stop]
+other = "Stop"
+[previous_track]
+other = "Previous track"
+[studio_lcd_track]
+other = "trk"
+[studio_lcd_position]
+other = "pos"
+[studio_lcd_tempo]
+other = "bpm"
+[tempo]
+other = "Tempo"
+[tempo_hint]
+other = "Tempo — drag up/down, double-click to reset"
+[loop]
+other = "loop"
+[loop_hint]
+other = "The song always loops"
+[follow_playhead]
+other = "Follow the playhead"
+[studio_tracks]
+other = "Tracks"
+[studio_synth]
+other = "Synth"
+[studio_fx]
+other = "FX"
+[studio_groove]
+other = "Groove"
+[loading]
+other = "Loading…"
+[studio_status_hint]
+other = "Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets"
+
+# Shortcodes
+[spotify_player]
+other = "Spotify {{ .Type }} player"
+
+# Trash window and lock screen
+[trash_is_empty]
+other = "Trash is empty"
+[nothing_thrown_away]
+other = "Nothing thrown away yet."
+[items_count]
+one = "{{ .Count }} item"
+other = "{{ .Count }} items"
+[empty_trash]
+other = "Empty Trash"
+[password]
+other = "Password"
+
+# Icon vault (icons layout)
+[icon_vault_title]
+other = "The icon vault"
+[icon_vault_lede]
+other = "Every SVG the theme ships with. Monoline symbolics for chrome, Humanity application icons for the launcher, and the bigger flat illustrations. Click a tile to copy its markup. Each section picks its own backdrop, so you can check the icons on white, purple, or black."
+[icon_vault_glyphs]
+other = "Symbolic glyphs"
+[icon_vault_glyphs_note]
+other = "currentColor · 16px monoline"
+[icon_vault_apps]
+other = "Humanity application icons"
+[icon_vault_apps_note]
+other = "gradient launcher art · paints its own body"
+[icon_vault_flat]
+other = "Flat illustrations"
+[icon_vault_flat_note]
+other = "larger flat-color desktop art"
+[icons_count]
+one = "{{ .Count }} icon"
+other = "{{ .Count }} icons"
+[size]
+other = "Size"
+[background]
+other = "Background"
+[bg_white]
+other = "White"
+[bg_purple]
+other = "Purple"
+[bg_black]
+other = "Black"
+[copy_svg]
+other = "Copy SVG markup"
+
+# ---------------------------------------------------------------------------
+# Runtime strings. The scripts write these after the page loads, through
+# t() and tn() in assets/unity/js/i18n.ts. Their keys start with js_, and they
+# use {name} placeholders rather than Go templates. A key with one/other
+# forms is a plural whose number is {n}.
+# ---------------------------------------------------------------------------
+
+# Shared buttons
+[js_cancel]
+other = "Cancel"
+[js_close]
+other = "Close"
+
+# Trash
+[js_trash_items]
+one = "{n} item"
+other = "{n} items"
+[js_trash_items_selected]
+one = "{n} item selected"
+other = "{n} items selected"
+[js_trash_is_empty]
+other = "Trash is empty"
+[js_trash_empty]
+other = "Empty Trash"
+[js_trash_this_item]
+other = "This item"
+[js_trash_open_title]
+other = "\"{name}\" is in the Trash"
+[js_trash_open_body]
+other = "Files in the Trash can't be opened. To open this item, restore it first."
+[js_trash_restore]
+other = "Restore"
+[js_trash_delete_title]
+other = "Permanently delete \"{name}\"?"
+[js_trash_delete_items_title]
+one = "Permanently delete {n} item?"
+other = "Permanently delete {n} items?"
+[js_trash_delete_body]
+other = "If you delete an item, it will be permanently lost. This can't be undone."
+[js_trash_delete]
+other = "Delete"
+[js_trash_delete_from]
+other = "Delete from Trash"
+[js_trash_empty_body]
+other = "If you empty the trash, the items will be permanently deleted. This can't be undone."
+
+# Top panel
+[js_panel_launcher_title]
+other = "Launcher is always shown"
+[js_panel_launcher_body]
+other = "The launcher is part of the shell."
+[js_panel_source_title]
+other = "Source"
+[js_panel_source_body]
+other = "This is a personal site."
+[js_panel_ok]
+other = "OK"
+[js_panel_source_body_link]
+other = "This is a personal site living at {link}."
+[js_panel_cal_title]
+other = "Calendar"
+[js_panel_cal_body]
+other = "No events today. The next thing on the calendar is a haircut next Tuesday."
+[js_panel_hours_minutes]
+other = "{hours} {minutes}"
+[js_panel_hours]
+one = "{n} hour"
+other = "{n} hours"
+[js_panel_minutes]
+one = "{n} minute"
+other = "{n} minutes"
+[js_panel_less_than_minute]
+other = "less than a minute"
+[js_panel_until_full]
+other = "About {duration} until full"
+[js_panel_remaining]
+other = "About {duration} remaining"
+[js_panel_cal_mon]
+other = "M"
+[js_panel_cal_tue]
+other = "T"
+[js_panel_cal_wed]
+other = "W"
+[js_panel_cal_thu]
+other = "T"
+[js_panel_cal_fri]
+other = "F"
+[js_panel_cal_sat]
+other = "S"
+[js_panel_cal_sun]
+other = "S"
+[js_panel_time_title]
+other = "Time & date"
+[js_panel_time_zone]
+other = "Time zone: {zone} (UTC{offset})"
+[js_panel_time_locale]
+other = "Locale: {locale}"
+[js_panel_time_local]
+other = "Local time: {time}"
+[js_panel_fully_charged]
+other = "Fully charged"
+[js_panel_estimating]
+other = "Estimating time remaining…"
+[js_panel_power_title]
+other = "Power settings"
+[js_panel_battery_charging]
+other = "Battery: {level}% — charging"
+[js_panel_battery_on_battery]
+other = "Battery: {level}% — on battery"
+[js_panel_battery_api]
+other = "Reported by the Battery Status API."
+[js_panel_battery_discharging]
+other = "Battery: {level}% — discharging"
+[js_panel_battery_raw]
+other = "The raw data lives in /sys/class/power_supply/BAT0/uevent."
+[js_panel_net_effective_type]
+other = "Effective type: {value}"
+[js_panel_net_downlink]
+other = "Downlink: ~{value} Mbps"
+[js_panel_net_rtt]
+other = "Round-trip time: {value} ms"
+[js_panel_net_type]
+other = "Type: {value}"
+[js_panel_net_data_saver_on]
+other = "Data saver: on"
+[js_panel_net_data_saver_off]
+other = "Data saver: off"
+[js_panel_net_api]
+other = "Reported by the Network Information API."
+[js_panel_wired_title]
+other = "Wired connection"
+[js_panel_connection_details]
+other = "Connection details"
+[js_panel_ethernet_up]
+other = "Ethernet link is up."
+[js_panel_no_wired]
+other = "No wired link, but here's what the browser will tell us:"
+[js_panel_offline_title]
+other = "You're offline"
+[js_panel_online_body]
+other = "You're online, but this browser won't admit over what. No cable, no Mbps, no secrets."
+[js_panel_offline_body]
+other = "No connection detected. Check the cable nobody can see."
+[js_panel_subscribe_title]
+other = "Subscribe to feed"
+[js_panel_no_feed]
+other = "This site doesn't expose an RSS feed."
+[js_panel_feed_copied]
+other = "Copied {url} — paste it into your reader."
+[js_panel_feed_url]
+other = "Feed URL: {url}"
+[js_panel_open_feed]
+other = "Open feed"
+[js_panel_enable_hotspot]
+other = "Enable hotspot"
+[js_panel_hotspot_disabled_title]
+other = "Hotspot disabled"
+[js_panel_hotspot_disabled_body]
+other = "Other devices can no longer share this connection."
+[js_panel_hotspot_confirm_title]
+other = "Enable Wi-Fi hotspot?"
+[js_panel_hotspot_confirm_body]
+other = "Other devices will be able to share this connection. Estimated battery cost: significant."
+[js_panel_disable_hotspot]
+other = "Disable hotspot"
+[js_panel_hotspot_status]
+one = "Hotspot active · {name} ({n} device)"
+other = "Hotspot active · {name} ({n} devices)"
+[js_panel_hotspot_active_title]
+other = "Hotspot active"
+[js_panel_hotspot_active_body]
+other = "Broadcasting '{name}'. Other devices can now share this connection."
+[js_panel_power_saver_title]
+other = "Power saver enabled"
+[js_panel_power_saver_body]
+other = "Animations reduced to save power. Turn motion back on in Edit → Preferences."
+[js_panel_default_user]
+other = "user"
+[js_panel_logout_title]
+other = "Log out of {name}?"
+[js_panel_logout_body]
+other = "All unsaved windows will be closed and you'll be returned to the login screen."
+[js_panel_logout]
+other = "Log out"
+[js_panel_net_already_title]
+other = "Already connected"
+[js_panel_net_already_body]
+other = "You're connected to {name}."
+[js_panel_net_connect_title]
+other = "Connect to {name}?"
+[js_panel_net_disconnect_body]
+other = "This will disconnect you from {name}. Continue?"
+[js_panel_continue]
+other = "Continue?"
+[js_panel_connect]
+other = "Connect"
+[js_panel_net_failed_title]
+other = "Couldn't connect"
+[js_panel_net_failed_body]
+other = "Authentication failed for {name}. Check the password and try again."
+[js_panel_net_established_title]
+other = "Connection Established"
+[js_panel_net_established_body]
+other = "You are now connected to '{name}'."
+[js_panel_title_trash]
+other = "Trash"
+[js_panel_title_studio]
+other = "Studio"
+[js_panel_title_ubuntu]
+other = "Ubuntu"
+[js_panel_level_charging]
+other = "{level}% — charging"
+[js_panel_level_discharging]
+other = "{level}% — discharging"
+[js_panel_paused_named]
+other = "{name} — paused"
+[js_panel_paused]
+other = "Paused"
+[js_panel_muted_named]
+other = "{name} (muted)"
+[js_panel_volume]
+other = "Volume {level}%"
+[js_panel_now_playing]
+other = "Now playing"
+
+# Projects
+[js_projects_open_on]
+other = "Open on {host}"
+[js_projects_open]
+other = "Open"
+[js_projects_copy_link]
+other = "Copy link"
+[js_projects_stat_label]
+other = "{label}: {value}"
+[js_projects_stars]
+other = "Stars"
+[js_projects_forks]
+other = "Forks"
+[js_projects_license]
+other = "License"
+[js_projects_updated]
+other = "Updated"
+[js_projects_topics]
+other = "Topics"
+[js_projects_selected]
+one = "{n} project selected"
+other = "{n} projects selected"
+[js_projects_selection]
+other = "Selection"
+
+# Desktop
+[js_desktop_select_all]
+other = "Select All"
+[js_desktop_clean_up_icons]
+other = "Clean Up Icons"
+[js_desktop_filter_count]
+other = "{visible} / {count}"
+
+# Blog
+[js_blog_sorted_desc]
+other = "sorted descending"
+[js_blog_sorted_asc]
+other = "sorted ascending"
+[js_blog_copy_code]
+other = "Copy code"
+[js_blog_copy]
+other = "Copy"
+[js_blog_copied]
+other = "Copied"
+[js_blog_copy_failed]
+other = "Failed"
+
+# Dash
+[js_dash_see_more]
+one = "See {n} more result"
+other = "See {n} more results"
+[js_dash_see_fewer]
+other = "See fewer results"
+[js_dash_results]
+one = "{n} result"
+other = "{n} results"
+
+# HUD
+[js_hud_connect]
+other = "Connect to {name}"
+[js_hud_matches]
+one = "{n} matching command"
+other = "{n} matching commands"
+
+# CV
+[js_cv_zoom_percent]
+other = "{percent}%"
+[js_cv_page]
+other = "Page {page}"
+[js_cv_go_to_page]
+other = "Go to page {page}"
+
+# Lock
+[js_lock_hint]
+other = "Hint: any password works — just type something."
+
+# Icons
+[js_icons_copied]
+other = "copied · {name}"
+[js_icons_copy_failed]
+other = "copy failed; clipboard blocked"
+
+# Dialog
+[js_dialog_information]
+other = "Information"
+
+# Notify
+[js_notify_value]
+other = "{percent}%"
+
+# Studio
+[js_studio_drum_hat_short]
+other = "hat"
+[js_studio_drum_snare_short]
+other = "snr"
+[js_studio_drum_kick_short]
+other = "kck"
+[js_studio_track_bass]
+other = "Bass"
+[js_studio_track_lead]
+other = "Lead"
+[js_studio_track_keys_n]
+other = "Keys {n}"
+[js_studio_track_keys]
+other = "Keys"
+[js_studio_track_drums]
+other = "Drums"
+[js_studio_flavor_sine]
+other = "pure"
+[js_studio_flavor_square]
+other = "the default"
+[js_studio_flavor_saw]
+other = "buzzy"
+[js_studio_flavor_organ]
+other = "drawbars and a sub"
+[js_studio_flavor_pulse]
+other = "chip lead"
+[js_studio_flavor_epiano]
+other = "FM tines"
+[js_studio_flavor_bell]
+other = "FM bell, rings past the note"
+[js_studio_flavor_pluck]
+other = "instant attack, fast decay"
+[js_studio_flavor_pad]
+other = "slow wash"
+[js_studio_title_named]
+other = "{name} — Studio"
+[js_studio_title]
+other = "Studio"
+[js_studio_loading]
+other = "Loading…"
+[js_studio_load_failed]
+other = "Couldn't load the song. The tape deck stays empty."
+[js_studio_voice_title]
+other = "{name} — {flavor}"
+[js_studio_knob_att]
+other = "att"
+[js_studio_knob_rel]
+other = "rel"
+[js_studio_knob_oct]
+other = "oct"
+[js_studio_knob_det]
+other = "det"
+[js_studio_knob_vib]
+other = "vib"
+[js_studio_knob_cut]
+other = "cut"
+[js_studio_knob_drive]
+other = "drive"
+[js_studio_knob_crush]
+other = "crush"
+[js_studio_knob_echo]
+other = "echo"
+[js_studio_knob_verb]
+other = "verb"
+[js_studio_knob_width]
+other = "width"
+[js_studio_echo_sync]
+other = "echo sync"
+[js_studio_echo_eighth]
+other = "Echo: 1/8 note"
+[js_studio_echo_dotted]
+other = "Echo: dotted eighth note"
+[js_studio_echo_quarter]
+other = "Echo: 1/4 note"
+[js_studio_knob_swing]
+other = "swing"
+[js_studio_knob_hum]
+other = "hum"
+[js_studio_knob_vel]
+other = "vel"
+[js_studio_instrument_set]
+other = "{track}: instrument set to {instrument}"
+[js_studio_track_info]
+one = "Channel {channel} · {n} note"
+other = "Channel {channel} · {n} notes"
+[js_studio_instrument_auto]
+other = "Instrument: {name} (follows the Synth section)"
+[js_studio_instrument]
+other = "Instrument: {name}"
+[js_studio_mute_short]
+other = "M"
+[js_studio_mute]
+other = "Mute {name}"
+[js_studio_solo_short]
+other = "S"
+[js_studio_solo]
+other = "Solo {name}"
+[js_studio_drum_kick]
+other = "Kick"
+[js_studio_drum_snare]
+other = "Snare"
+[js_studio_drum_hat]
+other = "Hat"
+[js_studio_drum_press_muted]
+other = "{track} · {drum} — right-click to restore"
+[js_studio_drum_press]
+other = "{track} · {drum} — right-click to mute"
+[js_studio_scrub_playing]
+other = "Bar {bar} — playing from here"
+[js_studio_scrub_paused]
+other = "Bar {bar} — play starts here"
+[js_studio_transpose]
+other = "{track}: {from} → {to} ({offset} st)"
+[js_studio_timeline_hint]
+other = "Timeline — click or drag to move the playhead"
+[js_studio_hover_drum_muted]
+other = "{track} · {what} · bar {bar} (muted) — right-click to restore"
+[js_studio_hover_drum]
+other = "{track} · {what} · bar {bar} — right-click to mute"
+[js_studio_hover_note_muted]
+other = "{track} · {what} · bar {bar} (muted) — drag to transpose, right-click to restore"
+[js_studio_hover_note]
+other = "{track} · {what} · bar {bar} — drag to transpose, right-click to mute"
+[js_studio_toggled_muted]
+other = "{track} · {what} muted — right-click to restore"
+[js_studio_toggled_restored]
+other = "{track} · {what} restored"
+
+# Sound
+[js_sound_auto]
+other = "Auto"
+[js_sound_sine]
+other = "Sine"
+[js_sound_square]
+other = "Square"
+[js_sound_saw]
+other = "Saw"
+[js_sound_organ]
+other = "Organ"
+[js_sound_pulse]
+other = "Pulse"
+[js_sound_epiano]
+other = "E-Piano"
+[js_sound_bell]
+other = "Bell"
+[js_sound_pluck]
+other = "Pluck"
+[js_sound_pad]
+other = "Pad"
+[js_sound_track]
+other = "Track {n}"
+
+# Keyboard shortcuts
+[js_shortcuts_desktop]
+other = "Desktop"
+[js_shortcuts_open_dash]
+other = "Open the Dash (or click the launcher's top button)"
+[js_shortcuts_open_hud]
+other = "Open the HUD and search the menus"
+[js_shortcuts_dismiss]
+other = "Dismiss menus and dialogs"
+[js_shortcuts_confirm_dialog]
+other = "Confirm the focused dialog"
+[js_shortcuts_drag]
+other = "Drag"
+[js_shortcuts_move_window]
+other = "Move a window or dialog (titlebar)"
+[js_shortcuts_double_click]
+other = "Double-click"
+[js_shortcuts_maximize]
+other = "Maximize or restore (titlebar)"
+[js_shortcuts_scroll]
+other = "Scroll"
+[js_shortcuts_volume]
+other = "Adjust the volume (sound indicator)"
+[js_shortcuts_dash_hud]
+other = "Dash & HUD"
+[js_shortcuts_dash_hud_hint]
+other = "Esc clears the search first, then closes."
+[js_shortcuts_arrows]
+other = "Arrows"
+[js_shortcuts_move_results]
+other = "Move between results"
+[js_shortcuts_open_best]
+other = "Open the best match"
+[js_shortcuts_jump_lens]
+other = "Jump to the expanders and lens bar (Dash)"
+[js_shortcuts_blog_projects]
+other = "Blog & Projects"
+[js_shortcuts_search]
+other = "Search"
+[js_shortcuts_move_selection]
+other = "Move selection"
+[js_shortcuts_open_selected]
+other = "Open the selected item"
+[js_shortcuts_context_menu]
+other = "Open the context menu for the selection"
+[js_shortcuts_solitaire]
+other = "Solitaire"
+[js_shortcuts_solitaire_hint]
+other = "Click a card to send it to the first place it fits."
+[js_shortcuts_move_cards]
+other = "Move a card or a run"
+[js_shortcuts_draw_stock]
+other = "Draw from the stock"
+[js_shortcuts_undo]
+other = "Undo"
+[js_shortcuts_show_hint]
+other = "Show a hint (again for the next one)"
+[js_shortcuts_new_game]
+other = "New game"
+[js_shortcuts_auto_finish]
+other = "Finish a won game automatically"
+[js_shortcuts_switch_draw]
+other = "Switch between draw one and draw three"
+[js_shortcuts_toggle_sound]
+other = "Toggle sound"
+[js_shortcuts_drop_run]
+other = "Drop a held run back, or clear the hint"
+[js_shortcuts_terminal]
+other = "Terminal"
+[js_shortcuts_terminal_hint]
+other = "The usual bash/readline bindings."
+[js_shortcuts_line_start_end]
+other = "Start / end of line"
+[js_shortcuts_delete_word]
+other = "Delete previous word"
+[js_shortcuts_cut_line]
+other = "Cut to start / end of line"
+[js_shortcuts_paste_cut]
+other = "Paste cut text"
+[js_shortcuts_search_history]
+other = "Search history"
+[js_shortcuts_clear_screen]
+other = "Clear the screen"
+[js_shortcuts_complete]
+other = "Complete commands and paths"
+[js_shortcuts_leave_terminal]
+other = "Leave the terminal"
+[js_shortcuts_key_up]
+other = "Up"
+[js_shortcuts_key_down]
+other = "Down"
+[js_shortcuts_step_history]
+other = "Step through history"
+[js_shortcuts_or]
+other = "or"
+[js_shortcuts_title]
+other = "Keyboard shortcuts"
+
+# Preferences
+[js_prefs_accent_orange]
+other = "Orange"
+[js_prefs_accent_green]
+other = "Green"
+[js_prefs_accent_aubergine]
+other = "Aubergine"
+[js_prefs_accent_blue]
+other = "Blue"
+[js_prefs_reduce_motion]
+other = "Reduce motion"
+[js_prefs_reduce_motion_hint]
+other = "Stop window and dialog animations."
+[js_prefs_accent_color]
+other = "Accent color"
+[js_prefs_title]
+other = "Preferences"
+[js_prefs_body]
+other = "Session settings — these reset when you reload."
+
+# Solitaire
+[js_solitaire_rank_ace]
+other = "A"
+[js_solitaire_rank_jack]
+other = "J"
+[js_solitaire_rank_queen]
+other = "Q"
+[js_solitaire_rank_king]
+other = "K"
+[js_solitaire_suit_hearts]
+other = "hearts"
+[js_solitaire_suit_diamonds]
+other = "diamonds"
+[js_solitaire_suit_clubs]
+other = "clubs"
+[js_solitaire_suit_spades]
+other = "spades"
+[js_solitaire_card]
+other = "{rank} of {suit}"
+# The table draws the btn_ and banner_ strings in a pixel font with the
+# letters A-Z, the digits, and :.,!?-+/'(). It shows an accented letter
+# as its base letter and any other character as "?".
+[js_solitaire_btn_new]
+other = "NEW"
+[js_solitaire_btn_undo]
+other = "UNDO"
+[js_solitaire_btn_hint]
+other = "HINT"
+[js_solitaire_btn_draw]
+other = "DRAW {mode}"
+[js_solitaire_new_game_dealt]
+other = "New game dealt, draw {mode}."
+[js_solitaire_new_game_title]
+other = "Start a new game?"
+[js_solitaire_new_game_body]
+other = "The current deal will be lost."
+[js_solitaire_keep_playing]
+other = "Keep playing"
+[js_solitaire_new_game]
+other = "New game"
+[js_solitaire_move_foundation]
+other = "{card} to its foundation."
+[js_solitaire_move_column]
+other = "{card} to column {column}."
+[js_solitaire_move_waste]
+other = "{card} to the waste."
+[js_solitaire_move_stock]
+other = "{card} to the stock."
+[js_solitaire_drew]
+other = "Drew {cards}."
+[js_solitaire_waste_returned]
+other = "Waste returned to the stock."
+[js_solitaire_undid]
+other = "Undid the last move."
+[js_solitaire_no_moves]
+other = "No moves left. Try a new game."
+[js_solitaire_hint_draw]
+other = "Hint: draw from the stock."
+[js_solitaire_hint_move]
+other = "Hint: {move}"
+[js_solitaire_finishing]
+other = "Finishing the game."
+[js_solitaire_draw_mode]
+other = "Draw {mode}."
+[js_solitaire_sound_off]
+other = "Sound off."
+[js_solitaire_sound_on]
+other = "Sound on."
+[js_solitaire_won]
+other = "You won in {time} with {moves} and {points}. Press N for a new game."
+[js_solitaire_moves]
+one = "{n} move"
+other = "{n} moves"
+[js_solitaire_points]
+one = "{n} point"
+other = "{n} points"
+[js_solitaire_no_winnable]
+other = "No winnable deal found."
+[js_solitaire_btn_auto]
+other = "AUTO"
+[js_solitaire_draw_one_switch]
+other = "Draw one (switch)"
+[js_solitaire_draw_three_switch]
+other = "Draw three (switch)"
+[js_solitaire_banner_score]
+other = "SCORE {score}"
+[js_solitaire_banner_time]
+other = "TIME {time}"
+[js_solitaire_banner_moves]
+other = "MOVES {moves}"
+[js_solitaire_banner_win]
+other = "YOU WIN!"
+[js_solitaire_banner_new_game]
+other = "NEW GAME"

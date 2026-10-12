@@ -1,13 +1,13 @@
 # CLAUDE.md
 
-Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only theme is `themes/ubuntu-unity/`. It lives in-tree but is written as a standalone theme with its own README and CLAUDE.md, so read those for anything under it.
+Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only theme is `themes/unity/`. It lives in-tree but is written as a standalone theme with its own README and CLAUDE.md, so read those for anything under it.
 
 ## Commands
 
 - `devbox shell` puts the pinned Hugo and Node on PATH and installs the git hooks.
 - `hugo server -D` serves the site locally with drafts. `hugo --minify` is the production build CI runs.
 - `npm test`, `npm run typecheck`, and `npm run typecheck:test` run the theme's Vitest and tsc passes from the repo root. CI runs all three before the Hugo build.
-- The root `package.json` is an npm workspace over `themes/ubuntu-unity`, and its scripts call the theme's. Add dev dependencies to the theme's `package.json`, then run `npm install` at the root to update the one `package-lock.json`.
+- The root `package.json` is an npm workspace over `themes/unity`, and its scripts call the theme's. Add dev dependencies to the theme's `package.json`, then run `npm install` at the root to update the one `package-lock.json`.
 - `npm run test:sites` builds the theme's example site and two bare sites with every Hugo warning fatal. CI runs it after the site build.
 - `task populate-projects` regenerates `data/projects.yaml` from GitHub.
 

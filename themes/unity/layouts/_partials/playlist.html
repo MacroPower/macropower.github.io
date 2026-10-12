@@ -1,0 +1,31 @@
+{{- /*
+  The Studio's MIDI playlist as a slice of published URLs, empty when the
+  site ships no MIDI files. params.studio.playlist lists paths under assets/
+  in play order. Without it, every assets/midi/*.mid and *.midi file plays
+  in file-name order. The order defines the anonymous "Track N" labels the
+  player and the Dash show, so what each one is stays a surprise until
+  someone presses play.
+
+  Every Studio surface reads this partial: top-panel.html (the Sound menu's
+  player), dash.html (the Music category and the Studio tile), launcher.html
+  (the running-app tile), and baseof.html (the Studio window). An empty
+  playlist leaves the Studio out of the desktop.
+*/ -}}
+{{- $tracks := slice -}}
+{{- with site.Params.studio.playlist -}}
+  {{- range . -}}
+    {{- with resources.Get . -}}
+      {{- $tracks = $tracks | append . -}}
+    {{- else -}}
+      {{- warnf "unity: params.studio.playlist names %q, which is not under assets/" . -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- range slice "midi/*.mid" "midi/*.midi" -}}
+    {{- range resources.Match . }}{{ $tracks = $tracks | append . }}{{ end -}}
+  {{- end -}}
+  {{- $tracks = sort $tracks "Name" -}}
+{{- end -}}
+{{- $urls := slice -}}
+{{- range $tracks }}{{ $urls = $urls | append .RelPermalink }}{{ end -}}
+{{- return $urls -}}

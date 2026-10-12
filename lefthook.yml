@@ -11,11 +11,11 @@ pre-commit:
   commands:
     typecheck:
       glob:
-        - "themes/ubuntu-unity/assets/ubuntu-unity/js/**/*.ts"
-        - "themes/ubuntu-unity/tsconfig.json"
-      run: npx --no-install tsc -p themes/ubuntu-unity --noEmit
+        - "themes/unity/assets/unity/js/**/*.ts"
+        - "themes/unity/tsconfig.json"
+      run: npx --no-install tsc -p themes/unity --noEmit
     typecheck-test:
       glob:
-        - "themes/ubuntu-unity/assets/ubuntu-unity/js/**/*.ts"
-        - "themes/ubuntu-unity/tsconfig*.json"
-      run: npx --no-install tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit
+        - "themes/unity/assets/unity/js/**/*.ts"
+        - "themes/unity/tsconfig*.json"
+      run: npx --no-install tsc -p themes/unity/tsconfig.test.json --noEmit

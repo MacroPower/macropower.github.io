@@ -1,0 +1,191 @@
+# Example site for the unity theme. Run it from the theme directory:
+#
+#   hugo server -s exampleSite --themesDir ../..
+
+baseURL = "https://example.org/"
+title   = "Jane Doe"
+locale  = "en-us"
+theme   = "unity"
+
+# Used by the theme's RSS feeds. The home feed lists blog posts only.
+copyright = "Jane Doe"
+
+enableRobotsTXT = true
+enableEmoji     = true
+
+# The blog section. The post browser, the taxonomy pages, the RSS feed,
+# the Dash's Files category, and the home terminal's posts directory all
+# read it from here, so content/blog/ works as well as content/posts/.
+# Hugo defaults this to the section with the most pages.
+mainSections = ["posts"]
+
+[services.rss]
+  # Maximum number of items in the RSS feed.
+  limit = 10
+
+[permalinks]
+  # Optional; the theme works with any permalink shape.
+  posts = "/posts/:year/:month/:title/"
+
+[taxonomies]
+  # The blog sidebar offers category and series lenses. To drive them from
+  # other taxonomies, set params.blog.taxonomies (see [params] below).
+  category = "categories"
+  series   = "series"
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+  # Passes TeX between these delimiters through to the theme's math
+  # render hook, which renders it to MathML at build time.
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block  = [['\[', '\]'], ['$$', '$$']]
+      inline = [['\(', '\)']]
+
+[params]
+  # Site description for <meta name="description"> and the feeds.
+  description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."
+
+  # Browser UI color emitted as <meta name="theme-color">.
+  themeColor = "#1b1c1d"
+
+  # Source repository, linked from Help > "View source".
+  # repoUrl = "https://github.com/jane/janedoe.example"
+
+  [params.author]
+    name = "Jane Doe"
+    # email backs the Messages indicator's Compose button.
+    email = "jane@example.org"
+    # The terminal banner's title row and the focus line beneath it. Both
+    # optional; absent rows drop out of the banner. jobTitle is also the
+    # home page's JSON-LD jobTitle.
+    jobTitle = "Software Engineer"
+    focus    = "Distributed Systems"
+    # Optional: the terminal banner's uptime is your age when set,
+    # otherwise the time since your first post.
+    # born = "1990-01-31"
+
+  [params.desktop]
+    # The accent preset the desktop starts with: orange (the default),
+    # green, aubergine, or blue. Visitors can switch it in Edit >
+    # Preferences.
+    # accent = "aubergine"
+    # The corner watermark's lines; an empty list removes it.
+    # label = ["jane/personal-site", "est. 2024"]
+    # The Trash window's contents. A trailing slash marks a folder.
+    # trash = ["draft-v2-final.docx", "old-site/"]
+    # The network indicator's access points; the first starts connected.
+    # networks = ["home-wifi", { name = "wg0", mono = true }]
+
+  [params.blog]
+    # Long and numeric date formats (post reader and post list).
+    dateFormat     = "Jan 2, 2006"
+    listDateFormat = "2006-01-02"
+    # Show "N min read" in the post reader.
+    readingTime = true
+    # Put each post's whole body in the feed instead of its summary.
+    # feedFullContent = true
+    # Open each post with a table of contents. A post's toc front matter
+    # overrides this either way; the welcome post sets it.
+    # toc = true
+    # The taxonomies behind the blog's lenses and post chips. These are
+    # the defaults; a site that tags its posts sets category = "tags".
+    # [params.blog.taxonomies]
+    #   category = "categories"
+    #   series   = "series"
+
+  # The projects page reads data/projects.yaml. Without that file, github
+  # names an account whose public repositories the build fetches from the
+  # GitHub API instead. The thresholds behind the sidebar's Starred,
+  # Forks, and Recent filters show their defaults.
+  # [params.projects]
+  #   github       = "jane"
+  #   minStars     = 100
+  #   minForks     = 6
+  #   recentMonths = 6
+
+  # The home terminal is an SSH session into the site as a guest login.
+  # Both default from the site: "user" and the host of baseURL.
+  # [params.terminal]
+  #   user = "guest"
+  #   host = "example.org"
+
+  # The Studio plays MIDI files from the site's assets/. Without a
+  # playlist it plays every assets/midi/*.mid and *.midi file in file-name
+  # order, and a site with no MIDI files gets no Studio. This example ships
+  # two public-domain tunes under assets/midi/.
+  # [params.studio]
+  #   playlist = ["midi/ode-to-joy.mid", "midi/ah-vous-dirai-je.mid"]
+
+  # Social links: terminal banner rows and JSON-LD sameAs. `short`
+  # overrides the terminal label. A "github" entry also powers the
+  # sponsors page's sponsor button and the projects sidebar's GitHub link;
+  # a "twitter" entry becomes the twitter:site card metadata.
+
+  [[params.social]]
+    name = "github"
+    url  = "https://github.com/jane"
+
+  [[params.social]]
+    name = "linkedin"
+    url  = "https://www.linkedin.com/in/jane/"
+
+  [[params.social]]
+    name  = "stackoverflow"
+    short = "so"
+    url   = "https://stackoverflow.com/users/1/jane"
+
+# menu.main drives the theme's site-pages registry: the launcher dock, the
+# Dash's Applications category, the top panel's File menu, and the nav:<key>
+# actions. Home is implicit and always first. pageRef points an entry at a
+# page and follows its permalink and language; url takes any address.
+# Optional [menu.main.params]:
+#   icon      — launcher artwork under the theme's assets/unity/icons/
+#   match     — "exact" or "prefix" URL matching for active state
+#   kw        — Dash search keywords
+#   dashLabel — Dash tile label override
+#   dashIcon  — Dash tile icon override
+#   launcher  — false keeps the page off the dock (still in the Dash);
+#               "running" docks it only while it is the current page
+#   dash      — false keeps the page out of the Dash
+[menu]
+  [[menu.main]]
+    identifier = "cv"
+    name       = "CV"
+    pageRef    = "/cv"
+    weight     = 2
+  [[menu.main]]
+    identifier = "projects"
+    name       = "Projects"
+    pageRef    = "/projects"
+    weight     = 3
+  [[menu.main]]
+    identifier = "blog"
+    name       = "Blog"
+    pageRef    = "/posts"
+    weight     = 4
+  [[menu.main]]
+    identifier = "sponsors"
+    name       = "Sponsors"
+    pageRef    = "/sponsors"
+    weight     = 5
+  [[menu.main]]
+    identifier = "solitaire"
+    name       = "Solitaire"
+    pageRef    = "/solitaire"
+    weight     = 6
+    [menu.main.params]
+      # An easter egg like the Studio: docked only while open, reachable
+      # from the Dash or the terminal's `solitaire` command.
+      launcher = "running"
+  [[menu.main]]
+    identifier = "icons"
+    name       = "Icons"
+    pageRef    = "/icons"
+    weight     = 7
+    [menu.main.params]
+      # The icon vault: searchable in the Dash and linked from
+      # Help > Icon vault, but never a dock tile.
+      launcher = false

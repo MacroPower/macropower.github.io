@@ -1,0 +1,92 @@
+{{- /*
+  The icon vault. Lists every SVG under the theme's assets/unity/icons/ in a
+  copy-to-clipboard catalogue: symbolic glyphs (currentColor monoline),
+  Humanity application icons (gradient launcher art), and flat
+  illustrations. Selected by `layout = "icons"` front matter; the page's
+  own build options keep it out of lists and the sitemap.
+
+  DOM contract (icons.ts): [data-icon-vault] is the root. Each section
+  holds one [data-vault-grid] with a --icp-size custom property and a
+  data-bg attribute, driven by its [data-vault-size] and [data-vault-bg]
+  buttons. Every [data-vault-cell] copies the SVG it contains and names
+  itself in data-name. [data-vault-toast] announces the copy.
+*/ -}}
+{{ define "main" }}
+  {{- $glyphs := slice -}}
+  {{- range (resources.Match "unity/icons/glyphs/*.svg") -}}
+    {{- $n := path.BaseName .Name -}}
+    {{- if ne $n "lang-symbols" -}}
+      {{- $glyphs = $glyphs | append (dict "name" $n "svg" .Content) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $glyphs = sort $glyphs "name" -}}
+
+  {{- $apps := slice -}}
+  {{- range (resources.Match "unity/icons/launcher/*.svg") -}}
+    {{- $apps = $apps | append (dict "name" (path.BaseName .Name) "svg" .Content) -}}
+  {{- end -}}
+  {{- $apps = sort $apps "name" -}}
+
+  {{- $flat := slice -}}
+  {{- range (resources.Match "unity/icons/flat/*.svg") -}}
+    {{- $flat = $flat | append (dict "name" (path.BaseName .Name) "svg" .Content) -}}
+  {{- end -}}
+  {{- $flat = sort $flat "name" -}}
+
+  <div class="up-icons" data-icon-vault>
+    <header class="up-icons-head">
+      <div class="up-icons-kicker">~/icons</div>
+      <h1 class="up-icons-title">{{ T "icon_vault_title" }}</h1>
+      <p class="up-icons-lede">{{ T "icon_vault_lede" }}</p>
+    </header>
+
+    {{- $sections := slice
+        (dict "kind" "glyph" "no" "01" "title" (T "icon_vault_glyphs")
+              "note" (T "icon_vault_glyphs_note") "items" $glyphs
+              "sizes" (slice 16 20 24 32) "size" 24)
+        (dict "kind" "app" "no" "02" "title" (T "icon_vault_apps")
+              "note" (T "icon_vault_apps_note") "items" $apps
+              "sizes" (slice 40 48 56 72) "size" 56)
+        (dict "kind" "flat" "no" "03" "title" (T "icon_vault_flat")
+              "note" (T "icon_vault_flat_note") "items" $flat
+              "sizes" (slice 48 64 80 96) "size" 64)
+    -}}
+
+    {{- range $sections }}
+      <section class="up-icons-section">
+        <div class="up-icons-section-head">
+          <span class="up-icons-no">{{ .no }}</span>
+          <h2>{{ .title }}</h2>
+          <span class="up-icons-count">{{ T "icons_count" (len .items) }}</span>
+          <span class="up-icons-note">{{ .note }}</span>
+        </div>
+        {{- $size := .size }}
+        <div class="up-icons-controls-row">
+          <span class="up-icons-ctl-label">{{ T "size" }}</span>
+          <div class="up-icons-seg" data-vault-size-group>
+            {{- range $s := .sizes }}
+              <button type="button" data-vault-size="{{ $s }}"{{ if eq $s $size }} class="is-active"{{ end }}>{{ $s }}</button>
+            {{- end }}
+          </div>
+          <span class="up-icons-ctl-label">{{ T "background" }}</span>
+          <div class="up-icons-seg" data-vault-bg-group>
+            <button type="button" data-vault-bg="light" class="is-active">{{ T "bg_white" }}</button>
+            <button type="button" data-vault-bg="launcher">{{ T "bg_purple" }}</button>
+            <button type="button" data-vault-bg="dark">{{ T "bg_black" }}</button>
+          </div>
+        </div>
+        <div class="up-icons-grid" data-vault-grid data-kind="{{ .kind }}" data-bg="light" style="--icp-size:{{ .size }}px">
+          {{- range .items }}
+            <button type="button" class="up-icons-cell" data-vault-cell data-name="{{ .name }}"
+                    title="{{ T "copy_svg" }}">
+              <span class="up-icons-art">{{ .svg | safeHTML }}</span>
+              <span class="up-icons-label">{{ .name }}</span>
+            </button>
+          {{- end }}
+        </div>
+      </section>
+    {{- end }}
+
+    <div class="up-icons-toast" data-vault-toast aria-live="polite"></div>
+  </div>
+{{ end }}

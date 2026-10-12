@@ -48,7 +48,7 @@ jobs:
       - name: Build
         run: hugo --minify
 
-      # The theme is consumed standalone from themes/ubuntu-unity. Its
+      # The theme is consumed standalone from themes/unity. Its
       # example site and bare sites with no config must build without
       # warnings.
       - name: Build theme test sites
@@ -81,7 +81,7 @@ jobs:
           extended: false
 
       - name: Build theme test sites
-        run: node themes/ubuntu-unity/scripts/build-sites.mjs
+        run: node themes/unity/scripts/build-sites.mjs
 
   deploy:
     needs: build

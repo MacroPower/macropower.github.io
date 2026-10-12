@@ -1,15 +1,15 @@
 {
   "name": "jacobcolvin-com",
   "private": true,
-  "description": "Personal Hugo site for jacobcolvin.com. Its dev tooling is the ubuntu-unity theme's, which this workspace runs.",
+  "description": "Personal Hugo site for jacobcolvin.com. Its dev tooling is the unity theme's, which this workspace runs.",
   "workspaces": [
-    "themes/ubuntu-unity"
+    "themes/unity"
   ],
   "scripts": {
-    "typecheck": "npm run typecheck -w themes/ubuntu-unity",
-    "typecheck:test": "npm run typecheck:test -w themes/ubuntu-unity",
-    "test": "npm test -w themes/ubuntu-unity",
-    "test:watch": "npm run test:watch -w themes/ubuntu-unity",
-    "test:sites": "npm run test:sites -w themes/ubuntu-unity"
+    "typecheck": "npm run typecheck -w themes/unity",
+    "typecheck:test": "npm run typecheck:test -w themes/unity",
+    "test": "npm test -w themes/unity",
+    "test:watch": "npm run test:watch -w themes/unity",
+    "test:sites": "npm run test:sites -w themes/unity"
   }
 }

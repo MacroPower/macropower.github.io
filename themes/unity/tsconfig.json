@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": false,
+    "paths": {
+      "@xterm/xterm": [
+        "./assets/unity/third_party/xterm/xterm.d.ts"
+      ],
+      "@xterm/addon-fit": [
+        "./assets/unity/third_party/xterm/addon-fit.d.ts"
+      ],
+      "@xterm/addon-web-links": [
+        "./assets/unity/third_party/xterm/addon-web-links.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "assets/unity/js/**/*"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/testkit.ts"
+  ]
+}
