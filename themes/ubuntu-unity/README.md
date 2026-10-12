@@ -133,7 +133,7 @@ The theme also reads two of Hugo's own settings: `copyright` fills each feed's c
 
 ## Content
 
-- `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
+- `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too. Posts may sit in nested sections such as `content/posts/2024/`, and each section's list shows the posts at any depth below it. A site without sections has no blog, and its pages render as plain windows.
 - Any page accepts `noindex = true`, which asks search engines to skip it, and `slug`, which also names the page's file in the home terminal.
 - `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`. The viewer runs on Chrome 125, Safari 18, Firefox ESR, and later. Older browsers get a link to the PDF.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.

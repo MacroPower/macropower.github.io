@@ -67,6 +67,24 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // Posts in a nested section.
+  nested: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/posts/_index.md": page("Posts"),
+      "content/posts/top.md": page("Top post"),
+      "content/posts/2024/_index.md": page("2024"),
+      "content/posts/2024/deep.md": page("Deep post"),
+    },
+    check: (out) => {
+      const list = read(join(out, "posts/index.html"));
+      const deep = read(join(out, "posts/2024/deep/index.html"));
+      return [
+        !list.includes("Deep post") && "posts/index.html omits the nested post",
+        !deep.includes('href="/posts/"') && "the nested post's pathbar omits the blog section",
+      ].filter(Boolean);
+    },
+  },
 };
 
 function read(file) {

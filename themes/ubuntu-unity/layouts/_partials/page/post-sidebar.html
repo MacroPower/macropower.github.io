@@ -17,7 +17,7 @@
       "label" (T "all")
       "url" .RelPermalink
       "icon" $iconAll
-      "count" (len .RegularPages)
+      "count" (len .RegularPagesRecursive)
       "active" (eq $here .RelPermalink)) -}}
 {{- end -}}
 {{- range (index site.Taxonomies $tax.category).Alphabetical -}}

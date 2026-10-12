@@ -1,0 +1,15 @@
+{{- /*
+  The pathbar segments from the page's top-level section down to the
+  page itself, as a slice of {label, url} dicts. The home page is never a
+  segment, because the launcher's Home tile already leads there.
+
+  Context: the page.
+*/ -}}
+{{- $segments := slice -}}
+{{- range .Ancestors.Reverse -}}
+  {{- if not .IsHome -}}
+    {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
+  {{- end -}}
+{{- end -}}
+{{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
+{{- return $segments -}}
