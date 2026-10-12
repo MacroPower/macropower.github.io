@@ -1,0 +1,3 @@
+{{- /* Feed headings: the plain heading, without render-heading.html's
+      self-link, which means nothing in a feed reader. */ -}}
+<h{{ .Level }} id="{{ .Anchor }}">{{ .Text }}</h{{ .Level }}>

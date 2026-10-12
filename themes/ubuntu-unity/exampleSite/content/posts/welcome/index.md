@@ -21,6 +21,25 @@ func main() {
 
 > Blockquotes, lists, and images all render inside the page window.
 
+GitHub-style alerts render as info bars:
+
+> [!TIP]
+> Hover a heading to reveal the link to its section.
+
+> [!WARNING]- Collapsed by default
+> A `+` or `-` after the alert type makes it collapsible.
+
+## Math
+
+With Goldmark's passthrough extension enabled, TeX renders to MathML at
+build time, inline like \(e^{i\pi} + 1 = 0\) or as a block:
+
+$$
+\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+$$
+
+## Images and links
+
 This post is a page bundle, so an image beside its `index.md` resolves
 by file name. The theme's render hook loads it lazily and gives it a
 width and height:

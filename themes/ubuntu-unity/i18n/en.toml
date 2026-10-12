@@ -93,6 +93,20 @@ other = "Feeds"
 [rss]
 other = "RSS"
 
+# Markdown render hooks
+[link_to_section]
+other = "Link to {{ .Title }}"
+[alert_note]
+other = "Note"
+[alert_tip]
+other = "Tip"
+[alert_important]
+other = "Important"
+[alert_warning]
+other = "Warning"
+[alert_caution]
+other = "Caution"
+
 # Home page (screen-reader and no-JS fallback)
 [links]
 other = "Links"

@@ -1,0 +1,37 @@
+{{- /* Markdown blockquotes. A GitHub-style alert (> [!NOTE], [!TIP],
+      [!IMPORTANT], [!WARNING], or [!CAUTION]) renders as a GTK info bar
+      with an icon and a title, which a custom title after the marker
+      replaces. A + or - after the marker makes the alert collapsible,
+      open or closed. An unknown type gets the note's look. Any other
+      blockquote renders plainly. */ -}}
+{{- if eq .Type "alert" -}}
+  {{- $kinds := dict
+    "note" "glyphs/info"
+    "tip" "glyphs/check-circle"
+    "important" "glyphs/star"
+    "warning" "glyphs/warning"
+    "caution" "glyphs/warning"
+  -}}
+  {{- $type := lower .AlertType -}}
+  {{- if not (index $kinds $type) }}{{ $type = "note" }}{{ end -}}
+  {{- $title := or .AlertTitle (T (printf "alert_%s" $type)) -}}
+  {{- $head := printf `<span class="up-alert-icon" aria-hidden="true">%s</span><span>%s</span>` (partial "icon.html" (index $kinds $type)) $title -}}
+  {{- if .AlertSign -}}
+<details class="up-alert is-{{ $type }}"{{ if eq .AlertSign "+" }} open{{ end }}>
+  <summary class="up-alert-title">{{ $head | safeHTML }}</summary>
+  <div class="up-alert-body">{{ .Text }}</div>
+</details>
+  {{- else -}}
+<div class="up-alert is-{{ $type }}" role="note">
+  <div class="up-alert-title">{{ $head | safeHTML }}</div>
+  <div class="up-alert-body">{{ .Text }}</div>
+</div>
+  {{- end -}}
+{{- else -}}
+<blockquote
+  {{- range $k, $v := .Attributes -}}
+    {{- if $v }}{{ printf " %s=%q" $k ($v | transform.HTMLEscape) | safeHTMLAttr }}{{ end -}}
+  {{- end -}}>
+  {{ .Text }}
+</blockquote>
+{{- end }}

@@ -1,0 +1,9 @@
+{{- /* Markdown headings. Each keeps its id and ends with a "#" link to
+      itself, which shows on hover or focus so a reader can copy a link
+      to the section. */ -}}
+<h{{ .Level }} id="{{ .Anchor }}"
+  {{- range $k, $v := .Attributes -}}
+    {{- if and $v (ne $k "id") }}{{ printf " %s=%q" $k ($v | transform.HTMLEscape) | safeHTMLAttr }}{{ end -}}
+  {{- end -}}>
+  {{- .Text -}}
+  <a class="up-heading-anchor" href="#{{ .Anchor }}" aria-label="{{ T "link_to_section" (dict "Title" .PlainText) }}">#</a></h{{ .Level }}>

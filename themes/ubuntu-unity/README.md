@@ -139,6 +139,29 @@ theme   = "ubuntu-unity"
 
 `hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`.
 
+### Markdown
+
+The theme's render hooks extend Hugo's Markdown:
+
+- **Links and images.** A relative link or image resolves to a page, then a file in the page's bundle, then a file under `assets/`, so `[intro](other-post.md)` and `![](photo.jpg)` beside an `index.md` both work. Images Hugo can read get a width and height.
+- **Headings.** Every heading ends with a `#` link to itself, which shows on hover. Feeds get the plain heading.
+- **Alerts.** GitHub-style alerts render as info bars. The types are `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION`, text after the marker replaces the title, and a `+` or `-` after the type makes the alert collapsible, open or closed:
+
+  ```markdown
+  > [!WARNING]- Read this first
+  > The alert starts collapsed.
+  ```
+
+- **Math.** With Goldmark's passthrough extension enabled, TeX between the delimiters renders to MathML at build time, so math needs no script or stylesheet:
+
+  ```toml
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block  = [['\[', '\]'], ['$$', '$$']]
+      inline = [['\(', '\)']]
+  ```
+
 ## Customizing
 
 - **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. It goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files under `assets/css/`. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.

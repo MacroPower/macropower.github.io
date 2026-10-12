@@ -36,6 +36,13 @@ mainSections = ["posts"]
 [markup]
   [markup.highlight]
     style = "monokai"
+  # Passes TeX between these delimiters through to the theme's math
+  # render hook, which renders it to MathML at build time.
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block  = [['\[', '\]'], ['$$', '$$']]
+      inline = [['\(', '\)']]
 
 [params]
   # Site description for <meta name="description"> and the feeds.
