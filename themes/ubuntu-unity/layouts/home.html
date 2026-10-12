@@ -23,7 +23,7 @@
 {{- $ascii := "" -}}{{- with resources.Get "home/ascii.txt" -}}{{- $ascii = .Content -}}{{- end -}}
 {{- $colors := "" -}}{{- with resources.Get "home/colors.txt" -}}{{- $colors = .Content -}}{{- end -}}
 {{- $socials := slice -}}
-{{- range .Site.Params.social -}}
+{{- range partialCached "socials.html" . -}}
   {{- $label := .short | default .name -}}
   {{- $display := .url | strings.TrimPrefix "http://" | strings.TrimPrefix "https://" | strings.TrimPrefix "www." -}}
   {{- $socials = $socials | append (dict "label" $label "url" .url "display" $display) -}}
@@ -35,14 +35,13 @@
       prints the markdown. The blog section itself (see
       _partials/blog-section.html) names the directory the posts live in. */ -}}
 {{- $blogSection := partialCached "blog-section.html" . -}}
-{{- $tax := partialCached "blog-taxonomies.html" . -}}
 {{- $posts := slice -}}
 {{- range partialCached "blog-posts.html" . -}}
   {{- $posts = $posts | append (dict
       "slug" (partial "ui/file-name.html" .)
       "title" .Title
       "date" (.Date.Format "2006-01-02")
-      "categories" (index .Params $tax.category | default slice)
+      "categories" (partial "post-categories.html" .)
       "url" .RelPermalink
       "permalink" .Permalink
   ) -}}

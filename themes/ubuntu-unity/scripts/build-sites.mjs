@@ -85,6 +85,23 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // Config, front matter, and data in the looser shapes Hugo accepts.
+  loose: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[params]
+  social = { github = "https://github.com/jane" }
+[taxonomies]
+  category = "categories"
+`,
+      "content/posts/one.md": page("One", "categories = 'solo'\n"),
+      "content/posts/two.md": page("Two", "categories = ['a', 'b']\n"),
+      "data/projects.yaml": "- name: bare-project\n- name: tagged\n  language: Go\n  topics: [cli]\n",
+    },
+    check: (out) => [
+      !read(join(out, "index.html")).includes("github.com/jane") && "the home page drops a map-form params.social",
+    ].filter(Boolean),
+  },
 };
 
 function read(file) {

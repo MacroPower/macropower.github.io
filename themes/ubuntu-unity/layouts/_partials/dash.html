@@ -96,7 +96,6 @@
       </section>
 
       {{- with $posts }}
-      {{- $tax := partialCached "blog-taxonomies.html" $ }}
       <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
@@ -107,7 +106,7 @@
           {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
              title="{{ .Title }}"
-             data-keywords="{{ T "kw_post" }} {{ delimit (index .Params $tax.category | default slice) " " }} {{ time.Format "2006 January" .Date }}">
+             data-keywords="{{ T "kw_post" }} {{ delimit (partial "post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
             <span class="up-dash-tile-label">{{ .Title }}</span>
           </a>

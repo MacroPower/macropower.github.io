@@ -25,9 +25,10 @@
      which shifts the rendered sidebar across builds. */}}
 {{- $langCounts := dict -}}
 {{- range $projects -}}
-  {{- $l := .language -}}
-  {{- $n := index $langCounts $l | default 0 -}}
-  {{- $langCounts = merge $langCounts (dict $l (add $n 1)) -}}
+  {{- with .language -}}
+    {{- $n := index $langCounts . | default 0 -}}
+    {{- $langCounts = merge $langCounts (dict . (add $n 1)) -}}
+  {{- end -}}
 {{- end -}}
 {{- $langNames := slice -}}
 {{- range $name, $_ := $langCounts -}}

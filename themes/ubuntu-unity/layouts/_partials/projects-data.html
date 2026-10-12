@@ -1,7 +1,10 @@
 {{- /*
   The projects the projects page and the Dash show, as a slice of dicts
   with name, description, language, stars, forks, updated, topics, url,
-  and license. They come from the site's data/projects file. Without that
+  and license. They come from the site's data/projects file, where every
+  key but name is optional: description and language default to "", and
+  topics to an empty list. An entry without a name warns and drops out.
+  Without that
   file, a site that sets params.projects.github gets that account's
   public repositories from the GitHub API at build time: sources with a
   language, no forks or archived repositories, most starred first. Set the
@@ -13,7 +16,16 @@
 */ -}}
 {{- $projects := slice -}}
 {{- with hugo.Data.projects -}}
-  {{- $projects = . -}}
+  {{- range . -}}
+    {{- if not .name -}}
+      {{- warnf "ubuntu-unity: data/projects has an entry without a name: %v" . -}}
+      {{- continue -}}
+    {{- end -}}
+    {{- $projects = $projects | append (merge . (dict
+        "description" (.description | default "")
+        "language" (.language | default "")
+        "topics" (.topics | default slice))) -}}
+  {{- end -}}
 {{- else -}}
   {{- with site.Params.projects.github -}}
     {{- $url := printf "https://api.github.com/users/%s/repos?per_page=100&type=owner&sort=pushed" (urlquery .) -}}

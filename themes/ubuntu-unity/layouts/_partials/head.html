@@ -29,7 +29,7 @@
 {{- $author := partialCached "author.html" . }}
 {{- if .IsHome }}
 {{- $sameAs := slice }}
-{{- range .Site.Params.social }}{{ $sameAs = $sameAs | append .url }}{{ end }}
+{{- range partialCached "socials.html" . }}{{ $sameAs = $sameAs | append .url }}{{ end }}
 {{- $person := dict
   "@context" "https://schema.org"
   "@type" "Person"

@@ -1,7 +1,6 @@
 {{- $pages := .pages -}}
 {{- $here := .here -}}
 {{- $dateFmt := site.Params.blog.listDateFormat | default "2006-01-02" -}}
-{{- $tax := partialCached "blog-taxonomies.html" . -}}
 
 <section class="up-post-list" aria-label="{{ T "posts" }}" data-up-post-list>
   <header class="up-post-list-header">
@@ -20,7 +19,7 @@
     {{- range $pages.ByDate.Reverse }}
       {{- $isActive := and (ne $here "") (eq $here .RelPermalink) }}
       {{- $tagList := slice }}
-      {{- $chips := index .Params $tax.category | default slice }}
+      {{- $chips := partial "post-categories.html" . }}
       {{- range $chips }}{{ $tagList = $tagList | append (lower .) }}{{ end }}
       {{- $iso := .Date.Format "2006-01-02" }}
       {{ partial "page/post-row.html" (dict

@@ -7,9 +7,9 @@
   data-filters lists the sidebar filters the project belongs to (see
   project-filters.html), so the script never needs the thresholds.
 
-  Required keys: name, language, updated, topics, description, url.
-  Optional keys: stars, forks, license (emitted only when present, matching the
-  source contract so projects.ts can treat their absence as "unknown").
+  projects-data.html guarantees name, description, language, and topics.
+  stars, forks, and license are emitted only when present, so projects.ts
+  can treat their absence as "unknown".
 */ -}}
 {{- $p := . -}}
 <button type="button"

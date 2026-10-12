@@ -1,6 +1,6 @@
 # Projects shown on /projects/ (and searchable in the Dash). One entry per
-# repository. name, description, language, updated, and url are required;
-# stars, forks, topics, and license are optional. language is free text;
+# repository. Every key but name is optional, though a tile without a url
+# opens nothing. language is free text;
 # the theme ships emblems for Go, Python, TypeScript, JavaScript, Rust,
 # Shell, C, HTML, Ruby, and Lua, and shows a generic emblem for the rest.
 - name: sample-cli

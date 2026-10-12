@@ -16,9 +16,9 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 ## Layouts
 
 - `baseof.html` is the only base template. It wraps `{{ block "main" }}` in the page window, so a layout's `main` block emits inner content only and never its own outer wrapper or titlebar.
-- Templates never name the blog section or its taxonomies. `_partials/blog-section.html` resolves the section from `mainSections`, `_partials/in-blog.html` is the "is this a post" test, and `_partials/blog-posts.html` lists the posts. Never test `in site.MainSections .Section` directly, because Hugo sets `mainSections` to `[""]` on a site without sections. `_partials/blog-taxonomies.html` names the category and series taxonomies.
+- Templates never name the blog section or its taxonomies. `_partials/blog-section.html` resolves the section from `mainSections`, `_partials/in-blog.html` is the "is this a post" test, and `_partials/blog-posts.html` lists the posts. Never test `in site.MainSections .Section` directly, because Hugo sets `mainSections` to `[""]` on a site without sections. `_partials/blog-taxonomies.html` names the category and series taxonomies, and `_partials/post-categories.html` reads a post's categories.
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
-- `_partials/author.html` normalizes `params.author`, which a site may set as a table or a plain name, so read the owner through it.
+- `_partials/author.html` normalizes `params.author`, which a site may set as a table or a plain name, so read the owner through it. `_partials/socials.html` does the same for `params.social`, and `_partials/projects-data.html` fills in each project's optional keys.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.
 - `_partials/projects-data.html` resolves the projects from `data/projects` or, without it, the GitHub API. The projects page and the Dash read projects only through it.
 - `_partials/lang-indicator.html` renders nothing on a monolingual site, so a bare site's panel stays unchanged.
