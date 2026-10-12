@@ -136,7 +136,9 @@ mainSections = ["posts"]
 
 # menu.main drives the theme's site-pages registry: the launcher dock, the
 # Dash's Applications category, the top panel's File menu, and the nav:<key>
-# actions. Home is implicit and always first. Optional [menu.main.params]:
+# actions. Home is implicit and always first. pageRef points an entry at a
+# page and follows its permalink and language; url takes any address.
+# Optional [menu.main.params]:
 #   icon      — launcher artwork under the theme's assets/icons/
 #   match     — "exact" or "prefix" URL matching for active state
 #   kw        — Dash search keywords
@@ -149,27 +151,27 @@ mainSections = ["posts"]
   [[menu.main]]
     identifier = "cv"
     name       = "CV"
-    url        = "cv/"
+    pageRef    = "/cv"
     weight     = 2
   [[menu.main]]
     identifier = "projects"
     name       = "Projects"
-    url        = "projects/"
+    pageRef    = "/projects"
     weight     = 3
   [[menu.main]]
     identifier = "blog"
     name       = "Blog"
-    url        = "posts/"
+    pageRef    = "/posts"
     weight     = 4
   [[menu.main]]
     identifier = "sponsors"
     name       = "Sponsors"
-    url        = "sponsors/"
+    pageRef    = "/sponsors"
     weight     = 5
   [[menu.main]]
     identifier = "solitaire"
     name       = "Solitaire"
-    url        = "solitaire/"
+    pageRef    = "/solitaire"
     weight     = 6
     [menu.main.params]
       # An easter egg like the Studio: docked only while open, reachable
@@ -178,7 +180,7 @@ mainSections = ["posts"]
   [[menu.main]]
     identifier = "icons"
     name       = "Icons"
-    url        = "icons/"
+    pageRef    = "/icons"
     weight     = 7
     [menu.main.params]
       # The icon vault: searchable in the Dash and linked from
