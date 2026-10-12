@@ -9,7 +9,7 @@
                Appearance, ...). Page tiles are real <a>; app tiles are
                <button data-dash-action> dispatched by dash.ts.
     files    — blog posts (newest first), real <a>.
-    projects — hugo.Data.projects, real <a> to GitHub (new tab, like the
+    projects — projects-data.html's projects, real <a> to GitHub (new tab, like the
                projects grid's open behavior).
     music    — the Studio playlist as anonymous "Track N" buttons
                (music:<i> selects the track, opens the Studio, and plays).
@@ -53,6 +53,7 @@
         "kw" "log out logout session quit exit leave goodbye")
 ) -}}
 {{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
+{{- $projects := partialCached "projects-data.html" . -}}
 <div class="up-dash" data-up-dash hidden>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
   <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="{{ T "dash_search" }}">
@@ -111,7 +112,7 @@
       </section>
       {{- end }}
 
-      {{- with hugo.Data.projects }}
+      {{- with $projects }}
       <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
         <header class="up-dash-cat">
           <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
@@ -169,7 +170,7 @@
         {{ partial "icon.html" "glyphs/folder" }}
       </button>
       {{- end }}
-      {{- if hugo.Data.projects }}
+      {{- if $projects }}
       <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="{{ T "projects" }}">
         {{ partial "icon.html" "glyphs/code" }}
       </button>

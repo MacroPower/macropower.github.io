@@ -91,9 +91,12 @@ mainSections = ["posts"]
     #   category = "categories"
     #   series   = "series"
 
-  # The thresholds behind the projects sidebar's Starred, Forks, and
-  # Recent filters. These are the defaults.
+  # The projects page reads data/projects.yaml. Without that file, github
+  # names an account whose public repositories the build fetches from the
+  # GitHub API instead. The thresholds behind the sidebar's Starred,
+  # Forks, and Recent filters show their defaults.
   # [params.projects]
+  #   github       = "jane"
   #   minStars     = 100
   #   minForks     = 6
   #   recentMonths = 6

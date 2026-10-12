@@ -119,6 +119,7 @@ theme   = "ubuntu-unity"
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
 | `blog.taxonomies.category`, `blog.taxonomies.series` | `categories`, `series` | The taxonomies behind the blog's Places and Series lenses and the post chips. Set `category = "tags"` for a site that tags its posts. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The login the home terminal presents. |
+| `projects.github` | | A GitHub account whose public repositories fill the projects page when the site has no `data/projects.yaml`. |
 | `projects.minStars`, `projects.minForks`, `projects.recentMonths` | `100`, `6`, `6` | The thresholds behind the projects sidebar's Starred, Forks, and Recent filters. |
 | `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. |
 
@@ -131,7 +132,7 @@ theme   = "ubuntu-unity"
 - `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too.
 - `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`. The viewer runs on Chrome 125, Safari 18, Firefox ESR, and later. Older browsers get a link to the PDF.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.
-- `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
+- `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema. Without that file, set `params.projects.github` to your GitHub account, and the build fetches its public repositories with a language, skipping forks and archived ones. Set the `HUGO_GITHUB_TOKEN` environment variable to lift the GitHub API's rate limit for anonymous requests. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
 - `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens it.
 - `content/icons.md` with `layout = "icons"` is the icon vault, a copy-to-clipboard catalogue of every SVG the theme ships.
 - `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio.

@@ -1,11 +1,12 @@
 {{- /*
-  The projects page body: an icon-view grid over hugo.Data.projects (the
-  site's data/projects.yaml; the page renders empty without it) with the
+  The projects page body: an icon-view grid over the projects from
+  projects-data.html (the page renders empty without any) with the
   Places/Languages sidebar and the preview pane projects.ts paints.
   Rendered by layouts/projects.html for pages with `layout = "projects"`.
   Any language name is accepted; those without artwork in the lang-symbols
   sprite get a generic emblem.
 */ -}}
+{{- $projects := partialCached "projects-data.html" . -}}
 <article class="up-projects selectable" data-projects-kind="section">
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/icons/lang-symbols.html" . }}
@@ -23,8 +24,8 @@
       "searchNoun" (T "projects_noun")
       "searchPlaceholder" (T "filter_projects_placeholder")) }}
   <div class="up-projects-grid">
-    {{ partial "page/projects-sidebar.html" (dict "projects" hugo.Data.projects) }}
-    {{ partial "page/projects-grid.html" (dict "projects" hugo.Data.projects) }}
+    {{ partial "page/projects-sidebar.html" (dict "projects" $projects) }}
+    {{ partial "page/projects-grid.html" (dict "projects" $projects) }}
     {{ partial "page/empty-pane.html" (dict
         "class" "up-project-preview"
         "ariaLabel" (T "project_preview")
@@ -46,7 +47,7 @@
       .up-projects noscript{display:contents}
     </style>
     <ul class="up-projects-noscript">
-      {{- range hugo.Data.projects }}
+      {{- range $projects }}
       <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
       {{- end }}
     </ul>
