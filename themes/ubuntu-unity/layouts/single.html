@@ -4,7 +4,7 @@
      sponsors, projects, solitaire, icons); everything else renders in a
      plain window. */ -}}
 {{ define "main" }}
-  {{- if in site.MainSections .Section -}}
+  {{- if partial "in-blog.html" . -}}
     {{ partial "page/blog-post.html" . }}
   {{- else -}}
     {{ partial "ui/page.html" (dict "title" .Title "content" .Content) }}

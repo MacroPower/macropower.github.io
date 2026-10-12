@@ -51,7 +51,7 @@ window.UP_SITE = {{ (dict "handle" $handle "repo" $repo "rss" $rss "nav" $nav) |
   {{/* blog.js and projects.js no-op without their root data attribute
        ([data-blog-kind] / [data-projects-kind]); ship each only to the
        layouts that emit it, mirroring the shell bundle's IsHome gate. */}}
-  {{ if or (in site.MainSections .Section) (in (slice "taxonomy" "term") .Kind) }}
+  {{ if or (partial "in-blog.html" .) (in (slice "taxonomy" "term") .Kind) }}
   {{ partial "ui/script.html" (dict "entry" "js/blog.ts" "target" "js/blog.js") }}
   {{ end }}
 

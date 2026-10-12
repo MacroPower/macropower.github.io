@@ -2,7 +2,7 @@
      gets the Nautilus-style post browser; every other section renders as
      a plain page listing its children. */ -}}
 {{ define "main" }}
-  {{- if in site.MainSections .Section -}}
+  {{- if partial "in-blog.html" . -}}
     {{ partial "page/blog-list.html" . }}
   {{- else -}}
     {{- $children := slice -}}

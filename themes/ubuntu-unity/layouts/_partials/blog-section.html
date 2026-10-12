@@ -9,7 +9,7 @@
   through partialCached; the result is the same for every page.
 */ -}}
 {{- $page := "" -}}
-{{- with index site.MainSections 0 -}}
+{{- with index (complement (slice "") site.MainSections) 0 -}}
   {{- with site.GetPage (printf "/%s" .) }}{{ $page = . }}{{ end -}}
 {{- end -}}
 {{- return $page -}}

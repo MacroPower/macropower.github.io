@@ -37,7 +37,7 @@
 {{- $blogSection := partialCached "blog-section.html" . -}}
 {{- $tax := partialCached "blog-taxonomies.html" . -}}
 {{- $posts := slice -}}
-{{- range where .Site.RegularPages "Section" "in" site.MainSections -}}
+{{- range partialCached "blog-posts.html" . -}}
   {{- $posts = $posts | append (dict
       "slug" (partial "ui/file-name.html" .)
       "title" .Title

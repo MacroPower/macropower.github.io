@@ -7,7 +7,7 @@
        params.blog.feedFullContent is set. */}}
 {{- $pages := .Pages }}
 {{- if .IsHome }}
-  {{- $pages = where site.RegularPages "Section" "in" site.MainSections }}
+  {{- $pages = partialCached "blog-posts.html" . }}
 {{- else if .IsSection }}
   {{- $pages = .RegularPagesRecursive }}
 {{- end }}

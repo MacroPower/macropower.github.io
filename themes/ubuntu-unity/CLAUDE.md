@@ -4,7 +4,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 ## Constraints
 
-- A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds bare sites and `exampleSite/` with warnings fatal to check this, and the example site must use every template.
+- A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds `exampleSite/` and small sites of other shapes with warnings fatal, then checks their output. The example site must use every template. Add a site to `scripts/build-sites.mjs` when a fix covers a site shape the others miss.
 - A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
 - The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together.
 - All desktop state is session-only by design. Only the terminal's command history persists.
@@ -16,7 +16,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 ## Layouts
 
 - `baseof.html` is the only base template. It wraps `{{ block "main" }}` in the page window, so a layout's `main` block emits inner content only and never its own outer wrapper or titlebar.
-- Templates never name the blog section or its taxonomies. `_partials/blog-section.html` resolves the section from `mainSections`, and `in site.MainSections .Section` is the "is this a post" test. `_partials/blog-taxonomies.html` names the category and series taxonomies.
+- Templates never name the blog section or its taxonomies. `_partials/blog-section.html` resolves the section from `mainSections`, `_partials/in-blog.html` is the "is this a post" test, and `_partials/blog-posts.html` lists the posts. Never test `in site.MainSections .Section` directly, because Hugo sets `mainSections` to `[""]` on a site without sections. `_partials/blog-taxonomies.html` names the category and series taxonomies.
 - Bespoke pages select `layouts/<layout>.html` through `layout` front matter, and each one renders `_partials/page/<layout>.html`. Adding a page means adding both files and documenting the front matter the partial reads in its header comment.
 - `_partials/author.html` normalizes `params.author`, which a site may set as a table or a plain name, so read the owner through it.
 - `_partials/site-pages.html` is the page registry built from `menu.main`. The launcher, Dash, HUD, File menu, and `nav:<key>` actions all read it.

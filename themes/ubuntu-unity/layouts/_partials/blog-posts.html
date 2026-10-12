@@ -1,0 +1,8 @@
+{{- /*
+  The blog's posts: every regular page in Hugo's mainSections, at any
+  depth, in Hugo's default page order. The Dash, the home terminal, and
+  the home feed list posts through here. A site with no sections has no
+  posts. Call it through partialCached.
+*/ -}}
+{{- $sections := complement (slice "") site.MainSections -}}
+{{- return where site.RegularPages "Section" "in" $sections -}}

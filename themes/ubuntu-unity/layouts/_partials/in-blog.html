@@ -1,0 +1,10 @@
+{{- /*
+  Whether the page belongs to the blog: a post, or a section page under
+  one of Hugo's mainSections. Every template that switches to blog UI
+  asks through here. A site with no sections gets mainSections [""], so
+  the test requires a non-empty section, or every root page would count
+  as a post.
+
+  Context: the page.
+*/ -}}
+{{- return and .Section (in site.MainSections .Section) -}}
