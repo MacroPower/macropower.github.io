@@ -1,8 +1,9 @@
 {{- /*
   Resolves a URL from front matter the way the Markdown render hooks do.
-  An absolute URL passes through. Anything else resolves to a resource in
-  the page's bundle, then to one under assets/, and otherwise to a path
-  under the site's baseURL, so "/files/cv.pdf" keeps working when the site
+  An absolute or protocol-relative URL passes through. Anything else
+  resolves to a resource in the page's bundle, then to one under assets/,
+  and otherwise to a path under the site's baseURL (see
+  markup/site-url.html), so "/files/cv.pdf" keeps working when the site
   is served from a subpath.
 
   Args (dict): page     - the page whose bundle to search
@@ -12,15 +13,15 @@
 */ -}}
 {{- $u := urls.Parse .url -}}
 {{- $out := .url -}}
-{{- if not $u.IsAbs -}}
+{{- if not (or $u.IsAbs $u.Host) -}}
   {{- $path := strings.TrimPrefix "./" $u.Path -}}
   {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
     {{- $out = cond $.absolute .Permalink .RelPermalink -}}
   {{- else -}}
-    {{- $path = strings.TrimPrefix "/" $path -}}
-    {{- $out = cond .absolute (absURL $path) (relURL $path) -}}
+    {{- $escaped := printf "/%s" (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.EscapedPath)) -}}
+    {{- $out = partial "markup/site-url.html" (dict "path" $escaped "absolute" .absolute) -}}
   {{- end -}}
   {{- with $u.RawQuery }}{{ $out = printf "%s?%s" $out . }}{{ end -}}
-  {{- with $u.Fragment }}{{ $out = printf "%s#%s" $out . }}{{ end -}}
+  {{- with $u.EscapedFragment }}{{ $out = printf "%s#%s" $out . }}{{ end -}}
 {{- end -}}
 {{- return $out -}}

@@ -3,7 +3,9 @@
   a dict of src, width, height, and srcset. A relative destination
   resolves against the page bundle and then the site's assets, so
   `![](photo.jpg)` beside an index.md works, and a root-relative one
-  that matches neither resolves under the site's baseURL. Raster images
+  that matches neither resolves under the site's baseURL (see
+  site-url.html). In absolute mode, any other relative one resolves
+  against the page's permalink. Raster images
   Hugo can read get width and height, and a JPEG, PNG, or WebP wider
   than the text column also gets a srcset of narrower copies. The other
   keys are empty when they do not apply.
@@ -36,14 +38,15 @@
       {{- end -}}
     {{- end -}}
   {{- else -}}
-    {{- if hasPrefix $path "/" -}}
-      {{- $path = strings.TrimPrefix "/" $path -}}
-      {{- $src = cond .absolute (absURL $path) (relURL $path) -}}
+    {{- if hasPrefix $u.Path "/" -}}
+      {{- $src = partial "markup/site-url.html" (dict "path" $u.EscapedPath "absolute" .absolute) -}}
+    {{- else if and .absolute $u.Path -}}
+      {{- $src = urls.JoinPath .page.Permalink $u.EscapedPath -}}
     {{- end -}}
   {{- end -}}
   {{- with $src -}}
     {{- with $u.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
-    {{- with $u.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
+    {{- with $u.EscapedFragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
     {{- $out = merge $out (dict "src" $src) -}}
   {{- end -}}
 {{- end -}}
