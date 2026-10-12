@@ -1,8 +1,11 @@
 {{- /*
   The Unity Dash: a translucent search overlay anchored under the top panel at
   the launcher's right edge, opened from the launcher's BFB (the Dash button)
-  or a Super tap. Everything searchable is SSR'd here as tiles; dash.ts only
-  filters, ranks, and dispatches — it never invents content.
+  or a Super tap. Everything searchable is server-rendered as tiles; dash.ts
+  only filters, ranks, and dispatches — it never invents content. The apps
+  category renders here. The files, projects, and music categories render
+  once per language in dash/results.html, which dash.ts fetches from
+  data-dash-src the first time the Dash opens.
 
   Categories:
     apps     — site pages plus the desktop "applications" (Studio, Trash,
@@ -14,7 +17,8 @@
     music    — the Studio playlist as anonymous "Track N" buttons
                (music:<i> selects the track, opens the Studio, and plays).
 
-  DOM contract (read by dash.ts): [data-up-dash], [data-dash-backdrop],
+  DOM contract (read by dash.ts): [data-up-dash], [data-dash-src],
+  [data-dash-backdrop],
   [data-dash-search], [data-dash-results], [data-dash-section],
   [data-dash-grid], [data-dash-more], [data-dash-cap], [data-dash-tile],
   [data-dash-action], data-keywords, [data-dash-lens], [data-dash-empty],
@@ -52,16 +56,15 @@
   (dict "label" (T "log_out_app") "icon" "launcher/doorway" "action" "logout"
         "kw" (T "kw_logout"))
 ) -}}
-{{- /* Every page carries the Dash, so it holds only the newest
-      params.desktop.dashPosts posts; the blog's own list searches the
-      rest. */ -}}
-{{- $posts := (partialCached "blog-posts.html" .).ByDate.Reverse -}}
-{{- with site.Params.desktop.dashPosts }}{{ $posts = first (int .) $posts }}{{ end -}}
+{{- $posts := partialCached "blog-posts.html" . -}}
 {{- $projects := partialCached "projects-data.html" . -}}
-<div class="up-dash" data-up-dash hidden>
+{{- $src := "" -}}
+{{- if or $posts $projects $playlist -}}
+  {{- $src = partialCached "dash/results-url.html" . site.Language.Name -}}
+{{- end -}}
+<div class="up-dash" data-up-dash hidden{{ with $src }} data-dash-src="{{ . }}"{{ end }}>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
   <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="{{ T "dash_search" }}">
-    {{ partial "page/icons/lang-symbols.html" . }}
     <div class="up-dash-searchbar">
       <span class="up-dash-search-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>
       <input class="up-dash-search" data-dash-search type="text"
@@ -94,66 +97,6 @@
           {{- end }}
         </div>
       </section>
-
-      {{- with $posts }}
-      <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
-        <header class="up-dash-cat">
-          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
-          <span class="up-dash-cat-label">{{ T "files_and_folders" }}</span>
-          <button class="up-dash-more" data-dash-more type="button" hidden></button>
-        </header>
-        <div class="up-dash-grid" data-dash-grid>
-          {{- range . }}
-          <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
-             title="{{ .Title }}"
-             data-keywords="{{ T "kw_post" }} {{ delimit (partial "post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
-            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
-            <span class="up-dash-tile-label">{{ .Title }}</span>
-          </a>
-          {{- end }}
-        </div>
-      </section>
-      {{- end }}
-
-      {{- with $projects }}
-      <section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
-        <header class="up-dash-cat">
-          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
-          <span class="up-dash-cat-label">{{ T "projects" }}</span>
-          <button class="up-dash-more" data-dash-more type="button" hidden></button>
-        </header>
-        <div class="up-dash-grid" data-dash-grid>
-          {{- range . }}
-          <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
-             target="_blank" rel="noopener" title="{{ .description }}"
-             data-keywords="{{ T "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
-            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
-            <span class="up-dash-tile-label">{{ .name }}</span>
-          </a>
-          {{- end }}
-        </div>
-      </section>
-      {{- end }}
-
-      {{- with $playlist }}
-      <section class="up-dash-section" data-dash-section="music" aria-label="{{ T "music" }}">
-        <header class="up-dash-cat">
-          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-music" }}</span>
-          <span class="up-dash-cat-label">{{ T "music" }}</span>
-          <button class="up-dash-more" data-dash-more type="button" hidden></button>
-        </header>
-        <div class="up-dash-grid" data-dash-grid>
-          {{- range $i, $u := . }}
-          <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
-                  data-dash-action="music:{{ $i }}"
-                  data-keywords="{{ T "kw_track" }}">
-            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
-            <span class="up-dash-tile-label">{{ T "track_n" (dict "N" (add $i 1)) }}</span>
-          </button>
-          {{- end }}
-        </div>
-      </section>
-      {{- end }}
 
       <div class="up-dash-empty" data-dash-empty hidden>
         <span class="up-dash-empty-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/search" }}</span>

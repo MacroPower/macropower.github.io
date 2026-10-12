@@ -1,0 +1,79 @@
+{{- /*
+  The Dash's searchable content beyond its applications: the blog's
+  posts, the projects, and the Studio's tracks, as the category sections
+  dash.html would otherwise render into every page. dash/results-url.html
+  publishes this once per language, and dash.ts fetches it the first
+  time the Dash opens, so a page carries none of it and the browser
+  caches it across pages. The sections follow dash.html's DOM contract.
+  The lang-symbols sprite rides along for the project emblems, marked
+  data-dash-sprite so dash.ts can skip it on a page that already has one.
+
+  Context: any page. The output must not depend on which.
+*/ -}}
+{{- $posts := (partialCached "blog-posts.html" .).ByDate.Reverse -}}
+{{- $projects := partialCached "projects-data.html" . -}}
+{{- $playlist := partialCached "playlist.html" . -}}
+{{- with $projects }}
+{{- /* Not hidden: the sprite's gradients stop painting inside a
+      display:none subtree, and the sprite already takes no space. */}}
+<div data-dash-sprite>{{ partial "page/icons/lang-symbols.html" $ }}</div>
+{{- end }}
+{{- with $posts }}
+<section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
+  <header class="up-dash-cat">
+    <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
+    <span class="up-dash-cat-label">{{ T "files_and_folders" }}</span>
+    <button class="up-dash-more" data-dash-more type="button" hidden></button>
+  </header>
+  <div class="up-dash-grid" data-dash-grid>
+    {{- range . }}
+    <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
+       title="{{ .Title }}"
+       data-keywords="{{ T "kw_post" }} {{ delimit (partial "post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
+      <span class="up-dash-tile-label">{{ .Title }}</span>
+    </a>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- with $projects }}
+<section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
+  <header class="up-dash-cat">
+    <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
+    <span class="up-dash-cat-label">{{ T "projects" }}</span>
+    <button class="up-dash-more" data-dash-more type="button" hidden></button>
+  </header>
+  <div class="up-dash-grid" data-dash-grid>
+    {{- range . }}
+    <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
+       target="_blank" rel="noopener" title="{{ .description }}"
+       data-keywords="{{ T "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
+      <span class="up-dash-tile-label">{{ .name }}</span>
+    </a>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- with $playlist }}
+<section class="up-dash-section" data-dash-section="music" aria-label="{{ T "music" }}">
+  <header class="up-dash-cat">
+    <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-music" }}</span>
+    <span class="up-dash-cat-label">{{ T "music" }}</span>
+    <button class="up-dash-more" data-dash-more type="button" hidden></button>
+  </header>
+  <div class="up-dash-grid" data-dash-grid>
+    {{- range $i, $u := . }}
+    <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
+            data-dash-action="music:{{ $i }}"
+            data-keywords="{{ T "kw_track" }}">
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
+      <span class="up-dash-tile-label">{{ T "track_n" (dict "N" (add $i 1)) }}</span>
+    </button>
+    {{- end }}
+  </div>
+</section>
+{{- end }}

@@ -1,7 +1,10 @@
 // The Unity Dash: the translucent search overlay behind the launcher's BFB
-// (the Dash button) and a Super tap. Everything searchable is SSR'd into
-// partials/dash.html as tiles grouped in category sections; this module only
-// filters, ranks, and dispatches — it never invents content.
+// (the Dash button) and a Super tap. Everything searchable is server-rendered
+// as tiles grouped in category sections; this module only filters, ranks, and
+// dispatches — it never invents content. partials/dash.html renders the apps
+// section into the page, and the root's data-dash-src names a fragment with
+// the remaining sections, which this module fetches once, on the first open
+// or when the pointer nears the BFB.
 //
 // Interaction model (GNOME-style real focus, no aria-activedescendant): the
 // search input holds focus; arrows walk the visible tile grid with real DOM
@@ -51,9 +54,7 @@ export function initDash(): void {
   const lenses = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-dash-lens]"));
   if (!panel || !input || !results) return;
 
-  const sections: DashSection[] = Array.from(
-    root.querySelectorAll<HTMLElement>("[data-dash-section]"),
-  ).map((sec) => ({
+  const readSection = (sec: HTMLElement): DashSection => ({
     key: sec.dataset.dashSection ?? "",
     root: sec,
     more: sec.querySelector<HTMLButtonElement>("[data-dash-more]"),
@@ -69,7 +70,10 @@ export function initDash(): void {
     }),
     matches: new Set<DashTile>(),
     shown: 0,
-  }));
+  });
+  const sections: DashSection[] = Array.from(
+    root.querySelectorAll<HTMLElement>("[data-dash-section]"),
+  ).map(readSection);
 
   let visible = false;
   let lens = "home";
@@ -133,6 +137,38 @@ export function initDash(): void {
     if (statusEl) statusEl.textContent = tn("js_dash_results", total);
   };
 
+  // ---- remote sections -----------------------------------------------------
+
+  // Fetches the fragment at most once. A failed fetch leaves the Dash with
+  // its apps and lets a later open try again.
+  let loading: Promise<void> | null = null;
+  const loadSections = (): Promise<void> => {
+    const src = root.dataset.dashSrc;
+    if (!src || loading) return loading ?? Promise.resolve();
+    loading = fetch(src)
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return res.text();
+      })
+      .then((html) => {
+        const tpl = document.createElement("template");
+        tpl.innerHTML = html;
+        // A page that renders the language sprite itself (the projects
+        // page) keeps its copy, so the sprite's ids stay unique.
+        const sprite = tpl.content.querySelector("[data-dash-sprite]");
+        if (sprite && document.getElementById("lang-generic")) sprite.remove();
+        const added = Array.from(tpl.content.querySelectorAll<HTMLElement>("[data-dash-section]"));
+        results.insertBefore(tpl.content, emptyEl);
+        sections.push(...added.map(readSection));
+        if (visible) apply();
+      })
+      .catch((err: unknown) => {
+        loading = null;
+        console.warn("ubuntu-unity: cannot load the Dash's sections", err);
+      });
+    return loading;
+  };
+
   const reset = (): void => {
     input.value = "";
     lens = "home";
@@ -161,6 +197,7 @@ export function initDash(): void {
     root.classList.add("is-visible");
     syncBfb();
     input.focus();
+    void loadSections();
   };
 
   const close = (): void => {
@@ -237,6 +274,7 @@ export function initDash(): void {
 
   backdrop?.addEventListener("click", close);
   bfb?.addEventListener("click", toggle);
+  bfb?.addEventListener("pointerenter", () => void loadSections(), { once: true });
 
   // Click-away: launcher / panel clicks land outside the dash root entirely.
   // Capture phase, because the top panel's menu triggers stopPropagation()

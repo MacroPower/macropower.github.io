@@ -1,0 +1,9 @@
+{{- /*
+  Publishes dash/results.html for the current language as a minified,
+  fingerprinted file and returns its URL, which dash.html hands to
+  dash.ts. Call it through partialCached keyed on the language.
+*/ -}}
+{{- $html := partial "dash/results.html" . -}}
+{{- $path := printf "dash/results.%s.html" site.Language.Name -}}
+{{- $res := resources.FromString $path $html | minify | fingerprint -}}
+{{- return $res.RelPermalink -}}

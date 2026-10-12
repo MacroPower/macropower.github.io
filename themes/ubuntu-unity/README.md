@@ -115,7 +115,6 @@ The theme also reads two of Hugo's own settings: `copyright` fills each feed's c
 | `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. |
-| `desktop.dashPosts` | `100` | How many of the newest posts the Dash searches. Every page carries the Dash, so this bounds each page's size on a large blog. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
 | `blog.dateFormat`, `blog.listDateFormat` | `Jan 2, 2006`, `2006-01-02` | Date formats in the post reader and post list. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
