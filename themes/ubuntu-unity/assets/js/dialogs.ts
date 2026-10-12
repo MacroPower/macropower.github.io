@@ -217,8 +217,12 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
     requestAnimationFrame(() => {
       backdrop.classList.add("is-appear");
       dialog.classList.add("is-appear");
+      // Focus starts on the primary button, except when it confirms
+      // something destructive: then it starts on the first safe button,
+      // so a stray Enter or Space cannot delete or log out.
       const primaryBtn = footerEl.querySelector<HTMLButtonElement>("[data-dlg-primary-btn]");
-      primaryBtn?.focus();
+      const safeBtn = footerEl.querySelector<HTMLButtonElement>(".up-dlg-btn:not(.is-danger)");
+      (primaryBtn?.classList.contains("is-danger") && safeBtn ? safeBtn : primaryBtn)?.focus();
     });
   });
 }

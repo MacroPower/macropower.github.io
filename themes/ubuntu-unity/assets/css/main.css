@@ -3859,9 +3859,15 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline-offset:1px;
 }
 .up-naut-item:focus-visible,
-.up-post-row:focus-visible{
+.up-post-row:focus-visible,
+.up-project-tile:focus-visible,
+.up-trash-tile:focus-visible{
   outline:2px solid var(--orange-light);
   outline-offset:-2px;
+}
+.up-dlg-btn:focus-visible{
+  outline:2px solid var(--orange-light);
+  outline-offset:1px;
 }
 /* The skip link baseof.html puts first in the page. It stays off screen
    until a keyboard user tabs to it, then sits above every desktop layer. */
