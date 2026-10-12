@@ -75,9 +75,13 @@
     <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ T "network" }}</div>
       <div class="up-dropdown-body">
-        {{ partial "ui/net-row.html" (dict "name" "café-do-bairro" "on" true "strong" true) }}
-        {{ partial "ui/net-row.html" (dict "name" "MEO-WiFi") }}
-        {{ partial "ui/net-row.html" (dict "name" "ngrok-tunnel" "mono" true) }}
+        {{- /* params.desktop.networks lists the access points, and the
+              first one starts connected. An entry is a name or a
+              {name, mono} table, where mono sets the name in monospace. */}}
+        {{- range $i, $n := site.Params.desktop.networks }}
+          {{- $row := cond (reflect.IsMap $n) $n (dict "name" $n) }}
+        {{ partial "ui/net-row.html" (dict "name" $row.name "mono" $row.mono "on" (eq $i 0) "strong" (eq $i 0)) }}
+        {{- end }}
         {{ partial "ui/net-row.html" (dict "name" (T "hidden_network") "muted" true) }}
         <div class="up-dropdown-sep"></div>
         {{ partial "ui/dropdown-row.html" (dict "label" (T "wired_connection") "action" "dlg:wired") }}

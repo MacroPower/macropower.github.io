@@ -1,12 +1,14 @@
+{{- /* The Trash's contents come from params.desktop.trash, a list of
+      names in which a trailing slash marks a folder. */ -}}
 {{- $handle := partial "ui/author-handle.html" . -}}
-{{- $files := slice
-  (dict "icon" "flat/empty-file"    "label" "old-resume-FINAL-v3.pdf")
-  (dict "icon" "flat/empty-file"    "label" "passwords.txt")
-  (dict "icon" "flat/empty-folder"  "label" "node_modules")
-  (dict "icon" "flat/empty-file"    "label" ".DS_Store")
-  (dict "icon" "flat/empty-file"    "label" "screenshot-2009-08-14.png")
-  (dict "icon" "flat/empty-folder"  "label" "System32")
--}}
+{{- $files := slice -}}
+{{- range site.Params.desktop.trash -}}
+  {{- if hasSuffix . "/" -}}
+    {{- $files = $files | append (dict "icon" "flat/empty-folder" "label" (strings.TrimSuffix "/" .)) -}}
+  {{- else -}}
+    {{- $files = $files | append (dict "icon" "flat/empty-file" "label" .) -}}
+  {{- end -}}
+{{- end -}}
 <div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
   <section class="up-window-chrome">
     <div class="up-titlebar" data-titlebar>

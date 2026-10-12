@@ -15,6 +15,23 @@
     # Show "N min read" in the post reader.
     readingTime = true
 
+  [params.desktop]
+    # Names in the Trash window. A trailing slash marks a folder.
+    trash = [
+      "old-resume-FINAL-v3.pdf",
+      "passwords.txt",
+      "node_modules/",
+      ".DS_Store",
+      "screenshot-2009-08-14.png",
+      "System32/",
+    ]
+    # Access points in the network indicator; the first starts connected.
+    networks = [
+      "café-do-bairro",
+      "MEO-WiFi",
+      { name = "ngrok-tunnel", mono = true },
+    ]
+
   [params.projects]
     # Thresholds behind the projects sidebar's Starred, Forks, and Recent
     # filters.

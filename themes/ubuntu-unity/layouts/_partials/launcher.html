@@ -41,7 +41,19 @@
   {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" (T "trash") "icon" "launcher/trash" "trash" true) }}
 </aside>
 
+{{- /* The desktop's corner watermark. params.desktop.label replaces the
+      default lines, and an empty list removes the watermark. */ -}}
+{{- $label := slice
+  (printf "%s/personal-site" ((partialCached "author.html" .).name | lower | replaceRE " +" "-"))
+  (printf `v1.0 · "aubergine" · %d` now.Year)
+-}}
+{{- with site.Params.desktop -}}
+  {{- if isset . "label" }}{{ $label = .label }}{{ end -}}
+{{- end -}}
+{{- with $label }}
 <div class="up-desktop-label">
-  {{ (partialCached "author.html" .).name | lower | replaceRE " +" "-" }}/personal-site<br>
-  v1.0 · "aubergine" · {{ now.Year }}
+  {{- range $i, $line := . }}{{ if $i }}<br>{{ end }}
+  {{ $line }}
+  {{- end }}
 </div>
+{{- end }}

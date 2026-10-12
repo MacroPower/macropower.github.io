@@ -65,6 +65,12 @@ mainSections = ["posts"]
     # green, aubergine, or blue. Visitors can switch it in Edit >
     # Preferences.
     # accent = "aubergine"
+    # The corner watermark's lines; an empty list removes it.
+    # label = ["jane/personal-site", "est. 2024"]
+    # The Trash window's contents. A trailing slash marks a folder.
+    # trash = ["draft-v2-final.docx", "old-site/"]
+    # The network indicator's access points; the first starts connected.
+    # networks = ["home-wifi", { name = "wg0", mono = true }]
 
   [params.blog]
     # Long and numeric date formats (post reader and post list).
