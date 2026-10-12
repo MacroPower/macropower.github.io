@@ -481,7 +481,7 @@ other = "Copy SVG markup"
 
 # ---------------------------------------------------------------------------
 # Runtime strings. The scripts write these after the page loads, through
-# t() and tn() in assets/js/i18n.ts. Their keys start with js_, and they
+# t() and tn() in assets/ubuntu-unity/js/i18n.ts. Their keys start with js_, and they
 # use {name} placeholders rather than Go templates. A key with one/other
 # forms is a plural whose number is {n}.
 # ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@
   },
   "exclude": [],
   "include": [
-    "assets/js/**/*.test.ts",
-    "assets/js/shell/testkit.ts"
+    "assets/ubuntu-unity/js/**/*.test.ts",
+    "assets/ubuntu-unity/js/shell/testkit.ts"
   ]
 }

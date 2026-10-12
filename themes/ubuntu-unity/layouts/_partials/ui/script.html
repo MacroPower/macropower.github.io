@@ -5,17 +5,17 @@
   baseof.html routes every bundle through here so the build options and the
   script-tag shape are defined once.
 
-  Args (dict): entry  — source path under assets/ (e.g. "js/blog.ts")
+  Args (dict): entry  — source path under assets/ (e.g. "ubuntu-unity/js/blog.ts")
                target — emitted path (e.g. "js/blog.js")
 
   The shims point the xterm and pdf.js package imports at the copies
-  vendored under assets/third_party/, so a site builds without npm.
+  vendored under assets/ubuntu-unity/third_party/, so a site builds without npm.
 */ -}}
 {{- $shims := dict
-  "@xterm/xterm" "third_party/xterm/xterm.mjs"
-  "@xterm/addon-fit" "third_party/xterm/addon-fit.mjs"
-  "@xterm/addon-web-links" "third_party/xterm/addon-web-links.mjs"
-  "pdfjs-dist" "third_party/pdf-js/pdf.min.mjs"
+  "@xterm/xterm" "ubuntu-unity/third_party/xterm/xterm.mjs"
+  "@xterm/addon-fit" "ubuntu-unity/third_party/xterm/addon-fit.mjs"
+  "@xterm/addon-web-links" "ubuntu-unity/third_party/xterm/addon-web-links.mjs"
+  "pdfjs-dist" "ubuntu-unity/third_party/pdf-js/pdf.min.mjs"
 -}}
 {{- $opts := dict "targetPath" .target "minify" hugo.IsProduction "format" "iife" "shims" $shims -}}
 {{- if hugo.IsDevelopment }}{{ $opts = merge $opts (dict "sourceMap" "inline") }}{{ end -}}

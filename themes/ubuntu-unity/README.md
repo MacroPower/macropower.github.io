@@ -139,7 +139,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 
 ### Menu
 
-`menu.main` drives the launcher dock, the Dash's Applications category, the File menu, and the panel's navigation actions. Home is implicit and always first. Point an entry at a page with `pageRef`, which follows the page's permalink and language, or at any other address with `url`. Per-entry `[menu.main.params]` accept `icon`, `match` (`"exact"` or `"prefix"`), `kw` (Dash keywords), `dashLabel`, `dashIcon`, and the `launcher` and `dash` booleans that keep a page off the dock or out of the Dash. `launcher = "running"` docks a page only while it is open. Known identifiers (`cv`, `blog`, `posts`, `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting icons and keywords automatically.
+`menu.main` drives the launcher dock, the Dash's Applications category, the File menu, and the panel's navigation actions. Home is implicit and always first. Point an entry at a page with `pageRef`, which follows the page's permalink and language, or at any other address with `url`. Per-entry `[menu.main.params]` accept `icon` (an SVG name under `assets/ubuntu-unity/icons/`, such as `launcher/cv`, which your site may add to), `match` (`"exact"` or `"prefix"`), `kw` (Dash keywords), `dashLabel`, `dashIcon`, and the `launcher` and `dash` booleans that keep a page off the dock or out of the Dash. `launcher = "running"` docks a page only while it is open. Known identifiers (`cv`, `blog`, `posts`, `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting icons and keywords automatically.
 
 ## Content
 
@@ -181,17 +181,17 @@ The theme's render hooks extend Hugo's Markdown:
 
 ## Customizing
 
-- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. It goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files under `assets/css/`. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
+- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. It goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files under `assets/ubuntu-unity/css/`. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event.
 - **Comments.** Add `layouts/_partials/extend-post.html` to your site. The post reader renders it after each post's body, with the post as its context.
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site and translate the values. That covers the desktop's dialogs and notifications too, whose keys start with `js_` and use `{name}` placeholders instead of Go templates. The `kw_` keys hold the words the Dash search matches, so a translation can add words in its own language. Hugo fills a key you leave out from your default language's file, so on a site whose default language is English the theme's English shows through. With another default language, a missing key renders empty, except in the desktop's scripts, which show the English. The build warns once per language and lists the keys your file lacks. The home terminal stays in English, like the bash it imitates.
 - **Languages.** On a multilingual site, a language badge joins the top panel's indicators. Its menu lists every language and leads to the current page's translation, or to that language's home page when the page has none.
 - **Favicons.** Drop `favicon.svg`, `favicon.ico`, and `apple-touch-icon.png` into your site's `static/` to replace the theme's.
-- **Terminal ascii art.** Override `assets/home/ascii.txt` (the art) and `assets/home/colors.txt` (a same-shape color mask using `O Y G B P C R M`, with space for no color).
+- **Terminal ascii art.** Override `assets/ubuntu-unity/home/ascii.txt` (the art) and `assets/ubuntu-unity/home/colors.txt` (a same-shape color mask using `O Y G B P C R M`, with space for no color).
 - **Terminal login.** The prompt reads `user@<host of baseURL>`. Set `params.terminal.user` and `params.terminal.host` to change either half.
-- **Language emblems.** Copy the theme's `assets/icons/glyphs/lang-symbols.svg` to the same path in your site and add a `<symbol id="lang-<Name>">` to give a project language its own emblem. Your copy replaces the theme's whole sprite, so start from the theme's file.
-- **Anything else.** Copy a file from the theme's `layouts/` into your site's `layouts/` at the same path and edit it.
+- **Language emblems.** Copy the theme's `assets/ubuntu-unity/icons/glyphs/lang-symbols.svg` to the same path in your site and add a `<symbol id="lang-<Name>">` to give a project language its own emblem. Your copy replaces the theme's whole sprite, so start from the theme's file.
+- **Anything else.** Copy a file from the theme's `layouts/` into your site's `layouts/` at the same path and edit it. The theme keeps its own assets under `assets/ubuntu-unity/`, so your site's `assets/css/`, `assets/js/`, and `assets/icons/` never replace them, and a copy under `assets/ubuntu-unity/` overrides the theme's file at that path.
 
 ## Example site
 
@@ -212,7 +212,7 @@ npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 npm run test:sites       # hugo: the example site and bare sites, warnings fatal
 ```
 
-The theme vendors xterm.js and pdf.js under `assets/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
+The theme vendors xterm.js and pdf.js under `assets/ubuntu-unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
 The bash-conformance suite skips itself where bash is absent.
 
@@ -221,6 +221,6 @@ The bash-conformance suite skips itself where bash is absent.
 Apache-2.0. See [LICENSE.md](https://github.com/MacroPower/macropower.github.io/blob/main/themes/ubuntu-unity/LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
-- [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/third_party/xterm/`.
-- [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/third_party/pdf-js/`.
+- [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/ubuntu-unity/third_party/xterm/`.
+- [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/ubuntu-unity/third_party/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.

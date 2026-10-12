@@ -1,6 +1,6 @@
 /* =========================================================================
    self-hosted fonts: the Ubuntu family, subset and stored in the theme's
-   assets/fonts/. css.Build publishes each file this stylesheet references
+   assets/ubuntu-unity/fonts/. css.Build publishes each file this stylesheet references
    under a hashed name and rewrites the URL. Same faces, woff2 files, and
    unicode-ranges Google Fonts served, so rendering is byte-identical --
    minus the render-blocking third-party CSS fetch. font-display:swap keeps

@@ -1,6 +1,6 @@
 // The CV page's Evince-style document viewer. Renders the PDF named by
 // [data-cv-viewer]'s data-pdf-url through the pdf.js build vendored under
-// assets/third_party/pdf-js/, which this bundle includes (_partials/page/cv.html
+// assets/ubuntu-unity/third_party/pdf-js/, which this bundle includes (_partials/page/cv.html
 // names the worker in data-pdfjs-worker): every page becomes a sheet in the
 // scrollable page well, plus a clickable thumbnail rail and a toolbar with
 // page-number / zoom controls. Zoom is fit-to-width until the user zooms explicitly; the

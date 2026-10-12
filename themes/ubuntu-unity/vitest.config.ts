@@ -16,7 +16,7 @@ export default defineConfig({
     environment: "node",
     dir: dirname(fileURLToPath(import.meta.url)),
     // The shell core plus any other DOM-free module with tests beside it
-    // (midi.ts's parser/tempo-warp suite lives at assets/js/midi.test.ts).
-    include: ["assets/js/**/*.test.ts"],
+    // (midi.ts's parser/tempo-warp suite lives at assets/ubuntu-unity/js/midi.test.ts).
+    include: ["assets/ubuntu-unity/js/**/*.test.ts"],
   },
 });

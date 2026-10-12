@@ -74,6 +74,29 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // A site whose own assets use common names. The theme keeps its files
+  // under assets/ubuntu-unity/, so these must not replace any of them.
+  clash: {
+    files: {
+      "hugo.toml": BARE,
+      "content/about.md": page("About"),
+      "assets/css/main.css": "/* SITE-CSS */ body{color:red}\n",
+      "assets/js/app.ts": 'console.log("SITE-JS");\n',
+      "assets/icons/launcher/home.svg": '<svg><!-- SITE-ICON --></svg>\n',
+      "assets/home/ascii.txt": "SITE-ASCII\n",
+    },
+    check: (out) => {
+      const text = (dir) => readdirSync(join(out, dir)).map((f) => read(join(out, dir, f))).join("");
+      const css = text("css");
+      const pages = read(join(out, "index.html")) + read(join(out, "about/index.html"));
+      return [
+        (css.includes("SITE-CSS") || !css.includes(".up-top-panel")) && "the site's css/main.css replaced the theme's stylesheet",
+        text("js").includes("SITE-JS") && "the site's js/app.ts replaced the theme's script",
+        pages.includes("SITE-ICON") && "the site's icons/ replaced a theme icon",
+        pages.includes("SITE-ASCII") && "the site's home/ascii.txt replaced the terminal art",
+      ].filter(Boolean);
+    },
+  },
   // Root pages only. Hugo then sets mainSections to [""], which must not
   // turn every root page into a blog post.
   sectionless: {

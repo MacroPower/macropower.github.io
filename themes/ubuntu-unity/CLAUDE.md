@@ -1,17 +1,18 @@
 # CLAUDE.md
 
-A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity desktop. Hugo partials server-render everything, `assets/css/main.css` styles it, and the TypeScript modules under `assets/js/` enhance the rendered DOM. Hugo Pipes bundles the TypeScript at site build time, so this directory has no build step of its own. README.md documents the surface a consuming site configures.
+A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity desktop. Hugo partials server-render everything, `assets/ubuntu-unity/css/main.css` styles it, and the TypeScript modules under `assets/ubuntu-unity/js/` enhance the rendered DOM. Hugo Pipes bundles the TypeScript at site build time, so this directory has no build step of its own. README.md documents the surface a consuming site configures.
 
 ## Constraints
 
 - A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds `exampleSite/` and small sites of other shapes with warnings fatal, then checks their output. The example site must use every template. Add a site to `scripts/build-sites.mjs` when a fix covers a site shape the others miss.
+- Every asset the theme owns lives under `assets/ubuntu-unity/`, so a site's own `assets/css/main.css` or `assets/icons/` never replaces one. Keep new assets there. `assets/css/custom.css` is the one path the theme reads outside it, because it is the site's hook, and the `clash` site in `scripts/build-sites.mjs` checks both.
 - A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
 - The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together, and the `theme-floor` CI job of the site that hosts the theme with them.
 - All desktop state is session-only by design. Only the terminal's command history persists.
 - `main.css` is one file on purpose, and every selector is prefixed `up-`. Do not split it. It is plain CSS with native nesting, and `css.Build` in `_partials/head/css.html` lowers the nesting for the browser targets listed there.
 - `main.css` has no mixins, so shared looks repeat inline after a `/* recipe: <name> */` marker. Grep the marker and change every copy together.
-- Every string a template renders goes through `T "<key>"` from `i18n/en.toml`. Every string the desktop's scripts show goes through `t("js_<key>")` or `tn()` from `assets/js/i18n.ts`, with the English under the `js_` keys at the end of `en.toml`. `_partials/ui/i18n.html` renders those keys for the page's language, so a key must be a string literal, and `i18n.test.ts` checks that every key the scripts use exists and every `js_` key is used. The home terminal's output stays English, like the bash it imitates.
-- A consuming site needs no npm. xterm.js and pdf.js are vendored under `assets/third_party/`, never a directory named `vendor`, because Go module zips drop `vendor` directories and a site importing the theme as a Hugo module would lose them, and `_partials/ui/script.html` shims the `@xterm/*` and `pdfjs-dist` imports to those files. `npm run vendor:xterm` and `npm run vendor:pdfjs` refresh them from the versions in `scripts/`. pdf.js ships no type declarations, so `assets/js/pdfjs.d.ts` declares the slice `cv.ts` uses. The structural CSS from `@xterm/xterm` is inlined in `main.css` under a version pin, so bump it with the vendored copy.
+- Every string a template renders goes through `T "<key>"` from `i18n/en.toml`. Every string the desktop's scripts show goes through `t("js_<key>")` or `tn()` from `assets/ubuntu-unity/js/i18n.ts`, with the English under the `js_` keys at the end of `en.toml`. `_partials/ui/i18n.html` renders those keys for the page's language, so a key must be a string literal, and `i18n.test.ts` checks that every key the scripts use exists and every `js_` key is used. The home terminal's output stays English, like the bash it imitates.
+- A consuming site needs no npm. xterm.js and pdf.js are vendored under `assets/ubuntu-unity/third_party/`, never a directory named `vendor`, because Go module zips drop `vendor` directories and a site importing the theme as a Hugo module would lose them, and `_partials/ui/script.html` shims the `@xterm/*` and `pdfjs-dist` imports to those files. `npm run vendor:xterm` and `npm run vendor:pdfjs` refresh them from the versions in `scripts/`. pdf.js ships no type declarations, so `assets/ubuntu-unity/js/pdfjs.d.ts` declares the slice `cv.ts` uses. The structural CSS from `@xterm/xterm` is inlined in `main.css` under a version pin, so bump it with the vendored copy.
 
 ## Layouts
 
@@ -32,9 +33,9 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 ## DOM contracts
 
-TypeScript types the JavaScript surface but not the DOM. Each module selects its root by a `data-*` attribute and no-ops when the attribute is absent. Renaming any `data-*` attribute or `up-` class a module reads breaks it silently, so grep `assets/js/` before renaming anything in a partial. The larger partials list the attributes their module reads in a header comment. The HUD indexes the top panel's rendered menus as its search index, so that markup is a contract too.
+TypeScript types the JavaScript surface but not the DOM. Each module selects its root by a `data-*` attribute and no-ops when the attribute is absent. Renaming any `data-*` attribute or `up-` class a module reads breaks it silently, so grep `assets/ubuntu-unity/js/` before renaming anything in a partial. The larger partials list the attributes their module reads in a header comment. The HUD indexes the top panel's rendered menus as its search index, so that markup is a contract too.
 
-`baseof.html` injects `window.UP_SITE` before the bundles load. The `Window` augmentation in `assets/js/types.ts` must match it.
+`baseof.html` injects `window.UP_SITE` before the bundles load. The `Window` augmentation in `assets/ubuntu-unity/js/types.ts` must match it.
 
 ## Cross-bundle contracts
 
@@ -50,4 +51,4 @@ The app, projects, and shell bundles are separate IIFEs and cannot import each o
 - `shortcuts.ts` is a static table of bindings implemented elsewhere. Update it when a binding changes.
 - A new terminal command is a `shell/commands/*.ts` module appended to `ALL_COMMANDS` in `commands/all.ts`, which both the entrypoint and the test kit consume. Set `builtin: true` only for commands bash treats as builtins, because the flag decides whether `/usr/bin/<name>` exists.
 - The shell core imports `terminal.ts` as a type only, so it runs headless. `shell/testkit.ts` runs the same programs through the shell and real bash and asserts they agree. Keep `vfs.ts` DOM-free and deterministic. Written nodes use the fixed `SESSION_MTIME`, and sizes derive from content, so golden `ls` output stays stable.
-- Tests are `*.test.ts` files under `assets/js/`. Run them with `npm test` from this directory or from the site root.
+- Tests are `*.test.ts` files under `assets/ubuntu-unity/js/`. Run them with `npm test` from this directory or from the site root.

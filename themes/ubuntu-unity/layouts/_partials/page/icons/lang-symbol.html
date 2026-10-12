@@ -8,7 +8,7 @@
   Arg: the language name as it appears in data/projects.yaml (e.g. "Go").
 */ -}}
 {{- $id := "lang-generic" -}}
-{{- with resources.Get "icons/glyphs/lang-symbols.svg" -}}
+{{- with resources.Get "ubuntu-unity/icons/glyphs/lang-symbols.svg" -}}
   {{- $want := printf "lang-%s" $ -}}
   {{- if in (findRE `<symbol id="lang-[^"]+"` .Content) (printf `<symbol id="%s"` $want) -}}
     {{- $id = $want -}}

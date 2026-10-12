@@ -1,5 +1,5 @@
 {{- /*
-  Bundles assets/css/main.css through css.Build and emits the stylesheet
+  Bundles assets/ubuntu-unity/css/main.css through css.Build and emits the stylesheet
   link plus font preloads. css.Build lowers the native nesting for the
   target browsers and publishes the fonts main.css references with hashed
   names, so the preloads read their URLs from the build's artifacts.
@@ -15,7 +15,7 @@
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")
   "target" (slice "chrome115" "edge115" "firefox116" "ios16.4" "opera101" "safari16.4")
 -}}
-{{- $main := resources.Get "css/main.css" | css.Build $opts -}}
+{{- $main := resources.Get "ubuntu-unity/css/main.css" | css.Build (merge $opts (dict "targetPath" "css/main.css")) -}}
 {{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
       terminal. */ -}}
 {{- $preload := slice "ubuntu-400-latin" -}}

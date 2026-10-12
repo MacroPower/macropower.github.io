@@ -24,18 +24,18 @@
     "verbatimModuleSyntax": false,
     "paths": {
       "@xterm/xterm": [
-        "./assets/third_party/xterm/xterm.d.ts"
+        "./assets/ubuntu-unity/third_party/xterm/xterm.d.ts"
       ],
       "@xterm/addon-fit": [
-        "./assets/third_party/xterm/addon-fit.d.ts"
+        "./assets/ubuntu-unity/third_party/xterm/addon-fit.d.ts"
       ],
       "@xterm/addon-web-links": [
-        "./assets/third_party/xterm/addon-web-links.d.ts"
+        "./assets/ubuntu-unity/third_party/xterm/addon-web-links.d.ts"
       ]
     }
   },
   "include": [
-    "assets/js/**/*"
+    "assets/ubuntu-unity/js/**/*"
   ],
   "exclude": [
     "**/*.test.ts",

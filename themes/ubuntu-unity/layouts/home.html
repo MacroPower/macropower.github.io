@@ -19,9 +19,9 @@
 {{- end -}}
 {{- /* Mask codes (O Y G B P C R M, space = no color) are mapped to truecolor
       in banner.ts. The theme ships defaults; a site overrides them by
-      providing its own assets/home/ascii.txt + colors.txt. */ -}}
-{{- $ascii := "" -}}{{- with resources.Get "home/ascii.txt" -}}{{- $ascii = .Content -}}{{- end -}}
-{{- $colors := "" -}}{{- with resources.Get "home/colors.txt" -}}{{- $colors = .Content -}}{{- end -}}
+      providing its own assets/ubuntu-unity/home/ascii.txt + colors.txt. */ -}}
+{{- $ascii := "" -}}{{- with resources.Get "ubuntu-unity/home/ascii.txt" -}}{{- $ascii = .Content -}}{{- end -}}
+{{- $colors := "" -}}{{- with resources.Get "ubuntu-unity/home/colors.txt" -}}{{- $colors = .Content -}}{{- end -}}
 {{- $socials := slice -}}
 {{- range partialCached "socials.html" . -}}
   {{- $label := .short | default .name -}}

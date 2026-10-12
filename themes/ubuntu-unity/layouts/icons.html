@@ -1,5 +1,5 @@
 {{- /*
-  The icon vault. Lists every SVG under the theme's assets/icons/ in a
+  The icon vault. Lists every SVG under the theme's assets/ubuntu-unity/icons/ in a
   copy-to-clipboard catalogue: symbolic glyphs (currentColor monoline),
   Humanity application icons (gradient launcher art), and flat
   illustrations. Selected by `layout = "icons"` front matter; the page's
@@ -13,7 +13,7 @@
 */ -}}
 {{ define "main" }}
   {{- $glyphs := slice -}}
-  {{- range (resources.Match "icons/glyphs/*.svg") -}}
+  {{- range (resources.Match "ubuntu-unity/icons/glyphs/*.svg") -}}
     {{- $n := path.BaseName .Name -}}
     {{- if ne $n "lang-symbols" -}}
       {{- $glyphs = $glyphs | append (dict "name" $n "svg" .Content) -}}
@@ -22,13 +22,13 @@
   {{- $glyphs = sort $glyphs "name" -}}
 
   {{- $apps := slice -}}
-  {{- range (resources.Match "icons/launcher/*.svg") -}}
+  {{- range (resources.Match "ubuntu-unity/icons/launcher/*.svg") -}}
     {{- $apps = $apps | append (dict "name" (path.BaseName .Name) "svg" .Content) -}}
   {{- end -}}
   {{- $apps = sort $apps "name" -}}
 
   {{- $flat := slice -}}
-  {{- range (resources.Match "icons/flat/*.svg") -}}
+  {{- range (resources.Match "ubuntu-unity/icons/flat/*.svg") -}}
     {{- $flat = $flat | append (dict "name" (path.BaseName .Name) "svg" .Content) -}}
   {{- end -}}
   {{- $flat = sort $flat "name" -}}

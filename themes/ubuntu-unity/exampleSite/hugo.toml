@@ -142,7 +142,7 @@ mainSections = ["posts"]
 # actions. Home is implicit and always first. pageRef points an entry at a
 # page and follows its permalink and language; url takes any address.
 # Optional [menu.main.params]:
-#   icon      — launcher artwork under the theme's assets/icons/
+#   icon      — launcher artwork under the theme's assets/ubuntu-unity/icons/
 #   match     — "exact" or "prefix" URL matching for active state
 #   kw        — Dash search keywords
 #   dashLabel — Dash tile label override

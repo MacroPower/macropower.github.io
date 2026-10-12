@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Refreshes assets/third_party/xterm/ from the npm registry. Edit the versions
+// Refreshes assets/ubuntu-unity/third_party/xterm/ from the npm registry. Edit the versions
 // below, run `npm run vendor:xterm`, and commit the result. Bump the
 // structural xterm CSS in main.css to the same @xterm/xterm version.
 import { execFileSync } from "node:child_process";
@@ -14,7 +14,7 @@ const PACKAGES = {
   "@xterm/addon-web-links": { version: "0.12.0", lib: "addon-web-links.mjs", typings: "addon-web-links.d.ts" },
 };
 
-const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "third_party", "xterm");
+const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "ubuntu-unity", "third_party", "xterm");
 const work = mkdtempSync(join(tmpdir(), "vendor-xterm-"));
 
 try {

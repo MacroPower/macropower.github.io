@@ -1,5 +1,5 @@
 {{- /*
-  Inlines assets/icons/<name>.svg by body. Icons that paint with their own
+  Inlines assets/ubuntu-unity/icons/<name>.svg by body. Icons that paint with their own
   defs (gradients/filters referenced as url(#id), or in-file href="#id" uses)
   get those ids suffixed with a per-call counter: the same icon is inlined
   several times per page (launcher tile, dash tile, icon vault), id lookups
@@ -11,7 +11,7 @@
   <use href>) keep their stable names. Must stay a plain partial — caching it
   would collapse the per-call suffixes back into duplicates.
 */ -}}
-{{- with resources.Get (printf "icons/%s.svg" .) -}}
+{{- with resources.Get (printf "ubuntu-unity/icons/%s.svg" .) -}}
   {{- $c := .Content -}}
   {{- $ids := slice -}}
   {{- range findRE `url\(#[^)]+\)` $c -}}
@@ -32,5 +32,5 @@
   {{- end -}}
   {{- $c | safeHTML -}}
 {{- else -}}
-  {{- errorf "icon.html: icons/%s.svg not found" . -}}
+  {{- errorf "icon.html: ubuntu-unity/icons/%s.svg not found" . -}}
 {{- end -}}

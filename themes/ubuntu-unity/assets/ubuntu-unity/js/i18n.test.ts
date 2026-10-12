@@ -13,7 +13,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 function readEnglish(): Map<string, Record<string, string>> {
   const out = new Map<string, Record<string, string>>();
   let current: Record<string, string> | null = null;
-  const text = readFileSync(join(here, "..", "..", "i18n", "en.toml"), "utf8");
+  const text = readFileSync(join(here, "..", "..", "..", "i18n", "en.toml"), "utf8");
   for (const line of text.split("\n")) {
     const table = /^\[([^\]]+)\]\s*$/.exec(line);
     if (table) {
