@@ -1,17 +1,15 @@
 {
   "name": "jacobcolvin-com",
   "private": true,
-  "description": "Personal Hugo site for jacobcolvin.com. The scripts delegate to the ubuntu-unity theme's own configs.",
+  "description": "Personal Hugo site for jacobcolvin.com. Its dev tooling is the ubuntu-unity theme's, which this workspace runs.",
+  "workspaces": [
+    "themes/ubuntu-unity"
+  ],
   "scripts": {
-    "typecheck": "tsc -p themes/ubuntu-unity --noEmit",
-    "typecheck:test": "tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit",
-    "test": "vitest run --config themes/ubuntu-unity/vitest.config.ts",
-    "test:watch": "vitest --config themes/ubuntu-unity/vitest.config.ts",
-    "test:sites": "node themes/ubuntu-unity/scripts/build-sites.mjs"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.0",
-    "typescript": "^5.7.2",
-    "vitest": "^5.0.3"
+    "typecheck": "npm run typecheck -w themes/ubuntu-unity",
+    "typecheck:test": "npm run typecheck:test -w themes/ubuntu-unity",
+    "test": "npm test -w themes/ubuntu-unity",
+    "test:watch": "npm run test:watch -w themes/ubuntu-unity",
+    "test:sites": "npm run test:sites -w themes/ubuntu-unity"
   }
 }

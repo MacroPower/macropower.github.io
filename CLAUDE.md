@@ -7,6 +7,7 @@ Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only th
 - `devbox shell` puts the pinned Hugo and Node on PATH and installs the git hooks.
 - `hugo server -D` serves the site locally with drafts. `hugo --minify` is the production build CI runs.
 - `npm test`, `npm run typecheck`, and `npm run typecheck:test` run the theme's Vitest and tsc passes from the repo root. CI runs all three before the Hugo build.
+- The root `package.json` is an npm workspace over `themes/ubuntu-unity`, and its scripts call the theme's. Add dev dependencies to the theme's `package.json`, then run `npm install` at the root to update the one `package-lock.json`.
 - `npm run test:sites` builds the theme's example site and two bare sites with every Hugo warning fatal. CI runs it after the site build.
 - `task populate-projects` regenerates `data/projects.yaml` from GitHub.
 
