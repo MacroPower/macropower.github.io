@@ -16,6 +16,8 @@ let input: HTMLInputElement | null = null;
 let hintEl: HTMLElement | null = null;
 
 let visible = false;
+/** What held focus when the screen locked, to hand it back on unlock. */
+let restoreFocus: HTMLElement | null = null;
 let tickTimer = 0;
 let onUnlockCb: (() => void) | null = null;
 
@@ -62,15 +64,19 @@ function unlock(): void {
     setTimeout(finish, 400);
   }
 
-  // Hand focus back to the page content, the window body baseof.html's
-  // skip link also targets.
-  document.getElementById("up-main")?.focus();
+  // Hand focus back to whatever held it before the lock, or else to the
+  // document, so the keyboard drives the page again.
+  const target = restoreFocus?.isConnected ? restoreFocus : null;
+  restoreFocus = null;
+  if (target) target.focus();
+  else (document.activeElement as HTMLElement | null)?.blur();
 }
 
 export function showLock(opts?: { onUnlock?: () => void }): void {
   if (!root || visible) return;
   onUnlockCb = opts?.onUnlock ?? null;
   visible = true;
+  restoreFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   if (hintEl) hintEl.textContent = "";
   if (input) input.value = "";
   root.hidden = false;

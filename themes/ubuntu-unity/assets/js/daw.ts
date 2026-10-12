@@ -333,7 +333,8 @@ export function initDaw(): void {
   // Keyboard focus follows the window, as in trash.ts.
   const releaseFocus = (): void => {
     if (chrome.contains(document.activeElement)) {
-      (launcherTile && !launcherTile.hidden ? launcherTile : document.getElementById("up-main"))?.focus();
+      if (launcherTile && !launcherTile.hidden) launcherTile.focus();
+      else (document.activeElement as HTMLElement | null)?.blur();
     }
   };
   const show = (): void => {
