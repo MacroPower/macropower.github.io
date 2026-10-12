@@ -5,6 +5,12 @@
   template string. hugo.toml mounts that en.toml under assets/ so this
   partial can list the keys.
 
+  Hugo falls back to the default language's table for a key a
+  translation lacks, so on a site whose default language is not English
+  a missing key renders empty. This partial gives such a js_ key its
+  English text, and it warns once per language with every key, template
+  or script, that renders empty.
+
   A plural key renders at every count from 0 to 199 under the plural rules
   of whichever translation file matched, which only Hugo knows. The
   output keeps the distinct forms and an index string with one digit per
@@ -18,15 +24,17 @@
 */ -}}
 {{- $strings := dict -}}
 {{- $plurals := dict -}}
+{{- $missing := slice -}}
 {{- with resources.Get "ubuntu-unity/i18n/en.toml" -}}
   {{- range $key, $v := . | transform.Unmarshal -}}
+    {{- if not (T $key) }}{{ $missing = $missing | append $key }}{{ end -}}
     {{- if hasPrefix $key "js_" -}}
       {{- if and (reflect.IsMap $v) (isset $v "one") -}}
         {{- $forms := slice -}}
         {{- $seen := dict -}}
         {{- $index := "" -}}
         {{- range seq 0 199 -}}
-          {{- $text := T $key . -}}
+          {{- $text := T $key . | default (cond (eq . 1) $v.one $v.other) -}}
           {{- if not (isset $seen $text) -}}
             {{- $seen = merge $seen (dict $text (len $forms)) -}}
             {{- $forms = $forms | append $text -}}
@@ -35,12 +43,17 @@
         {{- end -}}
         {{- $plurals = merge $plurals (dict $key (dict "forms" $forms "index" $index)) -}}
       {{- else -}}
-        {{- $strings = merge $strings (dict $key (T $key)) -}}
+        {{- $strings = merge $strings (dict $key (T $key | default (cond (reflect.IsMap $v) $v.other $v))) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- else -}}
   {{- errorf "ubuntu-unity: assets/ubuntu-unity/i18n/en.toml is missing. A site that imports the theme with ignoreConfig must copy the theme's module.mounts." -}}
+{{- end -}}
+{{- with $missing -}}
+  {{- $list := delimit (first 8 .) ", " -}}
+  {{- if gt (len .) 8 }}{{ $list = printf "%s, and %d more" $list (sub (len .) 8) }}{{ end -}}
+  {{- warnf "ubuntu-unity: the %q translation lacks %d of the theme's i18n keys, so pages show those strings empty or in English: %s. Copy the missing keys from the theme's i18n/en.toml." site.Language.Name (len .) $list -}}
 {{- end -}}
 {{- $data := dict "strings" $strings "plurals" $plurals -}}
 {{- $js := printf "window.UP_I18N=%s;" ($data | jsonify) -}}

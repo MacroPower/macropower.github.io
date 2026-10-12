@@ -4,7 +4,7 @@
 // that each exercise one shape a consuming site may take. A site's checks
 // then read its output for regressions a clean build cannot catch. Run it
 // with `npm run test:sites`. It needs only Hugo on PATH.
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
@@ -22,7 +22,9 @@ const BARE = config();
 const page = (title, front = "") => `+++\ntitle = '${title}'\n${front}+++\nBody of ${title}.\n`;
 
 // Each site is a Hugo source directory, or the files to write into a fresh
-// one. check(out) reads the built site and returns a list of failures.
+// one. check(out) reads the built site and returns a list of failures. A
+// site with warns builds with warnings allowed and must print a warning
+// matching that pattern.
 const SITES = {
   example: {
     source: join(theme, "exampleSite"),
@@ -85,6 +87,22 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // A non-English default language whose translation covers one key.
+  // Hugo renders the other template strings empty, so the build must say
+  // so, and the scripts' strings must fall back to English.
+  translated: {
+    files: {
+      "hugo.toml": `${BARE}defaultContentLanguage = "de"\n`,
+      "i18n/de.toml": '[home]\nother = "Startseite"\n',
+    },
+    warns: /the "de" translation lacks \d+ of the theme's i18n keys/,
+    check: (out) => {
+      const js = readdirSync(join(out, "js")).find((f) => f.startsWith("i18n."));
+      return [
+        (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
+      ].filter(Boolean);
+    },
+  },
   // Config, front matter, and data in the looser shapes Hugo accepts.
   loose: {
     files: {
@@ -127,15 +145,18 @@ try {
     }
     const out = join(work, `${name}-public`);
     const args = ["--source", source, "--destination", out,
-      "--panicOnWarning", "--printPathWarnings", "--quiet", ...(site.flags ?? [])];
-    try {
-      execFileSync("hugo", args, { stdio: "inherit" });
-    } catch {
+      "--printPathWarnings", ...(site.warns ? [] : ["--quiet", "--panicOnWarning"]), ...(site.flags ?? [])];
+    // Hugo prints warnings and errors on stderr.
+    const run = spawnSync("hugo", args, { encoding: "utf8" });
+    const log = `${run.stdout ?? ""}${run.stderr ?? ""}`;
+    if (run.status !== 0) {
+      process.stderr.write(log);
       console.error(`FAIL ${name}`);
       failed = true;
       continue;
     }
     const problems = site.check?.(out) ?? [];
+    if (site.warns && !site.warns.test(log)) problems.push(`no warning matches ${site.warns}`);
     for (const p of problems) console.error(`     ${name}: ${p}`);
     console.log(`${problems.length ? "FAIL" : "ok  "} ${name}`);
     failed ||= problems.length > 0;
