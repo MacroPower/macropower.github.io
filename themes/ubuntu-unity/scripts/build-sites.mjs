@@ -34,11 +34,13 @@ const SITES = {
   subpath: {
     source: join(theme, "exampleSite"),
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
+    // Minified files such as the Dash fragment drop attribute quotes,
+    // and a srcset lists several URLs.
     check: (out) =>
       htmlFiles(out).flatMap((file) =>
-        [...read(file).matchAll(/\s(?:href|src|action)="(\/[^"]*)"/g)]
-          .map((m) => m[1])
-          .filter((url) => !url.startsWith("/sub/"))
+        [...read(file).matchAll(/\s(href|src|srcset|action|data-[a-z-]+)=(?:"([^"]*)"|([^\s">]+))/g)]
+          .flatMap((m) => (m[1] === "srcset" ? (m[2] ?? m[3]).split(",").map((c) => c.trim().split(" ")[0]) : [m[2] ?? m[3]]))
+          .filter((url) => url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/sub/"))
           .map((url) => `${relative(out, file)} links ${url} outside /sub/`),
       ),
   },
@@ -90,16 +92,17 @@ const SITES = {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
       "content/posts/_index.md": page("Posts"),
-      "content/posts/top.md": page("Top post"),
+      "content/posts/top.md": page("Top post", "date = 2025-01-01\n"),
       "content/posts/2024/_index.md": page("2024"),
-      "content/posts/2024/deep.md": page("Deep post"),
+      "content/posts/2024/deep.md": page("Deep post", "date = 2024-01-01\n"),
     },
     check: (out) => {
       const list = read(join(out, "posts/index.html"));
       const deep = read(join(out, "posts/2024/deep/index.html"));
       return [
         !list.includes("Deep post") && "posts/index.html omits the nested post",
-        !deep.includes('href="/posts/"') && "the nested post's pathbar omits the blog section",
+        !deep.includes('class="up-pathbar-btn" href="/posts/"') && "the nested post's pathbar omits the blog section",
+        !deep.includes('href="/posts/top/"') && "the nested post has no arrow to the newer post outside its section",
       ].filter(Boolean);
     },
   },

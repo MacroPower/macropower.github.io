@@ -1,9 +1,16 @@
 {{- /* A single post: pathbar with older/newer arrows, the reading-progress
      bar, and the reader. Rendered by single.html for pages in the blog
-     section. In Hugo, .PrevInSection walks back in time and .NextInSection
-     walks forward. */ -}}
-{{- $older := .PrevInSection -}}
-{{- $newer := .NextInSection -}}
+     section. The arrows step by date through every post in the post's
+     top-level section, across any nested sections. */ -}}
+{{- $older := "" -}}
+{{- $newer := "" -}}
+{{- $posts := (where (partialCached "blog-posts.html" .) "Section" .Section).ByDate -}}
+{{- range $i, $p := $posts -}}
+  {{- if eq $p $ -}}
+    {{- if $i }}{{ $older = index $posts (sub $i 1) }}{{ end -}}
+    {{- $newer = index $posts (add $i 1) -}}
+  {{- end -}}
+{{- end -}}
 {{- $prevURL := "" }}{{ with $older }}{{ $prevURL = .RelPermalink }}{{ end }}
 {{- $nextURL := "" }}{{ with $newer }}{{ $nextURL = .RelPermalink }}{{ end }}
 {{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = .Title }}{{ end }}
