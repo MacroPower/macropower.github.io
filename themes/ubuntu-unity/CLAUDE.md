@@ -4,7 +4,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 ## Constraints
 
-- A bare site with no params, menu, or data files must keep building. Guard every optional read. CI builds `exampleSite/` to check this.
+- A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds bare sites and `exampleSite/` with warnings fatal to check this, and the example site must use every template.
 - A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
 - The Hugo version floor appears in `hugo.toml`, `theme.toml`, and the guard at the top of `baseof.html`. Change all three together.
 - All desktop state is session-only by design. Only the terminal's command history persists.

@@ -192,6 +192,7 @@ npm install
 npm run typecheck        # production sources
 npm run typecheck:test   # test sources
 npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
+npm run test:sites       # hugo: the example site and bare sites, warnings fatal
 ```
 
 The theme vendors xterm.js and pdf.js under `assets/vendor/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.

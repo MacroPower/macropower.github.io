@@ -48,10 +48,11 @@ jobs:
       - name: Build
         run: hugo --minify
 
-      # The theme is consumed standalone from themes/ubuntu-unity; its
-      # example site must keep building against a bare config.
-      - name: Build theme example site
-        run: hugo --minify -s themes/ubuntu-unity/exampleSite --themesDir ../.. -d /tmp/example-site
+      # The theme is consumed standalone from themes/ubuntu-unity. Its
+      # example site and bare sites with no config must build without
+      # warnings.
+      - name: Build theme test sites
+        run: npm run test:sites
 
       # upload-artifact excludes hidden files by default. public/ contains no
       # dotfiles today, and peaceiris/actions-gh-pages creates .nojekyll itself

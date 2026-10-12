@@ -8,6 +8,7 @@
     "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:sites": "node scripts/build-sites.mjs",
     "vendor:xterm": "node scripts/vendor-xterm.mjs",
     "vendor:pdfjs": "node scripts/vendor-pdfjs.mjs"
   },

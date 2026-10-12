@@ -6,7 +6,8 @@
     "typecheck": "tsc -p themes/ubuntu-unity --noEmit",
     "typecheck:test": "tsc -p themes/ubuntu-unity/tsconfig.test.json --noEmit",
     "test": "vitest run --config themes/ubuntu-unity/vitest.config.ts",
-    "test:watch": "vitest --config themes/ubuntu-unity/vitest.config.ts"
+    "test:watch": "vitest --config themes/ubuntu-unity/vitest.config.ts",
+    "test:sites": "node themes/ubuntu-unity/scripts/build-sites.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
