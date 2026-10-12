@@ -16,6 +16,7 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
 - **Translations.** Every label, dialog, and notification goes through Hugo's i18n, dates follow the page's language, and a multilingual site gets a language indicator in the top panel.
 - **Markdown.** Heading anchors, GitHub-style alerts, build-time MathML math, and responsive images.
+- **Accessibility and print.** A skip link, real landmarks, keyboard focus that follows each window, and a print stylesheet that puts a post on plain paper without the desktop.
 - **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
 
 Hugo partials server-render everything, and Hugo's built-in esbuild bundles the TypeScript and the stylesheet, so a site needs nothing but Hugo: no Node, npm, or Dart Sass. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
@@ -159,7 +160,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 
 The theme's render hooks extend Hugo's Markdown:
 
-- **Links and images.** A relative link or image resolves to a page, then a file in the page's bundle, then a file under `assets/`, so `[intro](other-post.md)` and `![](photo.jpg)` beside an `index.md` both work. Images Hugo can read get a width and height.
+- **Links and images.** A relative link or image resolves to a page, then a file in the page's bundle, then a file under `assets/`, so `[intro](other-post.md)` and `![](photo.jpg)` beside an `index.md` both work. A root-relative path that matches none of them, such as `/files/cv.pdf`, resolves under your `baseURL`, so it keeps working on a site served from a subdirectory. Images Hugo can read get a width and height. Feeds get absolute URLs, and an alert becomes a plain blockquote led by its title.
 - **Headings.** Every heading ends with a `#` link to itself, which shows on hover. Feeds get the plain heading.
 - **Alerts.** GitHub-style alerts render as info bars. The types are `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION`, text after the marker replaces the title, and a `+` or `-` after the type makes the alert collapsible, open or closed:
 
