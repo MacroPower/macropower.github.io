@@ -38,19 +38,19 @@
 {{- $playlist := partialCached "playlist.html" . -}}
 {{- with $playlist -}}
   {{- $apps = $apps | append (dict "label" (T "studio") "icon" "launcher/piano" "action" "studio"
-        "kw" "studio daw music midi sequencer synth piano roll lmms audio") -}}
+        "kw" (T "kw_studio")) -}}
 {{- end -}}
 {{- $apps = $apps | append (slice
   (dict "label" (T "trash") "icon" "launcher/trash" "action" "trash"
-        "kw" "trash rubbish bin wastebasket deleted files")
+        "kw" (T "kw_trash"))
   (dict "label" (T "appearance") "icon" "launcher/paint" "action" "prefs"
-        "kw" "appearance preferences settings theme accent color colour motion animations")
+        "kw" (T "kw_appearance"))
   (dict "label" (T "shortcuts") "icon" "launcher/typewriter-key" "action" "shortcuts"
-        "kw" "keyboard shortcuts keys bindings hotkeys help reference")
+        "kw" (T "kw_shortcuts"))
   (dict "label" (T "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
-        "kw" "lock screen security password greeter lightdm")
+        "kw" (T "kw_lock"))
   (dict "label" (T "log_out_app") "icon" "launcher/doorway" "action" "logout"
-        "kw" "log out logout session quit exit leave goodbye")
+        "kw" (T "kw_logout"))
 ) -}}
 {{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
 {{- $projects := partialCached "projects-data.html" . -}}
@@ -103,7 +103,7 @@
           {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
              title="{{ .Title }}"
-             data-keywords="post blog article {{ delimit (index .Params $tax.category | default slice) " " }} {{ time.Format "2006 January" .Date }}">
+             data-keywords="{{ T "kw_post" }} {{ delimit (index .Params $tax.category | default slice) " " }} {{ time.Format "2006 January" .Date }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
             <span class="up-dash-tile-label">{{ .Title }}</span>
           </a>
@@ -123,7 +123,7 @@
           {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
              target="_blank" rel="noopener" title="{{ .description }}"
-             data-keywords="project repository github {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
+             data-keywords="{{ T "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
             <span class="up-dash-tile-label">{{ .name }}</span>
           </a>
@@ -143,7 +143,7 @@
           {{- range $i, $u := . }}
           <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
                   data-dash-action="music:{{ $i }}"
-                  data-keywords="music track song tune play audio midi tape mystery">
+                  data-keywords="{{ T "kw_track" }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
             <span class="up-dash-tile-label">{{ T "track_n" (dict "N" (add $i 1)) }}</span>
           </button>

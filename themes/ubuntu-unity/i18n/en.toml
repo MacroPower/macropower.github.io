@@ -94,6 +94,43 @@ other = "Feeds"
 [rss]
 other = "RSS"
 
+# Dash search keywords. Each is a space-separated list of words that
+# find a tile when typed into the Dash; a translation can mix languages.
+[kw_home]
+other = "terminal shell bash console neofetch prompt tty home start"
+[kw_cv]
+other = "cv resume curriculum vitae pdf work experience career history"
+[kw_blog]
+other = "blog posts articles writing files notes"
+[kw_projects]
+other = "projects repositories repos github code open source software"
+[kw_sponsors]
+other = "sponsors sponsorship support donate heart thanks"
+[kw_icons]
+other = "icons gallery artwork svg viewer images eye of gnome"
+[kw_solitaire]
+other = "solitaire klondike cards card game patience aisleriot play deck"
+[kw_about]
+other = "about bio contact person profile"
+[kw_studio]
+other = "studio daw music midi sequencer synth piano roll lmms audio"
+[kw_trash]
+other = "trash rubbish bin wastebasket deleted files"
+[kw_appearance]
+other = "appearance preferences settings theme accent color colour motion animations"
+[kw_shortcuts]
+other = "keyboard shortcuts keys bindings hotkeys help reference"
+[kw_lock]
+other = "lock screen security password greeter lightdm"
+[kw_logout]
+other = "log out logout session quit exit leave goodbye"
+[kw_post]
+other = "post blog article"
+[kw_project]
+other = "project repository github"
+[kw_track]
+other = "music track song tune play audio midi tape mystery"
+
 # Markdown render hooks
 [link_to_section]
 other = "Link to {{ .Title }}"

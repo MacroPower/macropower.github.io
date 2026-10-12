@@ -33,34 +33,34 @@
 {{- $defaults := dict
   "cv" (dict
     "icon" "launcher/cv"
-    "kw" "cv resume curriculum vitae pdf work experience career history")
+    "kw" (T "kw_cv"))
   "blog" (dict
     "icon" "launcher/blog"
-    "kw" "blog posts articles writing files notes")
+    "kw" (T "kw_blog"))
   "posts" (dict
     "icon" "launcher/blog"
-    "kw" "blog posts articles writing files notes")
+    "kw" (T "kw_blog"))
   "projects" (dict
     "icon" "launcher/projects"
-    "kw" "projects repositories repos github code open source software")
+    "kw" (T "kw_projects"))
   "sponsors" (dict
     "icon" "launcher/heart"
-    "kw" "sponsors sponsorship support donate heart thanks")
+    "kw" (T "kw_sponsors"))
   "icons" (dict
     "icon" "launcher/image-viewer"
-    "kw" "icons gallery artwork svg viewer images eye of gnome")
+    "kw" (T "kw_icons"))
   "solitaire" (dict
     "icon" "launcher/games"
-    "kw" "solitaire klondike cards card game patience aisleriot play deck")
+    "kw" (T "kw_solitaire"))
   "about" (dict
     "icon" "launcher/about"
-    "kw" "about bio contact person profile")
+    "kw" (T "kw_about"))
 -}}
 {{- $home := dict
   "label" (T "home") "icon" "launcher/home"
   "dashLabel" (T "terminal") "dashIcon" "launcher/terminal"
   "url" site.Home.RelPermalink "match" "exact"
-  "kw" "terminal shell bash console neofetch prompt tty home start"
+  "kw" (T "kw_home")
 -}}
 {{- $pages := dict -}}
 {{- $launcher := slice "home" -}}
