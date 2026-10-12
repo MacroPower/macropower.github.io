@@ -45,7 +45,7 @@ The app, projects, and shell bundles are separate IIFEs and cannot import each o
 
 ## Editing notes
 
-- `app.ts` initializes the modules in a deliberate order, and its comments explain each dependency. Add new calls after the ones they depend on.
+- `app.ts` initializes the modules in a deliberate order, and its comments explain each dependency. Add new calls after the ones they depend on, wrapped in `run()` so one module's failure leaves the rest working. It dispatches `up:ready` on `document` last, which README.md documents for sites' own scripts.
 - A new top-panel action is a `data-action` row in `_partials/top-panel.html` plus a case in `dispatchAction()` in `top-panel.ts`. The Dash's app tiles run the same `dlg:*` cases.
 - `shortcuts.ts` is a static table of bindings implemented elsewhere. Update it when a binding changes.
 - A new terminal command is a `shell/commands/*.ts` module appended to `ALL_COMMANDS` in `commands/all.ts`, which both the entrypoint and the test kit consume. Set `builtin: true` only for commands bash treats as builtins, because the flag decides whether `/usr/bin/<name>` exists.

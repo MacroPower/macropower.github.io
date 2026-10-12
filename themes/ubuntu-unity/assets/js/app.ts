@@ -18,19 +18,33 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   setReduceMotion(true);
 }
 
-initDialogs();
+// Runs one module's init. A module that throws, on markup a site
+// customized for example, logs and leaves the rest of the desktop working.
+function run(name: string, init: () => void): void {
+  try {
+    init();
+  } catch (err) {
+    console.error(`ubuntu-unity: ${name} failed to start`, err);
+  }
+}
+
+run("dialogs", initDialogs);
 // Before initTopPanel so its bubbles are available the moment the volume
 // slider (or any other panel control) first fires one.
-initNotify();
+run("notify", initNotify);
 // Before initTopPanel so the lock overlay's window keydown listener is
 // registered first and can stopImmediatePropagation past the dropdown-close
 // handler when Esc unlocks.
-initLock();
-initTopPanel();
-initTrash();
-initDaw();
-initDash();
-initHud();
-installPageWindow();
-initDesktopMarquee();
+run("lock", initLock);
+run("top panel", initTopPanel);
+run("trash", initTrash);
+run("studio", initDaw);
+run("dash", initDash);
+run("hud", initHud);
+run("page window", installPageWindow);
+run("desktop marquee", initDesktopMarquee);
 document.body.classList.add("up-ready");
+// A site's own scripts (extend-footer.html) run before this deferred
+// bundle, so they wait for this event to call window.uiDialog and the
+// other desktop APIs.
+document.dispatchEvent(new CustomEvent("up:ready"));
