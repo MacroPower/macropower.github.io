@@ -3,6 +3,7 @@ categories = ["Meta"]
 date = "2024-02-10"
 title = "Welcome to the desktop"
 description = "A first post to exercise the blog list, reader, and terminal."
+toc = true
 +++
 
 This example post shows up in three places: the blog's Nautilus-style

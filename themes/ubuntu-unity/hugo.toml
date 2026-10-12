@@ -38,6 +38,9 @@
     readingTime = true
     # Put each post's whole body in the feed instead of its summary.
     feedFullContent = false
+    # Open each post with a table of contents. A post's toc front matter
+    # overrides this either way.
+    toc = false
 
   [params.desktop]
     # Names in the Trash window. A trailing slash marks a folder.

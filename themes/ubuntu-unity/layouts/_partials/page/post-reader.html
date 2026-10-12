@@ -19,6 +19,17 @@
       {{- end }}
     </div>
     <h1 class="up-reader-title">{{ .Title }}</h1>
+    {{- /* The table of contents, shown when params.blog.toc or the post's
+          toc front matter asks for it and the post has two headings or
+          more within Hugo's tableOfContents levels. */}}
+    {{- $toc := site.Params.blog.toc }}
+    {{- if isset .Params "toc" }}{{ $toc = .Params.toc }}{{ end }}
+    {{- if and $toc (ge (len (findRE `<li>` .TableOfContents)) 2) }}
+    <details class="up-toc" open>
+      <summary>{{ T "contents" }}</summary>
+      {{ .TableOfContents }}
+    </details>
+    {{- end }}
     <div class="up-reader-body" data-up-reader-body>
       {{ .Content }}
     </div>

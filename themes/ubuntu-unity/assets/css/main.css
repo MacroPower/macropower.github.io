@@ -1665,6 +1665,19 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   .katex-display{display:block;margin:0 0 14px;overflow-x:auto}
 }
 
+/* The post reader's table of contents, a GtkExpander over Hugo's
+   TableOfContents nav. */
+.up-toc{
+  margin:0 0 20px;padding:8px 14px;font-size:14px;
+  background:#F4F1ED;border:1px solid var(--content-line);border-radius:3px;
+  > summary{cursor:pointer;font-weight:500;color:#3A3733}
+  ul{list-style:none;margin:6px 0 0;padding-left:0}
+  ul ul{margin:2px 0 0;padding-left:1.1em}
+  li{margin:3px 0}
+  a{color:#2B4E8E;text-decoration:none}
+  a:hover{color:var(--orange-light);text-decoration:underline}
+}
+
 /* GitHub-style alerts from render-blockquote.html, drawn as GTK info bars
    in the Tango palette Ambiance used. */
 .up-alert{
