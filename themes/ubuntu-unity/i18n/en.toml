@@ -1041,6 +1041,9 @@ other = "clubs"
 other = "spades"
 [js_solitaire_card]
 other = "{rank} of {suit}"
+# The table draws the btn_ and banner_ strings in a pixel font with the
+# letters A-Z, the digits, and :.,!?-+/'(). It shows an accented letter
+# as its base letter and any other character as "?".
 [js_solitaire_btn_new]
 other = "NEW"
 [js_solitaire_btn_undo]

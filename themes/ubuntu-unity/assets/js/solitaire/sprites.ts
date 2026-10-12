@@ -199,8 +199,11 @@ const FONT: Record<string, Rows> = {
 export const FONT_H = 7;
 const LETTER_GAP = 1;
 
+// The font has ASCII capitals only, so an accented letter draws as its
+// base letter (É as E), which keeps translated Latin-script labels legible.
 function glyph(ch: string): Rows {
-  return FONT[ch.toUpperCase()] ?? FONT["?"];
+  const upper = ch.toUpperCase();
+  return FONT[upper] ?? FONT[upper.normalize("NFD").charAt(0)] ?? FONT["?"];
 }
 
 export function textWidth(text: string): number {
