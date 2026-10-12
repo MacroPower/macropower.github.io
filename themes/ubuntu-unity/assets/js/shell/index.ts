@@ -5,7 +5,9 @@ import { formatUptime } from "./uptime";
 import { color, PALETTE } from "./ansi";
 import { registerAll } from "./commands/all";
 
-const HISTORY_KEY = "up:shell-history";
+// Keyed by the home page's path, which is the site's root, so two sites
+// on one origin (user.github.io/a/ and /b/) keep separate histories.
+const HISTORY_KEY = `up:shell-history:${location.pathname}`;
 
 // The JSON data island as home.html emits it.
 type ShellIsland = Omit<ShellData, "uptime"> & { since?: string };
