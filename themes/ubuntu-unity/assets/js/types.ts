@@ -28,7 +28,6 @@ export interface UPDialogOptions {
 
 export interface UPSite {
   handle: string;
-  github: string;
   repo: string;
   rss: string;
   /** nav:<key> action targets, from the theme's site-pages.html registry. */

@@ -110,7 +110,7 @@ theme   = "ubuntu-unity"
 | `author.name`, `author.email` | site title | The banner name, JSON-LD author, and the Messages indicator's Compose target. A plain string `author = "Jane Doe"` sets the name. |
 | `author.jobTitle`, `author.focus` | | The terminal banner's title row and the focus line under it. `jobTitle` is also the home page's JSON-LD `jobTitle`. |
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
-| `social` | | A list of `{name, url, short}`. Rows in the banner, links in JSON-LD. A `github` entry also backs the session menu and sponsors button; a `twitter` entry sets the card metadata. |
+| `social` | | A list of `{name, url, short}`. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button and the projects sidebar's GitHub link; a `twitter` entry sets the card metadata. |
 | `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. |

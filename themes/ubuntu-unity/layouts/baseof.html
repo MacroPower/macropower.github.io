@@ -34,7 +34,6 @@
   </div>
 
   {{ $handle := partial "ui/author-handle.html" . }}
-  {{ $github := partial "ui/social-url.html" "github" }}
   {{ $rss := "" }}{{ with .Site.Home.OutputFormats.Get "rss" }}{{ $rss = .Permalink }}{{ end }}
   {{ $repo := .Site.Params.repoUrl | default "" }}
   {{- /* nav backs top-panel.ts's nav:<key> actions; one URL per page in
@@ -43,7 +42,7 @@
   {{ $nav := dict }}
   {{ range $k, $p := (partialCached "site-pages.html" .).pages }}{{ $nav = merge $nav (dict $k $p.url) }}{{ end }}
   <script>
-window.UP_SITE = {{ (dict "handle" $handle "github" $github "repo" $repo "rss" $rss "nav" $nav) | jsonify | safeJS }};
+window.UP_SITE = {{ (dict "handle" $handle "repo" $repo "rss" $rss "nav" $nav) | jsonify | safeJS }};
   </script>
 
   {{ partialCached "ui/i18n.html" . site.Language.Name }}

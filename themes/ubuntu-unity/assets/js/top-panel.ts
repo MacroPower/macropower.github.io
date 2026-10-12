@@ -9,7 +9,7 @@ import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
 
-const EMPTY_SITE: UPSite = { handle: "", github: "", repo: "", rss: "", nav: {} };
+const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 // nav:<key> targets are SSR'd into UP_SITE.nav from the site-pages.html
