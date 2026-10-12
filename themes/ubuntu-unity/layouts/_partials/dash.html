@@ -52,7 +52,11 @@
   (dict "label" (T "log_out_app") "icon" "launcher/doorway" "action" "logout"
         "kw" (T "kw_logout"))
 ) -}}
-{{- $posts := where .Site.RegularPages "Section" "in" site.MainSections -}}
+{{- /* Every page carries the Dash, so it holds only the newest
+      params.desktop.dashPosts posts; the blog's own list searches the
+      rest. */ -}}
+{{- $posts := (where .Site.RegularPages "Section" "in" site.MainSections).ByDate.Reverse -}}
+{{- with site.Params.desktop.dashPosts }}{{ $posts = first (int .) $posts }}{{ end -}}
 {{- $projects := partialCached "projects-data.html" . -}}
 <div class="up-dash" data-up-dash hidden>
   <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>

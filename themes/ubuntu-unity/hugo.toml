@@ -49,6 +49,9 @@
       "screenshot-2009-08-14.png",
       "System32/",
     ]
+    # How many of the newest posts the Dash searches. Every page carries
+    # the Dash, so this bounds each page's size on a large blog.
+    dashPosts = 100
     # Access points in the network indicator; the first starts connected.
     networks = [
       "café-do-bairro",
