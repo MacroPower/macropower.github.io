@@ -170,19 +170,30 @@ export function initTrash(): void {
     syncLauncherTile(visible, focused);
   };
 
+  // Keyboard focus follows the window: opening moves it in, so a keyboard
+  // user lands on the window they asked for, and hiding returns it to the
+  // dock tile when it was inside.
+  const releaseFocus = (): void => {
+    if (chrome.contains(document.activeElement)) {
+      document.querySelector<HTMLElement>("[data-launcher-trash]")?.focus();
+    }
+  };
   const show = (): void => {
     open = true;
     minimized = false;
     setTrashFocused(true);
     render();
+    chrome.focus({ preventScroll: true });
   };
   const hide = (): void => {
+    releaseFocus();
     open = false;
     minimized = false;
     setTrashFocused(false);
     render();
   };
   const minimize = (): void => {
+    releaseFocus();
     minimized = true;
     setTrashFocused(false);
     render();

@@ -111,6 +111,11 @@ export function initLock(): void {
       e.preventDefault();
       e.stopImmediatePropagation();
       unlock();
+    } else if (e.key === "Tab") {
+      // The password field is the greeter's only control, and the desktop
+      // behind it stays out of reach until it unlocks.
+      e.preventDefault();
+      input?.focus();
     }
   });
 }

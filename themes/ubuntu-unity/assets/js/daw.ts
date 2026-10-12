@@ -330,16 +330,24 @@ export function initDaw(): void {
     syncLauncherTile();
   };
 
+  // Keyboard focus follows the window, as in trash.ts.
+  const releaseFocus = (): void => {
+    if (chrome.contains(document.activeElement)) {
+      (launcherTile && !launcherTile.hidden ? launcherTile : document.getElementById("up-main"))?.focus();
+    }
+  };
   const show = (): void => {
     open = true;
     minimized = false;
     setStudioFocused(true);
     render();
+    chrome.focus({ preventScroll: true });
     void loadSurface(); // idempotent: early-returns while the surface matches
     startLoop();
     requestAnimationFrame(() => { sizeCanvas(); dirty = true; });
   };
   const hide = (): void => {
+    releaseFocus();
     open = false;
     minimized = false;
     setStudioFocused(false);
@@ -347,6 +355,7 @@ export function initDaw(): void {
     stopLoop();
   };
   const minimize = (): void => {
+    releaseFocus();
     minimized = true;
     setStudioFocused(false);
     render();

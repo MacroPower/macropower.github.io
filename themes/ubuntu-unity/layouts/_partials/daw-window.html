@@ -13,7 +13,7 @@
   data-daw-status.
 */ -}}
 <div class="up-window-stage up-daw-stage" data-up-window="daw" hidden>
-  <section class="up-window-chrome up-daw-chrome">
+  <section class="up-window-chrome up-daw-chrome" aria-label="{{ T "studio" }}" tabindex="-1">
     <div class="up-titlebar" data-titlebar>
       {{ partial "ui/window-controls.html" (dict "max" true) }}
       <span class="up-titlebar-text" data-daw-title>{{ T "studio" }}</span>
