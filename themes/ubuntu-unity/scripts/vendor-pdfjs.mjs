@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Refreshes assets/vendor/pdf-js/ from the npm registry. Edit the version
+// Refreshes assets/third_party/pdf-js/ from the npm registry. Edit the version
 // below, run `npm run vendor:pdfjs`, and commit the result.
 //
 // The theme vendors pdf.js's legacy build. The modern build calls
@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 const VERSION = "6.4.299";
 const FILES = ["pdf.min.mjs", "pdf.worker.min.mjs"];
 
-const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "vendor", "pdf-js");
+const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "third_party", "pdf-js");
 const work = mkdtempSync(join(tmpdir(), "vendor-pdfjs-"));
 
 try {

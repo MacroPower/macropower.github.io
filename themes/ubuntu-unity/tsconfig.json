@@ -24,13 +24,13 @@
     "verbatimModuleSyntax": false,
     "paths": {
       "@xterm/xterm": [
-        "./assets/vendor/xterm/xterm.d.ts"
+        "./assets/third_party/xterm/xterm.d.ts"
       ],
       "@xterm/addon-fit": [
-        "./assets/vendor/xterm/addon-fit.d.ts"
+        "./assets/third_party/xterm/addon-fit.d.ts"
       ],
       "@xterm/addon-web-links": [
-        "./assets/vendor/xterm/addon-web-links.d.ts"
+        "./assets/third_party/xterm/addon-web-links.d.ts"
       ]
     }
   },

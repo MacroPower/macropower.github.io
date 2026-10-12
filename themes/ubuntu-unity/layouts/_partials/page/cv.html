@@ -8,7 +8,7 @@
   under static/, and resolve through ui/resolve-url.html.
     sourceUrl    (optional) the document's source repository, offered as "Source"
   The viewer JS ships only on this page (see baseof.html) and bundles the
-  pdf.js build vendored under the theme's assets/vendor/pdf-js/. The pdf.js
+  pdf.js build vendored under the theme's assets/third_party/pdf-js/. The pdf.js
   worker is a separate file, published only when a page renders this
   partial.
 */ -}}
@@ -18,7 +18,7 @@
       (dict "label" .Title "url" .RelPermalink))) }}
   {{- with .Params.pdf }}
   {{- $pdf := partial "ui/resolve-url.html" (dict "page" $ "url" .) -}}
-  {{- $worker := resources.Get "vendor/pdf-js/pdf.worker.min.mjs" | resources.Fingerprint -}}
+  {{- $worker := resources.Get "third_party/pdf-js/pdf.worker.min.mjs" | resources.Fingerprint -}}
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ $pdf }}"
        data-pdfjs-worker="{{ $worker.RelPermalink }}">

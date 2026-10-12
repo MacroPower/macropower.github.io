@@ -1,5 +1,5 @@
 // The slice of the pdf.js API cv.ts uses. _partials/ui/script.html shims
-// "pdfjs-dist" to the build vendored under assets/vendor/pdf-js/, which
+// "pdfjs-dist" to the build vendored under assets/third_party/pdf-js/, which
 // ships without type declarations.
 declare module "pdfjs-dist" {
   export interface PageViewport {

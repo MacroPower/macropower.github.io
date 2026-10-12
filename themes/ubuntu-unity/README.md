@@ -197,7 +197,7 @@ npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 npm run test:sites       # hugo: the example site and bare sites, warnings fatal
 ```
 
-The theme vendors xterm.js and pdf.js under `assets/vendor/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
+The theme vendors xterm.js and pdf.js under `assets/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
 The bash-conformance suite skips itself where bash is absent.
 
@@ -206,6 +206,6 @@ The bash-conformance suite skips itself where bash is absent.
 Apache-2.0. See [LICENSE.md](LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
-- [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/vendor/xterm/`.
-- [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/vendor/pdf-js/`.
+- [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/third_party/xterm/`.
+- [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/third_party/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.
