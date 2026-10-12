@@ -1620,6 +1620,7 @@ body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
   .up-heading-anchor{
     margin-left:.35em;color:var(--content-muted);font-weight:400;
     text-decoration:none;opacity:0;transition:opacity .12s ease;
+    &::after{content:"#"}
     &:hover{color:var(--orange-light);text-decoration:none}
     &:focus-visible{opacity:1}
   }
