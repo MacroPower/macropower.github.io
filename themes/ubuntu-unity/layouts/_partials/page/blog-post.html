@@ -8,7 +8,7 @@
 {{- $nextURL := "" }}{{ with $newer }}{{ $nextURL = .RelPermalink }}{{ end }}
 {{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = .Title }}{{ end }}
 {{- $nextTitle := "" }}{{ with $newer }}{{ $nextTitle = .Title }}{{ end }}
-<article class="up-blog selectable" data-blog-kind="post">
+<article class="up-blog up-selectable" data-blog-kind="post">
   {{ partial "page/nav-pathbar.html" (dict
       "segments" (partial "page/crumbs.html" .)
       "prevURL" $prevURL "prevTitle" $prevTitle

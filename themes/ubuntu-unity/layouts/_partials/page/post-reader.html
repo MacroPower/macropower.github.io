@@ -5,7 +5,7 @@
     {{ partial "icon.html" "glyphs/pathbar-back" }}
     <span>{{ T "all_posts" }}</span>
   </a>
-  <div class="up-reader-inner selectable">
+  <div class="up-reader-inner up-selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format $dateFmt .Date }}</time>
       {{- if site.Params.blog.readingTime }}

@@ -77,7 +77,7 @@
 {{- with index (where site.Pages "Layout" "solitaire") 0 -}}
   {{- $payload = merge $payload (dict "solitaire" .RelPermalink) -}}
 {{- end -}}
-<section class="up-shell up-neofetch selectable" data-shell aria-label="{{ T "terminal" }}">
+<section class="up-shell up-neofetch up-selectable" data-shell aria-label="{{ T "terminal" }}">
   {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
         would double-encode the JSON. jsonify already \u-escapes < > & so the
         payload is safe to emit verbatim. Same pattern as UP_SITE in baseof.html. */ -}}

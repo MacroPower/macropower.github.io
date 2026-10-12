@@ -187,7 +187,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   let marqueeGridTop = 0;
 
   // Native text selection fights the icon drag: the press lands on a label
-  // kept user-select:text by the window's .selectable rule, and the tile
+  // kept user-select:text by the window's .up-selectable rule, and the tile
   // branch cannot preventDefault its pointerdown (that would kill the plain
   // click path), so the browser starts extending a selection across tile
   // labels as the block rides the cursor. startDrag clears what accumulated

@@ -5,7 +5,7 @@
   {{- $segments = $segments | append
         (dict "label" .Parent.Title "url" .Parent.RelPermalink)
         (dict "label" .Title "url" .RelPermalink) -}}
-  <article class="up-blog selectable" data-blog-kind="term">
+  <article class="up-blog up-selectable" data-blog-kind="term">
     {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}
@@ -13,7 +13,7 @@
           "pages" .Pages
           "here" "") }}
       <div class="up-reader up-reader-term">
-        <div class="up-reader-inner selectable">
+        <div class="up-reader-inner up-selectable">
           <div class="up-reader-meta">
             <span>{{ .Parent.Title }}</span>
             <span class="up-reader-meta-sep">·</span>

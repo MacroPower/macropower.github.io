@@ -7,7 +7,7 @@
   sprite get a generic emblem.
 */ -}}
 {{- $projects := partialCached "projects-data.html" . -}}
-<article class="up-projects selectable" data-projects-kind="section">
+<article class="up-projects up-selectable" data-projects-kind="section">
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/icons/lang-symbols.html" . }}
   <template id="up-project-icons">

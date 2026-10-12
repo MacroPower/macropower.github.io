@@ -76,7 +76,7 @@ function makeButton(d: DialogEntry, b: UPDialogButton, isLast: boolean): HTMLBut
 }
 
 // Drag is inline (not via drag.ts) because the dialog stores its offset
-// in CSS custom properties --ox/--oy so the dlgShake keyframe can compose
+// in CSS custom properties --ox/--oy so the up-dlg-shake keyframe can compose
 // with the drag offset. drag.ts writes transform directly, which would
 // clobber the keyframe.
 function installDialogDrag(d: DialogEntry): void {

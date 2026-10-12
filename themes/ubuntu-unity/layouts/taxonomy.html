@@ -6,7 +6,7 @@
   {{- $segments := slice -}}
   {{- with partialCached "blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
   {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
-  <article class="up-blog selectable" data-blog-kind="taxonomy">
+  <article class="up-blog up-selectable" data-blog-kind="taxonomy">
     <h1 class="up-sr-only">{{ .Title }}</h1>
     {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">

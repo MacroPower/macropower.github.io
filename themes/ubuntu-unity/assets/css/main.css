@@ -193,10 +193,10 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;
 body{font-size:13.5px;line-height:1.45}
 button{font-family:inherit}
 ::selection{background:color-mix(in srgb, var(--orange) 35%, transparent)}
-#root{height:100%}
+#up-root{height:100%}
 
 /* let normal text be selectable inside windows */
-.selectable, .selectable *{user-select:text;-webkit-user-select:text}
+.up-selectable, .up-selectable *{user-select:text;-webkit-user-select:text}
 
 /* Screen-reader-only content: visually removed, still in the accessibility
    tree. Used for the page headings the desktop chrome has no visual slot
@@ -981,7 +981,6 @@ a.up-sponsor-card[href]:hover{
 /* ---------- Icon vault (icons layout) ---------- */
 /* The vault shows icons against solid backdrops, so the faint desktop
    watermark behind the window would only add noise. */
-body:has(.up-icons) .up-wallpaper-glyph{ display:none; }
 .up-icons{
   flex:1 1 auto; min-height:0; overflow:auto;
   background:var(--content-bg); color:var(--content-fg);
@@ -1822,7 +1821,7 @@ details.up-alert{
 
 /* Drag-to-reorder: the grid suppresses text selection mid-drag; the lifted
    tile's drag states come from the tile-states recipe. */
-/* The descendant arm out-specifies `.selectable *` (which re-enables
+/* The descendant arm out-specifies `.up-selectable *` (which re-enables
    user-select:text on every label) so the icon drag cannot smear a native
    text selection across the grid. */
 .up-project-grid.is-dragging,
@@ -2448,10 +2447,10 @@ details.up-alert{
                         calc(-50% + var(--oy,0px))) scale(1);
   }
   &.is-dragging{transition:none}
-  &.is-shaking{animation:dlgShake .38s}
+  &.is-shaking{animation:up-dlg-shake .38s}
   &.is-dragging .up-dlg-titlebar{cursor:grabbing}
 }
-@keyframes dlgShake{
+@keyframes up-dlg-shake{
   0%,100%{transform:translate(calc(-50% + var(--ox,0px)),
                               calc(-50% + var(--oy,0px))) scale(1)}
   15%,55%{transform:translate(calc(-50% + var(--ox,0px) - 6px),
@@ -3275,7 +3274,7 @@ body.up-reduce-motion *{
   }
 }
 /* Descendant arm for the same reason as .up-project-grid.is-dragging:
-   `.selectable *` would otherwise keep the labels text-selectable mid-drag. */
+   `.up-selectable *` would otherwise keep the labels text-selectable mid-drag. */
 .up-trash-files.is-dragging,
 .up-trash-files.is-dragging *{cursor:default;user-select:none;-webkit-user-select:none}
 .up-trash-tile-icon{
@@ -3958,7 +3957,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    needs.
    ========================================================================= */
 @media print{
-  html,body,#root{height:auto;overflow:visible;background:#fff}
+  html,body,#up-root{height:auto;overflow:visible;background:#fff}
   body{user-select:text}
   body::before,
   body::after{display:none}
