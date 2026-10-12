@@ -61,6 +61,9 @@ export interface ShellData {
   posts: PostMeta[];
   pages: PageMeta[];
   blog?: BlogMeta;
+  /** The site's solitaire table, the first page with `layout = "solitaire"`.
+   *  Absent when the site has none. */
+  solitaire?: string;
   ascii: string;
   colors: string;
 }

@@ -72,6 +72,9 @@
 {{- with $blogSection -}}
   {{- $payload = merge $payload (dict "blog" (dict "dir" .Section "url" .RelPermalink)) -}}
 {{- end -}}
+{{- with index (where site.Pages "Layout" "solitaire") 0 -}}
+  {{- $payload = merge $payload (dict "solitaire" .RelPermalink) -}}
+{{- end -}}
 <section class="up-shell up-neofetch selectable" data-shell aria-label="{{ T "terminal" }}">
   {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
         would double-encode the JSON. jsonify already \u-escapes < > & so the

@@ -11,21 +11,21 @@ export const sudo: Command = {
   },
 };
 
-// Launches the site's solitaire page when one exists (a top-level page
-// whose slug is "solitaire"); hidden so it ships no /usr/bin stub on
-// sites without the game.
+// Launches the site's solitaire table when one exists (any page with
+// `layout = "solitaire"`); hidden so it ships no /usr/bin stub on sites
+// without the game.
 export const solitaire: Command = {
   name: "solitaire",
   summary: "deal a game of klondike",
   hidden: true,
   run(ctx) {
-    const page = ctx.data.pages.find((p) => p.slug === "solitaire");
-    if (!page) {
+    const url = ctx.data.solitaire;
+    if (!url) {
       ctx.errln("solitaire: no deck installed");
       return 1;
     }
     ctx.writeln("Shuffling...");
-    navigate(page.url);
+    navigate(url);
     return 0;
   },
 };
