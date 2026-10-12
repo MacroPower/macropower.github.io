@@ -1,18 +1,19 @@
+{{- /* A taxonomy's term list. Labels use the taxonomy page's title, which
+      a site translates through content/<plural>/_index.<lang>.md. */ -}}
 {{ define "main" }}
   {{- $plural := .Data.Plural -}}
-  {{- $singular := .Data.Singular -}}
   {{- $terms := .Data.Terms.Alphabetical -}}
   {{- $segments := slice -}}
   {{- with partialCached "blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
-  {{- $segments = $segments | append (dict "label" (humanize $plural) "url" .RelPermalink) -}}
+  {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
   <article class="up-blog selectable" data-blog-kind="taxonomy">
-    <h1 class="up-sr-only">{{ humanize $plural }}</h1>
+    <h1 class="up-sr-only">{{ .Title }}</h1>
     {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
       {{ partial "page/post-sidebar.html" . }}
-      <section class="up-post-list" aria-label="{{ humanize $plural }}">
+      <section class="up-post-list" aria-label="{{ .Title }}">
         <header class="up-post-list-header">
-          <span>{{ humanize $singular | title }}</span>
+          <span>{{ T "col_name" }}</span>
           <span>{{ T "posts" }}</span>
         </header>
         {{- range $terms }}
@@ -22,7 +23,7 @@
               "chips" (slice (.Page.Title | lower))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">{{ T "no_terms_yet" (dict "Plural" $plural) }}</div>
+          <div class="up-post-empty">{{ T "no_terms_yet" (dict "Plural" (lower .Title)) }}</div>
         {{- end }}
       </section>
       {{ partial "page/empty-pane.html" (dict
