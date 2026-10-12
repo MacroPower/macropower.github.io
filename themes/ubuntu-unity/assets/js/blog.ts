@@ -1,5 +1,5 @@
 import { installFilterNav } from "./filter-nav";
-import { t } from "./i18n";
+import { locale, t } from "./i18n";
 
 type SortKey = "name" | "date";
 type SortDir = "asc" | "desc";
@@ -49,9 +49,12 @@ interface SortState {
     const key = sortState.key;
     const dir = sortState.dir === "desc" ? -1 : 1;
     const attr = key === "name" ? "data-title" : "data-date";
+    // Titles sort by the page's language, and ISO dates sort as strings.
+    const collator = new Intl.Collator(locale(), { sensitivity: "base", numeric: true });
     rows.sort((a, b) => {
       const av = a.getAttribute(attr) ?? "";
       const bv = b.getAttribute(attr) ?? "";
+      if (key === "name") return collator.compare(av, bv) * dir;
       if (av < bv) return -1 * dir;
       if (av > bv) return 1 * dir;
       return 0;

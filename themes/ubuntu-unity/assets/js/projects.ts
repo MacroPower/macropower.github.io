@@ -1,6 +1,6 @@
 import { createSelection } from "./desktop-select";
 import { installFilterNav } from "./filter-nav";
-import { t, tn } from "./i18n";
+import { locale, t, tn } from "./i18n";
 import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
 (function (): void {
@@ -76,11 +76,10 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
   }
   const iconHTML = (key: string): string => ICONS.get(key) ?? "";
 
+  const compact = new Intl.NumberFormat(locale(), { notation: "compact", maximumFractionDigits: 1 });
   function fmtNum(n: string): string {
     const num = Number(n);
-    if (!Number.isFinite(num)) return n;
-    if (num >= 1000) return `${(num / 1000).toFixed(num >= 10_000 ? 0 : 1)}k`;
-    return String(num);
+    return Number.isFinite(num) ? compact.format(num) : n;
   }
 
   function buildStat(

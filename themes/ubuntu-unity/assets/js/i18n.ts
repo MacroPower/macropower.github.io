@@ -21,9 +21,17 @@ function fill(text: string, vars?: Vars): string {
 }
 
 /** The page's language tag for Intl and toLocale*() formatting, so dates
- *  and numbers follow the page rather than the browser. */
+ *  and numbers follow the page rather than the browser. A tag Intl
+ *  rejects, such as "en_US", yields undefined, the browser's default. */
 export function locale(): string | undefined {
-  return typeof document === "undefined" ? undefined : document.documentElement.lang || undefined;
+  if (typeof document === "undefined") return undefined;
+  const tag = document.documentElement.lang;
+  if (!tag) return undefined;
+  try {
+    return Intl.getCanonicalLocales(tag)[0];
+  } catch {
+    return undefined;
+  }
 }
 
 /** The translated string for `key`, with `{name}` placeholders filled from `vars`. */
