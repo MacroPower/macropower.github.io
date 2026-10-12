@@ -1,0 +1,5 @@
+{{- /* Feed links: render-link.html's resolution, with absolute URLs,
+      because a feed reader shows the item away from the site. */ -}}
+{{- $href := partial "markup/link-url.html" (dict "page" .PageInner "dest" .Destination "absolute" true) -}}
+<a href="{{ $href }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
+{{- /**/ -}}

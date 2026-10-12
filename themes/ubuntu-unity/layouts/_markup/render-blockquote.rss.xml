@@ -1,0 +1,11 @@
+{{- /* Feed blockquotes. An alert becomes a plain blockquote that opens
+      with its title in bold, because feed readers drop the info bar's
+      styles and icon. */ -}}
+<blockquote>
+{{- if eq .Type "alert" }}
+  {{- $title := or .AlertTitle (T (printf "alert_%s" (lower .AlertType))) (T "alert_note") }}
+  <p><strong>{{ $title }}</strong></p>
+{{- end }}
+  {{ .Text }}
+</blockquote>
+{{- /**/ -}}
