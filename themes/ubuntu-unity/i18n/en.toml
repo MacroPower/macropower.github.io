@@ -256,6 +256,8 @@ other = "Keyboard shortcuts"
 other = "View source on github"
 [icon_vault]
 other = "Icon vault"
+[language]
+other = "Language"
 [messages]
 other = "Messages"
 [no_new_messages]

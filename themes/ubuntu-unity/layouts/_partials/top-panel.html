@@ -52,6 +52,8 @@
 
   <div class="up-panel-spacer"></div>
 
+  {{ partial "lang-indicator.html" . }}
+
   <div class="up-panel-item">
     <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ T "messages" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "icon.html" "glyphs/panel-inbox" }}

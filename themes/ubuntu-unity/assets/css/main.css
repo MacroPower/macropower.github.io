@@ -2293,6 +2293,22 @@ details.up-alert{
 }
 .up-net-row-name{color:inherit}
 
+/* ---- language indicator ------------------------------------------------ */
+
+/* The current language as Unity's keyboard-layout badge: dark letters
+   knocked out of a light rounded plate. */
+.up-lang-badge{
+  display:inline-block;min-width:20px;padding:0 3px;
+  border-radius:3px;background:rgba(255,255,255,.86);color:#2B2B2B;
+  font-size:10.5px;font-weight:700;line-height:14px;text-align:center;
+}
+.up-lang-row{
+  text-decoration:none;
+  &::before{content:"\25CB";display:inline-block;width:14px;color:rgba(255,255,255,.4)}
+  &.is-on::before{content:"\25CF";color:var(--orange-light)}
+  &:hover::before{color:inherit}
+}
+
 /* Net indicator while a hotspot is broadcasting: accent-tinted with a gentle
    pulse (reduce-motion neutralizes the animation via the global rule). */
 .up-indicator.is-hotspot{
