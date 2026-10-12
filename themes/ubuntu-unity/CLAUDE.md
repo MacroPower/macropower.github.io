@@ -27,6 +27,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
 - `rss.xml` renders every feed. The home feed lists the blog's posts only, so utility pages never surface as entries.
 - The render hooks under `_markup/` own Markdown output. `render-heading.rss.xml` keeps feeds free of the heading self-links, so a new heading feature that adds markup needs its RSS twin to match.
+- `_partials/head/meta.html` renders all search and share metadata. The theme does not call Hugo's embedded `opengraph.html` or `twitter_cards.html`, because they describe the home page by its body, which is the terminal's README.
 - `head.html` renders `_partials/extend-head.html` last, and `_partials/head/css.html` appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`; `page/post-reader.html` renders `_partials/extend-post.html` after a post's body. The hook partials ship empty and are the documented override points, so keep them.
 
 ## DOM contracts

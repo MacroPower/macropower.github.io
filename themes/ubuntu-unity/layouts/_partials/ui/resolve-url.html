@@ -5,17 +5,20 @@
   under the site's baseURL, so "/files/cv.pdf" keeps working when the site
   is served from a subpath.
 
-  Args (dict): page — the page whose bundle to search
-               url  — the URL to resolve
+  Args (dict): page     - the page whose bundle to search
+               url      - the URL to resolve
+               absolute - true for a URL with scheme and host, as feeds
+                          and share metadata need
 */ -}}
 {{- $u := urls.Parse .url -}}
 {{- $out := .url -}}
 {{- if not $u.IsAbs -}}
   {{- $path := strings.TrimPrefix "./" $u.Path -}}
   {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
-    {{- $out = .RelPermalink -}}
+    {{- $out = cond $.absolute .Permalink .RelPermalink -}}
   {{- else -}}
-    {{- $out = relURL (strings.TrimPrefix "/" $path) -}}
+    {{- $path = strings.TrimPrefix "/" $path -}}
+    {{- $out = cond .absolute (absURL $path) (relURL $path) -}}
   {{- end -}}
   {{- with $u.RawQuery }}{{ $out = printf "%s?%s" $out . }}{{ end -}}
   {{- with $u.Fragment }}{{ $out = printf "%s#%s" $out . }}{{ end -}}

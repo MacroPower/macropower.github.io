@@ -1,68 +1,23 @@
-{{- $description := or .Description .Summary .Site.Params.description -}}
-{{- $title := cond .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
+{{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{{- if .Params.noindex }}
-<meta name="robots" content="noindex, nofollow">
-{{- end }}
 <title>{{ $title }}</title>
-{{- with $description }}
-<meta name="description" content="{{ . | plainify | truncate 200 }}">
-{{- end }}
 <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="32x32">
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
 {{- with site.Params.themeColor }}
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
-<link rel="canonical" href="{{ .Permalink }}">
-{{- if .IsTranslated }}
-{{- range .AllTranslations }}
-<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
-{{- end }}
-{{- end }}
-{{ partial "opengraph.html" . }}
-{{ partial "twitter_cards.html" . }}
-{{- with partial "ui/social-url.html" "twitter" }}
-<meta name="twitter:site" content="@{{ path.Base . }}">
-{{- end }}
-{{- $author := partialCached "author.html" . }}
-{{- if .IsHome }}
-{{- $sameAs := slice }}
-{{- range partialCached "socials.html" . }}{{ $sameAs = $sameAs | append .url }}{{ end }}
-{{- $person := dict
-  "@context" "https://schema.org"
-  "@type" "Person"
-  "name" $author.name
-  "url" .Site.BaseURL
-  "sameAs" $sameAs
-}}
-{{- with $author.jobTitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
-<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
-{{- else if and .IsPage (partial "in-blog.html" .) }}
-{{- $ld := dict
-  "@context" "https://schema.org"
-  "@type" "BlogPosting"
-  "headline" .Title
-  "url" .Permalink
-  "datePublished" (.Date.Format "2006-01-02")
-  "dateModified" (.Lastmod.Format "2006-01-02")
-  "description" ($description | plainify)
-  "author" (dict "@type" "Person" "name" $author.name "url" .Site.BaseURL)
--}}
-{{- /* The image Hugo's Open Graph template picks, so a bundle
-      resource named in images front matter resolves the same way. */ -}}
-{{- if templates.Exists "_partials/_funcs/get-page-images.html" }}
-  {{- with partial "_funcs/get-page-images" . }}
-    {{- $ld = merge $ld (dict "image" (slice (index . 0).Permalink)) }}
-  {{- end }}
-{{- end }}
-<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
-{{- end }}
+{{ partial "head/meta.html" . }}
 {{ partialCached "head/css.html" . .IsHome }}
-{{ with .OutputFormats.Get "rss" -}}
-<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
+{{- /* Every page advertises the site feed, and a section or taxonomy
+      page also advertises its own. */}}
+{{- with site.Home.OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ site.Title }}">
 {{- end }}
+{{- if not .IsHome }}{{ with .OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Title }} | {{ site.Title }}">
+{{- end }}{{ end }}
 {{- /* Hugo's built-in Google Analytics tag renders only when the site
       sets services.googleAnalytics.id. */ -}}
 {{ if hugo.IsProduction }}{{ partial "google_analytics.html" . }}{{ end }}
