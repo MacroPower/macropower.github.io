@@ -78,6 +78,13 @@ mainSections = ["posts"]
     #   category = "categories"
     #   series   = "series"
 
+  # The thresholds behind the projects sidebar's Starred, Forks, and
+  # Recent filters. These are the defaults.
+  # [params.projects]
+  #   minStars     = 100
+  #   minForks     = 6
+  #   recentMonths = 6
+
   # The home terminal is an SSH session into the site as a guest login.
   # Both default from the site: "user" and the host of baseURL.
   # [params.terminal]

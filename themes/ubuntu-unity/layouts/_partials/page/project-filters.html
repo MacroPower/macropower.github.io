@@ -1,0 +1,22 @@
+{{- /*
+  The sidebar filters a project belongs to, as a slice drawn from
+  "starred", "recent", and "forks". params.projects sets the thresholds:
+  minStars (default 100), minForks (default 6), and recentMonths (default
+  6, counted back from the build date). The sidebar counts and the tile's
+  data-filters attribute both come from here, so the counts always match
+  what each filter shows.
+
+  Arg: a project dict from the projects data.
+*/ -}}
+{{- $cfg := site.Params.projects -}}
+{{- $minStars := $cfg.minStars | default 100 -}}
+{{- $minForks := $cfg.minForks | default 6 -}}
+{{- $months := $cfg.recentMonths | default 6 -}}
+{{- $cutoff := now.AddDate 0 (mul -1 (int $months)) 0 -}}
+{{- $out := slice -}}
+{{- if ge (int (.stars | default 0)) (int $minStars) }}{{ $out = $out | append "starred" }}{{ end -}}
+{{- with .updated -}}
+  {{- if (time.AsTime .).After $cutoff }}{{ $out = $out | append "recent" }}{{ end -}}
+{{- end -}}
+{{- if ge (int (.forks | default 0)) (int $minForks) }}{{ $out = $out | append "forks" }}{{ end -}}
+{{- return $out -}}

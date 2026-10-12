@@ -116,6 +116,7 @@ theme   = "ubuntu-unity"
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
 | `blog.taxonomies.category`, `blog.taxonomies.series` | `categories`, `series` | The taxonomies behind the blog's Places and Series lenses and the post chips. Set `category = "tags"` for a site that tags its posts. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The login the home terminal presents. |
+| `projects.minStars`, `projects.minForks`, `projects.recentMonths` | `100`, `6`, `6` | The thresholds behind the projects sidebar's Starred, Forks, and Recent filters. |
 | `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. |
 
 ### Menu

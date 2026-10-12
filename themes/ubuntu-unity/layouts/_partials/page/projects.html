@@ -6,8 +6,7 @@
   Any language name is accepted; those without artwork in the lang-symbols
   sprite get a generic emblem.
 */ -}}
-{{- $cutoff := (now.AddDate 0 -6 0).Format "2006-01-02" -}}
-<article class="up-projects selectable" data-projects-kind="section" data-projects-recent-cutoff="{{ $cutoff }}">
+<article class="up-projects selectable" data-projects-kind="section">
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "page/icons/lang-symbols.html" . }}
   <template id="up-project-icons">
@@ -24,7 +23,7 @@
       "searchNoun" (T "projects_noun")
       "searchPlaceholder" (T "filter_projects_placeholder")) }}
   <div class="up-projects-grid">
-    {{ partial "page/projects-sidebar.html" (dict "projects" hugo.Data.projects "cutoff" $cutoff) }}
+    {{ partial "page/projects-sidebar.html" (dict "projects" hugo.Data.projects) }}
     {{ partial "page/projects-grid.html" (dict "projects" hugo.Data.projects) }}
     {{ partial "page/empty-pane.html" (dict
         "class" "up-project-preview"

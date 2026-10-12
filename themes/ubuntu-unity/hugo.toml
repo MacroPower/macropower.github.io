@@ -14,3 +14,10 @@
     listDateFormat = "2006-01-02"
     # Show "N min read" in the post reader.
     readingTime = true
+
+  [params.projects]
+    # Thresholds behind the projects sidebar's Starred, Forks, and Recent
+    # filters.
+    minStars     = 100
+    minForks     = 6
+    recentMonths = 6

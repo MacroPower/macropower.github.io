@@ -1,8 +1,10 @@
 {{- $projects := .projects -}}
-{{- $cutoff := .cutoff -}}
-{{- $starred := where $projects "stars" "ge" 100 -}}
-{{- $recent := where $projects "updated" "gt" $cutoff -}}
-{{- $forks := where $projects "forks" "gt" 5 -}}
+{{- $counts := dict "starred" 0 "recent" 0 "forks" 0 -}}
+{{- range $projects -}}
+  {{- range partial "page/project-filters.html" . -}}
+    {{- $counts = merge $counts (dict . (add (index $counts .) 1)) -}}
+  {{- end -}}
+{{- end -}}
 {{- $github := partial "ui/social-url.html" "github" -}}
 
 {{- $iconAll := partial "icon.html" "glyphs/sidebar-all" -}}
@@ -13,9 +15,9 @@
 
 {{- $places := slice
     (dict "tag" "button" "label" (T "all")     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))
-    (dict "tag" "button" "label" (T "starred") "icon" $iconStarred "count" (len $starred)                 "attrs" (dict "data-projects-filter" "starred"))
-    (dict "tag" "button" "label" (T "recent")  "icon" $iconRecent  "count" (len $recent)                  "attrs" (dict "data-projects-filter" "recent"))
-    (dict "tag" "button" "label" (T "forks")   "icon" $iconForks   "count" (len $forks)                   "attrs" (dict "data-projects-filter" "forks"))
+    (dict "tag" "button" "label" (T "starred") "icon" $iconStarred "count" $counts.starred                "attrs" (dict "data-projects-filter" "starred"))
+    (dict "tag" "button" "label" (T "recent")  "icon" $iconRecent  "count" $counts.recent                 "attrs" (dict "data-projects-filter" "recent"))
+    (dict "tag" "button" "label" (T "forks")   "icon" $iconForks   "count" $counts.forks                  "attrs" (dict "data-projects-filter" "forks"))
 -}}
 
 {{/* Build language histogram, then sort the keys into a stable alphabetical

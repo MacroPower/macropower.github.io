@@ -18,10 +18,6 @@ import { installDesktop } from "./projects-desktop";
     root.querySelectorAll<HTMLElement>("[data-projects-filter]"),
   );
 
-  // Hugo emits the Recent cutoff on the root so build-time and runtime see
-  // the same ISO date (see data-projects-recent-cutoff in projects/list.html).
-  const recentCutoffISO = root.dataset.projectsRecentCutoff ?? "";
-
   const initialPreviewHTML = preview?.innerHTML ?? "";
   const initialPreviewClass = preview?.className ?? "";
   function resetPreview(): void {
@@ -50,18 +46,15 @@ import { installDesktop } from "./projects-desktop";
 
   let currentFilter = "all";
 
-  const PREDICATES: Record<string, (t: HTMLElement) => boolean> = {
-    all: () => true,
-    starred: (t) => Number(t.dataset.stars ?? "0") >= 100,
-    recent: (t) => (t.dataset.updated ?? "") > recentCutoffISO,
-    forks: (t) => Number(t.dataset.forks ?? "0") > 5,
-  };
-
+  // Hugo decides which of the starred, recent, and forks filters each tile
+  // belongs to (data-filters), so the thresholds live only in the theme's
+  // params and the sidebar counts always agree with the grid.
   function filterMatches(tile: HTMLElement): boolean {
+    if (currentFilter === "all") return true;
     if (currentFilter.startsWith("lang:")) {
       return (tile.dataset.language ?? "") === currentFilter.slice(5);
     }
-    return (PREDICATES[currentFilter] ?? PREDICATES.all!)(tile);
+    return (tile.dataset.filters ?? "").split(" ").includes(currentFilter);
   }
 
   function searchMatch(tile: HTMLElement, query: string): boolean {
