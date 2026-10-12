@@ -47,8 +47,9 @@
   </header>
   <div class="up-dash-grid" data-dash-grid>
     {{- range . }}
-    <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
-       target="_blank" rel="noopener" title="{{ .description }}"
+    {{- /* A project without a url gets a tile that opens nothing. */}}
+    <a class="up-dash-tile" data-dash-tile tabindex="-1"
+       {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }} title="{{ .description }}"
        data-keywords="{{ T "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
       <span class="up-dash-tile-label">{{ .name }}</span>
