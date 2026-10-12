@@ -25,6 +25,8 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 - `_partials/playlist.html` resolves the Studio's MIDI files from the site. An empty playlist removes every Studio surface, so gate any new one on it.
 - The accent preset names appear in `main.css`, `ACCENTS` in `prefs.ts`, and the `params.desktop.accent` check in `baseof.html`. Change all three together.
 - `baseof.html` ships the blog, projects, cv, solitaire, icons, and shell bundles only to the pages that use them.
+- `rss.xml` renders every feed. The home feed lists the blog's posts only, so utility pages never surface as entries.
+- The render hooks under `_markup/` own Markdown output. `render-heading.rss.xml` keeps feeds free of the heading self-links, so a new heading feature that adds markup needs its RSS twin to match.
 - `head.html` renders `_partials/extend-head.html` last, and `_partials/head/css.html` appends the site's `assets/css/custom.css` to the stylesheet; `baseof.html` renders `_partials/extend-footer.html` before `</body>`; `page/post-reader.html` renders `_partials/extend-post.html` after a post's body. The hook partials ship empty and are the documented override points, so keep them.
 
 ## DOM contracts
