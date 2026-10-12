@@ -1,16 +1,5 @@
-{{- /* Markdown links. A relative destination resolves to a page, then a
-      page bundle resource, then a site asset, so `[intro](other-post.md)`
-      links to that post's permalink. Anything else, including in-page
-      `#anchors` and external URLs, passes through unchanged. */ -}}
-{{- $u := urls.Parse .Destination -}}
-{{- $href := $u.String -}}
-{{- if and $href (not $u.IsAbs) (not (hasPrefix $href "#")) -}}
-  {{- $path := strings.TrimPrefix "./" $u.Path -}}
-  {{- with or ($.PageInner.GetPage $path) ($.PageInner.Resources.Get $path) (resources.Get $path) -}}
-    {{- $href = .RelPermalink -}}
-    {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
-    {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
-  {{- end -}}
-{{- end -}}
+{{- /* Markdown links. _partials/markup/link-url.html resolves the
+      destination. */ -}}
+{{- $href := partial "markup/link-url.html" (dict "page" .PageInner "dest" .Destination) -}}
 <a href="{{ $href }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
 {{- /**/ -}}

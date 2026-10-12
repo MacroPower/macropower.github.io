@@ -48,7 +48,9 @@ width and height:
 ![The Ubuntu roundel](roundel.png "A 180px Ubuntu roundel")
 
 Links to other content files resolve to their permalinks, so this one
-reaches [the first part of the series](/posts/series-part-1.md).
+reaches [the first part of the series](/posts/series-part-1.md). A
+root-relative link to a static file, like this
+[sample CV](/files/sample-cv.pdf), resolves under the site's `baseURL`.
 
 The `spotify` shortcode embeds an album, track, playlist, or artist:
 

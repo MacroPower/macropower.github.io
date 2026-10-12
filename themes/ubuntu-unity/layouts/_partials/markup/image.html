@@ -1,0 +1,50 @@
+{{- /*
+  Resolves a Markdown image for render-image.html and its feed twin, as
+  a dict of src, width, height, and srcset. A relative destination
+  resolves against the page bundle and then the site's assets, so
+  `![](photo.jpg)` beside an index.md works, and a root-relative one
+  that matches neither resolves under the site's baseURL. Raster images
+  Hugo can read get width and height, and a JPEG, PNG, or WebP wider
+  than the text column also gets a srcset of narrower copies. The other
+  keys are empty when they do not apply.
+
+  Args (dict): page     - the page whose images to resolve (.PageInner)
+               dest     - the image destination
+               absolute - true for URLs with scheme and host
+*/ -}}
+{{- $u := urls.Parse .dest -}}
+{{- $out := dict "src" $u.String "width" 0 "height" 0 "srcset" "" -}}
+{{- if and (not $u.IsAbs) (not $u.Host) -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- $src := "" -}}
+  {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
+    {{- $src = cond $.absolute .Permalink .RelPermalink -}}
+    {{- if reflect.IsImageResourceProcessable . -}}
+      {{- $img := . -}}
+      {{- $out = merge $out (dict "width" .Width "height" .Height) -}}
+      {{- /* 800px is the widest text column, the plain page's. */ -}}
+      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt .Width 800) -}}
+        {{- $set := slice -}}
+        {{- range slice 800 1600 -}}
+          {{- if lt . $img.Width -}}
+            {{- $copy := $img.Resize (printf "%dx" .) -}}
+            {{- $set = $set | append (printf "%s %dw" (cond $.absolute $copy.Permalink $copy.RelPermalink) .) -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $set = $set | append (printf "%s %dw" $src $img.Width) -}}
+        {{- $out = merge $out (dict "srcset" (delimit $set ", ")) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- if hasPrefix $path "/" -}}
+      {{- $path = strings.TrimPrefix "/" $path -}}
+      {{- $src = cond .absolute (absURL $path) (relURL $path) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $src -}}
+    {{- with $u.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
+    {{- with $u.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
+    {{- $out = merge $out (dict "src" $src) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

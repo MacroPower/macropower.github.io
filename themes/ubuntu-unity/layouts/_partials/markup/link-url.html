@@ -1,0 +1,33 @@
+{{- /*
+  Resolves a Markdown link destination for render-link.html and its feed
+  twin. A relative destination resolves to a page, then a page bundle
+  resource, then a site asset, so `[intro](other-post.md)` links to that
+  post's permalink. A root-relative destination that matches none of
+  them resolves under the site's baseURL, so `/files/cv.pdf` keeps
+  working when the site is served from a subpath. In-page `#anchors`,
+  external URLs, and other relative paths pass through unchanged.
+
+  Args (dict): page     - the page whose links to resolve (.PageInner)
+               dest     - the link destination
+               absolute - true for a URL with scheme and host
+*/ -}}
+{{- $u := urls.Parse .dest -}}
+{{- $href := $u.String -}}
+{{- if and $href (not $u.IsAbs) (not $u.Host) (not (hasPrefix $href "#")) -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- $target := "" -}}
+  {{- with or (.page.GetPage $path) (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
+    {{- $target = cond $.absolute .Permalink .RelPermalink -}}
+  {{- else -}}
+    {{- if hasPrefix $path "/" -}}
+      {{- $path = strings.TrimPrefix "/" $path -}}
+      {{- $target = cond .absolute (absURL $path) (relURL $path) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $target -}}
+    {{- $href = . -}}
+    {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+    {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $href -}}

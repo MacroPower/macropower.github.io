@@ -1,40 +1,11 @@
-{{- /* Markdown images. A relative destination resolves against the page
-      bundle and then the site's assets, so `![](photo.jpg)` beside an
-      index.md works. Raster images Hugo can read get width and height,
-      which keeps the reader from jumping as they load, and a JPEG, PNG,
-      or WebP wider than the text column also gets a srcset of narrower
-      copies. Every image loads lazily and decodes off the critical
-      path. */ -}}
-{{- $u := urls.Parse .Destination -}}
-{{- $src := $u.String -}}
-{{- $dims := dict -}}
-{{- $srcset := "" -}}
-{{- if not $u.IsAbs -}}
-  {{- $path := strings.TrimPrefix "./" $u.Path -}}
-  {{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
-    {{- $src = .RelPermalink -}}
-    {{- with $u.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
-    {{- with $u.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
-    {{- if reflect.IsImageResourceProcessable . -}}
-      {{- $img := . -}}
-      {{- $dims = dict "width" .Width "height" .Height -}}
-      {{- /* 800px is the widest text column, the plain page's. */ -}}
-      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt .Width 800) -}}
-        {{- $set := slice -}}
-        {{- range slice 800 1600 -}}
-          {{- if lt . $img.Width -}}
-            {{- $set = $set | append (printf "%s %dw" ($img.Resize (printf "%dx" .)).RelPermalink .) -}}
-          {{- end -}}
-        {{- end -}}
-        {{- $srcset = delimit ($set | append (printf "%s %dw" $img.RelPermalink $img.Width)) ", " -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-<img src="{{ $src }}" alt="{{ .PlainText }}"
+{{- /* Markdown images. _partials/markup/image.html resolves the source
+      and its dimensions. Every image loads lazily and decodes off the
+      critical path. */ -}}
+{{- $img := partial "markup/image.html" (dict "page" .PageInner "dest" .Destination) -}}
+<img src="{{ $img.src }}" alt="{{ .PlainText }}"
   {{- with .Title }} title="{{ . }}"{{ end }}
-  {{- with $dims }} width="{{ .width }}" height="{{ .height }}"{{ end }}
-  {{- with $srcset }} srcset="{{ . }}" sizes="(max-width: 840px) 100vw, 800px"{{ end }}
+  {{- with $img.width }} width="{{ . }}" height="{{ $img.height }}"{{ end }}
+  {{- with $img.srcset }} srcset="{{ . }}" sizes="(max-width: 840px) 100vw, 800px"{{ end }}
   loading="lazy" decoding="async"
   {{- range $k, $v := .Attributes -}}
     {{- if $v }}{{ printf " %s=%q" $k ($v | transform.HTMLEscape) | safeHTMLAttr }}{{ end -}}
