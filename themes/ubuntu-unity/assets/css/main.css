@@ -3950,3 +3950,54 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-window-stage{ padding:8px 12px; }
   .up-window-chrome{ max-height:100%; }
 }
+
+/* =========================================================================
+   print: the page window's content on plain paper. The desktop chrome
+   drops out, and the window, which otherwise clips to the viewport,
+   grows to its content so a long post prints on as many pages as it
+   needs.
+   ========================================================================= */
+@media print{
+  html,body,#root{height:auto;overflow:visible;background:#fff}
+  body{user-select:text}
+  body::before,
+  body::after{display:none}
+  .up-skip-link,
+  .up-top-panel,
+  .up-launcher,
+  .up-desktop-label,
+  .up-dash,
+  .up-hud,
+  .up-notify-host,
+  .up-lock,
+  #up-dialog-host,
+  .up-window-stage:not(:has([data-page-window])),
+  .up-titlebar,
+  .up-pathbar-wrap,
+  .up-naut-sidebar,
+  .up-reader-progress,
+  .up-reader-up,
+  .up-heading-anchor{display:none !important}
+  .up-window-stage,
+  .up-window-chrome,
+  .up-window-body,
+  .up-blog,
+  .up-blog-grid,
+  .up-reader,
+  .up-reader-inner,
+  .up-page{
+    position:static !important;display:block !important;
+    width:auto !important;height:auto !important;max-width:none !important;
+    min-height:0 !important;overflow:visible !important;transform:none !important;
+    margin:0 !important;box-shadow:none !important;border:0 !important;
+    background:#fff !important;
+  }
+  /* Code keeps its highlighting background, which browsers otherwise
+     drop, and wraps where the screen would scroll. */
+  pre{
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible !important;
+  }
+  pre, img, figure, .up-alert{break-inside:avoid}
+  h1, h2, h3, h4{break-after:avoid}
+}
