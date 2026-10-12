@@ -1,6 +1,7 @@
 {{/* Paired with window-frame-close.html. Opens
        <div.up-window-stage> > <section.up-window-chrome> >
-       <div.up-titlebar> + opening <div.up-window-body>.
+       <div.up-titlebar> + opening <main#up-main.up-window-body>, the
+       target of baseof.html's skip link.
      The content layout's `{{ define "main" }}` body fills the slot;
      it must emit inner content only — no extra outer wrapper,
      no overridden titlebar text. */}}
@@ -10,4 +11,4 @@
       {{ partial "ui/window-controls.html" (dict "max" true) }}
       <span class="up-titlebar-text">{{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}</span>
     </div>
-    <div class="up-window-body selectable" role="main">
+    <main id="up-main" class="up-window-body selectable" tabindex="-1">

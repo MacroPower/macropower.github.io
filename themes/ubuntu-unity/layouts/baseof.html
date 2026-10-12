@@ -18,6 +18,7 @@
   {{- with $accent }} data-up-accent="{{ . }}"{{ end }}>
 <head>{{ partial "head.html" . }}</head>
 <body>
+  <a class="up-skip-link" href="#up-main">{{ T "skip_to_content" }}</a>
   <div id="root">
     {{ partial "top-panel.html" . }}
     {{ partial "launcher.html" . }}

@@ -62,8 +62,9 @@ function unlock(): void {
     setTimeout(finish, 400);
   }
 
-  // Hand focus back to the page content.
-  document.querySelector<HTMLElement>("[data-page-window]")?.focus?.();
+  // Hand focus back to the page content, the window body baseof.html's
+  // skip link also targets.
+  document.getElementById("up-main")?.focus();
 }
 
 export function showLock(opts?: { onUnlock?: () => void }): void {

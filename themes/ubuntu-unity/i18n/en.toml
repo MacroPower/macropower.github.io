@@ -160,6 +160,8 @@ other = "this terminal requires JavaScript."
 # 404
 [page_not_found]
 other = "Page not found"
+[skip_to_content]
+other = "Skip to content"
 [page_does_not_exist]
 other = "This page does not exist"
 [places_instead]

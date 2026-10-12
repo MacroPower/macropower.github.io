@@ -20,7 +20,7 @@
 {{- if eq $tag "button" -}}
 <button class="up-launcher-tile{{ if .active }} is-active{{ end }}" data-launcher="{{ .key }}"{{ if .trash }} data-launcher-trash{{ end }}{{ if .hidden }} hidden{{ end }} aria-label="{{ .label }}" type="button">
 {{- else -}}
-<a class="up-launcher-tile{{ if .active }} is-active{{ end }}" href="{{ .url }}" data-launcher="{{ .key }}" aria-label="{{ .label }}"{{ if .active }} data-page-current="1"{{ end }}>
+<a class="up-launcher-tile{{ if .active }} is-active{{ end }}" href="{{ .url }}" data-launcher="{{ .key }}" aria-label="{{ .label }}"{{ if .active }} aria-current="page" data-page-current="1"{{ end }}>
 {{- end -}}
   <span class="up-launcher-icon">{{ partial "icon.html" .icon }}</span>
   <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>

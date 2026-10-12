@@ -3863,6 +3863,16 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline:2px solid var(--orange-light);
   outline-offset:-2px;
 }
+/* The skip link baseof.html puts first in the page. It stays off screen
+   until a keyboard user tabs to it, then sits above every desktop layer. */
+.up-skip-link{
+  position:fixed;top:4px;left:4px;z-index:3000;
+  padding:6px 12px;border-radius:3px;
+  background:var(--orange);color:#fff;font-weight:500;text-decoration:none;
+  transform:translateY(-200%);
+  &:focus{transform:none;outline:2px solid #fff;outline-offset:1px}
+}
+#up-main:focus{outline:none}
 .up-pathbar-btn:focus-visible,
 .up-pathbar-arrow:focus-visible,
 .up-pathbar-icon-btn:focus-visible,
