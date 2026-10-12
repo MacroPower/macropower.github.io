@@ -13,6 +13,7 @@
 import * as audio from "./audio";
 import { installTitlebarDrag } from "./drag";
 import { setStudioFocused, getStudioFocused, subscribe } from "./focus";
+import { t, tn } from "./i18n";
 import type { MidiNote, MidiSong } from "./midi";
 import { installResize } from "./resize";
 
@@ -30,9 +31,9 @@ const BLACK = new Set([1, 3, 6, 8, 10]);
 
 const ACCENT = "#E95420"; // playhead — Unity orange, deliberately not themed
 const DRUM_ROWS = [
-  { label: "hat", pitch: 42 },
-  { label: "snr", pitch: 38 },
-  { label: "kck", pitch: 36 },
+  { label: t("js_studio_drum_hat_short"), pitch: 42 },
+  { label: t("js_studio_drum_snare_short"), pitch: 38 },
+  { label: t("js_studio_drum_kick_short"), pitch: 36 },
 ];
 
 function noteName(pitch: number): string {
@@ -72,17 +73,17 @@ function deriveTracks(song: MidiSong): Track[] {
   pitched.forEach(([key, notes], i) => {
     let name: string;
     let color: string;
-    if (pitched.length > 1 && i === 0) { name = "Bass"; color = "#5AA7E8"; }
-    else if (i === pitched.length - 1) { name = "Lead"; color = "#6FE07C"; }
+    if (pitched.length > 1 && i === 0) { name = t("js_studio_track_bass"); color = "#5AA7E8"; }
+    else if (i === pitched.length - 1) { name = t("js_studio_track_lead"); color = "#6FE07C"; }
     else {
-      name = pitched.length > 3 ? `Keys ${keysIdx + 1}` : "Keys";
+      name = pitched.length > 3 ? t("js_studio_track_keys_n", { n: keysIdx + 1 }) : t("js_studio_track_keys");
       color = KEYS_COLORS[keysIdx % KEYS_COLORS.length];
       keysIdx++;
     }
     tracks.push({ channel: key & 0xff, name, color, notes, strip: audio.strip(key) });
   });
   const drums = byKey.get(9);
-  if (drums) tracks.push({ channel: 9, name: "Drums", color: "#E8625A", notes: drums, strip: audio.strip(9) });
+  if (drums) tracks.push({ channel: 9, name: t("js_studio_track_drums"), color: "#E8625A", notes: drums, strip: audio.strip(9) });
   return tracks;
 }
 
@@ -249,15 +250,15 @@ const PATCH_GLYPHS: Record<audio.PatchKey, string> = {
 const patchSvg = (key: audio.PatchKey, size: number): string =>
   `<svg viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">${PATCH_GLYPHS[key]}</svg>`;
 const VOICE_FLAVOR: Partial<Record<audio.PatchKey, string>> = {
-  sine: "pure",
-  square: "the default",
-  saw: "buzzy",
-  organ: "drawbars and a sub",
-  pulse: "chip lead",
-  epiano: "FM tines",
-  bell: "FM bell, rings past the note",
-  pluck: "instant attack, fast decay",
-  pad: "slow wash",
+  sine: t("js_studio_flavor_sine"),
+  square: t("js_studio_flavor_square"),
+  saw: t("js_studio_flavor_saw"),
+  organ: t("js_studio_flavor_organ"),
+  pulse: t("js_studio_flavor_pulse"),
+  epiano: t("js_studio_flavor_epiano"),
+  bell: t("js_studio_flavor_bell"),
+  pluck: t("js_studio_flavor_pluck"),
+  pad: t("js_studio_flavor_pad"),
 };
 
 // ---- module wiring ------------------------------------------------------------
@@ -445,26 +446,26 @@ export function initDaw(): void {
     if (idx === surfaceIdx) return;
     surfaceIdx = idx;
     const name = audio.trackName();
-    if (titleEl) titleEl.textContent = name ? `${name} — Studio` : "Studio";
+    if (titleEl) titleEl.textContent = name ? t("js_studio_title_named", { name }) : t("js_studio_title");
     song = null; // park the renderer while the surface swaps
     tracks = [];
-    showLoading("Loading…");
+    showLoading(t("js_studio_loading"));
     const loaded = await audio.getSong();
     if (audio.trackIndex() !== idx || surfaceIdx !== idx) return;
     if (!loaded || !loaded.notes.length) {
-      showLoading("Couldn't load the song. The tape deck stays empty.");
+      showLoading(t("js_studio_load_failed"));
       surfaceIdx = -1; // unlatch so the next interaction retries the load
       return;
     }
     song = loaded;
     tracks = deriveTracks(loaded);
-    hasDrums = tracks.some((t) => t.channel === 9);
+    hasDrums = tracks.some((trk) => trk.channel === 9);
 
     let lo = 127;
     let hi = 0;
-    for (const t of tracks) {
-      if (t.channel === 9) continue;
-      for (const n of t.notes) {
+    for (const trk of tracks) {
+      if (trk.channel === 9) continue;
+      for (const n of trk.notes) {
         if (n.pitch < lo) lo = n.pitch;
         if (n.pitch > hi) hi = n.pitch;
       }
@@ -485,7 +486,7 @@ export function initDaw(): void {
   function buildRack(): void {
     closePatchMenu(); // an open picker would reference the torn-down strips
     if (tracksHost) {
-      tracksHost.replaceChildren(...tracks.map((t) => buildTrackStrip(t)));
+      tracksHost.replaceChildren(...tracks.map((trk) => buildTrackStrip(trk)));
     }
     if (synthHost) {
       // The global "auto" voice: every concrete patch, not just the tables.
@@ -498,7 +499,7 @@ export function initDaw(): void {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "up-daw-wave";
-        const title = `${p.label} — ${VOICE_FLAVOR[key] ?? ""}`;
+        const title = t("js_studio_voice_title", { name: p.label, flavor: VOICE_FLAVOR[key] ?? "" });
         b.title = title;
         b.setAttribute("aria-label", title);
         b.innerHTML = patchSvg(key, 16);
@@ -516,27 +517,27 @@ export function initDaw(): void {
       const D = audio.PARAM_DEFAULTS;
       knobs.append(
         makeKnob({
-          label: "att", min: 0.001, max: 0.08, value: p.attack,
+          label: t("js_studio_knob_att"), min: 0.001, max: 0.08, value: p.attack,
           preset: D.attack, fmt: fmtMs,
           onInput: (v) => audio.setParam("attack", v),
         }),
         makeKnob({
-          label: "rel", min: 0.15, max: 1, value: p.release,
+          label: t("js_studio_knob_rel"), min: 0.15, max: 1, value: p.release,
           preset: D.release, fmt: fmtPct,
           onInput: (v) => audio.setParam("release", v),
         }),
         makeKnob({
-          label: "oct", min: -2, max: 2, step: 1, value: p.oct,
+          label: t("js_studio_knob_oct"), min: -2, max: 2, step: 1, value: p.oct,
           preset: D.oct, fmt: fmtSigned,
           onInput: (v) => audio.setParam("oct", v),
         }),
         makeKnob({
-          label: "det", min: 0, max: 30, value: p.detune,
+          label: t("js_studio_knob_det"), min: 0, max: 30, value: p.detune,
           preset: D.detune, fmt: fmtCents,
           onInput: (v) => audio.setParam("detune", v),
         }),
         makeKnob({
-          label: "vib", min: 0, max: 40, value: p.vib,
+          label: t("js_studio_knob_vib"), min: 0, max: 40, value: p.vib,
           preset: D.vib, fmt: fmtCents,
           onInput: (v) => audio.setParam("vib", v),
         }),
@@ -550,32 +551,32 @@ export function initDaw(): void {
       knobs.className = "up-daw-knobs";
       knobs.append(
         makeKnob({
-          label: "cut", min: 200, max: 12000, value: p.cutoff,
+          label: t("js_studio_knob_cut"), min: 200, max: 12000, value: p.cutoff,
           preset: D.cutoff, log: true, fmt: fmtHz,
           onInput: (v) => audio.setParam("cutoff", v),
         }),
         makeKnob({
-          label: "drive", min: 0, max: 1, value: p.drive,
+          label: t("js_studio_knob_drive"), min: 0, max: 1, value: p.drive,
           preset: D.drive, fmt: fmtPct,
           onInput: (v) => audio.setParam("drive", v),
         }),
         makeKnob({
-          label: "crush", min: 0, max: 1, value: p.crush,
+          label: t("js_studio_knob_crush"), min: 0, max: 1, value: p.crush,
           preset: D.crush, fmt: fmtPct,
           onInput: (v) => audio.setParam("crush", v),
         }),
         makeKnob({
-          label: "echo", min: 0, max: 1, value: p.echo,
+          label: t("js_studio_knob_echo"), min: 0, max: 1, value: p.echo,
           preset: D.echo, fmt: fmtPct,
           onInput: (v) => audio.setParam("echo", v),
         }),
         makeKnob({
-          label: "verb", min: 0, max: 1, value: p.verb,
+          label: t("js_studio_knob_verb"), min: 0, max: 1, value: p.verb,
           preset: D.verb, fmt: fmtPct,
           onInput: (v) => audio.setParam("verb", v),
         }),
         makeKnob({
-          label: "width", min: 0, max: 1, value: p.width,
+          label: t("js_studio_knob_width"), min: 0, max: 1, value: p.width,
           preset: D.width, fmt: fmtPct,
           onInput: (v) => audio.setParam("width", v),
         }),
@@ -585,19 +586,19 @@ export function initDaw(): void {
       times.className = "up-daw-times";
       const timesLabel = document.createElement("span");
       timesLabel.className = "up-daw-times-label";
-      timesLabel.textContent = "echo sync";
+      timesLabel.textContent = t("js_studio_echo_sync");
       times.appendChild(timesLabel);
       const timeBtns = new Map<number, HTMLButtonElement>();
-      for (const { label, div } of [
-        { label: "1/8", div: 0.5 },
-        { label: "·8", div: 0.75 },
-        { label: "1/4", div: 1 },
+      for (const { label, div, title } of [
+        { label: "1/8", div: 0.5, title: t("js_studio_echo_eighth") },
+        { label: "·8", div: 0.75, title: t("js_studio_echo_dotted") },
+        { label: "1/4", div: 1, title: t("js_studio_echo_quarter") },
       ]) {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "up-daw-time";
         b.textContent = label;
-        b.title = `Echo: ${label === "·8" ? "dotted eighth" : label} note`;
+        b.title = title;
         b.addEventListener("click", () => {
           audio.setParam("echoDiv", div);
           timeBtns.forEach((btn, d) => btn.classList.toggle("is-on", d === div));
@@ -613,17 +614,17 @@ export function initDaw(): void {
       const D = audio.PARAM_DEFAULTS;
       grooveHost.replaceChildren(
         makeKnob({
-          label: "swing", min: 0, max: 0.8, value: p.swing,
+          label: t("js_studio_knob_swing"), min: 0, max: 0.8, value: p.swing,
           preset: D.swing, fmt: fmtPct,
           onInput: (v) => audio.setParam("swing", v),
         }),
         makeKnob({
-          label: "hum", min: 0, max: 1, value: p.humanize,
+          label: t("js_studio_knob_hum"), min: 0, max: 1, value: p.humanize,
           preset: D.humanize, fmt: fmtPct,
           onInput: (v) => audio.setParam("humanize", v),
         }),
         makeKnob({
-          label: "vel", min: 0, max: 1, value: p.velSens,
+          label: t("js_studio_knob_vel"), min: 0, max: 1, value: p.velSens,
           preset: D.velSens, fmt: fmtPct,
           onInput: (v) => audio.setParam("velSens", v),
         }),
@@ -648,8 +649,8 @@ export function initDaw(): void {
   // still dismisses the menu.
   document.addEventListener("pointerdown", (e) => {
     if (!patchMenu) return;
-    const t = e.target;
-    if (t instanceof Node && (patchMenu.contains(t) || patchMenuAnchor?.contains(t))) return;
+    const node = e.target;
+    if (node instanceof Node && (patchMenu.contains(node) || patchMenuAnchor?.contains(node))) return;
     closePatchMenu();
   });
   window.addEventListener("keydown", (e) => {
@@ -674,22 +675,25 @@ export function initDaw(): void {
 
   // Arrow (not a hoisted declaration) so the `chrome` null-guard narrowing
   // above applies inside.
-  const openPatchMenu = (anchor: HTMLElement, t: Track, sync: () => void): void => {
+  const openPatchMenu = (anchor: HTMLElement, trk: Track, sync: () => void): void => {
     closePatchMenu();
     const menu = document.createElement("div");
     menu.className = "up-daw-patchmenu";
     for (const p of audio.PATCHES) {
       const item = document.createElement("button");
       item.type = "button";
-      item.className = "up-daw-patchmenu-item" + (t.strip.patch === p.key ? " is-on" : "");
-      item.innerHTML = `${patchSvg(p.key, 13)}<span>${p.label}</span>`;
+      item.className = "up-daw-patchmenu-item" + (trk.strip.patch === p.key ? " is-on" : "");
+      item.innerHTML = patchSvg(p.key, 13);
+      const itemLabel = document.createElement("span");
+      itemLabel.textContent = p.label;
+      item.appendChild(itemLabel);
       item.addEventListener("click", () => {
-        t.strip.patch = p.key;
+        trk.strip.patch = p.key;
         sync();
         closePatchMenu();
-        setStatus(`${t.name}: instrument set to ${p.label}`);
+        setStatus(t("js_studio_instrument_set", { track: trk.name, instrument: p.label }));
         // Preview the new voice at a pitch the track actually uses.
-        audio.auditionNote(Math.round(avgPitch(t.notes)), t.channel);
+        audio.auditionNote(Math.round(avgPitch(trk.notes)), trk.channel);
       });
       menu.appendChild(item);
     }
@@ -709,21 +713,21 @@ export function initDaw(): void {
     menu.querySelector<HTMLButtonElement>("button")?.focus();
   };
 
-  function buildTrackStrip(t: Track): HTMLElement {
+  function buildTrackStrip(trk: Track): HTMLElement {
     const row = document.createElement("div");
     row.className = "up-daw-track";
-    row.style.setProperty("--tc", t.color);
+    row.style.setProperty("--tc", trk.color);
 
     const chip = document.createElement("span");
     chip.className = "up-daw-track-chip";
     const name = document.createElement("span");
     name.className = "up-daw-track-name";
-    name.textContent = t.name;
-    name.title = `Channel ${t.channel + 1} · ${t.notes.length} notes`;
+    name.textContent = trk.name;
+    name.title = tn("js_studio_track_info", trk.notes.length, { channel: trk.channel + 1 });
 
     // Instrument selector (pitched strips only — the kit is the kit).
     let patchEl: HTMLElement;
-    if (t.channel === 9) {
+    if (trk.channel === 9) {
       patchEl = document.createElement("span");
       patchEl.className = "up-daw-patch-blank";
     } else {
@@ -731,9 +735,11 @@ export function initDaw(): void {
       btn.type = "button";
       btn.className = "up-daw-patch";
       const sync = (): void => {
-        const meta = audio.PATCHES.find((x) => x.key === t.strip.patch) ?? audio.PATCHES[0];
+        const meta = audio.PATCHES.find((x) => x.key === trk.strip.patch) ?? audio.PATCHES[0];
         btn.innerHTML = patchSvg(meta.key, 12);
-        const title = `Instrument: ${meta.label}${meta.key === "auto" ? " (follows the Synth section)" : ""}`;
+        const title = meta.key === "auto"
+          ? t("js_studio_instrument_auto", { name: meta.label })
+          : t("js_studio_instrument", { name: meta.label });
         btn.title = title;
         btn.setAttribute("aria-label", title);
         btn.classList.toggle("is-custom", meta.key !== "auto");
@@ -745,7 +751,7 @@ export function initDaw(): void {
           closePatchMenu(); // second click on the same button toggles shut
           return;
         }
-        openPatchMenu(btn, t, sync);
+        openPatchMenu(btn, trk, sync);
       });
       patchEl = btn;
     }
@@ -753,33 +759,33 @@ export function initDaw(): void {
     const mute = document.createElement("button");
     mute.type = "button";
     mute.className = "up-daw-ms";
-    mute.textContent = "M";
-    mute.title = `Mute ${t.name}`;
+    mute.textContent = t("js_studio_mute_short");
+    mute.title = t("js_studio_mute", { name: trk.name });
     mute.setAttribute("aria-pressed", "false");
     mute.addEventListener("click", () => {
-      t.strip.muted = !t.strip.muted;
-      mute.classList.toggle("is-mute", t.strip.muted);
-      mute.setAttribute("aria-pressed", String(t.strip.muted));
+      trk.strip.muted = !trk.strip.muted;
+      mute.classList.toggle("is-mute", trk.strip.muted);
+      mute.setAttribute("aria-pressed", String(trk.strip.muted));
       dirty = true;
     });
 
     const solo = document.createElement("button");
     solo.type = "button";
     solo.className = "up-daw-ms";
-    solo.textContent = "S";
-    solo.title = `Solo ${t.name}`;
+    solo.textContent = t("js_studio_solo_short");
+    solo.title = t("js_studio_solo", { name: trk.name });
     solo.setAttribute("aria-pressed", "false");
     solo.addEventListener("click", () => {
-      t.strip.solo = !t.strip.solo;
-      solo.classList.toggle("is-solo", t.strip.solo);
-      solo.setAttribute("aria-pressed", String(t.strip.solo));
+      trk.strip.solo = !trk.strip.solo;
+      solo.classList.toggle("is-solo", trk.strip.solo);
+      solo.setAttribute("aria-pressed", String(trk.strip.solo));
       dirty = true;
     });
 
     const vol = makeKnob({
-      label: "", min: 0, max: 1.5, value: t.strip.gain, preset: 1, small: true,
+      label: "", min: 0, max: 1.5, value: trk.strip.gain, preset: 1, small: true,
       fmt: fmtPct,
-      onInput: (v) => { t.strip.gain = v; },
+      onInput: (v) => { trk.strip.gain = v; },
     });
 
     row.append(chip, name, patchEl, mute, solo, vol);
@@ -1012,12 +1018,12 @@ export function initDaw(): void {
     }
 
     // notes
-    const anySolo = tracks.some((t) => t.strip.solo);
-    for (const t of tracks) {
-      const silent = t.strip.muted || (anySolo && !t.strip.solo);
-      const isDrum = t.channel === 9;
+    const anySolo = tracks.some((trk) => trk.strip.solo);
+    for (const trk of tracks) {
+      const silent = trk.strip.muted || (anySolo && !trk.strip.solo);
+      const isDrum = trk.channel === 9;
       g.globalAlpha = silent ? 0.22 : 1;
-      for (const n of t.notes) {
+      for (const n of trk.notes) {
         if (n.start + n.dur < beat0 || n.start > beat1) continue;
         const x = KEYS_W + n.start * zb - sx;
         let y: number;
@@ -1035,13 +1041,13 @@ export function initDaw(): void {
         if (n.dead) {
           // Ghost: a right-click-muted note stays findable for restoring.
           g.globalAlpha = 0.13;
-          g.fillStyle = t.color;
+          g.fillStyle = trk.color;
           g.fillRect(x, y, w, ROW_H - 2);
           g.globalAlpha = silent ? 0.22 : 1;
           continue;
         }
         const sounding = playing && !silent && pos >= n.start && pos < n.start + Math.max(n.dur, 0.25);
-        g.fillStyle = sounding ? "#FFFFFF" : t.color;
+        g.fillStyle = sounding ? "#FFFFFF" : trk.color;
         g.fillRect(x, y, w, ROW_H - 2);
         if (w > 5) {
           g.fillStyle = "rgba(0,0,0,.35)";
@@ -1145,22 +1151,22 @@ export function initDaw(): void {
     const py = cy - RULER_H;
     if (py >= 0 && py < rows() * ROW_H) {
       const pitch = pitchHi - Math.floor(py / ROW_H);
-      for (const t of tracks) {
-        if (t.channel === 9) continue;
-        for (const n of t.notes) {
+      for (const trk of tracks) {
+        if (trk.channel === 9) continue;
+        for (const n of trk.notes) {
           if (n.pitch !== pitch) continue;
-          if (beat >= n.start && beat <= n.start + Math.max(n.dur, minDur)) hit = { note: n, track: t };
+          if (beat >= n.start && beat <= n.start + Math.max(n.dur, minDur)) hit = { note: n, track: trk };
         }
       }
     } else if (hasDrums) {
       const dy = cy - drumTop();
       if (dy >= 0 && dy < DRUM_ROWS.length * ROW_H) {
         const row = Math.floor(dy / ROW_H);
-        for (const t of tracks) {
-          if (t.channel !== 9) continue;
-          for (const n of t.notes) {
+        for (const trk of tracks) {
+          if (trk.channel !== 9) continue;
+          for (const n of trk.notes) {
             if (drumRowIndex(n.pitch) !== row) continue;
-            if (beat >= n.start && beat <= n.start + Math.max(n.dur, minDur)) hit = { note: n, track: t };
+            if (beat >= n.start && beat <= n.start + Math.max(n.dur, minDur)) hit = { note: n, track: trk };
           }
         }
       }
@@ -1170,7 +1176,7 @@ export function initDaw(): void {
 
   function drumLabel(pitch: number): string {
     const i = drumRowIndex(pitch);
-    return i === 2 ? "Kick" : i === 1 ? "Snare" : "Hat";
+    return i === 2 ? t("js_studio_drum_kick") : i === 1 ? t("js_studio_drum_snare") : t("js_studio_drum_hat");
   }
 
   // Both coordinate spaces: content (cx/cy, scroll-offset — for notes and the
@@ -1202,7 +1208,8 @@ export function initDaw(): void {
   // mappings, not a pitch axis); right-click still mutes them.
   const auditionDrumHit = (hit: Hit): void => {
     audio.auditionNote(hit.note.pitch, 9);
-    setStatus(`Drums · ${drumLabel(hit.note.pitch)} — right-click to ${hit.note.dead ? "restore" : "mute"}`);
+    const vars = { track: hit.track.name, drum: drumLabel(hit.note.pitch) };
+    setStatus(hit.note.dead ? t("js_studio_drum_press_muted", vars) : t("js_studio_drum_press", vars));
   };
 
   // Empty grid: audition the pitch (or drum) under the press.
@@ -1217,7 +1224,7 @@ export function initDaw(): void {
       const di = Math.floor((cy - drumTop()) / ROW_H);
       if (di >= 0 && di < DRUM_ROWS.length) {
         audio.auditionNote(DRUM_ROWS[di].pitch, 9);
-        setStatus(DRUM_ROWS[di].label === "kck" ? "Kick" : DRUM_ROWS[di].label === "snr" ? "Snare" : "Hat");
+        setStatus(drumLabel(DRUM_ROWS[di].pitch));
       }
     }
   };
@@ -1239,7 +1246,7 @@ export function initDaw(): void {
       last = b;
       audio.seek(b);
       const bar = Math.floor(b / 4) + 1;
-      setStatus(`Bar ${bar} — ${audio.isPlaying() ? "playing from here" : "play starts here"}`);
+      setStatus(audio.isPlaying() ? t("js_studio_scrub_playing", { bar }) : t("js_studio_scrub_paused", { bar }));
     };
     scrub(e.clientX);
     // Canceling pointerdown does not stop a touch pan — only canceling the
@@ -1291,8 +1298,12 @@ export function initDaw(): void {
           lastAudition = next;
           audio.auditionNote(next, hit.note.channel);
         }
-        const off = next - startPitch;
-        setStatus(`${hit.track.name}: ${noteName(startPitch)} → ${noteName(next)} (${off > 0 ? "+" : ""}${off} st)`);
+        setStatus(t("js_studio_transpose", {
+          track: hit.track.name,
+          from: noteName(startPitch),
+          to: noteName(next),
+          offset: fmtSigned(next - startPitch),
+        }));
       }
     };
     // pointercancel drops the drag like pointerup: the note keeps the pitch
@@ -1368,7 +1379,7 @@ export function initDaw(): void {
     const { cx, cy, vx, vy } = pointInfo(e);
     if (vy < RULER_H && vx >= KEYS_W) {
       scroller!.style.cursor = "pointer";
-      setStatus("Timeline — click or drag to move the playhead");
+      setStatus(t("js_studio_timeline_hint"));
       return;
     }
     if (vx < KEYS_W || vy < RULER_H) {
@@ -1380,10 +1391,14 @@ export function initDaw(): void {
     const isDrumHit = hit !== null && hit.note.channel === 9;
     scroller!.style.cursor = hit && !isDrumHit ? "ns-resize" : "";
     if (hit) {
-      const bar = Math.floor(hit.note.start / 4) + 1;
-      const label = isDrumHit ? `Drums · ${drumLabel(hit.note.pitch)}` : `${hit.track.name} · ${noteName(hit.note.pitch)}`;
-      const verbs = `${isDrumHit ? "" : "drag to transpose, "}right-click to ${hit.note.dead ? "restore" : "mute"}`;
-      setStatus(`${label} · bar ${bar}${hit.note.dead ? " (muted)" : ""} — ${verbs}`);
+      const dead = hit.note.dead === true;
+      const vars = {
+        track: hit.track.name,
+        what: isDrumHit ? drumLabel(hit.note.pitch) : noteName(hit.note.pitch),
+        bar: Math.floor(hit.note.start / 4) + 1,
+      };
+      if (isDrumHit) setStatus(dead ? t("js_studio_hover_drum_muted", vars) : t("js_studio_hover_drum", vars));
+      else setStatus(dead ? t("js_studio_hover_note_muted", vars) : t("js_studio_hover_note", vars));
     } else {
       setStatus(defaultStatus);
     }
@@ -1401,10 +1416,11 @@ export function initDaw(): void {
     if (!hit) return;
     hit.note.dead = !hit.note.dead;
     dirty = true;
-    const label = hit.note.channel === 9
-      ? `Drums · ${drumLabel(hit.note.pitch)}`
-      : `${hit.track.name} · ${noteName(hit.note.pitch)}`;
-    setStatus(hit.note.dead ? `${label} muted — right-click to restore` : `${label} restored`);
+    const vars = {
+      track: hit.track.name,
+      what: hit.note.channel === 9 ? drumLabel(hit.note.pitch) : noteName(hit.note.pitch),
+    };
+    setStatus(hit.note.dead ? t("js_studio_toggled_muted", vars) : t("js_studio_toggled_restored", vars));
   });
 
   // ---- frame loop -----------------------------------------------------------------

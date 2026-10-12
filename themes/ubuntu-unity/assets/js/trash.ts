@@ -1,6 +1,7 @@
 import { createSelection } from "./desktop-select";
 import { installTitlebarDrag } from "./drag";
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
+import { t, tn } from "./i18n";
 import { isReduceMotion } from "./prefs";
 import { installDesktop } from "./projects-desktop";
 import { installResize } from "./resize";
@@ -48,14 +49,14 @@ export function initTrash(): void {
     if (countEl) {
       const n = selection.get().length;
       countEl.textContent = empty
-        ? "0 items"
+        ? tn("js_trash_items", 0)
         : n > 1
-          ? `${n} items selected`
-          : `${tiles.length} item${tiles.length === 1 ? "" : "s"}`;
+          ? tn("js_trash_items_selected", n)
+          : tn("js_trash_items", tiles.length);
     }
     if (emptyBtn) {
       emptyBtn.disabled = empty;
-      emptyBtn.textContent = empty ? "Trash is empty" : "Empty Trash";
+      emptyBtn.textContent = empty ? t("js_trash_is_empty") : t("js_trash_empty");
     }
   };
 
@@ -100,14 +101,14 @@ export function initTrash(): void {
   };
 
   const cannotOpen = async (tile: HTMLElement): Promise<void> => {
-    const name = tile.dataset.name ?? "This item";
+    const name = tile.dataset.name ?? t("js_trash_this_item");
     const r = await window.uiDialog?.({
       icon: "warning",
-      title: `"${name}" is in the Trash`,
-      body: "Files in the Trash can't be opened. To open this item, restore it first.",
+      title: t("js_trash_open_title", { name }),
+      body: t("js_trash_open_body"),
       buttons: [
-        { id: "cancel", label: "Cancel" },
-        { id: "restore", label: "Restore", primary: true },
+        { id: "cancel", label: t("js_cancel") },
+        { id: "restore", label: t("js_trash_restore"), primary: true },
       ],
     });
     if (r === "restore") removeFlow([tile]);
@@ -118,11 +119,11 @@ export function initTrash(): void {
     const name = targets[0]?.dataset.name ?? "";
     const r = await window.uiDialog?.({
       icon: "warning",
-      title: n > 1 ? `Permanently delete ${n} items?` : `Permanently delete "${name}"?`,
-      body: "If you delete an item, it will be permanently lost. This can't be undone.",
+      title: n > 1 ? tn("js_trash_delete_items_title", n) : t("js_trash_delete_title", { name }),
+      body: t("js_trash_delete_body"),
       buttons: [
-        { id: "cancel", label: "Cancel" },
-        { id: "delete", label: "Delete", primary: true, danger: true },
+        { id: "cancel", label: t("js_cancel") },
+        { id: "delete", label: t("js_trash_delete"), primary: true, danger: true },
       ],
     });
     if (r === "delete") removeFlow(targets);
@@ -150,8 +151,8 @@ export function initTrash(): void {
         tileMenu: (tile, sel) => {
           const targets = sel.includes(tile) ? sel : [tile];
           return [
-            { label: "Restore", run: () => removeFlow(targets) },
-            { label: "Delete from Trash", run: () => { void confirmDelete(targets); } },
+            { label: t("js_trash_restore"), run: () => removeFlow(targets) },
+            { label: t("js_trash_delete_from"), run: () => { void confirmDelete(targets); } },
           ];
         },
         // emptyMenu: the default (Select All / Clean Up Icons) is exactly right.
@@ -195,11 +196,11 @@ export function initTrash(): void {
     void (async () => {
       const r = await window.uiDialog?.({
         icon: "warning",
-        title: `Permanently delete ${tiles.length} item${tiles.length === 1 ? "" : "s"}?`,
-        body: "If you empty the trash, the items will be permanently deleted. This can't be undone.",
+        title: tn("js_trash_delete_items_title", tiles.length),
+        body: t("js_trash_empty_body"),
         buttons: [
-          { id: "cancel", label: "Cancel" },
-          { id: "empty", label: "Empty Trash", primary: true, danger: true },
+          { id: "cancel", label: t("js_cancel") },
+          { id: "empty", label: t("js_trash_empty"), primary: true, danger: true },
         ],
       });
       if (r === "empty") doEmpty();
@@ -208,8 +209,8 @@ export function initTrash(): void {
 
   document.addEventListener("click", (e) => {
     const target = e.target as Element | null;
-    const t = target?.closest('[data-launcher="trash"]');
-    if (!t) return;
+    const tile = target?.closest('[data-launcher="trash"]');
+    if (!tile) return;
     e.preventDefault();
     const focused = getTrashFocused();
     if (!open || minimized) { show(); return; }

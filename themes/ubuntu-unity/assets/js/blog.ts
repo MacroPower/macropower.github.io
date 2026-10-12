@@ -1,4 +1,5 @@
 import { installFilterNav } from "./filter-nav";
+import { t } from "./i18n";
 
 type SortKey = "name" | "date";
 type SortDir = "asc" | "desc";
@@ -68,7 +69,7 @@ interface SortState {
       if (k === key) {
         btn.classList.add("is-sorted", sortState.dir === "desc" ? "is-desc" : "is-asc");
         btn.setAttribute("aria-pressed", "true");
-        if (sr) sr.textContent = sortState.dir === "desc" ? "sorted descending" : "sorted ascending";
+        if (sr) sr.textContent = sortState.dir === "desc" ? t("js_blog_sorted_desc") : t("js_blog_sorted_asc");
         if (caret) caret.textContent = sortState.dir === "desc" ? "▾" : "▴";
       } else {
         btn.setAttribute("aria-pressed", "false");
@@ -141,16 +142,16 @@ interface SortState {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "up-code-copy";
-      btn.setAttribute("aria-label", "Copy code");
-      btn.textContent = "Copy";
+      btn.setAttribute("aria-label", t("js_blog_copy_code"));
+      btn.textContent = t("js_blog_copy");
       btn.addEventListener("click", () => {
         const code = pre.querySelector("code") ?? pre;
         const text = (code as HTMLElement).innerText.replace(/ /g, " ");
         const done = (ok: boolean): void => {
-          btn.textContent = ok ? "Copied" : "Failed";
+          btn.textContent = ok ? t("js_blog_copied") : t("js_blog_copy_failed");
           btn.classList.toggle("is-copied", ok);
           setTimeout(() => {
-            btn.textContent = "Copy";
+            btn.textContent = t("js_blog_copy");
             btn.classList.remove("is-copied");
           }, 1400);
         };

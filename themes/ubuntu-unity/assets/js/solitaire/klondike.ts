@@ -64,14 +64,9 @@ export type Hint =
   | { type: "draw" };
 
 export const RANK_LABELS = ["", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-export const SUIT_NAMES = ["hearts", "diamonds", "clubs", "spades"] as const;
 
 export function isRed(suit: Suit): boolean {
   return suit < 2;
-}
-
-export function cardName(card: Card): string {
-  return `${RANK_LABELS[card.rank]} of ${SUIT_NAMES[card.suit]}`;
 }
 
 export function sameLoc(a: Loc, b: Loc): boolean {

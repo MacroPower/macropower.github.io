@@ -19,6 +19,8 @@
 // lives in installDesktop's closure and every document-level listener guards on
 // it; never add module-level mutable state here.
 
+import { t } from "./i18n";
+
 export interface DesktopMenuItem {
   label: string;
   run(): void;
@@ -107,17 +109,17 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   const tileMenu = deps.tileMenu ?? ((tile: HTMLElement): DesktopMenuItem[] => {
     const url = tile.dataset.url ?? "";
     return [
-      { label: "Open on GitHub", run: () => {
+      { label: t("js_projects_open_github"), run: () => {
         if (url) window.open(url, "_blank", "noopener");
       } },
-      { label: "Copy link", run: () => {
+      { label: t("js_projects_copy_link"), run: () => {
         if (url && navigator.clipboard) navigator.clipboard.writeText(url).catch(() => { /* no-op */ });
       } },
     ];
   });
   const emptyMenu = deps.emptyMenu ?? ((clean: () => void): DesktopMenuItem[] => [
-    { label: "Select All", run: () => deps.selectAllVisible() },
-    { label: "Clean Up Icons", run: () => clean() },
+    { label: t("js_desktop_select_all"), run: () => deps.selectAllVisible() },
+    { label: t("js_desktop_clean_up_icons"), run: () => clean() },
   ]);
 
   // ---- gesture state -------------------------------------------------------

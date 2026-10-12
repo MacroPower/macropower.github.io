@@ -12,8 +12,9 @@
 // aria-live status line), and [data-sol-action="<id>"] buttons that mirror
 // the on-canvas controls for keyboard and screen-reader users.
 
+import { t, tn } from "../i18n";
 import {
-  Klondike, cardName, sameLoc, type Card, type Hint, type Loc, type Suit,
+  Klondike, sameLoc, type Card, type Hint, type Loc, type Suit,
 } from "./klondike";
 import {
   CARD_H, CARD_W, PAL, cardBack, cardFace, ctx2d, drawIcon, drawText,
@@ -152,6 +153,29 @@ function formatTime(ms: number): string {
   const s = Math.floor(ms / 1000);
   const m = Math.floor(s / 60);
   return `${m}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function rankName(rank: number): string {
+  switch (rank) {
+    case 1: return t("js_solitaire_rank_ace");
+    case 11: return t("js_solitaire_rank_jack");
+    case 12: return t("js_solitaire_rank_queen");
+    case 13: return t("js_solitaire_rank_king");
+    default: return String(rank);
+  }
+}
+
+function suitName(suit: Suit): string {
+  switch (suit) {
+    case 0: return t("js_solitaire_suit_hearts");
+    case 1: return t("js_solitaire_suit_diamonds");
+    case 2: return t("js_solitaire_suit_clubs");
+    case 3: return t("js_solitaire_suit_spades");
+  }
+}
+
+function cardName(card: Card): string {
+  return t("js_solitaire_card", { rank: rankName(card.rank), suit: suitName(card.suit) });
 }
 
 (() => {
@@ -383,8 +407,8 @@ function formatTime(ms: number): string {
     W = Math.max(MIN_W, Math.floor(availW / ds));
     H = Math.max(MIN_H, Math.floor(availH / ds));
     // Two HUD rows when the controls and readouts cannot share one.
-    const controlsW = 4 * 3 + (textWidth("NEW") + 6) + (textWidth("UNDO") + 6) + (textWidth("HINT") + 6)
-      + (textWidth("DRAW 3") + 6) + 15;
+    const controlsW = 4 * 3 + (textWidth(t("js_solitaire_btn_new")) + 6) + (textWidth(t("js_solitaire_btn_undo")) + 6)
+      + (textWidth(t("js_solitaire_btn_hint")) + 6) + (textWidth(t("js_solitaire_btn_draw", { mode: 3 })) + 6) + 15;
     const readoutsW = 2 * 3 + chipWidth("9999") + chipWidth("99:99") + chipWidth("999");
     hudRows = controlsW + readoutsW + 8 > W ? 2 : 1;
     const dpr = window.devicePixelRatio || 1;
@@ -488,7 +512,7 @@ function formatTime(ms: number): string {
     }
     if (reduceMotion()) dealing = false;
     sfx.play("shuffle");
-    announce(`New game dealt, draw ${drawMode}.`);
+    announce(t("js_solitaire_new_game_dealt", { mode: drawMode }));
     syncControls();
     requestFrame();
   }
@@ -501,11 +525,11 @@ function formatTime(ms: number): string {
     }
     void window.uiDialog({
       icon: "question",
-      title: "Start a new game?",
-      body: "The current deal will be lost.",
+      title: t("js_solitaire_new_game_title"),
+      body: t("js_solitaire_new_game_body"),
       buttons: [
-        { id: "cancel", label: "Keep playing" },
-        { id: "new", label: "New game", primary: true },
+        { id: "cancel", label: t("js_solitaire_keep_playing") },
+        { id: "new", label: t("js_solitaire_new_game"), primary: true },
       ],
     }).then((r) => {
       if (r === "new") newGame();
@@ -556,17 +580,18 @@ function formatTime(ms: number): string {
       if (exposed) popups.push({ text: "+5", x: exposed.x + CARD_W / 2, y: exposed.y + 14, t0: performance.now() + 150, color: PAL.white });
     }
     if (record.score !== 0) bumpScore();
-    if (source !== "auto") announce(`${cardName(card)} to ${describeLoc(to)}.`);
+    if (source !== "auto") announce(describeMove(card, to));
     syncControls();
     return true;
   }
 
-  function describeLoc(loc: Loc): string {
-    switch (loc.kind) {
-      case "foundation": return "its foundation";
-      case "tableau": return `column ${loc.pile + 1}`;
-      case "waste": return "the waste";
-      case "stock": return "the stock";
+  function describeMove(card: Card, to: Loc): string {
+    const name = cardName(card);
+    switch (to.kind) {
+      case "foundation": return t("js_solitaire_move_foundation", { card: name });
+      case "tableau": return t("js_solitaire_move_column", { card: name, column: to.pile + 1 });
+      case "waste": return t("js_solitaire_move_waste", { card: name });
+      case "stock": return t("js_solitaire_move_stock", { card: name });
     }
   }
 
@@ -593,11 +618,11 @@ function formatTime(ms: number): string {
     if (record.type === "draw") {
       sfx.play("draw");
       sync();
-      announce(`Drew ${game.waste.slice(wasteBefore).map(cardName).join(", ")}.`);
+      announce(t("js_solitaire_drew", { cards: game.waste.slice(wasteBefore).map(cardName).join(", ") }));
     } else {
       sfx.play("shuffle");
       sync({ stagger: (p) => (p.loc.kind === "stock" ? (record.count - 1 - p.index) * 12 : 0) });
-      announce("Waste returned to the stock.");
+      announce(t("js_solitaire_waste_returned"));
     }
     return true;
   }
@@ -613,7 +638,7 @@ function formatTime(ms: number): string {
     sfx.play("undo");
     sync();
     bumpScore();
-    announce("Undid the last move.");
+    announce(t("js_solitaire_undid"));
   }
 
   function showHint(): void {
@@ -622,15 +647,15 @@ function formatTime(ms: number): string {
     if (hints.length === 0) {
       hint = null;
       sfx.play("invalid");
-      announce("No moves left. Try a new game.");
+      announce(t("js_solitaire_no_moves"));
       return;
     }
     hint = hints[hintCursor % hints.length];
     hintCursor++;
     hintT0 = performance.now();
     sfx.play("hint");
-    if (hint.type === "draw") announce("Hint: draw from the stock.");
-    else announce(`Hint: ${cardName(game.pile(hint.from)[hint.index])} to ${describeLoc(hint.to)}.`);
+    if (hint.type === "draw") announce(t("js_solitaire_hint_draw"));
+    else announce(t("js_solitaire_hint_move", { move: describeMove(game.pile(hint.from)[hint.index], hint.to) }));
     requestFrame();
   }
 
@@ -638,7 +663,7 @@ function formatTime(ms: number): string {
     if (autoRunning || won || !game.autoCompleteAvailable()) return;
     autoRunning = true;
     clearHint();
-    announce("Finishing the game.");
+    announce(t("js_solitaire_finishing"));
     const step = (): void => {
       const record = game.autoStep();
       if (!record) {
@@ -648,9 +673,9 @@ function formatTime(ms: number): string {
       }
       const card = game.pile(record.to)[game.pile(record.to).length - 1];
       sync();
-      const t = tweenOf(card.id);
+      const tween = tweenOf(card.id);
       const landed = (): void => foundationEffects(card, record.to);
-      if (t) t.onDone = landed;
+      if (tween) tween.onDone = landed;
       else landed();
       bumpScore();
       autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 110);
@@ -663,13 +688,13 @@ function formatTime(ms: number): string {
     game.drawCount = drawMode;
     sfx.play("button");
     sync();
-    announce(`Draw ${drawMode}.`);
+    announce(t("js_solitaire_draw_mode", { mode: drawMode }));
   }
 
   function toggleSound(): void {
     sfx.setMuted(!sfx.muted);
     if (!sfx.muted) sfx.play("button");
-    announce(sfx.muted ? "Sound off." : "Sound on.");
+    announce(sfx.muted ? t("js_solitaire_sound_off") : t("js_solitaire_sound_on"));
     syncControls();
     requestFrame();
   }
@@ -717,7 +742,11 @@ function formatTime(ms: number): string {
     autoRunning = false;
     clearHint();
     sfx.play("win");
-    announce(`You won in ${formatTime(frozenElapsed)} with ${game.moves} moves and ${game.score} points. Press N for a new game.`);
+    announce(t("js_solitaire_won", {
+      time: formatTime(frozenElapsed),
+      moves: tn("js_solitaire_moves", game.moves),
+      points: tn("js_solitaire_points", game.score),
+    }));
     winT0 = performance.now();
     if (reduceMotion()) {
       banner = true;
@@ -749,7 +778,7 @@ function formatTime(ms: number): string {
       solution = solve(deal);
     }
     if (!solution) {
-      announce("No winnable deal found.");
+      announce(t("js_solitaire_no_winnable"));
       return;
     }
     if (deal !== game) newGame(deal);
@@ -813,14 +842,14 @@ function formatTime(ms: number): string {
     const canUndo = game.history.length > 0 && !autoRunning && !won;
     const auto = game.autoCompleteAvailable() && !autoRunning && !won;
     const specs: Omit<Button, "x" | "y" | "w" | "h">[] = [
-      { id: "new", label: "NEW", color: PAL.red, dark: PAL.redDark, enabled: true },
-      { id: "undo", label: "UNDO", color: PAL.blue, dark: PAL.blueDark, enabled: canUndo },
+      { id: "new", label: t("js_solitaire_btn_new"), color: PAL.red, dark: PAL.redDark, enabled: true },
+      { id: "undo", label: t("js_solitaire_btn_undo"), color: PAL.blue, dark: PAL.blueDark, enabled: canUndo },
     ];
     // Once the game can finish itself a hint is moot, so AUTO takes HINT's
     // slot and the row keeps its width.
-    if (auto) specs.push({ id: "auto", label: "AUTO", color: PAL.green, dark: PAL.greenDark, enabled: true, pulse: true });
-    else specs.push({ id: "hint", label: "HINT", color: PAL.amber, dark: PAL.amberDark, enabled: !autoRunning && !won });
-    specs.push({ id: "draw", label: `DRAW ${drawMode}`, color: PAL.slateLight, dark: PAL.slate, enabled: !autoRunning && !won });
+    if (auto) specs.push({ id: "auto", label: t("js_solitaire_btn_auto"), color: PAL.green, dark: PAL.greenDark, enabled: true, pulse: true });
+    else specs.push({ id: "hint", label: t("js_solitaire_btn_hint"), color: PAL.amber, dark: PAL.amberDark, enabled: !autoRunning && !won });
+    specs.push({ id: "draw", label: t("js_solitaire_btn_draw", { mode: drawMode }), color: PAL.slateLight, dark: PAL.slate, enabled: !autoRunning && !won });
     specs.push({ id: "sound", icon: sfx.muted ? "soundOff" : "soundOn", color: PAL.slateLight, dark: PAL.slate, enabled: true });
     const y = hudTop() + 3;
     let x = 4;
@@ -928,7 +957,7 @@ function formatTime(ms: number): string {
         return;
       }
       if (b) el.disabled = !b.enabled;
-      if (id === "draw") el.textContent = `Draw ${drawMode === 1 ? "one" : "three"} (switch)`;
+      if (id === "draw") el.textContent = drawMode === 1 ? t("js_solitaire_draw_one_switch") : t("js_solitaire_draw_three_switch");
       if (id === "sound") el.setAttribute("aria-pressed", String(!sfx.muted));
     });
   }
@@ -1067,9 +1096,9 @@ function formatTime(ms: number): string {
 
   function drawBanner(now: number): void {
     const lines = [
-      `SCORE ${game.score}`,
-      `TIME ${formatTime(frozenElapsed)}`,
-      `MOVES ${game.moves}`,
+      t("js_solitaire_banner_score", { score: game.score }),
+      t("js_solitaire_banner_time", { time: formatTime(frozenElapsed) }),
+      t("js_solitaire_banner_moves", { moves: game.moves }),
     ];
     const pw = 132;
     const ph = 92;
@@ -1078,13 +1107,13 @@ function formatTime(ms: number): string {
     pxRoundRect(loCtx, px + 1, py + 3, pw, ph, 3, PAL.ink);
     pxRoundRect(loCtx, px, py, pw, ph, 3, PAL.gold);
     pxRoundRect(loCtx, px + 2, py + 2, pw - 4, ph - 4, 2, PAL.slate);
-    drawBigText("YOU WIN!", W / 2, py + 12, PAL.gold, PAL.ink, now, !reduceMotion());
+    drawBigText(t("js_solitaire_banner_win"), W / 2, py + 12, PAL.gold, PAL.ink, now, !reduceMotion());
     let ly = py + 36;
     for (const line of lines) {
       drawText(loCtx, line, Math.round(W / 2 - textWidth(line) / 2), ly, PAL.white, PAL.ink);
       ly += 11;
     }
-    const label = "NEW GAME";
+    const label = t("js_solitaire_banner_new_game");
     const bw = textWidth(label) + 10;
     const bx = Math.round(W / 2 - bw / 2);
     const by = py + ph - 20;

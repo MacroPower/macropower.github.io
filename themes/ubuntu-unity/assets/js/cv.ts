@@ -9,6 +9,7 @@
 
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
+import { t } from "./i18n";
 
 (function (): void {
   "use strict";
@@ -78,7 +79,7 @@ import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 
   function updateZoomUI(): void {
     const pct = (scale / PT_TO_CSS) * 100;
-    if (zoomReadout) zoomReadout.textContent = `${Math.round(pct)}%`;
+    if (zoomReadout) zoomReadout.textContent = t("js_cv_zoom_percent", { percent: Math.round(pct) });
     const z = scale / PT_TO_CSS;
     if (zoomOutBtn) zoomOutBtn.disabled = !doc || z <= ZOOM_STEPS[0] + 1e-3;
     if (zoomInBtn)
@@ -202,7 +203,7 @@ import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
       sheet.className = "up-docv-sheet";
       const canvas = document.createElement("canvas");
       canvas.setAttribute("role", "img");
-      canvas.setAttribute("aria-label", `Page ${n}`);
+      canvas.setAttribute("aria-label", t("js_cv_page", { page: n }));
       sheet.appendChild(canvas);
       pagesEl.appendChild(sheet);
       sheets.push(sheet);
@@ -211,7 +212,7 @@ import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
       const thumb = document.createElement("button");
       thumb.type = "button";
       thumb.className = "up-docv-thumb";
-      thumb.setAttribute("aria-label", `Go to page ${n}`);
+      thumb.setAttribute("aria-label", t("js_cv_go_to_page", { page: n }));
       const frame = document.createElement("span");
       frame.className = "up-docv-thumb-frame";
       const tc = document.createElement("canvas");

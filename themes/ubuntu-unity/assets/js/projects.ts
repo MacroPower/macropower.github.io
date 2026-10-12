@@ -1,5 +1,6 @@
 import { createSelection } from "./desktop-select";
 import { installFilterNav } from "./filter-nav";
+import { t, tn } from "./i18n";
 import { installDesktop } from "./projects-desktop";
 
 (function (): void {
@@ -90,7 +91,7 @@ import { installDesktop } from "./projects-desktop";
   ): HTMLElement {
     const el = document.createElement("div");
     el.className = "up-project-preview-stat" + (wide ? " up-project-preview-stat-wide" : "");
-    el.setAttribute("aria-label", `${ariaLabel}: ${value}`);
+    el.setAttribute("aria-label", t("js_projects_stat_label", { label: ariaLabel, value }));
     el.innerHTML = iconHTML(iconKey);
     const valEl = document.createElement("span");
     valEl.textContent = value;
@@ -166,23 +167,23 @@ import { installDesktop } from "./projects-desktop";
 
     const stats = document.createElement("div");
     stats.className = "up-project-preview-stats";
-    if (stars) stats.appendChild(buildStat("star", "Stars", fmtNum(stars)));
-    if (forks) stats.appendChild(buildStat("fork", "Forks", fmtNum(forks)));
-    if (license) stats.appendChild(buildStat("license", "License", license, true));
-    if (updated) stats.appendChild(buildStat("clock", "Updated", updated, true));
+    if (stars) stats.appendChild(buildStat("star", t("js_projects_stars"), fmtNum(stars)));
+    if (forks) stats.appendChild(buildStat("fork", t("js_projects_forks"), fmtNum(forks)));
+    if (license) stats.appendChild(buildStat("license", t("js_projects_license"), license, true));
+    if (updated) stats.appendChild(buildStat("clock", t("js_projects_updated"), updated, true));
     if (stats.childElementCount) body.appendChild(stats);
 
     if (topics.length) {
       const label = document.createElement("div");
       label.className = "up-project-preview-section-label";
-      label.textContent = "Topics";
+      label.textContent = t("js_projects_topics");
       body.appendChild(label);
       const wrap = document.createElement("div");
       wrap.className = "up-project-preview-topics";
-      for (const t of topics) {
+      for (const topic of topics) {
         const chip = document.createElement("span");
         chip.className = "up-project-chip";
-        chip.textContent = `#${t}`;
+        chip.textContent = `#${topic}`;
         wrap.appendChild(chip);
       }
       body.appendChild(wrap);
@@ -194,7 +195,7 @@ import { installDesktop } from "./projects-desktop";
       a.href = url;
       a.target = "_blank";
       a.rel = "noopener";
-      a.innerHTML = `${iconHTML("github")}<span>Open on GitHub</span>`;
+      a.innerHTML = `${iconHTML("github")}<span>${t("js_projects_open_github")}</span>`;
       body.appendChild(a);
     }
 
@@ -216,7 +217,7 @@ import { installDesktop } from "./projects-desktop";
     headText.className = "up-project-preview-header-text";
     const title = document.createElement("h2");
     title.className = "up-project-preview-title";
-    title.textContent = `${n} projects selected`;
+    title.textContent = tn("js_projects_selected", n);
     headText.appendChild(title);
     header.appendChild(headText);
     preview.appendChild(header);
@@ -225,14 +226,14 @@ import { installDesktop } from "./projects-desktop";
     body.className = "up-project-preview-body";
     const label = document.createElement("div");
     label.className = "up-project-preview-section-label";
-    label.textContent = "Selection";
+    label.textContent = t("js_projects_selection");
     body.appendChild(label);
     const list = document.createElement("div");
     list.className = "up-project-preview-namelist";
-    for (const t of selection.get()) {
+    for (const item of selection.get()) {
       const chip = document.createElement("span");
       chip.className = "up-project-chip";
-      chip.textContent = t.dataset.name ?? "";
+      chip.textContent = item.dataset.name ?? "";
       list.appendChild(chip);
     }
     body.appendChild(list);

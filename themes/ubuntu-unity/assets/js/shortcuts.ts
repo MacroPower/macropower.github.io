@@ -8,6 +8,8 @@
 // focus escape screenReaderMode enables); keep the table in sync when
 // bindings change.
 
+import { t } from "./i18n";
+
 interface ShortcutRow {
   /** Alternative combos; each combo is a list of keycap labels. */
   combos: string[][];
@@ -27,63 +29,63 @@ interface ShortcutSection {
 
 const SECTIONS: ShortcutSection[] = [
   {
-    title: "Desktop",
+    title: t("js_shortcuts_desktop"),
     rows: [
-      { combos: [["Super"]], desc: "Open the Dash (or click the launcher's top button)" },
-      { combos: [["Alt"]], desc: "Open the HUD and search the menus" },
-      { combos: [["Esc"]], desc: "Dismiss menus and dialogs" },
-      { combos: [["Enter"]], desc: "Confirm the focused dialog" },
-      { combos: [["Drag"]], desc: "Move a window or dialog (titlebar)", gesture: true },
-      { combos: [["Double-click"]], desc: "Maximize or restore (titlebar)", gesture: true },
-      { combos: [["Scroll"]], desc: "Adjust the volume (sound indicator)", gesture: true },
+      { combos: [["Super"]], desc: t("js_shortcuts_open_dash") },
+      { combos: [["Alt"]], desc: t("js_shortcuts_open_hud") },
+      { combos: [["Esc"]], desc: t("js_shortcuts_dismiss") },
+      { combos: [["Enter"]], desc: t("js_shortcuts_confirm_dialog") },
+      { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_window"), gesture: true },
+      { combos: [[t("js_shortcuts_double_click")]], desc: t("js_shortcuts_maximize"), gesture: true },
+      { combos: [[t("js_shortcuts_scroll")]], desc: t("js_shortcuts_volume"), gesture: true },
     ],
   },
   {
-    title: "Dash & HUD",
-    hint: "Esc clears the search first, then closes.",
+    title: t("js_shortcuts_dash_hud"),
+    hint: t("js_shortcuts_dash_hud_hint"),
     rows: [
-      { combos: [["Arrows"]], desc: "Move between results" },
-      { combos: [["Enter"]], desc: "Open the best match" },
-      { combos: [["Tab"]], desc: "Jump to the expanders and lens bar (Dash)" },
+      { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_results") },
+      { combos: [["Enter"]], desc: t("js_shortcuts_open_best") },
+      { combos: [["Tab"]], desc: t("js_shortcuts_jump_lens") },
     ],
   },
   {
-    title: "Blog & Projects",
+    title: t("js_shortcuts_blog_projects"),
     rows: [
-      { combos: [["/"], ["Ctrl", "F"]], desc: "Search" },
-      { combos: [["Arrows"], ["H", "J", "K", "L"]], desc: "Move selection", loose: true },
-      { combos: [["Enter"]], desc: "Open the selected item" },
-      { combos: [["Shift", "F10"]], desc: "Open the context menu for the selection" },
+      { combos: [["/"], ["Ctrl", "F"]], desc: t("js_shortcuts_search") },
+      { combos: [[t("js_shortcuts_arrows")], ["H", "J", "K", "L"]], desc: t("js_shortcuts_move_selection"), loose: true },
+      { combos: [["Enter"]], desc: t("js_shortcuts_open_selected") },
+      { combos: [["Shift", "F10"]], desc: t("js_shortcuts_context_menu") },
     ],
   },
   {
-    title: "Solitaire",
-    hint: "Click a card to send it to the first place it fits.",
+    title: t("js_shortcuts_solitaire"),
+    hint: t("js_shortcuts_solitaire_hint"),
     rows: [
-      { combos: [["Drag"]], desc: "Move a card or a run", gesture: true },
-      { combos: [["Space"], ["Enter"]], desc: "Draw from the stock" },
-      { combos: [["Z"], ["Ctrl", "Z"]], desc: "Undo" },
-      { combos: [["H"]], desc: "Show a hint (again for the next one)" },
-      { combos: [["N"]], desc: "New game" },
-      { combos: [["A"]], desc: "Finish a won game automatically" },
-      { combos: [["D"]], desc: "Switch between draw one and draw three" },
-      { combos: [["M"]], desc: "Toggle sound" },
-      { combos: [["Esc"]], desc: "Drop a held run back, or clear the hint" },
+      { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_cards"), gesture: true },
+      { combos: [["Space"], ["Enter"]], desc: t("js_shortcuts_draw_stock") },
+      { combos: [["Z"], ["Ctrl", "Z"]], desc: t("js_shortcuts_undo") },
+      { combos: [["H"]], desc: t("js_shortcuts_show_hint") },
+      { combos: [["N"]], desc: t("js_shortcuts_new_game") },
+      { combos: [["A"]], desc: t("js_shortcuts_auto_finish") },
+      { combos: [["D"]], desc: t("js_shortcuts_switch_draw") },
+      { combos: [["M"]], desc: t("js_shortcuts_toggle_sound") },
+      { combos: [["Esc"]], desc: t("js_shortcuts_drop_run") },
     ],
   },
   {
-    title: "Terminal",
-    hint: "The usual bash/readline bindings.",
+    title: t("js_shortcuts_terminal"),
+    hint: t("js_shortcuts_terminal_hint"),
     rows: [
-      { combos: [["Ctrl", "A"], ["Ctrl", "E"]], desc: "Start / end of line" },
-      { combos: [["Ctrl", "W"]], desc: "Delete previous word" },
-      { combos: [["Ctrl", "U"], ["Ctrl", "K"]], desc: "Cut to start / end of line" },
-      { combos: [["Ctrl", "Y"]], desc: "Paste cut text" },
-      { combos: [["Ctrl", "R"]], desc: "Search history" },
-      { combos: [["Ctrl", "L"]], desc: "Clear the screen" },
-      { combos: [["Tab"]], desc: "Complete commands and paths" },
-      { combos: [["Shift", "Tab"]], desc: "Leave the terminal" },
-      { combos: [["Up"], ["Down"]], desc: "Step through history" },
+      { combos: [["Ctrl", "A"], ["Ctrl", "E"]], desc: t("js_shortcuts_line_start_end") },
+      { combos: [["Ctrl", "W"]], desc: t("js_shortcuts_delete_word") },
+      { combos: [["Ctrl", "U"], ["Ctrl", "K"]], desc: t("js_shortcuts_cut_line") },
+      { combos: [["Ctrl", "Y"]], desc: t("js_shortcuts_paste_cut") },
+      { combos: [["Ctrl", "R"]], desc: t("js_shortcuts_search_history") },
+      { combos: [["Ctrl", "L"]], desc: t("js_shortcuts_clear_screen") },
+      { combos: [["Tab"]], desc: t("js_shortcuts_complete") },
+      { combos: [["Shift", "Tab"]], desc: t("js_shortcuts_leave_terminal") },
+      { combos: [[t("js_shortcuts_key_up")], [t("js_shortcuts_key_down")]], desc: t("js_shortcuts_step_history") },
     ],
   },
 ];
@@ -99,7 +101,7 @@ function buildKeys(row: ShortcutRow): HTMLElement {
   const keys = document.createElement("div");
   keys.className = "up-shortcut-keys";
   row.combos.forEach((combo, ci) => {
-    if (ci > 0) keys.appendChild(join("or"));
+    if (ci > 0) keys.appendChild(join(t("js_shortcuts_or")));
     combo.forEach((label, ki) => {
       if (ki > 0 && !row.loose) keys.appendChild(join("+"));
       const kbd = document.createElement(row.gesture ? "span" : "kbd");
@@ -143,8 +145,8 @@ export function showShortcuts(): Promise<string | null> {
   return (
     window.uiDialog?.({
       icon: "none",
-      title: "Keyboard shortcuts",
-      buttons: [{ id: "close", label: "Close", primary: true }],
+      title: t("js_shortcuts_title"),
+      buttons: [{ id: "close", label: t("js_close"), primary: true }],
       render(content) {
         const list = document.createElement("div");
         list.className = "up-shortcuts";

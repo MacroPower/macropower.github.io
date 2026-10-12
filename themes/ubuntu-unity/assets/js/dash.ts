@@ -12,6 +12,7 @@
 // every open.
 
 import { openStudio } from "./daw";
+import { t, tn } from "./i18n";
 import { openTrash } from "./trash";
 import { dispatchAction } from "./top-panel";
 import { isReduceMotion } from "./prefs";
@@ -96,22 +97,22 @@ export function initDash(): void {
       const inLens = lens === "home" || lens === s.key;
       s.matches.clear();
       if (inLens) {
-        for (const t of s.tiles) {
-          if (tokens.every((tok) => t.text.includes(tok))) s.matches.add(t);
+        for (const tile of s.tiles) {
+          if (tokens.every((tok) => tile.text.includes(tok))) s.matches.add(tile);
         }
       }
       // A lens-focused section is the whole view; never cap it.
       const cap = s.expanded || lens === s.key ? Infinity : s.cap;
       let i = 0;
-      for (const t of s.tiles) {
-        const show = s.matches.has(t) && i < cap;
-        t.el.hidden = !show;
-        if (s.matches.has(t)) i++;
+      for (const tile of s.tiles) {
+        const show = s.matches.has(tile) && i < cap;
+        tile.el.hidden = !show;
+        if (s.matches.has(tile)) i++;
         if (show && tokens.length) {
-          const rank = t.title.startsWith(query) ? 0 : t.title.includes(query) ? 1 : 2;
-          if (rank < bestRank) { bestRank = rank; firstResult = t.el; }
+          const rank = tile.title.startsWith(query) ? 0 : tile.title.includes(query) ? 1 : 2;
+          if (rank < bestRank) { bestRank = rank; firstResult = tile.el; }
         } else if (show && !firstResult) {
-          firstResult = t.el;
+          firstResult = tile.el;
         }
       }
       s.shown = Math.min(s.matches.size, cap);
@@ -122,14 +123,14 @@ export function initDash(): void {
         const collapsible = s.expanded && s.matches.size > s.cap && lens !== s.key;
         s.more.hidden = overflow <= 0 && !collapsible;
         s.more.textContent = overflow > 0
-          ? `See ${overflow} more result${overflow === 1 ? "" : "s"}`
-          : "See fewer results";
+          ? tn("js_dash_see_more", overflow)
+          : t("js_dash_see_fewer");
         s.more.setAttribute("aria-expanded", String(s.expanded));
       }
     }
 
     if (emptyEl) emptyEl.hidden = total > 0;
-    if (statusEl) statusEl.textContent = `${total} result${total === 1 ? "" : "s"}`;
+    if (statusEl) statusEl.textContent = tn("js_dash_results", total);
   };
 
   const reset = (): void => {

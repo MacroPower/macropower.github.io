@@ -18,6 +18,7 @@
 // The mix runs master gain → lowpass filter → (dry + tempo-synced echo) →
 // compressor, the compressor taming peaks as before.
 
+import { t } from "./i18n";
 import { parseMidi, type MidiNote, type MidiSong } from "./midi";
 
 // Quantize note onsets/durations to this beat grid (a sixteenth note) so a
@@ -178,16 +179,16 @@ export type PatchKey =
 export type VoiceKey = Exclude<PatchKey, "auto">;
 
 export const PATCHES: { key: PatchKey; label: string }[] = [
-  { key: "auto", label: "Auto" },
-  { key: "sine", label: "Sine" },
-  { key: "square", label: "Square" },
-  { key: "saw", label: "Saw" },
-  { key: "organ", label: "Organ" },
-  { key: "pulse", label: "Pulse" },
-  { key: "epiano", label: "E-Piano" },
-  { key: "bell", label: "Bell" },
-  { key: "pluck", label: "Pluck" },
-  { key: "pad", label: "Pad" },
+  { key: "auto", label: t("js_sound_auto") },
+  { key: "sine", label: t("js_sound_sine") },
+  { key: "square", label: t("js_sound_square") },
+  { key: "saw", label: t("js_sound_saw") },
+  { key: "organ", label: t("js_sound_organ") },
+  { key: "pulse", label: t("js_sound_pulse") },
+  { key: "epiano", label: t("js_sound_epiano") },
+  { key: "bell", label: t("js_sound_bell") },
+  { key: "pluck", label: t("js_sound_pluck") },
+  { key: "pad", label: t("js_sound_pad") },
 ];
 
 // Per-strip mixer state. The returned object is live — the Studio mutates it
@@ -888,7 +889,7 @@ export function isPlaying(): boolean {
 
 // Anonymous display label — the playlist never exposes real song names.
 export function trackName(): string {
-  return playlist.length ? `Track ${trackIdx + 1}` : "";
+  return playlist.length ? t("js_sound_track", { n: trackIdx + 1 }) : "";
 }
 
 // The active tempo: the Studio override if set, else the file's tempo.

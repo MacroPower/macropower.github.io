@@ -84,7 +84,7 @@
           {{- $row := cond (reflect.IsMap $n) $n (dict "name" $n) }}
         {{ partial "ui/net-row.html" (dict "name" $row.name "mono" $row.mono "on" (eq $i 0) "strong" (eq $i 0)) }}
         {{- end }}
-        {{ partial "ui/net-row.html" (dict "name" (T "hidden_network") "muted" true) }}
+        {{ partial "ui/net-row.html" (dict "name" (T "hidden_network") "muted" true "hidden" true) }}
         <div class="up-dropdown-sep"></div>
         {{ partial "ui/dropdown-row.html" (dict "label" (T "wired_connection") "action" "dlg:wired") }}
         {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_hotspot") "action" "dlg:hotspot") }}

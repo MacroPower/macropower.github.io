@@ -13,6 +13,7 @@
 // rows), which is how Unity's HUD behaved: arrows move the highlight, typing
 // keeps flowing into the query.
 
+import { t, tn } from "./i18n";
 import { dispatchAction } from "./top-panel";
 import { isReduceMotion } from "./prefs";
 
@@ -113,7 +114,7 @@ export function initHud(): void {
       for (const net of Array.from(
         dropdown.querySelectorAll<HTMLButtonElement>("button[data-net-name]:not([data-net-on])"),
       )) {
-        push(menu, `Connect to ${net.dataset.netName ?? ""}`, () => net.click());
+        push(menu, t("js_hud_connect", { name: net.dataset.netName ?? "" }), () => net.click());
       }
     }
     return out;
@@ -166,7 +167,7 @@ export function initHud(): void {
     syncSelection();
     if (statusEl) {
       statusEl.textContent = tokens.length
-        ? `${shown.length} matching command${shown.length === 1 ? "" : "s"}`
+        ? tn("js_hud_matches", shown.length)
         : "";
     }
   };

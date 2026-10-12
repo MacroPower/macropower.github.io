@@ -1,4 +1,5 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
+import { t, tn } from "./i18n";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
@@ -26,48 +27,56 @@ function dlg(opts: UPDialogOptions): Promise<string | null> {
   return window.uiDialog?.(opts) ?? Promise.resolve<string | null>(null);
 }
 
+// Stands in for the link in the translated "living at {link}" sentence, so the
+// sentence stays one string and the anchor lands wherever the language puts it.
+const LINK_SLOT = "\u0000";
+
 const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
-  "dlg:launcher-info": () => ({ icon: "info", title: "Launcher is always shown",
-    body: "The launcher is part of the shell." }),
+  "dlg:launcher-info": () => ({ icon: "info", title: t("js_panel_launcher_title"),
+    body: t("js_panel_launcher_body") }),
   "dlg:github": (site) => {
     const url = site.repo;
     if (!url) {
       return {
-        icon: "info", title: "Source",
-        body: "This is a personal site.",
-        buttons: [{ id: "ok", label: "OK", primary: true }],
+        icon: "info", title: t("js_panel_source_title"),
+        body: t("js_panel_source_body"),
+        buttons: [{ id: "ok", label: t("js_panel_ok"), primary: true }],
       };
     }
     return {
-      icon: "info", title: "Source",
+      icon: "info", title: t("js_panel_source_title"),
       render: (content) => {
         const p = document.createElement("p");
         p.className = "up-dlg-content-body";
-        p.append("This is a personal site living at ");
         const a = document.createElement("a");
         a.href = url;
         a.target = "_blank";
         a.rel = "noopener";
         a.textContent = url.replace(/^https?:\/\//, "");
-        p.append(a, ".");
+        const [before = "", after = ""] = t("js_panel_source_body_link", { link: LINK_SLOT }).split(LINK_SLOT);
+        p.append(before, a, after);
         content.appendChild(p);
       },
-      buttons: [{ id: "ok", label: "OK", primary: true }],
+      buttons: [{ id: "ok", label: t("js_panel_ok"), primary: true }],
     };
   },
-  "dlg:cal": () => ({ icon: "info", title: "Calendar",
-    body: "No events today. The next thing on the calendar is a haircut next Tuesday." }),
+  "dlg:cal": () => ({ icon: "info", title: t("js_panel_cal_title"),
+    body: t("js_panel_cal_body") }),
 };
 
 function fmtDuration(mins: number): string {
-  const t = Math.round(mins);
-  const h = Math.floor(t / 60);
-  const m = t % 60;
-  const unit = (n: number, u: string): string => `${n} ${u}${n === 1 ? "" : "s"}`;
-  const parts: string[] = [];
-  if (h) parts.push(unit(h, "hour"));
-  if (m) parts.push(unit(m, "minute"));
-  return parts.length ? parts.join(" ") : "less than a minute";
+  const total = Math.round(mins);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (h && m) {
+    return t("js_panel_hours_minutes", {
+      hours: tn("js_panel_hours", h),
+      minutes: tn("js_panel_minutes", m),
+    });
+  }
+  if (h) return tn("js_panel_hours", h);
+  if (m) return tn("js_panel_minutes", m);
+  return t("js_panel_less_than_minute");
 }
 
 interface SimBattery {
@@ -89,7 +98,10 @@ function computeSimBattery(now: Date): SimBattery {
   const pct = charging
     ? 20 + (elapsed / length) * 80
     : 100 - (elapsed / length) * 80;
-  const detail = `About ${fmtDuration((length - elapsed) * 60)} ${charging ? "until full" : "remaining"}`;
+  const duration = fmtDuration((length - elapsed) * 60);
+  const detail = charging
+    ? t("js_panel_until_full", { duration })
+    : t("js_panel_remaining", { duration });
   return { level: Math.round(pct), charging, detail };
 }
 
@@ -125,7 +137,16 @@ function renderCalendar(host: HTMLElement, now: Date): void {
 
   const headRow = document.createElement("div");
   headRow.className = "up-cal-row up-cal-head";
-  for (const d of ["M", "T", "W", "T", "F", "S", "S"]) {
+  const weekdayInitials = [
+    t("js_panel_cal_mon"),
+    t("js_panel_cal_tue"),
+    t("js_panel_cal_wed"),
+    t("js_panel_cal_thu"),
+    t("js_panel_cal_fri"),
+    t("js_panel_cal_sat"),
+    t("js_panel_cal_sun"),
+  ];
+  for (const d of weekdayInitials) {
     const c = document.createElement("div");
     c.textContent = d;
     headRow.appendChild(c);
@@ -160,9 +181,12 @@ async function showTime(): Promise<void> {
     hour: "2-digit", minute: "2-digit", second: "2-digit",
   });
   await dlg({
-    icon: "info", title: "Time & date",
-    body: `Time zone: ${opts.timeZone} (UTC${sign}${hh}:${mm})`,
-    details: `Locale: ${opts.locale}\nLocal time: ${localTime}`,
+    icon: "info", title: t("js_panel_time_title"),
+    body: t("js_panel_time_zone", { zone: opts.timeZone, offset: `${sign}${hh}:${mm}` }),
+    details: [
+      t("js_panel_time_locale", { locale: opts.locale }),
+      t("js_panel_time_local", { time: localTime }),
+    ].join("\n"),
   });
 }
 
@@ -175,17 +199,19 @@ async function showPower(): Promise<void> {
       let line: string;
       if (bat.charging) {
         line = Number.isFinite(bat.chargingTime) && bat.chargingTime > 0
-          ? `About ${fmtDuration(bat.chargingTime / 60)} until full`
-          : "Fully charged";
+          ? t("js_panel_until_full", { duration: fmtDuration(bat.chargingTime / 60) })
+          : t("js_panel_fully_charged");
       } else {
         line = Number.isFinite(bat.dischargingTime) && bat.dischargingTime > 0
-          ? `About ${fmtDuration(bat.dischargingTime / 60)} remaining`
-          : "Estimating time remaining…";
+          ? t("js_panel_remaining", { duration: fmtDuration(bat.dischargingTime / 60) })
+          : t("js_panel_estimating");
       }
       await dlg({
-        icon: "info", title: "Power settings",
-        body: `Battery: ${level}% — ${bat.charging ? "charging" : "on battery"}`,
-        details: `${line}\nReported by the Battery Status API.`,
+        icon: "info", title: t("js_panel_power_title"),
+        body: bat.charging
+          ? t("js_panel_battery_charging", { level })
+          : t("js_panel_battery_on_battery", { level }),
+        details: `${line}\n${t("js_panel_battery_api")}`,
       });
       return;
     } catch {
@@ -194,9 +220,11 @@ async function showPower(): Promise<void> {
   }
   const sim = computeSimBattery(new Date());
   await dlg({
-    icon: "info", title: "Power settings",
-    body: `Battery: ${sim.level}% — ${sim.charging ? "charging" : "discharging"}`,
-    details: `${sim.detail}\nThe raw data lives in /sys/class/power_supply/BAT0/uevent.`,
+    icon: "info", title: t("js_panel_power_title"),
+    body: sim.charging
+      ? t("js_panel_battery_charging", { level: sim.level })
+      : t("js_panel_battery_discharging", { level: sim.level }),
+    details: `${sim.detail}\n${t("js_panel_battery_raw")}`,
   });
 }
 
@@ -206,18 +234,18 @@ async function showWired(): Promise<void> {
   if (conn && (conn.effectiveType || conn.downlink != null || conn.rtt != null)) {
     const wired = conn.type === "ethernet";
     const lines: string[] = [];
-    if (conn.effectiveType) lines.push(`Effective type: ${conn.effectiveType}`);
-    if (conn.downlink != null) lines.push(`Downlink: ~${conn.downlink} Mbps`);
-    if (conn.rtt != null) lines.push(`Round-trip time: ${conn.rtt} ms`);
-    if (conn.type) lines.push(`Type: ${conn.type}`);
-    lines.push(`Data saver: ${conn.saveData ? "on" : "off"}`);
-    lines.push("Reported by the Network Information API.");
+    if (conn.effectiveType) lines.push(t("js_panel_net_effective_type", { value: conn.effectiveType }));
+    if (conn.downlink != null) lines.push(t("js_panel_net_downlink", { value: conn.downlink }));
+    if (conn.rtt != null) lines.push(t("js_panel_net_rtt", { value: conn.rtt }));
+    if (conn.type) lines.push(t("js_panel_net_type", { value: conn.type }));
+    lines.push(conn.saveData ? t("js_panel_net_data_saver_on") : t("js_panel_net_data_saver_off"));
+    lines.push(t("js_panel_net_api"));
     await dlg({
       icon: "info",
-      title: wired ? "Wired connection" : "Connection details",
+      title: wired ? t("js_panel_wired_title") : t("js_panel_connection_details"),
       body: wired
-        ? "Ethernet link is up."
-        : "No wired link, but here's what the browser will tell us:",
+        ? t("js_panel_ethernet_up")
+        : t("js_panel_no_wired"),
       details: lines.join("\n"),
     });
     return;
@@ -227,18 +255,18 @@ async function showWired(): Promise<void> {
   const online = navigator.onLine;
   await dlg({
     icon: online ? "info" : "warning",
-    title: online ? "Connection details" : "You're offline",
+    title: online ? t("js_panel_connection_details") : t("js_panel_offline_title"),
     body: online
-      ? "You're online, but this browser won't admit over what. No cable, no Mbps, no secrets."
-      : "No connection detected. Check the cable nobody can see.",
+      ? t("js_panel_online_body")
+      : t("js_panel_offline_body"),
   });
 }
 
 async function showSubscribe(site: UPSite): Promise<void> {
   const url = site.rss;
   if (!url) {
-    await dlg({ icon: "info", title: "Subscribe to feed",
-      body: "This site doesn't expose an RSS feed." });
+    await dlg({ icon: "info", title: t("js_panel_subscribe_title"),
+      body: t("js_panel_no_feed") });
     return;
   }
   let copied = false;
@@ -253,13 +281,13 @@ async function showSubscribe(site: UPSite): Promise<void> {
   }
   const r = await dlg({
     icon: copied ? "success" : "info",
-    title: "Subscribe to feed",
+    title: t("js_panel_subscribe_title"),
     body: copied
-      ? `Copied ${url} — paste it into your reader.`
-      : `Feed URL: ${url}`,
+      ? t("js_panel_feed_copied", { url })
+      : t("js_panel_feed_url", { url }),
     buttons: [
-      { id: "close", label: "Close" },
-      { id: "open", label: "Open feed", primary: true },
+      { id: "close", label: t("js_close") },
+      { id: "open", label: t("js_panel_open_feed"), primary: true },
     ],
   });
   if (r === "open") window.open(url, "_blank", "noopener");
@@ -268,6 +296,10 @@ async function showSubscribe(site: UPSite): Promise<void> {
 // In-memory hotspot state. Toggling mutates the SSR net indicator + dropdown
 // directly (dispatchAction has no panel ref); session-only.
 const hotspot = { active: false };
+
+// The simulated hotspot's network name and client count.
+const HOTSPOT_SSID = "personal-site";
+const HOTSPOT_DEVICES = 2;
 
 async function handleHotspot(): Promise<void> {
   const indicator = document.querySelector<HTMLElement>('[data-indicator="net"]');
@@ -278,36 +310,36 @@ async function handleHotspot(): Promise<void> {
     hotspot.active = false;
     indicator?.classList.remove("is-hotspot");
     body?.querySelector("[data-hotspot-status]")?.remove();
-    if (trigger) trigger.textContent = "Enable hotspot";
+    if (trigger) trigger.textContent = t("js_panel_enable_hotspot");
     // Passive state change, passive surface: a bubble, not a modal dialog —
     // network-manager's own manners.
-    notify({ icon: "network", title: "Hotspot disabled",
-      body: "Other devices can no longer share this connection." });
+    notify({ icon: "network", title: t("js_panel_hotspot_disabled_title"),
+      body: t("js_panel_hotspot_disabled_body") });
     return;
   }
 
   const r = await dlg({
-    icon: "question", title: "Enable Wi-Fi hotspot?",
-    body: "Other devices will be able to share this connection. Estimated battery cost: significant.",
+    icon: "question", title: t("js_panel_hotspot_confirm_title"),
+    body: t("js_panel_hotspot_confirm_body"),
     buttons: [
-      { id: "cancel", label: "Cancel" },
-      { id: "on", label: "Enable hotspot", primary: true },
+      { id: "cancel", label: t("js_cancel") },
+      { id: "on", label: t("js_panel_enable_hotspot"), primary: true },
     ],
   });
   if (r !== "on") return;
 
   hotspot.active = true;
   indicator?.classList.add("is-hotspot");
-  if (trigger) trigger.textContent = "Disable hotspot";
+  if (trigger) trigger.textContent = t("js_panel_disable_hotspot");
   if (body) {
     const status = document.createElement("div");
     status.className = "up-dropdown-row is-hotspot-status";
     status.setAttribute("data-hotspot-status", "");
-    status.textContent = "Hotspot active · personal-site (2 devices)";
+    status.textContent = tn("js_panel_hotspot_status", HOTSPOT_DEVICES, { name: HOTSPOT_SSID });
     body.insertBefore(status, body.firstChild);
   }
-  notify({ icon: "network", title: "Hotspot active",
-    body: "Broadcasting 'personal-site'. Other devices can now share this connection." });
+  notify({ icon: "network", title: t("js_panel_hotspot_active_title"),
+    body: t("js_panel_hotspot_active_body", { name: HOTSPOT_SSID }) });
 }
 
 // Exported for dash.ts: the Dash's app tiles reuse the panel's action
@@ -342,8 +374,8 @@ export async function dispatchAction(action: string): Promise<void> {
   if (action === "dlg:power-saver") {
     setReduceMotion(true);
     await dlg({
-      icon: "success", title: "Power saver enabled",
-      body: "Animations reduced to save power. Turn motion back on in Edit → Preferences.",
+      icon: "success", title: t("js_panel_power_saver_title"),
+      body: t("js_panel_power_saver_body"),
     });
     return;
   }
@@ -354,11 +386,12 @@ export async function dispatchAction(action: string): Promise<void> {
   if (action === "dlg:hotspot") { await handleHotspot(); return; }
   if (action === "dlg:logout") {
     const r = await dlg({
-      icon: "question", title: "Log out of " + (site.handle || "user") + "?",
-      body: "All unsaved windows will be closed and you'll be returned to the login screen.",
+      icon: "question",
+      title: t("js_panel_logout_title", { name: site.handle || t("js_panel_default_user") }),
+      body: t("js_panel_logout_body"),
       buttons: [
-        { id: "cancel", label: "Cancel" },
-        { id: "out", label: "Log out", primary: true, danger: true },
+        { id: "cancel", label: t("js_cancel") },
+        { id: "out", label: t("js_panel_logout"), primary: true, danger: true },
       ],
     });
     // Drop to the greeter; "signing in" reloads a fresh session.
@@ -372,28 +405,28 @@ async function netClick(row: HTMLElement): Promise<void> {
   const name = row.dataset.netName ?? "";
   const on = row.hasAttribute("data-net-on");
   if (on) {
-    await dlg({ icon: "info", title: "Already connected",
-      body: "You're connected to " + name + "." });
+    await dlg({ icon: "info", title: t("js_panel_net_already_title"),
+      body: t("js_panel_net_already_body", { name }) });
     return;
   }
   const current = document.querySelector<HTMLElement>(".up-net-row[data-net-on]")?.dataset.netName;
   const r = await dlg({
-    icon: "question", title: "Connect to " + name + "?",
+    icon: "question", title: t("js_panel_net_connect_title", { name }),
     body: current
-      ? "This will disconnect you from " + current + ". Continue?"
-      : "Continue?",
+      ? t("js_panel_net_disconnect_body", { name: current })
+      : t("js_panel_continue"),
     buttons: [
-      { id: "cancel", label: "Cancel" },
-      { id: "connect", label: "Connect", primary: true },
+      { id: "cancel", label: t("js_cancel") },
+      { id: "connect", label: t("js_panel_connect"), primary: true },
     ],
   });
   if (r !== "connect") return;
-  if (name === "(hidden)") {
+  if (row.hasAttribute("data-net-hidden")) {
     // The one network you can never join; the gag survives the others
     // becoming connectable.
     await dlg({
-      icon: "warning", title: "Couldn't connect",
-      body: "Authentication failed for " + name + ". Check the password and try again.",
+      icon: "warning", title: t("js_panel_net_failed_title"),
+      body: t("js_panel_net_failed_body", { name }),
     });
     return;
   }
@@ -411,8 +444,8 @@ async function netClick(row: HTMLElement): Promise<void> {
   const dot = row.querySelector(".up-net-row-dot");
   if (dot) dot.textContent = "●";
   // nm-applet's classic toast, verbatim phrasing.
-  notify({ icon: "network", title: "Connection Established",
-    body: "You are now connected to '" + name + "'." });
+  notify({ icon: "network", title: t("js_panel_net_established_title"),
+    body: t("js_panel_net_established_body", { name }) });
 }
 
 export function initTopPanel(): void {
@@ -442,9 +475,9 @@ export function initTopPanel(): void {
   };
 
   const syncTitle = (): void => {
-    if (getTrashFocused()) { setTitle("Trash"); return; }
-    if (getStudioFocused()) { setTitle("Studio"); return; }
-    setTitle(winVisible ? pageTitle : "Ubuntu");
+    if (getTrashFocused()) { setTitle(t("js_panel_title_trash")); return; }
+    if (getStudioFocused()) { setTitle(t("js_panel_title_studio")); return; }
+    setTitle(winVisible ? pageTitle : t("js_panel_title_ubuntu"));
   };
 
   window.addEventListener(WINDOW_STATE_EVENT, (e) => {
@@ -504,7 +537,11 @@ export function initTopPanel(): void {
     const { level, charging, detail } = computeSimBattery(new Date());
 
     toggleGlyphPair(batGlyphs, "data-bat-glyph-charging", charging);
-    if (batHeadline) batHeadline.textContent = `${level}% — ${charging ? "charging" : "discharging"}`;
+    if (batHeadline) {
+      batHeadline.textContent = charging
+        ? t("js_panel_level_charging", { level })
+        : t("js_panel_level_discharging", { level });
+    }
     if (batDetail) batDetail.textContent = detail;
     if (batFill) batFill.style.width = `${level}%`;
 
@@ -527,9 +564,9 @@ export function initTopPanel(): void {
     panel.querySelectorAll<HTMLElement>("[data-panel-trigger][data-menu], [data-panel-trigger][data-indicator]"),
   );
   const dropdownByTrigger = new Map<HTMLElement, HTMLElement>();
-  for (const t of triggers) {
-    const drop = t.parentElement?.querySelector<HTMLElement>("[data-dropdown-for]");
-    if (drop) dropdownByTrigger.set(t, drop);
+  for (const trigger of triggers) {
+    const drop = trigger.parentElement?.querySelector<HTMLElement>("[data-dropdown-for]");
+    if (drop) dropdownByTrigger.set(trigger, drop);
   }
 
   let openTrigger: HTMLElement | null = null;
@@ -583,11 +620,11 @@ export function initTopPanel(): void {
     next?.focus();
   };
 
-  for (const t of triggers) {
-    t.addEventListener("click", (e) => {
+  for (const trigger of triggers) {
+    trigger.addEventListener("click", (e) => {
       e.stopPropagation();
-      const wasOpen = openTrigger === t;
-      openTriggerEl(t);
+      const wasOpen = openTrigger === trigger;
+      openTriggerEl(trigger);
       // A keyboard "click" (Enter/Space on the button) reports detail 0;
       // opening that way moves focus straight to the first dropdown item.
       if (!wasOpen && e.detail === 0 && openDropdown) moveDropdownFocus(openDropdown, 1);
@@ -612,7 +649,7 @@ export function initTopPanel(): void {
     // GTK-style — except on the volume slider, where they adjust the value.
     if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && openTrigger
         && !(target instanceof HTMLInputElement)) {
-      const visible = triggers.filter((t) => t.offsetParent !== null);
+      const visible = triggers.filter((trigger) => trigger.offsetParent !== null);
       const idx = visible.indexOf(openTrigger);
       if (idx === -1) return;
       e.preventDefault();
@@ -656,10 +693,12 @@ export function initTopPanel(): void {
     if (!nowPlaying) return;
     const name = audio.trackName();
     if (!audio.isPlaying()) {
-      nowPlaying.textContent = name ? `${name} — paused` : "Paused";
+      nowPlaying.textContent = name
+        ? t("js_panel_paused_named", { name })
+        : t("js_panel_paused");
       return;
     }
-    nowPlaying.textContent = vol.muted ? `${name} (muted)` : name;
+    nowPlaying.textContent = vol.muted ? t("js_panel_muted_named", { name }) : name;
   };
 
   const syncPlayUI = (isPlaying: boolean): void => {
@@ -704,7 +743,7 @@ export function initTopPanel(): void {
     audio.setMuted(false);
     syncVolUI();
     if (openTrigger?.dataset.indicator !== "vol") {
-      notifyValue({ value: vol.level, icon: "volume", label: `Volume ${vol.level}%` });
+      notifyValue({ value: vol.level, icon: "volume", label: t("js_panel_volume", { level: vol.level }) });
     }
   }, { passive: false });
 
@@ -759,7 +798,7 @@ export function initTopPanel(): void {
     syncPlayUI(playing);
     const volMenuOpen = openTrigger?.dataset.indicator === "vol";
     if (playing && (!lastPlaying || track !== lastTrack) && !volMenuOpen) {
-      notify({ icon: "music", title: "Now playing", body: audio.trackName() });
+      notify({ icon: "music", title: t("js_panel_now_playing"), body: audio.trackName() });
     }
     lastTrack = track;
     lastPlaying = playing;

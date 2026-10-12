@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 import type {
   UPDialogButton,
   UPDialogIcon,
@@ -151,9 +152,9 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
     const body = opts.body ?? "";
     const details = opts.details ?? null;
     const icon = opts.icon ?? "info";
-    const buttons = opts.buttons ?? [{ id: "ok", label: "Close", primary: true }];
+    const buttons = opts.buttons ?? [{ id: "ok", label: t("js_close"), primary: true }];
 
-    titleEl.textContent = title || "Information";
+    titleEl.textContent = title || t("js_dialog_information");
     dialog.setAttribute("aria-label", title);
 
     if (icon === "none") {

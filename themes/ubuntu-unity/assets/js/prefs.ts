@@ -5,6 +5,8 @@
 // `var(--orange)` / `var(--orange-light)` or gated on `body.up-reduce-motion`
 // updates live.
 
+import { t } from "./i18n";
+
 interface AccentDef {
   name: string;
   label: string;
@@ -15,10 +17,10 @@ interface AccentDef {
 // the one <html> starts with. Keep the names in sync with main.css and the
 // list in baseof.html.
 const ACCENTS: AccentDef[] = [
-  { name: "orange", label: "Orange" },
-  { name: "green", label: "Green" },
-  { name: "aubergine", label: "Aubergine" },
-  { name: "blue", label: "Blue" },
+  { name: "orange", label: t("js_prefs_accent_orange") },
+  { name: "green", label: t("js_prefs_accent_green") },
+  { name: "aubergine", label: t("js_prefs_accent_aubergine") },
+  { name: "blue", label: t("js_prefs_accent_blue") },
 ];
 
 // The body class is the single source of truth for reduce-motion (the CSS
@@ -48,17 +50,17 @@ function buildToggleRow(): HTMLElement {
 
   const label = document.createElement("div");
   label.className = "up-pref-row-label";
-  label.textContent = "Reduce motion";
+  label.textContent = t("js_prefs_reduce_motion");
   const hint = document.createElement("span");
   hint.className = "up-pref-row-hint";
-  hint.textContent = "Stop window and dialog animations.";
+  hint.textContent = t("js_prefs_reduce_motion_hint");
   label.appendChild(hint);
 
   const toggle = document.createElement("button");
   toggle.type = "button";
   toggle.className = "up-pref-toggle";
   toggle.setAttribute("role", "switch");
-  toggle.setAttribute("aria-label", "Reduce motion");
+  toggle.setAttribute("aria-label", t("js_prefs_reduce_motion"));
   const sync = (): void => {
     const on = isReduceMotion();
     toggle.classList.toggle("is-on", on);
@@ -80,7 +82,7 @@ function buildAccentRow(): HTMLElement {
 
   const label = document.createElement("div");
   label.className = "up-pref-row-label";
-  label.textContent = "Accent color";
+  label.textContent = t("js_prefs_accent_color");
 
   const swatches = document.createElement("div");
   swatches.className = "up-pref-swatches";
@@ -117,9 +119,9 @@ export function showPreferences(): Promise<string | null> {
   return (
     window.uiDialog?.({
       icon: "none",
-      title: "Preferences",
-      body: "Session settings — these reset when you reload.",
-      buttons: [{ id: "close", label: "Close", primary: true }],
+      title: t("js_prefs_title"),
+      body: t("js_prefs_body"),
+      buttons: [{ id: "close", label: t("js_close"), primary: true }],
       render(content) {
         content.append(buildToggleRow(), buildAccentRow());
       },

@@ -1,0 +1,47 @@
+{{- /*
+  The strings the scripts write at runtime, translated for the page's
+  language. Every key in the theme's i18n/en.toml that starts with js_
+  goes through T, so a site's i18n/<lang>.toml translates them like any
+  template string. hugo.toml mounts that en.toml under assets/ so this
+  partial can list the keys.
+
+  A plural key renders at every count from 0 to 199 under the plural rules
+  of whichever translation file matched, which only Hugo knows. The
+  output keeps the distinct forms and an index string with one digit per
+  count naming its form. assets/js/i18n.ts reads larger counts at 100
+  plus the count modulo 100, where CLDR's integer rules repeat.
+
+  Emits a deferred <script> setting window.UP_I18N, published once per
+  language and cached across pages. baseof.html renders it before the
+  bundles, which run in document order. Call it through partialCached
+  keyed on the language.
+*/ -}}
+{{- $strings := dict -}}
+{{- $plurals := dict -}}
+{{- with resources.Get "ubuntu-unity/i18n/en.toml" -}}
+  {{- range $key, $v := . | transform.Unmarshal -}}
+    {{- if hasPrefix $key "js_" -}}
+      {{- if and (reflect.IsMap $v) (isset $v "one") -}}
+        {{- $forms := slice -}}
+        {{- $seen := dict -}}
+        {{- $index := "" -}}
+        {{- range seq 0 199 -}}
+          {{- $text := T $key . -}}
+          {{- if not (isset $seen $text) -}}
+            {{- $seen = merge $seen (dict $text (len $forms)) -}}
+            {{- $forms = $forms | append $text -}}
+          {{- end -}}
+          {{- $index = printf "%s%d" $index (index $seen $text) -}}
+        {{- end -}}
+        {{- $plurals = merge $plurals (dict $key (dict "forms" $forms "index" $index)) -}}
+      {{- else -}}
+        {{- $strings = merge $strings (dict $key (T $key)) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $data := dict "strings" $strings "plurals" $plurals -}}
+{{- $js := printf "window.UP_I18N=%s;" ($data | jsonify) -}}
+{{- $path := printf "js/i18n.%s.js" site.Language.Name -}}
+{{- $res := resources.FromString $path $js | minify | fingerprint -}}
+<script defer src="{{ $res.RelPermalink }}" integrity="{{ $res.Data.Integrity }}"></script>

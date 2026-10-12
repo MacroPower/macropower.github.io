@@ -14,6 +14,7 @@
 // literal "up:notify" CustomEvent (see NOTIFY_EVENT below and the cross-bundle
 // notes in CLAUDE.md — same rename-risk class as "up:page-window-state").
 
+import { t } from "./i18n";
 import { isReduceMotion } from "./prefs";
 
 export const NOTIFY_EVENT = "up:notify";
@@ -215,7 +216,7 @@ export function notify(opts: NotifyOpts): void {
 export function notifyValue(opts: NotifyValueOpts): void {
   if (!host) return;
   const value = Math.min(100, Math.max(0, Math.round(opts.value)));
-  const label = opts.label ?? `${value}%`;
+  const label = opts.label ?? t("js_notify_value", { percent: value });
 
   if (valueBubble) {
     // Synchronous bubbles update in place — a volume drag is one bubble

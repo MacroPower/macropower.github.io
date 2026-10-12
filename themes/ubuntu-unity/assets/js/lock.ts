@@ -5,6 +5,7 @@
 // `onUnlock` turns it into a logout greeter: signing in runs that callback
 // (e.g. reload a fresh session) instead of simply revealing the desktop.
 
+import { t } from "./i18n";
 import { isReduceMotion } from "./prefs";
 
 let root: HTMLElement | null = null;
@@ -94,7 +95,7 @@ export function initLock(): void {
     if (input && input.value.trim() === "") {
       // Empty submit: keep the greeter up so the playful nudge is actually
       // visible. Any typed password (or Esc) lets you through.
-      if (hintEl) hintEl.textContent = "Hint: any password works — just type something.";
+      if (hintEl) hintEl.textContent = t("js_lock_hint");
       return;
     }
     unlock();

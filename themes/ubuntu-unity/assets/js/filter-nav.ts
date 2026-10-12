@@ -1,3 +1,5 @@
+import { t } from "./i18n";
+
 export interface FilterNavOptions {
   root: HTMLElement;
   items: HTMLElement[];
@@ -78,7 +80,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     if (emptyEl && emptyEl.hidden !== emptyHide) emptyEl.hidden = emptyHide;
     if (searchCount) {
       searchCount.textContent = currentQuery
-        ? `${visible} / ${items.length}`
+        ? t("js_desktop_filter_count", { visible, count: items.length })
         : "";
     }
     onAfterFilter?.();

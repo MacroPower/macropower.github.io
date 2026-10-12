@@ -1,7 +1,8 @@
 // The icon vault page (layouts/icons.html): per-section size and backdrop
 // controls, and copy-to-clipboard on every tile. Ships only to pages with
-// `layout = "icons"` and no-ops without a [data-icon-vault] root. The toast
-// text is runtime English, like every other string JavaScript writes.
+// `layout = "icons"` and no-ops without a [data-icon-vault] root.
+
+import { t } from "./i18n";
 
 (function (): void {
   "use strict";
@@ -76,12 +77,12 @@
       const markup = tidy(svg.outerHTML);
       const name = cell.dataset.name ?? "";
       const done = (): void => {
-        showToast(`copied · ${name}`);
+        showToast(t("js_icons_copied", { name }));
         cell.classList.add("is-copied");
         window.setTimeout(() => cell.classList.remove("is-copied"), 600);
       };
       const failed = (): void => {
-        showToast("copy failed; clipboard blocked");
+        showToast(t("js_icons_copy_failed"));
       };
       if (navigator.clipboard?.writeText) {
         navigator.clipboard.writeText(markup).then(done, () => {

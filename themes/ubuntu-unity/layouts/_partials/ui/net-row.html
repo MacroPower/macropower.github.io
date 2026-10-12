@@ -7,6 +7,7 @@
     strong bool    is-strong (bold name)
     mono   bool    is-mono (monospace name, e.g. a tunnel)
     muted  bool    is-muted (dimmed name, e.g. a hidden network)
+    hidden bool    data-net-hidden, the network top-panel.ts never joins
 
   data-net-name / data-net-on are read by top-panel.ts; the is-* modifiers
   are styled by the .up-net-row rules. Modifier order matches the original
@@ -19,6 +20,6 @@
 {{- if .mono }}{{ $cls = printf "%s is-mono" $cls }}{{ end -}}
 {{- if .muted }}{{ $cls = printf "%s is-muted" $cls }}{{ end -}}
 {{- if .on }}{{ $cls = printf "%s is-on" $cls }}{{ end -}}
-<button type="button" class="{{ $cls }}" data-net-name="{{ .name }}"{{ if .on }} data-net-on{{ end }}>
+<button type="button" class="{{ $cls }}" data-net-name="{{ .name }}"{{ if .on }} data-net-on{{ end }}{{ if .hidden }} data-net-hidden{{ end }}>
   <span class="up-net-row-dot">{{ if .on }}●{{ else }}○{{ end }}</span><span class="up-net-row-name">{{ .name }}</span>
 </button>
