@@ -3,10 +3,10 @@
   names. "category" feeds the sidebar's Places lenses, the chips on each
   post row and in the reader, the Dash's post keywords, and the home
   terminal's post cards. "series" feeds the sidebar's Series lenses. A site
-  renames either through params.taxonomies, for example category = "tags"
-  for a site that tags its posts. Call it through partialCached.
+  renames either through params.blog.taxonomies, for example category =
+  "tags" for a site that tags its posts. Call it through partialCached.
 */ -}}
 {{- return dict
-  "category" (site.Params.taxonomies.category | default "categories")
-  "series" (site.Params.taxonomies.series | default "series")
+  "category" (site.Params.blog.taxonomies.category | default "categories")
+  "series" (site.Params.blog.taxonomies.series | default "series")
 -}}

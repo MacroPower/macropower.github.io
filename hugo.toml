@@ -32,7 +32,7 @@ mainSections = ["posts"]
     block = true
     title = true
 
-# Date formats and enableReadingTime keep the theme's defaults.
+# The blog's date formats and reading time keep the theme's defaults.
 [params]
   description = "Jacob Colvin is a Lead Software Engineer working on developer platforms and infrastructure, writing about Kubernetes, observability, and open source."
 
@@ -40,13 +40,11 @@ mainSections = ["posts"]
   # the desktop home page); pages can override via front-matter images.
   images = ["/img/og-card.png"]
 
-  # Home subtitle of the index page (the terminal banner's "title" row) and
-  # the focus line shown beneath it.
-  homeSubtitle = "Lead Software Engineer"
-  homeFocus    = "Developer Platforms & Infrastructure"
-
   # Source repository for this site (linked from the "View source" dialog).
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
+
+  # Browser UI color emitted as <meta name="theme-color">.
+  themeColor = "#1b1c1d"
 
   # The Studio's tracks, in play order. The anonymous "Track N" labels
   # follow this order.
@@ -63,10 +61,9 @@ mainSections = ["posts"]
     name  = "Jacob Colvin"
     email = "me@jacobcolvin.com"
     born  = "1996-10-03"
-
-  # Browser UI color emitted as <meta name="theme-color">.
-  [params.favicon.color]
-    theme = "#1b1c1d"
+    # The terminal banner's title row and the focus line beneath it.
+    jobTitle = "Lead Software Engineer"
+    focus    = "Developer Platforms & Infrastructure"
 
   # Social icons.
 

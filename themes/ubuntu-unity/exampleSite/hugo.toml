@@ -29,7 +29,7 @@ mainSections = ["posts"]
 
 [taxonomies]
   # The blog sidebar offers category and series lenses. To drive them from
-  # other taxonomies, set params.taxonomies (see [params] below).
+  # other taxonomies, set params.blog.taxonomies (see [params] below).
   category = "categories"
   series   = "series"
 
@@ -38,27 +38,45 @@ mainSections = ["posts"]
     style = "monokai"
 
 [params]
-  # Long and numeric date formats (post reader and post list).
-  dateform    = "Jan 2, 2006"
-  dateformNum = "2006-01-02"
-
   # Site description for <meta name="description"> and the feeds.
   description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."
 
-  # Home subtitle (the terminal banner's "title" row) and the focus line
-  # beneath it. Both optional; absent rows drop out of the banner.
-  homeSubtitle = "Software Engineer"
-  homeFocus    = "Distributed Systems"
-
-  # Show "N min read" in the post reader.
-  enableReadingTime = true
-
-  # The accent preset the desktop starts with: orange (the default), green,
-  # aubergine, or blue. Visitors can switch it in Edit > Preferences.
-  # accent = "aubergine"
+  # Browser UI color emitted as <meta name="theme-color">.
+  themeColor = "#1b1c1d"
 
   # Source repository, linked from Help > "View source on github".
   # repoUrl = "https://github.com/jane/janedoe.example"
+
+  [params.author]
+    name = "Jane Doe"
+    # email backs the Messages indicator's Compose button.
+    email = "jane@example.org"
+    # The terminal banner's title row and the focus line beneath it. Both
+    # optional; absent rows drop out of the banner. jobTitle is also the
+    # home page's JSON-LD jobTitle.
+    jobTitle = "Software Engineer"
+    focus    = "Distributed Systems"
+    # Optional: the terminal banner's uptime is your age when set,
+    # otherwise the time since your first post.
+    # born = "1990-01-31"
+
+  [params.desktop]
+    # The accent preset the desktop starts with: orange (the default),
+    # green, aubergine, or blue. Visitors can switch it in Edit >
+    # Preferences.
+    # accent = "aubergine"
+
+  [params.blog]
+    # Long and numeric date formats (post reader and post list).
+    dateFormat     = "Jan 2, 2006"
+    listDateFormat = "2006-01-02"
+    # Show "N min read" in the post reader.
+    readingTime = true
+    # The taxonomies behind the blog's lenses and post chips. These are
+    # the defaults; a site that tags its posts sets category = "tags".
+    # [params.blog.taxonomies]
+    #   category = "categories"
+    #   series   = "series"
 
   # The home terminal is an SSH session into the site as a guest login.
   # Both default from the site: "user" and the host of baseURL.
@@ -73,28 +91,10 @@ mainSections = ["posts"]
   # [params.studio]
   #   playlist = ["midi/ode-to-joy.mid", "midi/ah-vous-dirai-je.mid"]
 
-  # The taxonomies behind the blog's lenses and post chips. These are the
-  # defaults; a site that tags its posts sets category = "tags".
-  # [params.taxonomies]
-  #   category = "categories"
-  #   series   = "series"
-
-  [params.author]
-    name = "Jane Doe"
-    # email backs the Messages indicator's Compose button.
-    email = "jane@example.org"
-    # Optional: the terminal banner's uptime is your age when set,
-    # otherwise the time since your first post.
-    # born = "1990-01-31"
-
-  # Browser UI color emitted as <meta name="theme-color">.
-  [params.favicon.color]
-    theme = "#1b1c1d"
-
-  # Social links: terminal banner rows, footer icons, JSON-LD sameAs.
-  # `short` overrides the terminal label. A "github" entry also powers the
-  # session menu's profile link and the sponsors page's sponsor button;
-  # a "twitter" entry becomes the twitter:site card metadata.
+  # Social links: terminal banner rows and JSON-LD sameAs. `short`
+  # overrides the terminal label. A "github" entry also powers the session
+  # menu's profile link and the sponsors page's sponsor button; a
+  # "twitter" entry becomes the twitter:site card metadata.
 
   [[params.social]]
     name = "github"

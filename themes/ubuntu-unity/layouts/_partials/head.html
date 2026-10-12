@@ -12,7 +12,7 @@
 <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="32x32">
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
-{{- with .Site.Params.favicon.color.theme }}
+{{- with site.Params.themeColor }}
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
 <link rel="canonical" href="{{ .Permalink }}">
@@ -26,17 +26,18 @@
 {{- with partial "ui/social-url.html" "twitter" }}
 <meta name="twitter:site" content="@{{ path.Base . }}">
 {{- end }}
+{{- $author := partialCached "author.html" . }}
 {{- if .IsHome }}
 {{- $sameAs := slice }}
 {{- range .Site.Params.social }}{{ $sameAs = $sameAs | append .url }}{{ end }}
 {{- $person := dict
   "@context" "https://schema.org"
   "@type" "Person"
-  "name" (.Site.Params.author.name | default .Site.Title)
+  "name" $author.name
   "url" .Site.BaseURL
   "sameAs" $sameAs
 }}
-{{- with .Site.Params.homeSubtitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
+{{- with $author.jobTitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
 <script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
 {{- else if and .IsPage (in site.MainSections .Section) }}
 {{- $ld := dict
@@ -47,7 +48,7 @@
   "datePublished" (.Date.Format "2006-01-02")
   "dateModified" (.Lastmod.Format "2006-01-02")
   "description" ($description | plainify)
-  "author" (dict "@type" "Person" "name" (.Site.Params.author.name | default .Site.Title) "url" .Site.BaseURL)
+  "author" (dict "@type" "Person" "name" $author.name "url" .Site.BaseURL)
 -}}
 {{- /* Same share-image fallback chain as the Open Graph tags. */ -}}
 {{- with or .Params.images .Site.Params.images }}

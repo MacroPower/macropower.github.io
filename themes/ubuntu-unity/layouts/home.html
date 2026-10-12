@@ -8,8 +8,9 @@
       oldest content page, otherwise empty. The shell bundle turns it into
       the uptime on page load, so a page built days ago still shows the
       current value. */ -}}
+{{- $author := partialCached "author.html" . -}}
 {{- $since := "" -}}
-{{- with .Site.Params.author.born -}}
+{{- with $author.born -}}
   {{- $since = . -}}
 {{- else -}}
   {{- with $.Site.RegularPages.ByDate -}}
@@ -58,9 +59,9 @@
 {{- $payload := dict
     "handle" $user
     "host" $host
-    "name" (.Site.Params.author.name | default .Site.Title)
-    "title" (.Site.Params.homeSubtitle | default "")
-    "focus" (.Site.Params.homeFocus | default "")
+    "name" $author.name
+    "title" $author.jobTitle
+    "focus" $author.focus
     "since" $since
     "socials" $socials
     "posts" $posts

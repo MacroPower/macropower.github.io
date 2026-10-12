@@ -42,6 +42,6 @@
 </aside>
 
 <div class="up-desktop-label">
-  {{ (.Site.Params.author.name | default .Site.Title) | lower | replaceRE " +" "-" }}/personal-site<br>
+  {{ (partialCached "author.html" .).name | lower | replaceRE " +" "-" }}/personal-site<br>
   v1.0 · "aubergine" · {{ now.Year }}
 </div>

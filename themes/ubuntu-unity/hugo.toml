@@ -2,13 +2,15 @@
 # exposes the font artifacts _partials/head/css.html preloads from 0.165.0.
 [module]
   [module.hugoVersion]
+    extended = false
     min = "0.165.0"
 
 # Defaults a site inherits (Hugo deep-merges theme params under the
 # site's own). exampleSite/hugo.toml documents the full surface.
 [params]
-  # Long and numeric date formats (post reader and post list).
-  dateform    = "Jan 2, 2006"
-  dateformNum = "2006-01-02"
-  # Show "N min read" in the post reader.
-  enableReadingTime = true
+  [params.blog]
+    # Date formats in the post reader and the post list.
+    dateFormat     = "Jan 2, 2006"
+    listDateFormat = "2006-01-02"
+    # Show "N min read" in the post reader.
+    readingTime = true

@@ -1,6 +1,6 @@
 {{- $pages := .pages -}}
 {{- $here := .here -}}
-{{- $dateFmt := site.Params.dateformNum | default "2006-01-02" -}}
+{{- $dateFmt := site.Params.blog.listDateFormat | default "2006-01-02" -}}
 {{- $tax := partialCached "blog-taxonomies.html" . -}}
 
 <section class="up-post-list" aria-label="{{ T "posts" }}" data-up-post-list>

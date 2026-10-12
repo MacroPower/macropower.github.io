@@ -11,8 +11,8 @@ interface AccentDef {
 }
 
 // The accent presets. main.css holds each one's four shades under a
-// [data-up-accent="<name>"] rule, and the site's params.accent picks the
-// one <html> starts with. Keep the names in sync with main.css and the
+// [data-up-accent="<name>"] rule, and the site's params.desktop.accent picks
+// the one <html> starts with. Keep the names in sync with main.css and the
 // list in baseof.html.
 const ACCENTS: AccentDef[] = [
   { name: "orange", label: "Orange" },

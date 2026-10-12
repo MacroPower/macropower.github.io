@@ -61,7 +61,7 @@
       <div class="up-dropdown-body">
         <div class="up-dropdown-empty">{{ T "no_new_messages" }}</div>
         <div class="up-dropdown-row-buttons">
-          {{ with site.Params.author.email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">{{ T "compose" }}</a>{{ end }}
+          {{ with (partialCached "author.html" .).email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">{{ T "compose" }}</a>{{ end }}
           <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">{{ T "subscribe_to_feed" }}</button>
         </div>
       </div>

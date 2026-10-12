@@ -167,8 +167,8 @@
 }
 
 /* Accent presets. The Preferences dialog (prefs.ts) sets data-up-accent on
-   <html>, and params.accent picks the starting preset. Each swatch carries
-   the same attribute, so it paints in its own preset. These selectors
+   <html>, and params.desktop.accent picks the starting preset. Each swatch
+   carries the same attribute, so it paints in its own preset. These selectors
    outrank a bare :root, so a site's custom.css can restyle the default
    palette and the presets still apply over it. Keep the names in sync with
    ACCENTS in prefs.ts and the list in baseof.html. */

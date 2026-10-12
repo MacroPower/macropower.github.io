@@ -1,4 +1,4 @@
-{{- $dateFmt := site.Params.dateform | default "Jan 2, 2006" -}}
+{{- $dateFmt := site.Params.blog.dateFormat | default "Jan 2, 2006" -}}
 {{- $tax := partialCached "blog-taxonomies.html" . -}}
 
 <article class="up-reader" data-up-reader>
@@ -9,7 +9,7 @@
   <div class="up-reader-inner selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
-      {{- if site.Params.enableReadingTime }}
+      {{- if site.Params.blog.readingTime }}
         <span class="up-reader-meta-sep">·</span>
         <span>{{ T "reading_time" .ReadingTime }}</span>
       {{- end }}
