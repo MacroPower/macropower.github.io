@@ -2,6 +2,7 @@
   "name": "hugo-theme-ubuntu-unity",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Dev tooling for the ubuntu-unity Hugo theme: type-checks the TypeScript sources, runs the test suites, and refreshes the vendored xterm.js and pdf.js. Hugo's esbuild does the actual bundling at site build time.",
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
