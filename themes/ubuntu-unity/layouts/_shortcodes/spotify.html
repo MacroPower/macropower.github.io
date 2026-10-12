@@ -1,9 +1,9 @@
 {{- /*
-  Embeds a Spotify album, track, playlist, or artist player. Adapted from
+  Embeds a Spotify album, track, playlist, artist, episode, or show player. Adapted from
   https://gist.github.com/j-un/e7d0b3118556479392bd2269f7059242.
 
   Params, named or positional in this order:
-    type   (required) album, track, playlist, or artist
+    type   (required) album, track, playlist, artist, episode, or show
     id     (required) the Spotify ID
     width  (optional) iframe width, default 100%
     height (optional) iframe height, default 380
@@ -15,7 +15,11 @@
 {{- if not (and $type $id) -}}
   {{- errorf "The spotify shortcode needs a type and an id: %s" .Position -}}
 {{- end -}}
-<iframe src="https://open.spotify.com/embed/{{ $type }}/{{ $id }}"
+{{- $types := slice "album" "track" "playlist" "artist" "episode" "show" -}}
+{{- if not (in $types $type) -}}
+  {{- errorf "The spotify shortcode's type must be one of %s, not %q: %s" (delimit $types ", ") $type .Position -}}
+{{- end -}}
+<iframe src="https://open.spotify.com/embed/{{ $type }}/{{ $id | urlquery }}"
     title="{{ T "spotify_player" (dict "Type" $type) }}"
     width="{{ $width }}" height="{{ $height }}" style="border:0"
     loading="lazy"
