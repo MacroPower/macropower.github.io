@@ -14,6 +14,9 @@
 {{- $limit := site.Config.Services.RSS.Limit }}
 {{- if ge $limit 1 }}{{ $pages = $pages | first $limit }}{{ end }}
 {{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) }}
+{{- $author := partialCached "author.html" . }}
+{{- $contact := "" }}
+{{- with $author.email }}{{ $contact = printf "%s (%s)" . $author.name }}{{ end }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>{{ $title }}</title>
@@ -21,6 +24,10 @@
     <description>{{ or (cond .IsHome "" .Description) site.Params.description }}</description>
     <generator>Hugo</generator>
     <language>{{ site.Language.Locale }}</language>
+    {{- with $contact }}
+    <managingEditor>{{ . }}</managingEditor>
+    <webMaster>{{ . }}</webMaster>
+    {{- end }}
     {{- with site.Copyright }}
     <copyright>{{ . }}</copyright>
     {{- end }}
@@ -35,6 +42,9 @@
       <title>{{ .Title }}</title>
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+      {{- with $contact }}
+      <author>{{ . }}</author>
+      {{- end }}
       <guid>{{ .Permalink }}</guid>
       <description>{{ cond site.Params.blog.feedFullContent .Content .Summary | transform.XMLEscape | safeHTML }}</description>
     </item>
