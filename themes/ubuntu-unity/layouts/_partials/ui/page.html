@@ -6,8 +6,9 @@
   Caller params:
     title    string         the <h1> text (required)
     content  template.HTML  body HTML; pass .Content or a safeHTML string
-    children []dict          optional {url,title} list rendered as
-                             <ul.up-page-children> after the content
+    children []dict          optional {url, title, description} list
+                             rendered as <ul.up-page-children> after the
+                             content. description may be empty.
 */ -}}
 {{- $children := .children -}}
 <article class="up-page up-selectable">
@@ -17,7 +18,8 @@
     {{- with $children }}
       <ul class="up-page-children">
         {{- range . }}
-          <li><a href="{{ .url }}">{{ .title }}</a></li>
+          <li><a href="{{ .url }}">{{ .title }}</a>
+            {{- with .description }}<p class="up-page-child-desc">{{ . }}</p>{{ end }}</li>
         {{- end }}
       </ul>
     {{- end }}

@@ -56,6 +56,22 @@ const SITES = {
       "content/about.de.md": page("Über"),
     },
   },
+  // A section outside mainSections renders as a plain list of its pages.
+  notes: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/posts/one.md": page("One"),
+      "content/notes/_index.md": page("Notes"),
+      "content/notes/first.md": page("First note", "description = 'A short note.'\n"),
+    },
+    check: (out) => {
+      const list = read(join(out, "notes/index.html"));
+      return [
+        list.includes("data-blog-kind") && "notes/index.html renders as the blog",
+        !list.includes("A short note.") && "notes/index.html omits a page's description",
+      ].filter(Boolean);
+    },
+  },
   // Root pages only. Hugo then sets mainSections to [""], which must not
   // turn every root page into a blog post.
   sectionless: {

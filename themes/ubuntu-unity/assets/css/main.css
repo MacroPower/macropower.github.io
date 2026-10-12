@@ -633,6 +633,7 @@ body.up-resizing *{ cursor:inherit !important; }
   list-style:none;padding:0;margin:16px 0;
   li{padding:8px 0;border-bottom:1px dashed var(--content-line)}
 }
+.up-page-child-desc{margin:2px 0 0;color:var(--content-muted);font-size:13.5px}
 
 /* ---------- Nautilus sidebar (shared chrome) ---------- */
 .up-naut-sidebar{
