@@ -39,7 +39,7 @@
 {{- $posts := slice -}}
 {{- range where .Site.RegularPages "Section" "in" site.MainSections -}}
   {{- $posts = $posts | append (dict
-      "slug" .File.ContentBaseName
+      "slug" (partial "ui/file-name.html" .)
       "title" .Title
       "date" (.Date.Format "2006-01-02")
       "categories" (index .Params $tax.category | default slice)
@@ -50,7 +50,7 @@
 {{- $pages := slice -}}
 {{- range where .Site.RegularPages "Section" "" -}}
   {{- $pages = $pages | append (dict
-      "slug" .File.ContentBaseName
+      "slug" (partial "ui/file-name.html" .)
       "date" (.Date.Format "2006-01-02")
       "url" .RelPermalink
       "content" .RawContent

@@ -1,0 +1,9 @@
+{{- /*
+  The base name a page's file carries in the home terminal's filesystem:
+  its slug front matter, else the last segment of its logical path. The
+  path works for pages a content adapter makes, whose .File is the
+  adapter's template rather than a file of their own.
+
+  Arg: the page.
+*/ -}}
+{{- return (or .Slug (path.Base .Path)) -}}
