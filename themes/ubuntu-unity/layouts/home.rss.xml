@@ -1,7 +1,9 @@
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 {{- /* The home feed covers blog posts only (the mainSections, see
        _partials/blog-section.html); CV/Sponsors and other utility pages
-       would otherwise surface as phantom entries. */}}
+       would otherwise surface as phantom entries. Each item carries the
+       post's summary, or its whole body when params.blog.feedFullContent
+       is set. */}}
 {{- $pages := where site.RegularPages "Section" "in" site.MainSections }}
 {{- $limit := site.Config.Services.RSS.Limit }}
 {{- if ge $limit 1 }}{{ $pages = $pages | first $limit }}{{ end }}
@@ -27,7 +29,7 @@
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       <guid>{{ .Permalink }}</guid>
-      <description>{{ .Summary | transform.XMLEscape | safeHTML }}</description>
+      <description>{{ cond site.Params.blog.feedFullContent .Content .Summary | transform.XMLEscape | safeHTML }}</description>
     </item>
     {{- end }}
   </channel>

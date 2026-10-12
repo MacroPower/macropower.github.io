@@ -85,6 +85,8 @@ mainSections = ["posts"]
     listDateFormat = "2006-01-02"
     # Show "N min read" in the post reader.
     readingTime = true
+    # Put each post's whole body in the feed instead of its summary.
+    # feedFullContent = true
     # The taxonomies behind the blog's lenses and post chips. These are
     # the defaults; a site that tags its posts sets category = "tags".
     # [params.blog.taxonomies]

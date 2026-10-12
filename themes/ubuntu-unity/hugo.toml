@@ -36,6 +36,8 @@
     listDateFormat = "2006-01-02"
     # Show "N min read" in the post reader.
     readingTime = true
+    # Put each post's whole body in the feed instead of its summary.
+    feedFullContent = false
 
   [params.desktop]
     # Names in the Trash window. A trailing slash marks a folder.

@@ -117,6 +117,7 @@ theme   = "ubuntu-unity"
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
 | `blog.dateFormat`, `blog.listDateFormat` | `Jan 2, 2006`, `2006-01-02` | Date formats in the post reader and post list. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
+| `blog.feedFullContent` | `false` | Puts each post's whole body in the RSS feed instead of its summary. |
 | `blog.taxonomies.category`, `blog.taxonomies.series` | `categories`, `series` | The taxonomies behind the blog's Places and Series lenses and the post chips. Set `category = "tags"` for a site that tags its posts. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The login the home terminal presents. |
 | `projects.github` | | A GitHub account whose public repositories fill the projects page when the site has no `data/projects.yaml`. |
