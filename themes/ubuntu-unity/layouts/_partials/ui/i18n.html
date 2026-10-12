@@ -39,6 +39,8 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- else -}}
+  {{- errorf "ubuntu-unity: assets/ubuntu-unity/i18n/en.toml is missing. A site that imports the theme with ignoreConfig must copy the theme's module.mounts." -}}
 {{- end -}}
 {{- $data := dict "strings" $strings "plurals" $plurals -}}
 {{- $js := printf "window.UP_I18N=%s;" ($data | jsonify) -}}

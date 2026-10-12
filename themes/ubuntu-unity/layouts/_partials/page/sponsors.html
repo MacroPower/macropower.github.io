@@ -24,8 +24,8 @@
           (dict "label" (T "places") "items" (slice
             (dict "label" .Title "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
     <section class="up-sponsors-main">
+      {{ .Content }}
       {{- with $sponsors }}
-        {{ $.Content }}
         <ul class="up-sponsors-cards">
           {{- range . }}
             <li>
@@ -35,7 +35,7 @@
                   {{- with .avatar -}}
                     <img src="{{ . }}" alt="" loading="lazy" width="48" height="48">
                   {{- else -}}
-                    <span class="up-sponsor-monogram">{{ substr .name 0 1 | upper }}</span>
+                    <span class="up-sponsor-monogram">{{ substr (.name | default "?") 0 1 | upper }}</span>
                   {{- end -}}
                 </span>
                 <span class="up-sponsor-name">{{ .name }}</span>

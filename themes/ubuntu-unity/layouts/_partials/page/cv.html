@@ -106,5 +106,8 @@
       </div>
     </div>
   </div>
+  {{- else }}
+  {{- warnf "ubuntu-unity: %s uses layout cv but sets no pdf front matter" .RelPermalink }}
+  <div class="up-page-body">{{ .Content }}</div>
   {{- end }}
 </article>
