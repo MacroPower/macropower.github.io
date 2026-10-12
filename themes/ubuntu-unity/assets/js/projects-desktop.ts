@@ -2,7 +2,7 @@
 // drag-to-reorder, double-click-to-open, multi-select, marquee, and a
 // right-click menu. The consumer owns the selection model (desktop-select) and
 // its pane; this module is the sole gesture owner over the grid and drives that
-// model through `deps`. The projects grid uses the defaults (GitHub open/menu
+// model through `deps`. The projects grid uses the defaults (open and copy-link
 // actions); the trash window overrides the selector and hooks for its
 // Restore/Delete actions.
 //
@@ -20,6 +20,30 @@
 // it; never add module-level mutable state here.
 
 import { t } from "./i18n";
+
+// Brand names for the common forges, so a project's open action reads
+// "Open on GitHub" rather than "Open on github.com".
+const FORGES: Record<string, string> = {
+  "github.com": "GitHub",
+  "gitlab.com": "GitLab",
+  "codeberg.org": "Codeberg",
+  "bitbucket.org": "Bitbucket",
+  "git.sr.ht": "sourcehut",
+};
+
+/** The host a project URL points at, as a forge brand when it is a common
+ *  one, else the bare host name, or "" for a URL that does not parse. */
+export function forgeName(url: string): string {
+  let host: string;
+  try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; }
+  return FORGES[host] ?? host;
+}
+
+/** The label of a project's open action, naming the site it opens. */
+export function openLabel(url: string): string {
+  const host = forgeName(url);
+  return host ? t("js_projects_open_on", { host }) : t("js_projects_open");
+}
 
 export interface DesktopMenuItem {
   label: string;
@@ -109,7 +133,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   const tileMenu = deps.tileMenu ?? ((tile: HTMLElement): DesktopMenuItem[] => {
     const url = tile.dataset.url ?? "";
     return [
-      { label: t("js_projects_open_github"), run: () => {
+      { label: openLabel(url), run: () => {
         if (url) window.open(url, "_blank", "noopener");
       } },
       { label: t("js_projects_copy_link"), run: () => {

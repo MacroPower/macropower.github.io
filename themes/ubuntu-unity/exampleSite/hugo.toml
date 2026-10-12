@@ -51,7 +51,7 @@ mainSections = ["posts"]
   # Browser UI color emitted as <meta name="theme-color">.
   themeColor = "#1b1c1d"
 
-  # Source repository, linked from Help > "View source on github".
+  # Source repository, linked from Help > "View source".
   # repoUrl = "https://github.com/jane/janedoe.example"
 
   [params.author]

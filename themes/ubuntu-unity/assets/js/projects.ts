@@ -1,7 +1,7 @@
 import { createSelection } from "./desktop-select";
 import { installFilterNav } from "./filter-nav";
 import { t, tn } from "./i18n";
-import { installDesktop } from "./projects-desktop";
+import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
 (function (): void {
   "use strict";
@@ -195,7 +195,10 @@ import { installDesktop } from "./projects-desktop";
       a.href = url;
       a.target = "_blank";
       a.rel = "noopener";
-      a.innerHTML = `${iconHTML("github")}<span>${t("js_projects_open_github")}</span>`;
+      const label = document.createElement("span");
+      label.textContent = openLabel(url);
+      a.innerHTML = iconHTML(forgeName(url) === "GitHub" ? "github" : "link");
+      a.appendChild(label);
       body.appendChild(a);
     }
 

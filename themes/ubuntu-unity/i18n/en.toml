@@ -254,7 +254,7 @@ other = "Show top panel"
 [keyboard_shortcuts]
 other = "Keyboard shortcuts"
 [view_source]
-other = "View source on github"
+other = "View source"
 [icon_vault]
 other = "Icon vault"
 [language]
@@ -664,8 +664,10 @@ other = "Volume {level}%"
 other = "Now playing"
 
 # Projects
-[js_projects_open_github]
-other = "Open on GitHub"
+[js_projects_open_on]
+other = "Open on {host}"
+[js_projects_open]
+other = "Open"
 [js_projects_copy_link]
 other = "Copy link"
 [js_projects_stat_label]
