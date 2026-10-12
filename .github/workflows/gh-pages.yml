@@ -64,6 +64,25 @@ jobs:
           name: public
           path: public/
 
+  # The theme promises its module.hugoVersion floor, so its test sites
+  # also build on that release. Keep it in sync with the theme's
+  # hugo.toml, theme.toml, and baseof.html.
+  theme-floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.165.0'
+          extended: false
+
+      - name: Build theme test sites
+        run: node themes/ubuntu-unity/scripts/build-sites.mjs
+
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
