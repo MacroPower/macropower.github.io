@@ -2,12 +2,22 @@
 // our column/number formatting, stderr routing, and bash-format diagnostics.
 
 import { describe, it, expect } from "vitest";
-import { makeShell } from "./testkit";
+import { makeShell, TEST_DATA } from "./testkit";
 
 describe("cat / file reads", () => {
   it("prints a file's contents", () => {
     expect(makeShell().run("cat README.md").stdout).toBe(
       "Welcome to Me Example's terminal.\nTry: ls, cd posts, cat about.txt, open github, help.\n",
+    );
+  });
+  it("prints the home page's Markdown as README.md when it has some", () => {
+    const sh = makeShell({ ...TEST_DATA, readme: "# Hello\n\nWelcome aboard.\n" });
+    expect(sh.run("cat README.md").stdout).toBe("# Hello\n\nWelcome aboard.\n");
+  });
+  it("hints only at what the site has", () => {
+    const sh = makeShell({ ...TEST_DATA, socials: [], blog: undefined });
+    expect(sh.run("cat README.md").stdout).toBe(
+      "Welcome to Me Example's terminal.\nTry: ls, cat about.txt, help.\n",
     );
   });
   it("copies stdin when given no operands", () => {

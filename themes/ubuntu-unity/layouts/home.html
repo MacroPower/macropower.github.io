@@ -72,6 +72,9 @@
 {{- with $blogSection -}}
   {{- $payload = merge $payload (dict "blog" (dict "dir" .Section "url" .RelPermalink)) -}}
 {{- end -}}
+{{- with strings.TrimSpace .RawContent -}}
+  {{- $payload = merge $payload (dict "readme" .) -}}
+{{- end -}}
 {{- with index (where site.Pages "Layout" "solitaire") 0 -}}
   {{- $payload = merge $payload (dict "solitaire" .RelPermalink) -}}
 {{- end -}}

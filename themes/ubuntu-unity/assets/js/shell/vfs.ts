@@ -511,20 +511,30 @@ export function buildFs(data: ShellData): Vfs {
     }),
   );
 
+  // ~/README.md prints the home page's own Markdown when it has any, and
+  // otherwise a welcome whose hints name only things this site has.
+  const firstSocial = data.socials[0]?.label;
+  const hints = ["ls", ...(data.blog ? [`cd ${blogDir}`] : []), "cat about.txt",
+    ...(firstSocial ? [`open ${firstSocial}`] : []), "help"];
+  const readme = data.readme
+    ? file("README.md", {
+      mtime: "2025-07-13",
+      size: data.readme.length,
+      content: () => data.readme!.replace(/^\n+|\n+$/g, "").split("\n"),
+    })
+    : file("README.md", {
+      mtime: "2025-07-13",
+      size: 412,
+      content: () => [
+        color(PALETTE.fg, `Welcome to ${data.name}'s terminal.`),
+        color(PALETTE.muted, `Try: ${hints.join(", ")}.`),
+      ],
+    });
+
   const home = dir(data.handle, {
     mtime: "2025-07-13",
     children: [
-      file("README.md", {
-        mtime: "2025-07-13",
-        size: 412,
-        content: () => [
-          color(PALETTE.fg, `Welcome to ${data.name}'s terminal.`),
-          color(
-            PALETTE.muted,
-            `Try: ls, cd ${blogDir}, cat about.txt, open github, help.`,
-          ),
-        ],
-      }),
+      readme,
       file("about.txt", {
         mtime: "2024-11-02",
         size: 256,

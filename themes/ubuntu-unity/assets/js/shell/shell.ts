@@ -61,6 +61,9 @@ export interface ShellData {
   posts: PostMeta[];
   pages: PageMeta[];
   blog?: BlogMeta;
+  /** The home page's Markdown body, which ~/README.md prints in place of
+   *  the default welcome. Absent when the home page has none. */
+  readme?: string;
   /** The site's solitaire table, the first page with `layout = "solitaire"`.
    *  Absent when the site has none. */
   solitaire?: string;

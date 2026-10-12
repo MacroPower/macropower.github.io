@@ -140,6 +140,7 @@ The theme also reads two of Hugo's own settings: `copyright` fills each feed's c
 - `content/icons.md` with `layout = "icons"` is the icon vault, a copy-to-clipboard catalogue of every SVG the theme ships.
 - `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio.
 - Any other top-level page renders in a plain window and appears in the terminal's filesystem, where `cat` prints its markdown.
+- `content/_index.md` titles the home page, and its body becomes `~/README.md` in the terminal. Without a body, the terminal writes its own welcome there.
 
 `hugo new posts/my-post.md` uses the theme's `archetypes/posts.md`. For a blog section with another name, copy that file to `archetypes/<section>.md` in your site.
 
