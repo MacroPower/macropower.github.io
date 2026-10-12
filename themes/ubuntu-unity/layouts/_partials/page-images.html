@@ -16,7 +16,9 @@
   {{- with or ($bundle.GetMatch "*feature*") ($bundle.GetMatch "{*cover*,*thumbnail*}") -}}
     {{- $out = slice .Permalink -}}
   {{- else -}}
-    {{- $names = first 1 (site.Params.images | default slice) -}}
+    {{- $names = site.Params.images | default slice -}}
+    {{- if not (reflect.IsSlice $names) }}{{ $names = slice $names }}{{ end -}}
+    {{- $names = first 1 $names -}}
   {{- end -}}
 {{- end -}}
 {{- range $names -}}

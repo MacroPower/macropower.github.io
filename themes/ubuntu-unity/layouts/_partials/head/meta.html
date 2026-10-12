@@ -20,10 +20,17 @@
 {{- $images := partial "page-images.html" . -}}
 {{- $author := partialCached "author.html" . -}}
 {{- $isPost := and .IsPage (partial "in-blog.html" .) -}}
-{{- $locale := or .Params.locale site.Language.Locale -}}
-{{- $ogLocale := lower $locale -}}
-{{- with split $locale "-" -}}
-  {{- if eq (len .) 2 }}{{ $ogLocale = printf "%s_%s" (lower (index . 0)) (upper (index . 1)) }}{{ end -}}
+{{- /* The locale as a BCP 47 tag for JSON-LD, and as Open Graph's
+      language_TERRITORY, which takes a region but no script subtag:
+      zh-Hant-TW becomes zh_TW and de becomes de. */ -}}
+{{- $locale := replace (or .Params.locale site.Language.Locale) "_" "-" -}}
+{{- $subtags := split $locale "-" -}}
+{{- $ogLocale := lower (index $subtags 0) -}}
+{{- if gt (len $subtags) 1 -}}
+  {{- $region := index $subtags (sub (len $subtags) 1) -}}
+  {{- if or (eq (len $region) 2) (findRE `^\d{3}$` $region) -}}
+    {{- $ogLocale = printf "%s_%s" $ogLocale (upper $region) -}}
+  {{- end -}}
 {{- end }}
 {{- if or .Params.noindex (eq .Kind "404") }}
 <meta name="robots" content="noindex, nofollow">
@@ -106,7 +113,7 @@
   "headline" .Title
   "url" .Permalink
   "mainEntityOfPage" .Permalink
-  "inLanguage" site.Language.Locale
+  "inLanguage" $locale
   "datePublished" (.PublishDate.Format "2006-01-02")
   "dateModified" (.Lastmod.Format "2006-01-02")
   "description" $description
