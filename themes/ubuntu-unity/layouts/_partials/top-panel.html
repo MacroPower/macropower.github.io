@@ -1,7 +1,8 @@
 {{- $handle := partial "ui/author-handle.html" . -}}
-{{- $longDate := now.Format "Monday, 2 January 2006" -}}
-{{- $time := now.Format "15:04" -}}
-{{- $shortDate := now.Format "Mon, Jan 2" -}}
+{{- /* time.Format names the days and months in the page's language. */ -}}
+{{- $longDate := time.Format "Monday, 2 January 2006" now -}}
+{{- $time := time.Format "15:04" now -}}
+{{- $shortDate := time.Format "Mon, Jan 2" now -}}
 {{- $playlist := partialCached "playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">

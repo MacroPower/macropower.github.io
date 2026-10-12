@@ -20,6 +20,12 @@ function fill(text: string, vars?: Vars): string {
     name in vars ? String(vars[name]) : match);
 }
 
+/** The page's language tag for Intl and toLocale*() formatting, so dates
+ *  and numbers follow the page rather than the browser. */
+export function locale(): string | undefined {
+  return typeof document === "undefined" ? undefined : document.documentElement.lang || undefined;
+}
+
 /** The translated string for `key`, with `{name}` placeholders filled from `vars`. */
 export function t(key: string, vars?: Vars): string {
   return fill(catalog()?.strings[key] ?? key, vars);

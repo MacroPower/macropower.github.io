@@ -5,7 +5,7 @@
 // `onUnlock` turns it into a logout greeter: signing in runs that callback
 // (e.g. reload a fresh session) instead of simply revealing the desktop.
 
-import { t } from "./i18n";
+import { locale, t } from "./i18n";
 import { isReduceMotion } from "./prefs";
 
 let root: HTMLElement | null = null;
@@ -22,12 +22,12 @@ let onUnlockCb: (() => void) | null = null;
 function tick(): void {
   const now = new Date();
   if (clockEl) {
-    clockEl.textContent = now.toLocaleTimeString([], {
+    clockEl.textContent = now.toLocaleTimeString(locale(), {
       hour: "2-digit", minute: "2-digit", hour12: false,
     });
   }
   if (dateEl) {
-    dateEl.textContent = now.toLocaleDateString([], {
+    dateEl.textContent = now.toLocaleDateString(locale(), {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
     });
   }

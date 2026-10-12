@@ -103,7 +103,7 @@
           {{- range . }}
           <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
              title="{{ .Title }}"
-             data-keywords="post blog article {{ delimit (index .Params $tax.category | default slice) " " }} {{ .Date.Format "2006 January" }}">
+             data-keywords="post blog article {{ delimit (index .Params $tax.category | default slice) " " }} {{ time.Format "2006 January" .Date }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
             <span class="up-dash-tile-label">{{ .Title }}</span>
           </a>

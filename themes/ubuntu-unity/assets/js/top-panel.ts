@@ -1,5 +1,5 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
-import { t, tn } from "./i18n";
+import { locale, t, tn } from "./i18n";
 import { WINDOW_STATE_EVENT } from "./page-window";
 import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
@@ -177,7 +177,7 @@ async function showTime(): Promise<void> {
   const abs = Math.abs(offMin);
   const hh = String(Math.floor(abs / 60)).padStart(2, "0");
   const mm = String(abs % 60).padStart(2, "0");
-  const localTime = new Date().toLocaleTimeString([], {
+  const localTime = new Date().toLocaleTimeString(locale(), {
     hour: "2-digit", minute: "2-digit", second: "2-digit",
   });
   await dlg({
@@ -488,11 +488,11 @@ export function initTopPanel(): void {
 
   const narrowMQ = window.matchMedia("(max-width: 560px)");
   const fmtTime = (d: Date): string =>
-    d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+    d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
   const fmtShortDate = (d: Date): string =>
-    d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+    d.toLocaleDateString(locale(), { weekday: "short", day: "numeric", month: "short" });
   const fmtLongDate = (d: Date): string =>
-    d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    d.toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   let lastClockText = "";
   const tickClock = (): void => {

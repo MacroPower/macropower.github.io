@@ -28,7 +28,7 @@
           "title" .Title
           "active" $isActive
           "chips" $chips
-          "date" (.Date.Format $dateFmt)
+          "date" (time.Format $dateFmt .Date)
           "datetime" $iso
           "filter" (dict "title" (lower .Title) "tags" (delimit $tagList " ") "date" $iso)) }}
     {{- end }}

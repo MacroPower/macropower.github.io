@@ -8,7 +8,7 @@
   </a>
   <div class="up-reader-inner selectable">
     <div class="up-reader-meta">
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format $dateFmt }}</time>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format $dateFmt .Date }}</time>
       {{- if site.Params.blog.readingTime }}
         <span class="up-reader-meta-sep">·</span>
         <span>{{ T "reading_time" .ReadingTime }}</span>
