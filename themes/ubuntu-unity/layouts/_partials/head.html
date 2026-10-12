@@ -50,9 +50,12 @@
   "description" ($description | plainify)
   "author" (dict "@type" "Person" "name" $author.name "url" .Site.BaseURL)
 -}}
-{{- /* Same share-image fallback chain as the Open Graph tags. */ -}}
-{{- with or .Params.images .Site.Params.images }}
-  {{- $ld = merge $ld (dict "image" (slice (absURL (index . 0)))) }}
+{{- /* The image Hugo's Open Graph template picks, so a bundle
+      resource named in images front matter resolves the same way. */ -}}
+{{- if templates.Exists "_partials/_funcs/get-page-images.html" }}
+  {{- with partial "_funcs/get-page-images" . }}
+    {{- $ld = merge $ld (dict "image" (slice (index . 0).Permalink)) }}
+  {{- end }}
 {{- end }}
 <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 {{- end }}
