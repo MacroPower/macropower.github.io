@@ -8,4 +8,4 @@
     {{- if and $v (ne $k "id") }}{{ printf " %s=%q" $k ($v | transform.HTMLEscape) | safeHTMLAttr }}{{ end -}}
   {{- end -}}>
   {{- .Text -}}
-  <a class="up-heading-anchor" href="#{{ .Anchor }}" aria-label="{{ T "link_to_section" (dict "Title" .PlainText) }}"></a></h{{ .Level }}>
+  <a class="up-heading-anchor" href="#{{ .Anchor }}" aria-label="{{ partial "ui/t" (slice "link_to_section" (dict "Title" .PlainText)) }}"></a></h{{ .Level }}>

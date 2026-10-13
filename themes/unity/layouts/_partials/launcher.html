@@ -6,14 +6,14 @@
   {{- $active := cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) -}}
   {{- $tiles = $tiles | append (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" $active) -}}
 {{- end -}}
-<nav class="up-launcher" aria-label="{{ T "launcher" }}">
+<nav class="up-launcher" aria-label="{{ partial "ui/t" "launcher" }}">
   {{/* BFB ("big friendly button") — the orbit mark that opens the Dash.
        Deliberately not .is-active/.is-focused (those classes are page-window
        contracts); dash.ts toggles .is-open while the Dash is up. */}}
   <button class="up-launcher-tile up-launcher-bfb" data-dash-open type="button"
-          aria-label="{{ T "search_your_computer" }}" aria-haspopup="dialog" aria-expanded="false">
+          aria-label="{{ partial "ui/t" "search_your_computer" }}" aria-haspopup="dialog" aria-expanded="false">
     <span class="up-launcher-icon">{{ partial "icon.html" "launcher/dash" }}</span>
-    <span class="up-tooltip" aria-hidden="true">{{ T "search_your_computer" }}</span>
+    <span class="up-tooltip" aria-hidden="true">{{ partial "ui/t" "search_your_computer" }}</span>
   </button>
   <div class="up-launcher-sep" aria-hidden="true"></div>
 
@@ -33,12 +33,12 @@
 
   {{/* Running-app tile: hidden until daw.ts opens the Studio window. */}}
   {{- if partialCached "playlist.html" . }}
-  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" (T "studio") "icon" "launcher/piano" "hidden" true) }}
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "studio" "label" (partial "ui/t" "studio") "icon" "launcher/piano" "hidden" true) }}
   {{- end }}
 
   <div class="up-launcher-spacer"></div>
 
-  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" (T "trash") "icon" "launcher/trash" "trash" true) }}
+  {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" (partial "ui/t" "trash") "icon" "launcher/trash" "trash" true) }}
 </nav>
 
 {{- /* The desktop's corner watermark. params.desktop.label replaces the

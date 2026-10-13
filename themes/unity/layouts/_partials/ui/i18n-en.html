@@ -1,0 +1,12 @@
+{{- /*
+  The theme's English strings: its i18n/en.toml as a map from key to
+  string, or to a dict of plural forms. hugo.toml mounts that file under
+  assets/ so templates can read it. Call it through partialCached.
+*/ -}}
+{{- $en := dict -}}
+{{- with resources.Get "unity/i18n/en.toml" -}}
+  {{- $en = . | transform.Unmarshal -}}
+{{- else -}}
+  {{- errorf "unity: assets/unity/i18n/en.toml is missing. A site that imports the theme with ignoreConfig must copy the theme's module.mounts." -}}
+{{- end -}}
+{{- return $en -}}

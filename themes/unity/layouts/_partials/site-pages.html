@@ -33,34 +33,34 @@
 {{- $defaults := dict
   "cv" (dict
     "icon" "launcher/cv"
-    "kw" (T "kw_cv"))
+    "kw" (partial "ui/t" "kw_cv"))
   "blog" (dict
     "icon" "launcher/blog"
-    "kw" (T "kw_blog"))
+    "kw" (partial "ui/t" "kw_blog"))
   "posts" (dict
     "icon" "launcher/blog"
-    "kw" (T "kw_blog"))
+    "kw" (partial "ui/t" "kw_blog"))
   "projects" (dict
     "icon" "launcher/projects"
-    "kw" (T "kw_projects"))
+    "kw" (partial "ui/t" "kw_projects"))
   "sponsors" (dict
     "icon" "launcher/heart"
-    "kw" (T "kw_sponsors"))
+    "kw" (partial "ui/t" "kw_sponsors"))
   "icons" (dict
     "icon" "launcher/image-viewer"
-    "kw" (T "kw_icons"))
+    "kw" (partial "ui/t" "kw_icons"))
   "solitaire" (dict
     "icon" "launcher/games"
-    "kw" (T "kw_solitaire"))
+    "kw" (partial "ui/t" "kw_solitaire"))
   "about" (dict
     "icon" "launcher/about"
-    "kw" (T "kw_about"))
+    "kw" (partial "ui/t" "kw_about"))
 -}}
 {{- $home := dict
-  "label" (T "home") "icon" "launcher/home"
-  "dashLabel" (T "terminal") "dashIcon" "launcher/terminal"
+  "label" (partial "ui/t" "home") "icon" "launcher/home"
+  "dashLabel" (partial "ui/t" "terminal") "dashIcon" "launcher/terminal"
   "url" site.Home.RelPermalink "match" "exact"
-  "kw" (T "kw_home")
+  "kw" (partial "ui/t" "kw_home")
 -}}
 {{- $pages := dict -}}
 {{- $launcher := slice "home" -}}

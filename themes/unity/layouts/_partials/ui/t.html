@@ -1,0 +1,44 @@
+{{- /*
+  Hugo's T with the theme's English as the fallback. Hugo falls back only
+  to the default language's table, so on a site whose default language is
+  not English, a key the site's translation lacks renders empty. This
+  partial fills such a key from the theme's i18n/en.toml instead, and
+  ui/i18n.html warns once per language about every key it fills.
+
+  Context: a key, or a slice of a key and the argument T takes, such as a
+  count or a dict.
+
+    {{ partial "ui/t" "close" }}
+    {{ partial "ui/t" (slice "posts_count" (len .Pages)) }}
+
+  The English strings use only {{ .Name }} placeholders, so the fallback
+  fills them from the argument without running a template. A count
+  argument fills {{ .Count }}, and a dict fills its own keys.
+*/ -}}
+{{- $key := . -}}
+{{- $arg := "" -}}
+{{- $s := "" -}}
+{{- if reflect.IsSlice . -}}
+  {{- $key = index . 0 -}}
+  {{- $arg = index . 1 -}}
+  {{- $s = T $key $arg -}}
+{{- else -}}
+  {{- $s = T $key -}}
+{{- end -}}
+{{- if not $s -}}
+  {{- with index (partialCached "ui/i18n-en.html" .) $key -}}
+    {{- $count := $arg -}}
+    {{- if reflect.IsMap $arg }}{{ $count = index $arg "Count" }}{{ end -}}
+    {{- $s = . -}}
+    {{- if reflect.IsMap . -}}
+      {{- $s = cond (eq $count 1) (.one | default .other) .other -}}
+    {{- end -}}
+    {{- range findRESubmatch `\{\{\s*\.(\w+)\s*\}\}` $s -}}
+      {{- $name := index . 1 -}}
+      {{- $v := "" -}}
+      {{- if reflect.IsMap $arg }}{{ $v = index $arg $name }}{{ else if eq $name "Count" }}{{ $v = $arg }}{{ end -}}
+      {{- $s = replace $s (index . 0) (string $v) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $s -}}

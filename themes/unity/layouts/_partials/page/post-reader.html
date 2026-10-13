@@ -1,16 +1,16 @@
 {{- $dateFmt := site.Params.blog.dateFormat | default "Jan 2, 2006" -}}
 
 <article class="up-reader" data-up-reader>
-  <a class="up-reader-up" href="{{ .FirstSection.RelPermalink }}" aria-label="{{ T "back_to_all_posts" }}">
+  <a class="up-reader-up" href="{{ .FirstSection.RelPermalink }}" aria-label="{{ partial "ui/t" "back_to_all_posts" }}">
     {{ partial "icon.html" "glyphs/pathbar-back" }}
-    <span>{{ T "all_posts" }}</span>
+    <span>{{ partial "ui/t" "all_posts" }}</span>
   </a>
   <div class="up-reader-inner up-selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format $dateFmt .Date }}</time>
       {{- if site.Params.blog.readingTime }}
         <span class="up-reader-meta-sep">·</span>
-        <span>{{ T "reading_time" .ReadingTime }}</span>
+        <span>{{ partial "ui/t" (slice "reading_time" .ReadingTime) }}</span>
       {{- end }}
       {{- range partial "post-categories.html" . }}
         <span class="up-reader-meta-sep">·</span>
@@ -25,7 +25,7 @@
     {{- if isset .Params "toc" }}{{ $toc = .Params.toc }}{{ end }}
     {{- if and $toc (ge (len (findRE `<li>` .TableOfContents)) 2) }}
     <details class="up-toc" open>
-      <summary>{{ T "contents" }}</summary>
+      <summary>{{ partial "ui/t" "contents" }}</summary>
       {{ .TableOfContents }}
     </details>
     {{- end }}

@@ -19,17 +19,17 @@
 <div data-dash-sprite>{{ partial "page/icons/lang-symbols.html" $ }}</div>
 {{- end }}
 {{- with $posts }}
-<section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ T "files_and_folders" }}">
+<section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ partial "ui/t" "files_and_folders" }}">
   <header class="up-dash-cat">
     <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/folder" }}</span>
-    <span class="up-dash-cat-label">{{ T "files_and_folders" }}</span>
+    <span class="up-dash-cat-label">{{ partial "ui/t" "files_and_folders" }}</span>
     <button class="up-dash-more" data-dash-more type="button" hidden></button>
   </header>
   <div class="up-dash-grid" data-dash-grid>
     {{- range . }}
     <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
        title="{{ .Title }}"
-       data-keywords="{{ T "kw_post" }} {{ delimit (partial "post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
+       data-keywords="{{ partial "ui/t" "kw_post" }} {{ delimit (partial "post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/article" }}</span>
       <span class="up-dash-tile-label">{{ .Title }}</span>
     </a>
@@ -39,10 +39,10 @@
 {{- end }}
 
 {{- with $projects }}
-<section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ T "projects" }}">
+<section class="up-dash-section" data-dash-section="projects" data-dash-cap="6" aria-label="{{ partial "ui/t" "projects" }}">
   <header class="up-dash-cat">
     <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/code" }}</span>
-    <span class="up-dash-cat-label">{{ T "projects" }}</span>
+    <span class="up-dash-cat-label">{{ partial "ui/t" "projects" }}</span>
     <button class="up-dash-more" data-dash-more type="button" hidden></button>
   </header>
   <div class="up-dash-grid" data-dash-grid>
@@ -50,7 +50,7 @@
     {{- /* A project without a url gets a tile that opens nothing. */}}
     <a class="up-dash-tile" data-dash-tile tabindex="-1"
        {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }} title="{{ .description }}"
-       data-keywords="{{ T "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
+       data-keywords="{{ partial "ui/t" "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "page/icons/folder-emblem.html" (dict "language" .language) }}</span>
       <span class="up-dash-tile-label">{{ .name }}</span>
     </a>
@@ -60,19 +60,19 @@
 {{- end }}
 
 {{- with $playlist }}
-<section class="up-dash-section" data-dash-section="music" aria-label="{{ T "music" }}">
+<section class="up-dash-section" data-dash-section="music" aria-label="{{ partial "ui/t" "music" }}">
   <header class="up-dash-cat">
     <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "icon.html" "glyphs/dash-music" }}</span>
-    <span class="up-dash-cat-label">{{ T "music" }}</span>
+    <span class="up-dash-cat-label">{{ partial "ui/t" "music" }}</span>
     <button class="up-dash-more" data-dash-more type="button" hidden></button>
   </header>
   <div class="up-dash-grid" data-dash-grid>
     {{- range $i, $u := . }}
     <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
             data-dash-action="music:{{ $i }}"
-            data-keywords="{{ T "kw_track" }}">
+            data-keywords="{{ partial "ui/t" "kw_track" }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
-      <span class="up-dash-tile-label">{{ T "track_n" (dict "N" (add $i 1)) }}</span>
+      <span class="up-dash-tile-label">{{ partial "ui/t" (slice "track_n" (dict "N" (add $i 1))) }}</span>
     </button>
     {{- end }}
   </div>

@@ -10,10 +10,10 @@
   {{- end -}}
 {{- end -}}
 <div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
-  <section class="up-window-chrome" aria-label="{{ T "trash" }}" tabindex="-1">
+  <section class="up-window-chrome" aria-label="{{ partial "ui/t" "trash" }}" tabindex="-1">
     <div class="up-titlebar" data-titlebar>
       {{ partial "ui/window-controls.html" (dict) }}
-      <span class="up-titlebar-text">{{ T "trash" }}</span>
+      <span class="up-titlebar-text">{{ partial "ui/t" "trash" }}</span>
     </div>
     <div class="up-window-body">
       {{- /* Inline crumbs rather than page/nav-pathbar.html: the partial's
@@ -43,15 +43,15 @@
 
       <div class="up-trash-empty" hidden>
         {{ partial "icon.html" "flat/trash-empty" }}
-        <div class="up-trash-empty-headline">{{ T "trash_is_empty" }}</div>
+        <div class="up-trash-empty-headline">{{ partial "ui/t" "trash_is_empty" }}</div>
         <div class="up-trash-empty-detail">
-          {{ T "nothing_thrown_away" }}
+          {{ partial "ui/t" "nothing_thrown_away" }}
         </div>
       </div>
 
       <div class="up-trash-footer">
-        <span class="up-trash-count" data-trash-count>{{ T "items_count" (len $files) }}</span>
-        <button type="button" class="up-trash-empty-btn" data-trash-empty>{{ T "empty_trash" }}</button>
+        <span class="up-trash-count" data-trash-count>{{ partial "ui/t" (slice "items_count" (len $files)) }}</span>
+        <button type="button" class="up-trash-empty-btn" data-trash-empty>{{ partial "ui/t" "empty_trash" }}</button>
       </div>
     </div>
   </section>

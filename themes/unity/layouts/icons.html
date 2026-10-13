@@ -36,19 +36,19 @@
   <div class="up-icons" data-icon-vault>
     <header class="up-icons-head">
       <div class="up-icons-kicker">~/icons</div>
-      <h1 class="up-icons-title">{{ T "icon_vault_title" }}</h1>
-      <p class="up-icons-lede">{{ T "icon_vault_lede" }}</p>
+      <h1 class="up-icons-title">{{ partial "ui/t" "icon_vault_title" }}</h1>
+      <p class="up-icons-lede">{{ partial "ui/t" "icon_vault_lede" }}</p>
     </header>
 
     {{- $sections := slice
-        (dict "kind" "glyph" "no" "01" "title" (T "icon_vault_glyphs")
-              "note" (T "icon_vault_glyphs_note") "items" $glyphs
+        (dict "kind" "glyph" "no" "01" "title" (partial "ui/t" "icon_vault_glyphs")
+              "note" (partial "ui/t" "icon_vault_glyphs_note") "items" $glyphs
               "sizes" (slice 16 20 24 32) "size" 24)
-        (dict "kind" "app" "no" "02" "title" (T "icon_vault_apps")
-              "note" (T "icon_vault_apps_note") "items" $apps
+        (dict "kind" "app" "no" "02" "title" (partial "ui/t" "icon_vault_apps")
+              "note" (partial "ui/t" "icon_vault_apps_note") "items" $apps
               "sizes" (slice 40 48 56 72) "size" 56)
-        (dict "kind" "flat" "no" "03" "title" (T "icon_vault_flat")
-              "note" (T "icon_vault_flat_note") "items" $flat
+        (dict "kind" "flat" "no" "03" "title" (partial "ui/t" "icon_vault_flat")
+              "note" (partial "ui/t" "icon_vault_flat_note") "items" $flat
               "sizes" (slice 48 64 80 96) "size" 64)
     -}}
 
@@ -57,28 +57,28 @@
         <div class="up-icons-section-head">
           <span class="up-icons-no">{{ .no }}</span>
           <h2>{{ .title }}</h2>
-          <span class="up-icons-count">{{ T "icons_count" (len .items) }}</span>
+          <span class="up-icons-count">{{ partial "ui/t" (slice "icons_count" (len .items)) }}</span>
           <span class="up-icons-note">{{ .note }}</span>
         </div>
         {{- $size := .size }}
         <div class="up-icons-controls-row">
-          <span class="up-icons-ctl-label">{{ T "size" }}</span>
+          <span class="up-icons-ctl-label">{{ partial "ui/t" "size" }}</span>
           <div class="up-icons-seg" data-vault-size-group>
             {{- range $s := .sizes }}
               <button type="button" data-vault-size="{{ $s }}"{{ if eq $s $size }} class="is-active"{{ end }}>{{ $s }}</button>
             {{- end }}
           </div>
-          <span class="up-icons-ctl-label">{{ T "background" }}</span>
+          <span class="up-icons-ctl-label">{{ partial "ui/t" "background" }}</span>
           <div class="up-icons-seg" data-vault-bg-group>
-            <button type="button" data-vault-bg="light" class="is-active">{{ T "bg_white" }}</button>
-            <button type="button" data-vault-bg="launcher">{{ T "bg_purple" }}</button>
-            <button type="button" data-vault-bg="dark">{{ T "bg_black" }}</button>
+            <button type="button" data-vault-bg="light" class="is-active">{{ partial "ui/t" "bg_white" }}</button>
+            <button type="button" data-vault-bg="launcher">{{ partial "ui/t" "bg_purple" }}</button>
+            <button type="button" data-vault-bg="dark">{{ partial "ui/t" "bg_black" }}</button>
           </div>
         </div>
         <div class="up-icons-grid" data-vault-grid data-kind="{{ .kind }}" data-bg="light">
           {{- range .items }}
             <button type="button" class="up-icons-cell" data-vault-cell data-name="{{ .name }}"
-                    title="{{ T "copy_svg" }}">
+                    title="{{ partial "ui/t" "copy_svg" }}">
               <span class="up-icons-art">{{ .svg | safeHTML }}</span>
               <span class="up-icons-label">{{ .name }}</span>
             </button>

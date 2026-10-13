@@ -22,84 +22,84 @@
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ $pdf }}"
        data-pdfjs-worker="{{ $worker.RelPermalink }}">
-    <div class="up-docv-toolbar" role="toolbar" aria-label="{{ T "document_controls" }}">
+    <div class="up-docv-toolbar" role="toolbar" aria-label="{{ partial "ui/t" "document_controls" }}">
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-prev disabled
-                title="{{ T "previous_page" }}" aria-label="{{ T "previous_page" }}">
+                title="{{ partial "ui/t" "previous_page" }}" aria-label="{{ partial "ui/t" "previous_page" }}">
           {{- partial "icon.html" "glyphs/chevron-up" -}}
         </button>
         <button type="button" class="up-docv-btn" data-docv-next disabled
-                title="{{ T "next_page" }}" aria-label="{{ T "next_page" }}">
+                title="{{ partial "ui/t" "next_page" }}" aria-label="{{ partial "ui/t" "next_page" }}">
           {{- partial "icon.html" "glyphs/chevron-down" -}}
         </button>
       </div>
       <div class="up-docv-pageentry">
         <input class="up-docv-pagenum" data-docv-pagenum type="text"
                inputmode="numeric" value="1" disabled
-               aria-label="{{ T "page_number" }}" autocomplete="off">
-        <span class="up-docv-pagecount">{{ T "page_count_of" }} <span data-docv-pagecount>…</span></span>
+               aria-label="{{ partial "ui/t" "page_number" }}" autocomplete="off">
+        <span class="up-docv-pagecount">{{ partial "ui/t" "page_count_of" }} <span data-docv-pagecount>…</span></span>
       </div>
       <span class="up-docv-sep" aria-hidden="true"></span>
       <div class="up-docv-group">
         <button type="button" class="up-docv-btn" data-docv-zoom-out disabled
-                title="{{ T "zoom_out" }}" aria-label="{{ T "zoom_out" }}">
+                title="{{ partial "ui/t" "zoom_out" }}" aria-label="{{ partial "ui/t" "zoom_out" }}">
           {{- partial "icon.html" "glyphs/minus" -}}
         </button>
         <button type="button" class="up-docv-btn up-docv-zoom-readout" data-docv-zoom-fit disabled
-                title="{{ T "fit_page_width" }}" aria-pressed="true">
-          <span data-docv-zoom-readout>{{ T "fit" }}</span>
+                title="{{ partial "ui/t" "fit_page_width" }}" aria-pressed="true">
+          <span data-docv-zoom-readout>{{ partial "ui/t" "fit" }}</span>
         </button>
         <button type="button" class="up-docv-btn" data-docv-zoom-in disabled
-                title="{{ T "zoom_in" }}" aria-label="{{ T "zoom_in" }}">
+                title="{{ partial "ui/t" "zoom_in" }}" aria-label="{{ partial "ui/t" "zoom_in" }}">
           {{- partial "icon.html" "glyphs/plus" -}}
         </button>
       </div>
       <span class="up-docv-spacer"></span>
       {{- with $.Params.sourceUrl }}
       <a class="up-docv-btn up-docv-action" href="{{ . }}" target="_blank" rel="noopener"
-         title="{{ T "document_source_title" }}">
+         title="{{ partial "ui/t" "document_source_title" }}">
         {{- partial "icon.html" "glyphs/code" -}}
-        <span class="up-docv-action-label">{{ T "source" }}</span>
+        <span class="up-docv-action-label">{{ partial "ui/t" "source" }}</span>
       </a>
       {{- end }}
       {{- with $.Params.pdfPrintable }}
       <a class="up-docv-btn up-docv-action" href="{{ partial "ui/resolve-url.html" (dict "page" $ "url" .) }}" target="_blank" rel="noopener"
-         title="{{ T "print_title" }}">
+         title="{{ partial "ui/t" "print_title" }}">
         {{- partial "icon.html" "glyphs/pdf" -}}
-        <span class="up-docv-action-label">{{ T "print" }}</span>
+        <span class="up-docv-action-label">{{ partial "ui/t" "print" }}</span>
       </a>
       {{- end }}
       <a class="up-docv-btn up-docv-action" href="{{ $pdf }}" download
-         title="{{ T "download_pdf" }}">
+         title="{{ partial "ui/t" "download_pdf" }}">
         {{- partial "icon.html" "glyphs/download" -}}
-        <span class="up-docv-action-label">{{ T "download" }}</span>
+        <span class="up-docv-action-label">{{ partial "ui/t" "download" }}</span>
       </a>
     </div>
     <div class="up-docv-body">
-      <aside class="up-docv-side" aria-label="{{ T "page_thumbnails" }}">
-        <div class="up-docv-side-head">{{ T "thumbnails" }}</div>
+      <aside class="up-docv-side" aria-label="{{ partial "ui/t" "page_thumbnails" }}">
+        <div class="up-docv-side-head">{{ partial "ui/t" "thumbnails" }}</div>
         <div class="up-docv-thumbs" data-docv-thumbs></div>
       </aside>
       <div class="up-docv-view" data-docv-view tabindex="0">
         <div class="up-docv-status" data-docv-loading>
           <span class="up-docv-spinner" aria-hidden="true"></span>
-          <span>{{ T "loading_document" }}</span>
+          <span>{{ partial "ui/t" "loading_document" }}</span>
         </div>
         <div class="up-docv-status" data-docv-error hidden>
-          <span>{{ T "pdf_load_failed" }}</span>
+          <span>{{ partial "ui/t" "pdf_load_failed" }}</span>
           <a class="up-docv-open" href="{{ $pdf }}" target="_blank" rel="noopener">
             {{- partial "icon.html" "glyphs/pdf" -}}
-            <span>{{ T "open_pdf" }}</span>
+            <span>{{ partial "ui/t" "open_pdf" }}</span>
           </a>
         </div>
         <div class="up-docv-pages" data-docv-pages></div>
         <noscript>
           <style>.up-docv-status[data-docv-loading]{display:none}</style>
           <div class="up-docv-status">
-            <span>{{ T "pdf_needs_js" }}</span>
+            <span>{{ partial "ui/t" "pdf_needs_js" }}</span>
             <a class="up-docv-open" href="{{ $pdf }}" target="_blank" rel="noopener">
               {{- partial "icon.html" "glyphs/pdf" -}}
-              <span>{{ T "open_pdf" }}</span>
+              <span>{{ partial "ui/t" "open_pdf" }}</span>
             </a>
           </div>
         </noscript>

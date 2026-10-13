@@ -7,9 +7,9 @@
     </span>
   </span>
 </template>
-<section class="up-project-grid" data-up-project-grid aria-label="{{ T "projects" }}">
+<section class="up-project-grid" data-up-project-grid aria-label="{{ partial "ui/t" "projects" }}">
   {{- range $projects }}
     {{ partial "page/project-tile.html" . }}
   {{- end }}
-  <div class="up-project-grid-empty" data-up-project-empty hidden>{{ T "no_projects_match" }}</div>
+  <div class="up-project-grid-empty" data-up-project-empty hidden>{{ partial "ui/t" "no_projects_match" }}</div>
 </section>

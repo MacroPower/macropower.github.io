@@ -20,7 +20,7 @@
   {{- errorf "The spotify shortcode's type must be one of %s, not %q: %s" (delimit $types ", ") $type .Position -}}
 {{- end -}}
 <iframe src="https://open.spotify.com/embed/{{ $type }}/{{ $id | urlquery }}"
-    title="{{ T "spotify_player" (dict "Type" $type) }}"
+    title="{{ partial "ui/t" (slice "spotify_player" (dict "Type" $type)) }}"
     width="{{ $width }}" height="{{ $height }}"
     loading="lazy"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>

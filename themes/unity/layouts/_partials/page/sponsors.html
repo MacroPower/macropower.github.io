@@ -21,7 +21,7 @@
     {{- $iconHeart := partial "icon.html" "glyphs/heart" -}}
     {{ partial "page/naut-sidebar.html" (dict
         "sections" (slice
-          (dict "label" (T "places") "items" (slice
+          (dict "label" (partial "ui/t" "places") "items" (slice
             (dict "label" .Title "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
     <section class="up-sponsors-main">
       {{ .Content }}
@@ -46,13 +46,13 @@
       {{- else }}
         {{ partial "page/empty-pane.html" (dict
             "class" "up-sponsors-empty-pane"
-            "ariaLabel" (T "no_sponsors_yet")
+            "ariaLabel" (partial "ui/t" "no_sponsors_yet")
             "icon" $iconHeart
-            "hint" (T "no_sponsors_yet")
+            "hint" (partial "ui/t" "no_sponsors_yet")
             "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" "ls ./sponsors"))) }}
       {{- end }}
       {{- with $sponsorURL }}
-      <a class="up-open-btn" href="{{ . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>{{ T "become_a_sponsor" }}</span></a>
+      <a class="up-open-btn" href="{{ . }}" target="_blank" rel="noopener">{{ $iconHeart }}<span>{{ partial "ui/t" "become_a_sponsor" }}</span></a>
       {{- end }}
     </section>
   </div>

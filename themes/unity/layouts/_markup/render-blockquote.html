@@ -14,7 +14,7 @@
   -}}
   {{- $type := lower .AlertType -}}
   {{- if not (index $kinds $type) }}{{ $type = "note" }}{{ end -}}
-  {{- $title := or .AlertTitle (T (printf "alert_%s" $type) | htmlEscape) -}}
+  {{- $title := or .AlertTitle (partial "ui/t" (printf "alert_%s" $type) | htmlEscape) -}}
   {{- $head := printf `<span class="up-alert-icon" aria-hidden="true">%s</span><span>%s</span>` (partial "icon.html" (index $kinds $type)) $title -}}
   {{- if .AlertSign -}}
 <details class="up-alert is-{{ $type }}"{{ if eq .AlertSign "+" }} open{{ end }}>

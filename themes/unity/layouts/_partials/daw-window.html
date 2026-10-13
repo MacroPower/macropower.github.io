@@ -13,58 +13,58 @@
   data-daw-status.
 */ -}}
 <div class="up-window-stage up-daw-stage" data-up-window="daw" hidden>
-  <section class="up-window-chrome up-daw-chrome" aria-label="{{ T "studio" }}" tabindex="-1">
+  <section class="up-window-chrome up-daw-chrome" aria-label="{{ partial "ui/t" "studio" }}" tabindex="-1">
     <div class="up-titlebar" data-titlebar>
       {{ partial "ui/window-controls.html" (dict "max" true) }}
-      <span class="up-titlebar-text" data-daw-title>{{ T "studio" }}</span>
+      <span class="up-titlebar-text" data-daw-title>{{ partial "ui/t" "studio" }}</span>
     </div>
     <div class="up-window-body up-daw-body">
 
       <div class="up-daw-toolbar">
         <div class="up-daw-transport">
-          <button type="button" class="up-daw-btn up-daw-btn-play" data-daw-play aria-label="{{ T "play_pause" }}">
+          <button type="button" class="up-daw-btn up-daw-btn-play" data-daw-play aria-label="{{ partial "ui/t" "play_pause" }}">
             <span data-daw-play-glyph>{{ partial "icon.html" "glyphs/panel-play" }}</span>
             <span data-daw-play-glyph-playing hidden>{{ partial "icon.html" "glyphs/panel-pause" }}</span>
           </button>
-          <button type="button" class="up-daw-btn" data-daw-stop aria-label="{{ T "stop" }}">
+          <button type="button" class="up-daw-btn" data-daw-stop aria-label="{{ partial "ui/t" "stop" }}">
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="8" height="8" fill="currentColor"/></svg>
           </button>
         </div>
 
         <div class="up-daw-trk">
-          <button type="button" class="up-daw-btn" data-daw-prev aria-label="{{ T "previous_track" }}" title="{{ T "previous_track" }}">
+          <button type="button" class="up-daw-btn" data-daw-prev aria-label="{{ partial "ui/t" "previous_track" }}" title="{{ partial "ui/t" "previous_track" }}">
             {{ partial "icon.html" "glyphs/chevron-left" }}
           </button>
           <div class="up-daw-lcdbox">
-            <span class="up-daw-lcd-label">{{ T "studio_lcd_track" }}</span>
+            <span class="up-daw-lcd-label">{{ partial "ui/t" "studio_lcd_track" }}</span>
             <span class="up-daw-lcd is-trk" data-daw-trk>—</span>
           </div>
-          <button type="button" class="up-daw-btn" data-daw-next aria-label="{{ T "next_track" }}" title="{{ T "next_track" }}">
+          <button type="button" class="up-daw-btn" data-daw-next aria-label="{{ partial "ui/t" "next_track" }}" title="{{ partial "ui/t" "next_track" }}">
             {{ partial "icon.html" "glyphs/chevron-right" }}
           </button>
         </div>
 
         <div class="up-daw-lcdbox">
-          <span class="up-daw-lcd-label">{{ T "studio_lcd_position" }}</span>
+          <span class="up-daw-lcd-label">{{ partial "ui/t" "studio_lcd_position" }}</span>
           <span class="up-daw-lcd" data-daw-pos>001.1</span>
         </div>
         <div class="up-daw-lcdbox">
-          <span class="up-daw-lcd-label">{{ T "studio_lcd_tempo" }}</span>
+          <span class="up-daw-lcd-label">{{ partial "ui/t" "studio_lcd_tempo" }}</span>
           <span class="up-daw-lcd is-spin" data-daw-bpm tabindex="0" role="slider"
-            aria-label="{{ T "tempo" }}" title="{{ T "tempo_hint" }}">—</span>
+            aria-label="{{ partial "ui/t" "tempo" }}" title="{{ partial "ui/t" "tempo_hint" }}">—</span>
         </div>
-        <span class="up-daw-led is-on" title="{{ T "loop_hint" }}">{{ T "loop" }}</span>
+        <span class="up-daw-led is-on" title="{{ partial "ui/t" "loop_hint" }}">{{ partial "ui/t" "loop" }}</span>
 
         <div class="up-daw-toolbar-spacer"></div>
 
         <button type="button" class="up-daw-btn is-toggle is-on" data-daw-follow aria-pressed="true"
-          title="{{ T "follow_playhead" }}">
+          title="{{ partial "ui/t" "follow_playhead" }}">
           {{ partial "icon.html" "glyphs/arrow-right" }}
         </button>
-        <button type="button" class="up-daw-btn" data-daw-zoom-out aria-label="{{ T "zoom_out" }}">
+        <button type="button" class="up-daw-btn" data-daw-zoom-out aria-label="{{ partial "ui/t" "zoom_out" }}">
           {{ partial "icon.html" "glyphs/minus" }}
         </button>
-        <button type="button" class="up-daw-btn" data-daw-zoom-in aria-label="{{ T "zoom_in" }}">
+        <button type="button" class="up-daw-btn" data-daw-zoom-in aria-label="{{ partial "ui/t" "zoom_in" }}">
           {{ partial "icon.html" "glyphs/plus" }}
         </button>
       </div>
@@ -72,19 +72,19 @@
       <div class="up-daw-main">
         <aside class="up-daw-rack">
           <div class="up-daw-section is-tracks">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_tracks" }}</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ partial "ui/t" "studio_tracks" }}</button>
             <div class="up-daw-tracks" data-daw-tracks></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_synth" }}</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ partial "ui/t" "studio_synth" }}</button>
             <div class="up-daw-synth" data-daw-synth></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_fx" }}</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ partial "ui/t" "studio_fx" }}</button>
             <div class="up-daw-fx" data-daw-fx></div>
           </div>
           <div class="up-daw-section">
-            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ T "studio_groove" }}</button>
+            <button type="button" class="up-daw-section-title" data-daw-collapse>{{ partial "ui/t" "studio_groove" }}</button>
             <div class="up-daw-knobs" data-daw-groove></div>
           </div>
         </aside>
@@ -94,12 +94,12 @@
           <div class="up-daw-scroller" data-daw-scroller>
             <div class="up-daw-spacer" data-daw-spacer></div>
           </div>
-          <div class="up-daw-loading" data-daw-loading>{{ T "loading" }}</div>
+          <div class="up-daw-loading" data-daw-loading>{{ partial "ui/t" "loading" }}</div>
         </div>
       </div>
 
       <div class="up-daw-status">
-        <span data-daw-status>{{ T "studio_status_hint" }}</span>
+        <span data-daw-status>{{ partial "ui/t" "studio_status_hint" }}</span>
       </div>
 
     </div>

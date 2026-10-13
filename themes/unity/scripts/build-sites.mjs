@@ -140,9 +140,9 @@ const SITES = {
       ].filter(Boolean);
     },
   },
-  // A non-English default language whose translation covers one key.
-  // Hugo renders the other template strings empty, so the build must say
-  // so, and the scripts' strings must fall back to English.
+  // A non-English default language whose translation covers one key. The
+  // build must say so, and the other strings, in templates and scripts
+  // alike, must fall back to English.
   translated: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "de"\n`,
@@ -151,7 +151,11 @@ const SITES = {
     warns: /the "de" translation lacks \d+ of the theme's i18n keys/,
     check: (out) => {
       const js = readdirSync(join(out, "js")).find((f) => f.startsWith("runtime."));
+      const home = read(join(out, "index.html"));
       return [
+        !home.includes("Startseite") && "index.html drops the translated home label",
+        !home.includes(">Skip to content</a>") && "index.html lacks the English skip link",
+        !home.includes("data-trash-count>6 items<") && "the Trash count lacks its English plural",
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
       ].filter(Boolean);
     },

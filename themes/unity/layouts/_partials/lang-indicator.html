@@ -22,11 +22,11 @@
         "current" (eq $lang.Name $current)) -}}
   {{- end }}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="lang" aria-label="{{ T "language" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="lang" aria-label="{{ partial "ui/t" "language" }}" aria-haspopup="true" aria-expanded="false">
     <span class="up-lang-badge" aria-hidden="true">{{ substr $current 0 2 | strings.FirstUpper }}</span>
   </button>
   <div class="up-dropdown" data-dropdown-for="lang" data-align="right" data-flyout-keepopen hidden>
-    <div class="up-dropdown-header">{{ T "language" }}</div>
+    <div class="up-dropdown-header">{{ partial "ui/t" "language" }}</div>
     <div class="up-dropdown-body">
       {{- range $rows }}
       <a class="up-dropdown-row up-lang-row{{ if .current }} is-on{{ end }}" href="{{ .url }}" hreflang="{{ .locale }}" lang="{{ .locale }}"{{ if .current }} aria-current="true"{{ end }}>{{ .label }}</a>

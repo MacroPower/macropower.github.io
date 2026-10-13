@@ -22,19 +22,19 @@
     <div class="up-sol-stage" data-sol-stage>
       <canvas class="up-sol-canvas" data-sol-canvas tabindex="0" role="application"
               width="242" height="220"
-              aria-label="{{ T "solitaire_canvas" }}"></canvas>
+              aria-label="{{ partial "ui/t" "solitaire_canvas" }}"></canvas>
       <noscript>
-        <div class="up-sol-noscript">{{ T "solitaire_needs_js" }}</div>
+        <div class="up-sol-noscript">{{ partial "ui/t" "solitaire_needs_js" }}</div>
       </noscript>
     </div>
-    <div class="up-sr-only" role="toolbar" aria-label="{{ T "game_controls" }}">
-      <button type="button" data-sol-action="new">{{ T "new_game" }}</button>
-      <button type="button" data-sol-action="draw-stock">{{ T "draw_from_stock" }}</button>
-      <button type="button" data-sol-action="undo" disabled>{{ T "undo" }}</button>
-      <button type="button" data-sol-action="hint">{{ T "hint" }}</button>
-      <button type="button" data-sol-action="auto" hidden>{{ T "finish_the_game" }}</button>
-      <button type="button" data-sol-action="draw">{{ T "draw_one_switch" }}</button>
-      <button type="button" data-sol-action="sound" aria-pressed="true">{{ T "sound" }}</button>
+    <div class="up-sr-only" role="toolbar" aria-label="{{ partial "ui/t" "game_controls" }}">
+      <button type="button" data-sol-action="new">{{ partial "ui/t" "new_game" }}</button>
+      <button type="button" data-sol-action="draw-stock">{{ partial "ui/t" "draw_from_stock" }}</button>
+      <button type="button" data-sol-action="undo" disabled>{{ partial "ui/t" "undo" }}</button>
+      <button type="button" data-sol-action="hint">{{ partial "ui/t" "hint" }}</button>
+      <button type="button" data-sol-action="auto" hidden>{{ partial "ui/t" "finish_the_game" }}</button>
+      <button type="button" data-sol-action="draw">{{ partial "ui/t" "draw_one_switch" }}</button>
+      <button type="button" data-sol-action="sound" aria-pressed="true">{{ partial "ui/t" "sound" }}</button>
     </div>
     <p class="up-sr-only" data-sol-live aria-live="polite"></p>
   </div>

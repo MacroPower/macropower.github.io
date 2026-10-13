@@ -22,17 +22,17 @@
       "segments" (slice
         (dict "label" .Title "url" .RelPermalink))
       "search" true
-      "searchNoun" (T "projects_noun")
-      "searchPlaceholder" (T "filter_projects_placeholder")) }}
+      "searchNoun" (partial "ui/t" "projects_noun")
+      "searchPlaceholder" (partial "ui/t" "filter_projects_placeholder")) }}
   <div class="up-projects-grid">
     {{ partial "page/projects-sidebar.html" (dict "projects" $projects) }}
     {{ partial "page/projects-grid.html" (dict "projects" $projects) }}
     {{ partial "page/empty-pane.html" (dict
         "class" "up-project-preview"
-        "ariaLabel" (T "project_preview")
+        "ariaLabel" (partial "ui/t" "project_preview")
         "attrs" (dict "data-up-project-preview" "")
         "icon" (partial "icon.html" "flat/empty-folder")
-        "hint" (T "no_item_selected")
+        "hint" (partial "ui/t" "no_item_selected")
         "tagline" (partial "ui/term-prompt.html" (dict "path" "~/projects" "cmd" "ls | head"))) }}
   </div>
   <noscript>

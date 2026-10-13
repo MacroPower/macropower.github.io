@@ -128,3 +128,61 @@ describe("t and tn", () => {
     expect(tn("js_files", 1012)).toBe("1012 файлов");
   });
 });
+
+// Every table in i18n/en.toml as key -> forms.
+function readAllEnglish(): Map<string, Record<string, string>> {
+  const out = new Map<string, Record<string, string>>();
+  let current: Record<string, string> = {};
+  const text = readFileSync(join(here, "..", "..", "..", "i18n", "en.toml"), "utf8");
+  for (const line of text.split("\n")) {
+    const table = /^\[([^\]]+)\]\s*$/.exec(line);
+    if (table) {
+      current = {};
+      out.set(table[1]!, current);
+      continue;
+    }
+    const form = /^(\w+)\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/.exec(line);
+    if (form) current[form[1]!] = JSON.parse(`"${form[2]!}"`) as string;
+  }
+  return out;
+}
+
+function templates(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const path = join(dir, e.name);
+    if (e.isDirectory()) return templates(path);
+    return /\.(html|xml|txt)$/.test(e.name) ? [path] : [];
+  });
+}
+
+describe("template strings", () => {
+  const english = readAllEnglish();
+  const layouts = join(here, "..", "..", "..", "layouts");
+  const files = templates(layouts).map((path) => ({
+    name: path.slice(layouts.length + 1),
+    text: readFileSync(path, "utf8").replace(/\{\{-?\s*\/\*[\s\S]*?\*\/\s*-?\}\}/g, ""),
+  }));
+
+  it("go through ui/t, which falls back to the theme's English", () => {
+    const direct = files
+      .filter((f) => f.name !== "_partials/ui/t.html" && f.name !== "_partials/ui/i18n.html")
+      .flatMap((f) => [...f.text.matchAll(/(?<![\w.$])T ["(]/g)].map(() => f.name));
+    expect(direct).toEqual([]);
+  });
+
+  it("name only keys en.toml defines", () => {
+    const keys = files.flatMap((f) =>
+      [...f.text.matchAll(/partial "ui\/t" (?:\(slice )?"([a-z0-9_]+)"/g)].map((m) => m[1]!));
+    expect(keys.length).toBeGreaterThan(0);
+    expect(keys.filter((k) => !english.has(k))).toEqual([]);
+  });
+
+  it("use only {{ .Name }} placeholders, which ui/t can fill", () => {
+    for (const [key, forms] of english) {
+      if (key.startsWith("js_")) continue;
+      for (const text of Object.values(forms)) {
+        expect(text.replace(/\{\{ \.\w+ \}\}/g, ""), key).not.toContain("{{");
+      }
+    }
+  });
+});

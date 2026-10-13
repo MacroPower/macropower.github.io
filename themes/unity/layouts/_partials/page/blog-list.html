@@ -13,9 +13,9 @@
         "pages" .RegularPagesRecursive
         "here" "") }}
     {{ partial "page/empty-pane.html" (dict
-        "ariaLabel" (T "post_reader")
+        "ariaLabel" (partial "ui/t" "post_reader")
         "icon" (partial "icon.html" "flat/empty-file")
-        "hint" (T "select_a_post")
+        "hint" (partial "ui/t" "select_a_post")
         "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" .Section)))) }}
   </div>
 </article>

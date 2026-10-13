@@ -13,8 +13,8 @@
       {{ partial "page/post-sidebar.html" . }}
       <section class="up-post-list" aria-label="{{ .Title }}">
         <header class="up-post-list-header">
-          <span>{{ T "col_name" }}</span>
-          <span>{{ T "posts" }}</span>
+          <span>{{ partial "ui/t" "col_name" }}</span>
+          <span>{{ partial "ui/t" "posts" }}</span>
         </header>
         {{- range $terms }}
           {{ partial "page/post-row.html" (dict
@@ -23,13 +23,13 @@
               "chips" (slice (.Page.Title | lower))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">{{ T "no_terms_yet" (dict "Plural" (lower .Title)) }}</div>
+          <div class="up-post-empty">{{ partial "ui/t" (slice "no_terms_yet" (dict "Plural" (lower .Title))) }}</div>
         {{- end }}
       </section>
       {{ partial "page/empty-pane.html" (dict
-          "ariaLabel" (T "post_reader")
+          "ariaLabel" (partial "ui/t" "post_reader")
           "icon" (partial "icon.html" "flat/empty-file")
-          "hint" (T "select_a_post")
+          "hint" (partial "ui/t" "select_a_post")
           "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" $plural)))) }}
     </div>
   </article>
