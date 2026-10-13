@@ -16,7 +16,6 @@
   {{- $description = cond .IsHome site.Params.description (or .Summary site.Params.description) -}}
 {{- end -}}
 {{- $description = $description | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace -}}
-{{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}
 {{- $images := partial "page-images.html" . -}}
 {{- $author := partialCached "author.html" . -}}
 {{- $isPost := and .IsPage (partial "in-blog.html" .) -}}
@@ -42,6 +41,9 @@
 {{- if .IsTranslated }}
 {{- range .AllTranslations }}
 <link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+{{- if .Language.IsDefault }}
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{- end }}
 {{- end }}
 {{- end }}
 <meta property="og:url" content="{{ .Permalink }}">

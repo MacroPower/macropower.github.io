@@ -64,6 +64,10 @@ const SITES = {
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
     },
+    check: (out) => [
+      !read(join(out, "de/about/index.html")).includes('hreflang="x-default" href="https://example.org/about/"')
+        && "de/about/index.html lacks an x-default link to the English page",
+    ].filter(Boolean),
   },
   // A section outside mainSections renders as a plain list of its pages.
   notes: {
