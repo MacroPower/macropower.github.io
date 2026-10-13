@@ -220,6 +220,7 @@ The example site uses every layout, shortcode, and render hook, so `hugo --print
 npm install
 npm run typecheck        # production sources
 npm run typecheck:test   # test sources
+npm run lint             # biome lint over the scripts and tooling
 npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 npm run test:sites       # hugo: the example site and bare sites, warnings fatal
 ```

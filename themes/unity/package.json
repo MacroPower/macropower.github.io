@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Dev tooling for the unity Hugo theme: type-checks the TypeScript sources, runs the test suites, and refreshes the vendored xterm.js and pdf.js. Hugo's esbuild does the actual bundling at site build time.",
+  "description": "Dev tooling for the unity Hugo theme: type-checks and lints the TypeScript sources, runs the test suites, and refreshes the vendored xterm.js and pdf.js. Hugo's esbuild does the actual bundling at site build time.",
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
     "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
+    "lint": "biome lint",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:sites": "node scripts/build-sites.mjs",
@@ -14,6 +15,7 @@
     "vendor:pdfjs": "node scripts/vendor-pdfjs.mjs"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "@types/node": "^22.20.5",
     "typescript": "^7.0.2",
     "vitest": "^5.0.4"

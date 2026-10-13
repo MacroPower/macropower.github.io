@@ -14,6 +14,12 @@ pre-commit:
         - "themes/unity/assets/unity/js/**/*.ts"
         - "themes/unity/tsconfig.json"
       run: npx --no-install tsc -p themes/unity --noEmit
+    lint:
+      glob:
+        - "themes/unity/assets/unity/js/**/*.ts"
+        - "themes/unity/scripts/**"
+        - "themes/unity/biome.json"
+      run: npx --no-install biome lint --config-path themes/unity themes/unity
     typecheck-test:
       glob:
         - "themes/unity/assets/unity/js/**/*.ts"
