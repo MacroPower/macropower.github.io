@@ -52,7 +52,7 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
 
     while (q < end) {
       tick += readVlq();
-      let b = u8(q);
+      const b = u8(q);
       if (b & 0x80) { status = b; q++; } // otherwise running status reuses the last
       const ev = status & 0xf0;
       const ch = status & 0x0f;
@@ -77,7 +77,7 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
           arr.push([tick, vel]);
         } else {
           const arr = pending.get(key);
-          if (arr && arr.length) {
+          if (arr?.length) {
             const [s, v] = arr.shift() as [number, number];
             notes.push({ channel: ch, pitch, start: s / division, dur: (tick - s) / division, vel: v / 127 });
           }

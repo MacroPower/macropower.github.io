@@ -15,7 +15,7 @@ function setFocused(win: OverlayWindow, v: boolean): void {
   const next = v ? win : (focusedWin === win ? null : focusedWin);
   if (focusedWin === next) return;
   focusedWin = next;
-  subs.forEach((fn) => fn(focusedWin !== null));
+  for (const fn of subs) fn(focusedWin !== null);
 }
 
 export function setTrashFocused(v: boolean): void {

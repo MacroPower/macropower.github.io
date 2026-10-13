@@ -107,7 +107,7 @@ export class Sfx {
         // a foundation plays a rising scale.
         const scale = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28];
         const semis = scale[Math.max(0, Math.min(scale.length - 1, arg))]!;
-        const f = 523.25 * Math.pow(2, semis / 12);
+        const f = 523.25 * 2 ** (semis / 12);
         this.chime(t, f, 0.32);
         this.chime(t + 0.02, f * 2, 0.16, 0.5);
         this.burst(t, 0.04, "highpass", 3000, 1, 0.12, 1);
@@ -129,8 +129,8 @@ export class Sfx {
         break;
       case "win": {
         const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98, 2093];
-        notes.forEach((f, i) => this.chime(t + i * 0.09, f, 0.5, 0.45));
-        notes.slice(0, 4).forEach((f) => this.chime(t + 0.75, f, 1.6, 0.25));
+        for (const [i, f] of notes.entries()) this.chime(t + i * 0.09, f, 0.5, 0.45);
+        for (const f of notes.slice(0, 4)) this.chime(t + 0.75, f, 1.6, 0.25);
         break;
       }
       case "bounce": {

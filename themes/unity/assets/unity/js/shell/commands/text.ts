@@ -189,11 +189,13 @@ export const sort: Command = {
 function parseRanges(spec: string): [number, number][] | null {
   const ranges: [number, number][] = [];
   for (const part of spec.split(",")) {
-    let m: RegExpExecArray | null;
+    const from = /^(\d+)-$/.exec(part);
+    const upTo = /^-(\d+)$/.exec(part);
+    const between = /^(\d+)-(\d+)$/.exec(part);
     if (/^\d+$/.test(part)) { const n = Number(part); ranges.push([n, n]); }
-    else if ((m = /^(\d+)-$/.exec(part))) ranges.push([Number(m[1]), Infinity]);
-    else if ((m = /^-(\d+)$/.exec(part))) ranges.push([1, Number(m[1])]);
-    else if ((m = /^(\d+)-(\d+)$/.exec(part))) ranges.push([Number(m[1]), Number(m[2])]);
+    else if (from) ranges.push([Number(from[1]), Infinity]);
+    else if (upTo) ranges.push([1, Number(upTo[1])]);
+    else if (between) ranges.push([Number(between[1]), Number(between[2])]);
     else return null;
   }
   return ranges;

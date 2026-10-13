@@ -11,9 +11,7 @@ import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { t } from "./i18n";
 
-(function (): void {
-  "use strict";
-
+((): void => {
   const root = document.querySelector<HTMLElement>("[data-cv-viewer]");
   if (!root) return;
   const url = root.dataset.pdfUrl;

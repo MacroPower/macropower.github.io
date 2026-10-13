@@ -6,7 +6,7 @@ import { evalArith } from "./arith";
 function fakeExpander(vars: Record<string, string>): Expander {
   return {
     lookup: (n) => vars[n] ?? "",
-    isSet: (n) => Object.prototype.hasOwnProperty.call(vars, n),
+    isSet: (n) => Object.hasOwn(vars, n),
     assign: (n, v) => { vars[n] = v; },
     runSub: () => "SUB",
     arith: (e) => evalArith(e, (n) => vars[n] ?? ""),

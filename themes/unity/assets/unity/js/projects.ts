@@ -3,9 +3,7 @@ import { installFilterNav } from "./filter-nav";
 import { locale, t, tn } from "./i18n";
 import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
-(function (): void {
-  "use strict";
-
+((): void => {
   const root = document.querySelector<HTMLElement>("[data-projects-kind]");
   if (!root) return;
 
@@ -89,7 +87,7 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
     wide = false,
   ): HTMLElement {
     const el = document.createElement("div");
-    el.className = "up-project-preview-stat" + (wide ? " up-project-preview-stat-wide" : "");
+    el.className = `up-project-preview-stat${wide ? " up-project-preview-stat-wide" : ""}`;
     el.setAttribute("aria-label", t("js_projects_stat_label", { label: ariaLabel, value }));
     el.innerHTML = iconHTML(iconKey);
     const valEl = document.createElement("span");

@@ -4,9 +4,7 @@
 
 import { t } from "./i18n";
 
-(function (): void {
-  "use strict";
-
+((): void => {
   const root = document.querySelector<HTMLElement>("[data-icon-vault]");
   if (!root) return;
 

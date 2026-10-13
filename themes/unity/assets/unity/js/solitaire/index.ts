@@ -131,13 +131,13 @@ interface Button {
 }
 
 function easeOutCubic(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
+  return 1 - (1 - t) ** 3;
 }
 
 function easeOutBack(t: number): number {
   const c1 = 0.9;
   const c3 = c1 + 1;
-  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2;
 }
 
 function clamp(v: number, lo: number, hi: number): number {
@@ -1447,7 +1447,7 @@ function cardName(card: Card): string {
     }
 
     const b = buttonAt(x, y);
-    const nextButton = b && b.enabled ? b.id : null;
+    const nextButton = b?.enabled ? b.id : null;
     let nextHover: Placement | null = null;
     if (!nextButton && !dealing && !autoRunning) {
       const p = placementAt(x, y);

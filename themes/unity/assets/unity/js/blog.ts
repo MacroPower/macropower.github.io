@@ -9,9 +9,7 @@ interface SortState {
   dir: SortDir;
 }
 
-(function (): void {
-  "use strict";
-
+((): void => {
   const root = document.querySelector<HTMLElement>("[data-blog-kind]");
   if (!root) return;
 

@@ -114,7 +114,7 @@ interface KnobSpec {
 // the --rot / --arc custom properties; the readout below is a mini LCD.
 function makeKnob(spec: KnobSpec): HTMLElement {
   const root = document.createElement("div");
-  root.className = "up-daw-knob" + (spec.small ? " is-sm" : "");
+  root.className = `up-daw-knob${spec.small ? " is-sm" : ""}`;
   const dial = document.createElement("div");
   dial.className = "up-daw-knob-dial";
   dial.tabIndex = 0;
@@ -140,7 +140,7 @@ function makeKnob(spec: KnobSpec): HTMLElement {
     ? Math.log(v / spec.min) / Math.log(spec.max / spec.min)
     : (v - spec.min) / (spec.max - spec.min);
   const fromNorm = (n: number): number => spec.log
-    ? spec.min * Math.pow(spec.max / spec.min, n)
+    ? spec.min * (spec.max / spec.min) ** n
     : spec.min + n * (spec.max - spec.min);
 
   const paint = (): void => {
@@ -463,7 +463,7 @@ export function initDaw(): void {
     showLoading(t("js_studio_loading"));
     const loaded = await audio.getSong();
     if (audio.trackIndex() !== idx || surfaceIdx !== idx) return;
-    if (!loaded || !loaded.notes.length) {
+    if (!loaded?.notes.length) {
       showLoading(t("js_studio_load_failed"));
       surfaceIdx = -1; // unlatch so the next interaction retries the load
       return;
@@ -516,7 +516,7 @@ export function initDaw(): void {
         b.innerHTML = patchSvg(key, 16);
         b.addEventListener("click", () => {
           audio.setParam("wave", key);
-          buttons.forEach((btn, k) => btn.classList.toggle("is-on", k === key));
+          for (const [k, btn] of buttons) btn.classList.toggle("is-on", k === key);
         });
         buttons.set(key, b);
         waves.appendChild(b);
@@ -612,7 +612,7 @@ export function initDaw(): void {
         b.title = title;
         b.addEventListener("click", () => {
           audio.setParam("echoDiv", div);
-          timeBtns.forEach((btn, d) => btn.classList.toggle("is-on", d === div));
+          for (const [d, btn] of timeBtns) btn.classList.toggle("is-on", d === div);
         });
         timeBtns.set(div, b);
         times.appendChild(b);
@@ -693,7 +693,7 @@ export function initDaw(): void {
     for (const p of audio.PATCHES) {
       const item = document.createElement("button");
       item.type = "button";
-      item.className = "up-daw-patchmenu-item" + (trk.strip.patch === p.key ? " is-on" : "");
+      item.className = `up-daw-patchmenu-item${trk.strip.patch === p.key ? " is-on" : ""}`;
       item.innerHTML = patchSvg(p.key, 13);
       const itemLabel = document.createElement("span");
       itemLabel.textContent = p.label;
@@ -1229,7 +1229,7 @@ export function initDaw(): void {
     if (py >= 0 && py < rows() * ROW_H) {
       const pitch = pitchHi - Math.floor(py / ROW_H);
       audio.auditionNote(pitch, 0);
-      const hz = 440 * Math.pow(2, (pitch - 69) / 12);
+      const hz = 440 * 2 ** ((pitch - 69) / 12);
       setStatus(`${noteName(pitch)} · ${hz.toFixed(1)} Hz`);
     } else if (hasDrums) {
       const row = DRUM_ROWS[Math.floor((cy - drumTop()) / ROW_H)];

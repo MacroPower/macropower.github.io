@@ -717,7 +717,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     ctxMenu.hidden = true;
     const restore = ctxRestoreFocus;
     ctxRestoreFocus = null;
-    if (restore && restore.isConnected) restore.focus();
+    if (restore?.isConnected) restore.focus();
   }
   function ctxMenuOpen(): boolean {
     return ctxMenu?.hidden === false;

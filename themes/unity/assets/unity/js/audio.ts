@@ -156,7 +156,7 @@ function driveCurve(amount: number): Float32Array<ArrayBuffer> | null {
 function crushCurve(amount: number): Float32Array<ArrayBuffer> | null {
   if (amount <= 0) return null;
   const bits = Math.round(12 - amount * 9);
-  const levels = Math.pow(2, bits - 1);
+  const levels = 2 ** (bits - 1);
   const n = 4096;
   const curve = new Float32Array(n);
   for (let i = 0; i < n; i++) {
@@ -273,7 +273,7 @@ export function onChange(fn: Listener): () => void {
 }
 
 function emit(): void {
-  listeners.forEach((fn) => fn());
+  for (const fn of listeners) fn();
 }
 
 // ---- module state ----------------------------------------------------------
@@ -496,7 +496,7 @@ function scheduleNoise(audio: AudioContext, out: AudioNode, t: number, hp: numbe
 }
 
 function freqOf(pitch: number): number {
-  return 440 * Math.pow(2, (pitch - 69) / 12);
+  return 440 * 2 ** ((pitch - 69) / 12);
 }
 
 // ---- patch engines ---------------------------------------------------------
@@ -677,7 +677,7 @@ function renderNote(audio: AudioContext, out: AudioNode, n: MidiNote, t: number,
     else scheduleNoise(audio, panned(audio, out, 68), t, 7000, HAT_PEAK * gf, 0.05);
     return;
   }
-  const freq = freqOf(n.pitch) * Math.pow(2, clamp(Math.round(params.oct), -2, 2));
+  const freq = freqOf(n.pitch) * 2 ** clamp(Math.round(params.oct), -2, 2);
   const dest = panned(audio, out, n.pitch);
   const patch = strip(noteStripKey(n)).patch;
   if (patch === "auto") {
@@ -711,8 +711,7 @@ function pump(audio: AudioContext, out: AudioNode): void {
   const notes = song.notes;
   let anySolo = false;
   for (const s of strips.values()) if (s.solo) { anySolo = true; break; }
-  let n: MidiNote | undefined;
-  while ((n = notes[noteIdx]) !== undefined) {
+  for (let n = notes[noteIdx]; n !== undefined; n = notes[noteIdx]) {
     const base = loopBase + swungStart(n.start) * secPerBeat;
     if (base > horizon) break;
     if (n.dead) { noteIdx++; continue; } // muted from the piano roll
@@ -785,7 +784,7 @@ function impulseBuffer(audio: AudioContext): AudioBuffer {
   const buf = audio.createBuffer(2, len, audio.sampleRate);
   for (let chn = 0; chn < 2; chn++) {
     const data = buf.getChannelData(chn);
-    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2.6;
   }
   return buf;
 }

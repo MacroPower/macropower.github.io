@@ -43,7 +43,7 @@ describe("deal", () => {
     expect(g.waste).toHaveLength(0);
     g.tableau.forEach((col, i) => {
       expect(col).toHaveLength(i + 1);
-      col.forEach((c, j) => expect(c.faceUp).toBe(j === i));
+      for (const [j, c] of col.entries()) expect(c.faceUp).toBe(j === i);
     });
     expect(g.stock.every((c) => !c.faceUp)).toBe(true);
   });

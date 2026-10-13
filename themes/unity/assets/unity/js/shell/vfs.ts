@@ -299,7 +299,7 @@ export class Vfs {
     }
     const { parentPath, base } = splitPath(absPath);
     const parent = this.lookup(parentPath);
-    if (!parent || parent.kind !== "dir") return "No such file or directory";
+    if (parent?.kind !== "dir") return "No such file or directory";
     const node = parent.children.get(base);
     if (!node) return "No such file or directory";
     if (opts.dirOnly) {
@@ -325,7 +325,7 @@ export class Vfs {
     const targetPath = this.dropTarget(src, dstAbs);
     const { parentPath, base } = splitPath(targetPath);
     const parent = this.lookup(parentPath);
-    if (!parent || parent.kind !== "dir") return "No such file or directory";
+    if (parent?.kind !== "dir") return "No such file or directory";
     if (targetPath === srcAbs) return "same file";
     if (src.kind === "dir" && targetPath.startsWith(`${srcAbs}/`)) return "into itself";
     parent.children.set(base, cloneNode(src, base));
@@ -345,11 +345,11 @@ export class Vfs {
     if (!src) return "No such file or directory";
     const { parentPath: sp, base: sb } = splitPath(srcAbs);
     const srcParent = this.lookup(sp);
-    if (!srcParent || srcParent.kind !== "dir") return "No such file or directory";
+    if (srcParent?.kind !== "dir") return "No such file or directory";
     const targetPath = this.dropTarget(src, dstAbs);
     const { parentPath: dp, base: db } = splitPath(targetPath);
     const dstParent = this.lookup(dp);
-    if (!dstParent || dstParent.kind !== "dir") return "No such file or directory";
+    if (dstParent?.kind !== "dir") return "No such file or directory";
     if (targetPath === srcAbs) return "same file";
     if (src.kind === "dir" && targetPath.startsWith(`${srcAbs}/`)) return "into itself";
     srcParent.children.delete(sb);
@@ -408,7 +408,7 @@ export class Vfs {
     const isAbs = pattern.startsWith("/");
     const segs = pattern.split("/").filter((s) => s !== "");
     const start = isAbs ? this.root : this.lookup(cwd);
-    if (!start || start.kind !== "dir") return [];
+    if (start?.kind !== "dir") return [];
 
     const join = (prefix: string, name: string): string =>
       prefix === "" ? name : prefix === "/" ? `/${name}` : `${prefix}/${name}`;
@@ -653,7 +653,7 @@ export function completePath(
   const dirPart = slash >= 0 ? current.slice(0, slash + 1) : "";
   const leaf = slash >= 0 ? current.slice(slash + 1) : current;
   const node = vfs.lookup(vfs.resolvePath(cwd, dirPart || "."));
-  if (!node || node.kind !== "dir") return [];
+  if (node?.kind !== "dir") return [];
   const showHidden = leaf.startsWith(".");
   const out: string[] = [];
   for (const child of node.children.values()) {

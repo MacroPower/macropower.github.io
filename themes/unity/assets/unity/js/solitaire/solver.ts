@@ -49,7 +49,7 @@ export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
   let nodes = 0;
 
   const key = (): string =>
-    cols.map((c, i) => `${down[i]}:${c.map((x) => x.id).join(",")}`).join("|") + "#" + found.join(",");
+    `${cols.map((c, i) => `${down[i]}:${c.map((x) => x.id).join(",")}`).join("|")}#${found.join(",")}`;
 
   const canFound = (c: Card): boolean => found[c.suit] === c.rank - 1;
 

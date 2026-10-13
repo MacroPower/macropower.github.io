@@ -136,7 +136,7 @@ function dismiss(b: Bubble, after?: () => void): void {
 
 function buildBubble(extra?: string): HTMLElement {
   const el = document.createElement("div");
-  el.className = "up-notify-bubble" + (extra ? ` ${extra}` : "");
+  el.className = `up-notify-bubble${extra ? ` ${extra}` : ""}`;
   return el;
 }
 

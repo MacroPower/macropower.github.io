@@ -104,8 +104,8 @@ function installDialogDrag(d: DialogEntry): void {
       if (ev.pointerId !== id) return;
       ox = startOx + (ev.clientX - sx);
       oy = startOy + (ev.clientY - sy);
-      d.dialog.style.setProperty("--ox", ox + "px");
-      d.dialog.style.setProperty("--oy", oy + "px");
+      d.dialog.style.setProperty("--ox", `${ox}px`);
+      d.dialog.style.setProperty("--oy", `${oy}px`);
     };
     // pointerup and pointercancel release alike: the offset applied so far
     // stays in --ox/--oy, only the gesture state comes off.
@@ -160,7 +160,7 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
     if (icon === "none") {
       iconEl.hidden = true;
     } else {
-      iconEl.className = "up-dlg-icon up-dlg-icon-" + icon;
+      iconEl.className = `up-dlg-icon up-dlg-icon-${icon}`;
       iconGlyph.textContent = ICON_GLYPHS[icon];
     }
 

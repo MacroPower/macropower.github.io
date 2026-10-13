@@ -138,8 +138,8 @@ export interface Command {
   builtin?: boolean;
   hidden?: boolean;
   complete?(ctx: CompleteContext): string[];
-  /** Returns the exit status; a void return is treated as 0 (success). */
-  run(ctx: CommandContext): number | void;
+  /** Returns the exit status; an undefined return is treated as 0 (success). */
+  run(ctx: CommandContext): number | undefined;
 }
 
 export interface ShellOptions {
@@ -573,7 +573,7 @@ export class Shell {
           // at flush time, so a bare `> existing-dir` still reports it.
           const abs = this.vfs.resolvePath(this.cwdPath, target);
           const parent = this.vfs.lookup(this.vfs.resolvePath(abs, ".."));
-          if (!parent || parent.kind !== "dir") {
+          if (parent?.kind !== "dir") {
             this.errSink.writeln(color(PALETTE.red, `bash: ${target}: No such file or directory`));
             blocked = true;
             break;

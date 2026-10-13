@@ -32,9 +32,7 @@ function saveHistory(items: readonly string[]): void {
   }
 }
 
-(function (): void {
-  "use strict";
-
+((): void => {
   const root = document.querySelector<HTMLElement>("[data-shell]");
   if (!root) return;
 
