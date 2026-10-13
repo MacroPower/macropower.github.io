@@ -1,8 +1,8 @@
 {{ define "main" }}
 {{- /* The terminal plays an SSH session into the site's host as a guest
       login. params.terminal.user and params.terminal.host rename both. */ -}}
-{{- $user := .Site.Params.terminal.user | default "user" -}}
-{{- $host := .Site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
+{{- $user := site.Params.terminal.user | default "user" -}}
+{{- $host := site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
 {{- /* since: the date the banner's uptime counts from. It is the owner's
       birth date when params.author.born is set, otherwise the date of the
       oldest content page, otherwise empty. The shell bundle turns it into
@@ -13,7 +13,7 @@
 {{- with $author.born -}}
   {{- $since = . -}}
 {{- else -}}
-  {{- with $.Site.RegularPages.ByDate -}}
+  {{- with site.RegularPages.ByDate -}}
     {{- $since = (index . 0).Date.UTC.Format "2006-01-02" -}}
   {{- end -}}
 {{- end -}}
@@ -47,7 +47,7 @@
   ) -}}
 {{- end -}}
 {{- $pages := slice -}}
-{{- range where .Site.RegularPages "Section" "" -}}
+{{- range where site.RegularPages "Section" "" -}}
   {{- $pages = $pages | append (dict
       "slug" (partial "ui/file-name.html" .)
       "date" (.Date.Format "2006-01-02")

@@ -6,7 +6,7 @@
 {{- $playlist := partialCached "playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
-    {{ with .Title }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
+    {{ with .Title }}{{ . }}{{ else }}{{ site.Title }}{{ end }}
   </div>
 
   {{- /* One "Open <page>" row per launcher page (minus Home), straight from
