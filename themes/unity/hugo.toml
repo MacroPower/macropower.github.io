@@ -31,8 +31,9 @@
 # site's own). exampleSite/hugo.toml documents the full surface.
 [params]
   [params.blog]
-    # Date formats in the post reader and the post list.
-    dateFormat     = "Jan 2, 2006"
+    # Date formats in the post reader and the post list. :date_medium
+    # follows the page's language, such as Jan 2, 2006 or 02.01.2006.
+    dateFormat     = ":date_medium"
     listDateFormat = "2006-01-02"
     # Show "N min read" in the post reader.
     readingTime = true

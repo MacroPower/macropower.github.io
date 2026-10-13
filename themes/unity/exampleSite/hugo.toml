@@ -89,8 +89,9 @@ mainSections = ["posts"]
     # host = "unity"
 
   [params.blog]
-    # Long and numeric date formats (post reader and post list).
-    dateFormat     = "Jan 2, 2006"
+    # Long and numeric date formats (post reader and post list). Hugo's
+    # localized :date_medium is the default for the long one.
+    dateFormat     = ":date_medium"
     listDateFormat = "2006-01-02"
     # Show "N min read" in the post reader.
     readingTime = true

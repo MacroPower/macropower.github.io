@@ -123,10 +123,30 @@ interface NetworkInformation {
   type?: string;
 }
 
+// The day a calendar week starts on in the page's language, numbered as
+// Date.getDay() numbers it. A page without a language, or a browser
+// without Intl week data, starts the week on Monday.
+function weekStart(): number {
+  const tag = locale();
+  if (!tag) return 1;
+  try {
+    const loc: Intl.Locale & {
+      getWeekInfo?: () => { firstDay: number };
+      weekInfo?: { firstDay: number };
+    } = new Intl.Locale(tag);
+    const info = loc.getWeekInfo?.() ?? loc.weekInfo;
+    if (info) return info.firstDay % 7;
+  } catch {
+    // An invalid tag falls back to Monday.
+  }
+  return 1;
+}
+
 function renderCalendar(host: HTMLElement, now: Date): void {
   const y = now.getFullYear();
   const m = now.getMonth();
-  const firstDow = (new Date(y, m, 1).getDay() + 6) % 7;
+  const start = weekStart();
+  const firstDow = (new Date(y, m, 1).getDay() - start + 7) % 7;
   const dim = new Date(y, m + 1, 0).getDate();
   const today = now.getDate();
 
@@ -137,15 +157,16 @@ function renderCalendar(host: HTMLElement, now: Date): void {
 
   const headRow = document.createElement("div");
   headRow.className = "up-cal-row up-cal-head";
-  const weekdayInitials = [
+  const sundayFirst = [
+    t("js_panel_cal_sun"),
     t("js_panel_cal_mon"),
     t("js_panel_cal_tue"),
     t("js_panel_cal_wed"),
     t("js_panel_cal_thu"),
     t("js_panel_cal_fri"),
     t("js_panel_cal_sat"),
-    t("js_panel_cal_sun"),
   ];
+  const weekdayInitials = [...sundayFirst.slice(start), ...sundayFirst.slice(0, start)];
   for (const d of weekdayInitials) {
     const c = document.createElement("div");
     c.textContent = d;

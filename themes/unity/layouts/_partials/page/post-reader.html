@@ -1,4 +1,4 @@
-{{- $dateFmt := site.Params.blog.dateFormat | default "Jan 2, 2006" -}}
+{{- $dateFmt := site.Params.blog.dateFormat | default ":date_medium" -}}
 
 <article class="up-reader" data-up-reader>
   <a class="up-reader-up" href="{{ .FirstSection.RelPermalink }}" aria-label="{{ partial "ui/t" "back_to_all_posts" }}">

@@ -130,7 +130,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `desktop.hud` | `true` | `false` removes the HUD and its Alt tap, which some keyboard and screen reader users rely on for the browser's own menus. |
 | `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
-| `blog.dateFormat`, `blog.listDateFormat` | `Jan 2, 2006`, `2006-01-02` | Date formats in the post reader and post list. |
+| `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. Hugo's `:date_medium` follows the page's language. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
 | `blog.toc` | `false` | Opens each post with a table of contents when it has two headings or more. A post's `toc` front matter overrides it. |
 | `blog.feedFullContent` | `false` | Puts each post's whole body in the RSS feed instead of its summary. |

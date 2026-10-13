@@ -1,6 +1,8 @@
 {{- $handle := partial "ui/author-handle.html" . -}}
-{{- /* time.Format names the days and months in the page's language. */ -}}
-{{- $longDate := time.Format "Monday, 2 January 2006" now -}}
+{{- /* time.Format names the days and months in the page's language, and
+      :date_full orders them the way that language does. top-panel.ts
+      replaces these with the visitor's clock. */ -}}
+{{- $longDate := time.Format ":date_full" now -}}
 {{- $time := time.Format "15:04" now -}}
 {{- $shortDate := time.Format "Mon, Jan 2" now -}}
 {{- $playlist := partialCached "playlist.html" . -}}
