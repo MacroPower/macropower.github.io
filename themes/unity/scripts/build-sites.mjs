@@ -156,6 +156,23 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // An owner named only by an author name that is not a unix login.
+  login: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[params.author]
+  name = "Dr. José Doe"
+`,
+      "content/posts/one.md": page("One"),
+    },
+    check: (out) => {
+      const post = read(join(out, "posts/one/index.html"));
+      return [
+        !post.includes("dr@unity:~/posts$") && "posts/one/index.html signs off without the handle dr",
+        !post.includes('<div class="up-lock-user">dr</div>') && "the lock screen does not name dr",
+      ].filter(Boolean);
+    },
+  },
   // Config, front matter, and data in the looser shapes Hugo accepts.
   loose: {
     files: {

@@ -78,6 +78,10 @@ mainSections = ["posts"]
     # trash = ["draft-v2-final.docx", "old-site/"]
     # The network indicator's access points; the first starts connected.
     # networks = ["home-wifi", { name = "wg0", mono = true }]
+    # The owner's login on the lock screen, the user menu, and the post
+    # sign-offs. user defaults to the author's first name, lowercased.
+    # user = "jane"
+    # host = "unity"
 
   [params.blog]
     # Long and numeric date formats (post reader and post list).
