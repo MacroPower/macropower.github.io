@@ -9,6 +9,7 @@ import { installPageWindow } from "./page-window";
 import { initDesktopMarquee } from "./desktop-marquee";
 import { initLock } from "./lock";
 import { setReduceMotion } from "./prefs";
+import { READY_EVENT } from "./events";
 
 // Seed reduce-motion from the OS preference so JS-timed animations
 // (window fly-out, tile removal, lock fade) skip their waits too; the
@@ -47,4 +48,4 @@ document.body.classList.add("up-ready");
 // A site's own scripts (extend-footer.html) run before this deferred
 // bundle, so they wait for this event to call window.uiDialog and the
 // other desktop APIs.
-document.dispatchEvent(new CustomEvent("up:ready"));
+document.dispatchEvent(new CustomEvent(READY_EVENT, { detail: null }));

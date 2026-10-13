@@ -183,7 +183,13 @@ The theme's render hooks extend Hugo's Markdown:
 ## Customizing
 
 - **Extra CSS.** Add `assets/css/custom.css` to your site. The theme appends it to its own stylesheet, so your rules win on equal specificity. It goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files under `assets/unity/css/`. Every theme selector is prefixed `up-`, and the palette lives in CSS custom properties on `:root`.
-- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event.
+- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
+
+  ```js
+  window.dispatchEvent(new CustomEvent("up:notify", {
+    detail: { summary: "Saved", body: "Your draft is safe.", icon: "info" },
+  }));
+  ```
 - **Comments.** Add `layouts/_partials/extend-post.html` to your site. The post reader renders it after each post's body, with the post as its context.
 - **Content Security Policy.** The theme renders no inline script, event handler, or style attribute, so its pages work under `script-src 'self'`. The home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime. Hugo's Google Analytics tag is an inline script, and Hugo's default syntax highlighting writes style attributes.
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.

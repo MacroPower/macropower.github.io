@@ -3,6 +3,7 @@ import type { IDisposable, ILink } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { PALETTE, PALETTE_BRIGHT } from "./ansi";
+import { WINDOW_STATE_EVENT } from "../events";
 
 // Renderer-agnostic terminal surface. The shell core (readline, shell,
 // commands) talks only to this interface; XtermTerminal is the sole xterm
@@ -20,12 +21,6 @@ export interface TerminalIO {
   onData(cb: (data: string) => void): void;
   dispose(): void;
 }
-
-// Cross-bundle contract: page-window.ts dispatches this event name on resize
-// (maximize/restore). The shell is a separate IIFE and cannot import the
-// symbol, so the literal string is duplicated here. Keep in sync with
-// WINDOW_STATE_EVENT in page-window.ts (recorded in the theme CLAUDE.md).
-const WINDOW_STATE_EVENT = "up:page-window-state";
 
 const FONT_FAMILY = '"Ubuntu Mono", ui-monospace, Menlo, monospace';
 // Font shorthand probes for document.fonts.load()/check(): the faces xterm

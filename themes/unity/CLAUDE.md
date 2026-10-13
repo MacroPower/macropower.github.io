@@ -41,7 +41,7 @@ TypeScript types the JavaScript surface but not the DOM. Each module selects its
 
 The app, projects, and shell bundles are separate IIFEs and cannot import each other at runtime.
 
-- `shell/terminal.ts` listens for the literal string `"up:page-window-state"`, which duplicates `WINDOW_STATE_EVENT` in `page-window.ts`. `shell/commands/notify.ts` dispatches the literal `"up:notify"`, which duplicates `NOTIFY_EVENT` in `notify.ts`. Importing either module would inline its side effects into the shell bundle, so the strings are duplicated by design. Rename both ends together.
+- The bundles talk through window and document events. `events.ts` names each event and declares its detail type in the DOM event maps. It has no side effects, so every bundle imports it, and a listener reads a typed `e.detail` without a cast. Add a new cross-bundle event there, never as a string literal. The `up:ready` and `up:notify` events are part of the README's public surface, so renaming either breaks sites.
 - esbuild copies `desktop-select.ts` and `projects-desktop.ts` into both the app and projects bundles, so two instances coexist on the projects page. Keep all of their state inside the `createSelection` and `installDesktop` closures, and never add module-level mutable state to either file.
 
 ## Editing notes

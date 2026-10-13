@@ -9,15 +9,13 @@
 // nothing persists, and every timer/element lives in module state torn down
 // by its own removal path.
 //
-// The desktop side (top-panel.ts) calls notify()/notifyValue() directly; the
-// home page's terminal reaches the daemon from its separate bundle via the
-// literal "up:notify" CustomEvent (see NOTIFY_EVENT below and the cross-bundle
-// notes in CLAUDE.md — same rename-risk class as "up:page-window-state").
+// The desktop side (top-panel.ts) calls notify()/notifyValue() directly. The
+// home page's terminal, in its separate bundle, and a site's own scripts
+// raise bubbles through the NOTIFY_EVENT window event instead.
 
+import { NOTIFY_EVENT, type UPNotifyDetail } from "./events";
 import { t } from "./i18n";
 import { isReduceMotion } from "./prefs";
-
-export const NOTIFY_EVENT = "up:notify";
 
 export interface NotifyOpts {
   title: string;
@@ -283,10 +281,10 @@ export function initNotify(): void {
     }
   }
 
-  // The terminal lives in its own bundle (js/shell.js) and can't import this
-  // module; notify-send raises bubbles through this event instead.
+  // A site's script dispatches this event untyped, so the listener checks
+  // every field before trusting it.
   window.addEventListener(NOTIFY_EVENT, (e) => {
-    const d = (e as CustomEvent<{ summary?: unknown; body?: unknown; icon?: unknown; timeoutMs?: unknown }>).detail;
+    const d: Partial<Record<keyof UPNotifyDetail, unknown>> | null = e.detail;
     if (!d || typeof d.summary !== "string" || !d.summary) return;
     notify({
       title: d.summary,

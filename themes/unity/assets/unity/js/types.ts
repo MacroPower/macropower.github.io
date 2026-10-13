@@ -1,8 +1,8 @@
 // Shared types for unity's TypeScript modules, plus ambient
 // augmentation of `window` for the runtime surface those modules share.
 // Keep in lockstep with the JS objects assigned in _partials/ui/runtime.html
-// (UP_SITE and UP_I18N), page-window.ts (UP_PAGE_WINDOW_STATE,
-// WINDOW_STATE_EVENT) and dialogs.ts (uiDialog).
+// (UP_SITE and UP_I18N), page-window.ts (UP_PAGE_WINDOW_STATE), and
+// dialogs.ts (uiDialog). events.ts types the custom DOM events.
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
 

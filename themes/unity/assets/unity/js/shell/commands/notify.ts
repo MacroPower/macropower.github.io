@@ -1,9 +1,6 @@
 // notify-send — the terminal's bridge to the desktop's notify-osd bubbles.
 // The shell is a separate bundle from app.ts and cannot import notify.ts, so
-// the bubble crosses over as a window CustomEvent. The literal "up:notify"
-// must stay in sync with NOTIFY_EVENT in ../../notify.ts — the same
-// duplicated-by-design contract as "up:page-window-state" (importing the
-// module would inline the app bundle's side effects here). The dispatch is
+// the bubble crosses over as a NOTIFY_EVENT window event. The dispatch is
 // fenced behind a typeof-window guard (the nav.ts isolation rule) so the
 // command stays runnable — and testable — under headless Node, where firing
 // at a daemon that isn't there is simply a no-op, much like a real notify-send
@@ -11,17 +8,13 @@
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";
+import { NOTIFY_EVENT, type UPNotifyDetail } from "../../events";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
-function dispatchNotify(detail: {
-  summary: string;
-  body: string | undefined;
-  icon: string | undefined;
-  timeoutMs: number | undefined;
-}): void {
+function dispatchNotify(detail: UPNotifyDetail): void {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent("up:notify", { detail }));
+  window.dispatchEvent(new CustomEvent(NOTIFY_EVENT, { detail }));
 }
 
 const URGENCIES = new Set(["low", "normal", "critical"]);

@@ -1,18 +1,9 @@
 import { clearOverlayFocus, subscribe, getOverlayFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
+import { WINDOW_STATE_EVENT } from "./events";
+import type { UPPageWindowState } from "./types";
 
-interface PageWindowState {
-  visible: boolean;
-  minimized: boolean;
-  closed: boolean;
-  maximized: boolean;
-}
-
-interface PageWindowStateWithFocus extends PageWindowState {
-  focused: boolean;
-}
-
-export const WINDOW_STATE_EVENT = "up:page-window-state";
+type PageWindowState = Omit<UPPageWindowState, "focused">;
 
 function getPageTile(): HTMLElement | null {
   return (
@@ -21,7 +12,7 @@ function getPageTile(): HTMLElement | null {
   );
 }
 
-function emitState(state: PageWindowStateWithFocus): void {
+function emitState(state: UPPageWindowState): void {
   window.UP_PAGE_WINDOW_STATE = state;
   window.dispatchEvent(new CustomEvent(WINDOW_STATE_EVENT, { detail: state }));
 }

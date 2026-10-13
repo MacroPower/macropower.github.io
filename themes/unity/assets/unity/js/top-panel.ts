@@ -1,13 +1,13 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
 import { locale, t, tn } from "./i18n";
-import { WINDOW_STATE_EVENT } from "./page-window";
+import { WINDOW_STATE_EVENT } from "./events";
 import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
 import { showShortcuts } from "./shortcuts";
 import { showLock } from "./lock";
 import { openStudio } from "./daw";
 import * as audio from "./audio";
-import type { UPDialogOptions, UPPageWindowState, UPSite } from "./types";
+import type { UPDialogOptions, UPSite } from "./types";
 
 const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
@@ -481,7 +481,7 @@ export function initTopPanel(): void {
   };
 
   window.addEventListener(WINDOW_STATE_EVENT, (e) => {
-    winVisible = Boolean((e as CustomEvent<UPPageWindowState>).detail.visible);
+    winVisible = e.detail.visible;
     syncTitle();
   });
   subscribe(syncTitle);
