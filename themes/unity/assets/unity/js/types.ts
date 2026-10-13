@@ -59,5 +59,7 @@ declare global {
     UP_I18N?: UPI18n;
     UP_PAGE_WINDOW_STATE?: UPPageWindowState;
     uiDialog?: (opts: UPDialogOptions) => Promise<string | null>;
+    /** Safari before 14.1 names AudioContext this way. */
+    webkitAudioContext?: typeof AudioContext;
   }
 }

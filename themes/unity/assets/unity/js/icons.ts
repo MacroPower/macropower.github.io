@@ -3,6 +3,7 @@
 // `layout = "icons"` and no-ops without a [data-icon-vault] root.
 
 import { t } from "./i18n";
+import { eventElement } from "./dom";
 
 ((): void => {
   const root = document.querySelector<HTMLElement>("[data-icon-vault]");
@@ -23,7 +24,7 @@ import { t } from "./i18n";
   function wireGroup(group: HTMLElement | null, onPick: (btn: HTMLButtonElement) => void): void {
     if (!group) return;
     group.addEventListener("click", (e) => {
-      const btn = (e.target as HTMLElement | null)?.closest<HTMLButtonElement>("button");
+      const btn = eventElement(e)?.closest<HTMLButtonElement>("button");
       if (!btn) return;
       onPick(btn);
       for (const b of group.querySelectorAll("button")) b.classList.toggle("is-active", b === btn);

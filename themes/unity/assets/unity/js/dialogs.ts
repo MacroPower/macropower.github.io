@@ -229,7 +229,8 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
 
 export function initDialogs(): void {
   host = document.getElementById("up-dialog-host");
-  template = document.getElementById("up-dialog-template") as HTMLTemplateElement | null;
+  const tpl = document.getElementById("up-dialog-template");
+  template = tpl instanceof HTMLTemplateElement ? tpl : null;
   if (!host || !template) {
     console.warn("unity: #up-dialog-host or #up-dialog-template not found; dialogs disabled");
     return;

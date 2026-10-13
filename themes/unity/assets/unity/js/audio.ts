@@ -797,7 +797,7 @@ function impulseBuffer(audio: AudioContext): AudioBuffer {
 function ensureChain(): AudioContext | null {
   if (ctx) return ctx;
   const AC = window.AudioContext
-    ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    ?? window.webkitAudioContext;
   if (!AC) return null;
   ctx = new AC();
   master = ctx.createGain();

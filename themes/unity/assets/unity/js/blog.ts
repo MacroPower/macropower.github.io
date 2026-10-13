@@ -109,7 +109,7 @@ interface SortState {
         }
         node = node.parentElement;
       }
-      return (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
+      return document.scrollingElement instanceof HTMLElement ? document.scrollingElement : document.documentElement;
     };
     let ticking = false;
     const updateProgress = (): void => {
@@ -147,7 +147,7 @@ interface SortState {
       btn.textContent = t("js_blog_copy");
       btn.addEventListener("click", () => {
         const code = pre.querySelector("code") ?? pre;
-        const text = (code as HTMLElement).innerText.replace(/ /g, " ");
+        const text = code.innerText.replace(/ /g, " ");
         const done = (ok: boolean): void => {
           btn.textContent = ok ? t("js_blog_copied") : t("js_blog_copy_failed");
           btn.classList.toggle("is-copied", ok);

@@ -27,7 +27,7 @@ export class Sfx {
    *  gesture handler; repeated calls are cheap. */
   unlock(): void {
     if (!this.ctx) {
-      const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const Ctor = window.AudioContext ?? window.webkitAudioContext;
       if (!Ctor) return;
       const ctx = new Ctor();
       const master = ctx.createGain();

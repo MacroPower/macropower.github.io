@@ -20,6 +20,7 @@
 // it; never add module-level mutable state here.
 
 import { t } from "./i18n";
+import { eventElement, indexOfFocused } from "./dom";
 
 // Brand names for the common forges, so a project's open action reads
 // "Open on GitHub" rather than "Open on github.com". The projects sidebar's
@@ -214,8 +215,8 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     // justDragged into this gesture's click; reset it up front.
     justDragged = false;
 
-    const target = e.target as HTMLElement;
-    const tile = target.closest<HTMLElement>(TILE_SEL);
+    const target = eventElement(e);
+    const tile = target?.closest<HTMLElement>(TILE_SEL) ?? null;
 
     if (tile && grid.contains(tile)) {
       // Don't change selection or preventDefault yet: that preserves the plain
@@ -576,8 +577,8 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   // gives the trash a keyboard path to Restore via its can't-open dialog.
   // Mouse single-clicks (detail >= 1) already selected on pointerup.
   grid.addEventListener("click", (e) => {
-    const target = e.target as HTMLElement;
-    const tile = target.closest<HTMLElement>(TILE_SEL);
+    const target = eventElement(e);
+    const tile = target?.closest<HTMLElement>(TILE_SEL) ?? null;
     if (!tile) return;
     if (justDragged) {
       justDragged = false;
@@ -687,7 +688,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       ctxMenu.addEventListener("keydown", (e) => {
         const items = ctxItems();
         if (!items.length) return;
-        const idx = items.indexOf(document.activeElement as HTMLElement);
+        const idx = indexOfFocused(items);
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
           e.stopPropagation();
@@ -737,8 +738,8 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
 
   grid.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    const target = e.target as HTMLElement;
-    const tile = target.closest<HTMLElement>(TILE_SEL);
+    const target = eventElement(e);
+    const tile = target?.closest<HTMLElement>(TILE_SEL) ?? null;
     const menu = ensureCtxMenu();
     menu.replaceChildren();
     ctxRestoreFocus = null;
@@ -751,7 +752,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     // long-press with pointerType "touch") are positioned and focused
     // exactly as before.
     const keyboardOpen = e.button === -1
-      || (e.button !== 2 && !(e as MouseEvent & { pointerType?: string }).pointerType);
+      || (e.button !== 2 && !("pointerType" in e && e.pointerType));
 
     if (tile && grid.contains(tile)) {
       // Right-click outside the selection retargets to the clicked tile;

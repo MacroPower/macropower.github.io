@@ -22,6 +22,7 @@ import {
 } from "./sprites";
 import { Sfx } from "./sound";
 import { locate, solve, type SolverMove } from "./solver";
+import { eventElement } from "../dom";
 
 const GAP = 4;
 const TABLEAU_W = 7 * CARD_W + 6 * GAP;
@@ -1518,7 +1519,7 @@ function cardName(card: Card): string {
 
   function onKeyDown(e: KeyboardEvent): void {
     if (e.altKey || e.metaKey) return;
-    const target = e.target as HTMLElement | null;
+    const target = eventElement(e);
     if (target && target !== canvas && target.tagName === "BUTTON") return;
     const key = e.key.toLowerCase();
     if (e.ctrlKey) {

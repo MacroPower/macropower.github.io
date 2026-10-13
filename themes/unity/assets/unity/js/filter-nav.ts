@@ -1,4 +1,5 @@
 import { t } from "./i18n";
+import { eventHTMLElement } from "./dom";
 
 export interface FilterNavOptions {
   root: HTMLElement;
@@ -129,7 +130,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
   document.addEventListener("keydown", (e) => {
     if (!root.isConnected) return;
     if (e.defaultPrevented) return;
-    const target = e.target as HTMLElement | null;
+    const target = eventHTMLElement(e);
     const tag = target?.tagName ?? "";
     const typing = tag === "INPUT" || tag === "TEXTAREA" || Boolean(target?.isContentEditable);
 
@@ -156,7 +157,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     // the list rebinds Enter/arrows to where focus actually is; the class
     // fallbacks keep the cursor model for focus-outside navigation.
     let idx = focusInItems
-      ? list.findIndex((i) => i === target || i.contains(target as HTMLElement))
+      ? list.findIndex((i) => i === target || i.contains(target))
       : -1;
     if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-focused"));
     if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-active"));

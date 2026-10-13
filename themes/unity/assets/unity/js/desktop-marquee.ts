@@ -9,6 +9,8 @@
 // other surface — panel, launcher, windows, overlays, dialog backdrops —
 // is its own element, so the target check alone gates the gesture.
 
+import { eventElement } from "./dom";
+
 // Same press-to-drag threshold as the icon grids' marquee.
 const DRAG_THRESHOLD = 4;
 
@@ -61,8 +63,8 @@ export function initDesktopMarquee(): void {
 
   document.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || pointerId !== -1) return;
-    const target = e.target as HTMLElement;
-    if (target !== document.body && target.id !== "up-root") return;
+    const target = eventElement(e);
+    if (target !== document.body && target?.id !== "up-root") return;
     pointerId = e.pointerId;
     startX = e.clientX;
     startY = e.clientY;

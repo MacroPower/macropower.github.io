@@ -16,6 +16,7 @@ import { setStudioFocused, getStudioFocused, subscribe } from "./focus";
 import { t, tn } from "./i18n";
 import type { MidiNote, MidiSong } from "./midi";
 import { installResize } from "./resize";
+import { eventElement, focusedElement } from "./dom";
 
 // ---- piano-roll geometry ----------------------------------------------------
 
@@ -335,7 +336,7 @@ export function initDaw(): void {
   const releaseFocus = (): void => {
     if (chrome.contains(document.activeElement)) {
       if (launcherTile && !launcherTile.hidden) launcherTile.focus();
-      else (document.activeElement as HTMLElement | null)?.blur();
+      else focusedElement()?.blur();
     }
   };
   const show = (): void => {
@@ -376,13 +377,13 @@ export function initDaw(): void {
   chrome.querySelector(".up-tl-min")?.addEventListener("click", (e) => { e.stopPropagation(); minimize(); });
   chrome.querySelector(".up-tl-max")?.addEventListener("click", (e) => { e.stopPropagation(); toggleMaximize(); });
   chrome.querySelector("[data-titlebar]")?.addEventListener("dblclick", (e) => {
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (target?.closest("button")) return;
     toggleMaximize();
   });
 
   document.addEventListener("click", (e) => {
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (!target?.closest('[data-launcher="studio"]')) return;
     e.preventDefault();
     if (!open || minimized) { show(); return; }

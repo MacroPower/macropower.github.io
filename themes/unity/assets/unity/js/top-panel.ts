@@ -8,6 +8,7 @@ import { showLock } from "./lock";
 import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
+import { eventElement, indexOfFocused } from "./dom";
 
 const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
@@ -645,7 +646,7 @@ export function initTopPanel(): void {
   const moveDropdownFocus = (drop: HTMLElement, dir: 1 | -1): void => {
     const items = dropdownItems(drop);
     if (!items.length) return;
-    const idx = items.indexOf(document.activeElement as HTMLElement);
+    const idx = indexOfFocused(items);
     const next = idx === -1
       ? (dir === 1 ? items[0] : items[items.length - 1])
       : items[(idx + dir + items.length) % items.length];
@@ -696,7 +697,7 @@ export function initTopPanel(): void {
 
   document.addEventListener("click", (e) => {
     if (!openTrigger) return;
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (!target) return;
     if (target.closest("[data-panel-trigger]")) return;
     if (target.closest("[data-flyout-keepopen]")) return;
@@ -780,7 +781,7 @@ export function initTopPanel(): void {
   }, { passive: false });
 
   panel.addEventListener("click", (e) => {
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (!target) return;
     const netRow = target.closest<HTMLElement>(".up-net-row");
     if (netRow && panel.contains(netRow)) {

@@ -82,7 +82,8 @@ function resolveIcon(name: string | undefined): Element | null {
   if (!name) return null;
   const key = icons.has(name) ? name : ICON_ALIASES[name];
   const tpl = key ? icons.get(key) : undefined;
-  return tpl ? tpl.cloneNode(true) as Element : null;
+  const clone = tpl?.cloneNode(true);
+  return clone instanceof Element ? clone : null;
 }
 
 // notify-osd's "veil": bubbles never take input, but a pointer resting on one

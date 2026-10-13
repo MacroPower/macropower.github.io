@@ -16,6 +16,7 @@
 import { t, tn } from "./i18n";
 import { dispatchAction } from "./top-panel";
 import { isReduceMotion } from "./prefs";
+import { eventElement } from "./dom";
 
 const MAX_RESULTS = 5;
 
@@ -123,7 +124,7 @@ export function initHud(): void {
   // ---- Rendering -----------------------------------------------------------
 
   const syncSelection = (): void => {
-    const rows = Array.from(list.children) as HTMLElement[];
+    const rows = Array.from(list.children).filter((c) => c instanceof HTMLElement);
     rows.forEach((row, i) => {
       row.classList.toggle("is-selected", i === selected);
       row.setAttribute("aria-selected", i === selected ? "true" : "false");
@@ -257,7 +258,7 @@ export function initHud(): void {
   // of dismissing it; closing first also lets a BFB click swap to the Dash.
   document.addEventListener("click", (e) => {
     if (!visible) return;
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (!target || panel.contains(target)) return;
     close();
   }, true);

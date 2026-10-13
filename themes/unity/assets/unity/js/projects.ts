@@ -100,8 +100,8 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
   // so a language without artwork already points at the generic emblem.
   function buildFolderHeader(symbol: string): HTMLElement | null {
     if (!folderTpl) return null;
-    const clone = folderTpl.content.firstElementChild?.cloneNode(true) as HTMLElement | null;
-    if (!clone) return null;
+    const clone = folderTpl.content.firstElementChild?.cloneNode(true);
+    if (!(clone instanceof HTMLElement)) return null;
     const useEl = clone.querySelector<SVGUseElement>("[data-emblem-use]");
     if (useEl) useEl.setAttribute("href", `#${symbol}`);
     return clone;

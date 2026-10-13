@@ -2,6 +2,7 @@ import { clearOverlayFocus, subscribe, getOverlayFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
 import { WINDOW_STATE_EVENT } from "./events";
 import type { UPPageWindowState } from "./types";
+import { eventElement } from "./dom";
 
 type PageWindowState = Omit<UPPageWindowState, "focused">;
 
@@ -163,7 +164,7 @@ export function installPageWindow(): void {
   maxBtn?.addEventListener("click",   (e) => { e.stopPropagation(); toggleMaximize(); });
 
   titlebar?.addEventListener("dblclick", (e) => {
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (target?.closest("button")) return;
     toggleMaximize();
   });

@@ -5,6 +5,7 @@ import { t, tn } from "./i18n";
 import { isReduceMotion } from "./prefs";
 import { installDesktop } from "./projects-desktop";
 import { installResize } from "./resize";
+import { eventElement } from "./dom";
 
 function syncLauncherTile(open: boolean, focused: boolean): void {
   const tile = document.querySelector<HTMLElement>("[data-launcher-trash]");
@@ -219,7 +220,7 @@ export function initTrash(): void {
   });
 
   document.addEventListener("click", (e) => {
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     const tile = target?.closest('[data-launcher="trash"]');
     if (!tile) return;
     e.preventDefault();

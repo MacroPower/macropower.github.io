@@ -20,6 +20,7 @@ import { openTrash } from "./trash";
 import { dispatchAction } from "./top-panel";
 import { isReduceMotion } from "./prefs";
 import * as audio from "./audio";
+import { eventElement, focusedElement, indexOfFocused } from "./dom";
 
 interface DashTile {
   el: HTMLElement;
@@ -247,7 +248,7 @@ export function initDash(): void {
   };
 
   results.addEventListener("click", (e) => {
-    const tile = (e.target as Element | null)?.closest<HTMLElement>("[data-dash-tile]");
+    const tile = eventElement(e)?.closest<HTMLElement>("[data-dash-tile]");
     if (tile) {
       const action = tile.dataset.dashAction;
       // Close before dispatching so dialogs/windows take focus cleanly;
@@ -256,7 +257,7 @@ export function initDash(): void {
       if (action) runAction(action);
       return;
     }
-    const more = (e.target as Element | null)?.closest<HTMLElement>("[data-dash-more]");
+    const more = eventElement(e)?.closest<HTMLElement>("[data-dash-more]");
     if (more) {
       const s = sections.find((x) => x.more === more);
       if (s) { s.expanded = !s.expanded; apply(); }
@@ -282,7 +283,7 @@ export function initDash(): void {
   // dropdown on top of a still-open Dash instead of dismissing it.
   document.addEventListener("click", (e) => {
     if (!visible) return;
-    const target = e.target as Element | null;
+    const target = eventElement(e);
     if (!target || panel.contains(target) || target.closest("[data-dash-open]")) return;
     close();
   }, true);
@@ -351,15 +352,15 @@ export function initDash(): void {
     }
     if (e.key === "Tab") {
       const items = tabbables();
-      let idx = items.indexOf(document.activeElement as HTMLElement);
+      let idx = indexOfFocused(items);
       if (idx === -1) idx = 0; // from a tile, re-enter the structural cycle
       e.preventDefault();
       items[(idx + (e.shiftKey ? -1 : 1) + items.length) % items.length]?.focus();
       return;
     }
 
-    const onTile = (document.activeElement as HTMLElement | null)?.dataset?.dashTile !== undefined;
-    const cur = document.activeElement as HTMLElement | null;
+    const cur = focusedElement();
+    const onTile = cur?.dataset.dashTile !== undefined;
 
     if (e.key === "Enter" && document.activeElement === input) {
       e.preventDefault();

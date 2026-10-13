@@ -7,6 +7,7 @@
 
 import { locale, t } from "./i18n";
 import { isReduceMotion } from "./prefs";
+import { focusedElement } from "./dom";
 
 let root: HTMLElement | null = null;
 let clockEl: HTMLElement | null = null;
@@ -69,7 +70,7 @@ function unlock(): void {
   const target = restoreFocus?.isConnected ? restoreFocus : null;
   restoreFocus = null;
   if (target) target.focus();
-  else (document.activeElement as HTMLElement | null)?.blur();
+  else focusedElement()?.blur();
 }
 
 export function showLock(opts?: { onUnlock?: () => void }): void {
