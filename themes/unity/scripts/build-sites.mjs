@@ -29,6 +29,13 @@ const SITES = {
   example: {
     source: join(theme, "exampleSite"),
     flags: ["--printUnusedTemplates", "--themesDir", themesDir],
+    // The solitaire and icon pages set noindex.
+    check: (out) => {
+      const sitemap = read(join(out, "sitemap.xml"));
+      return ["solitaire", "icons"]
+        .filter((p) => sitemap.includes(`/${p}/</loc>`))
+        .map((p) => `sitemap.xml lists the noindex page ${p}/`);
+    },
   },
   // The example site served from a subdirectory, as on a GitHub project page.
   subpath: {
