@@ -16,7 +16,11 @@ export class Env {
   // A stable-per-session fake PID for $$.
   private readonly pid = 1000 + Math.floor(Math.random() * 9000);
 
-  constructor(private readonly hooks: EnvHooks) {}
+  private readonly hooks: EnvHooks;
+
+  constructor(hooks: EnvHooks) {
+    this.hooks = hooks;
+  }
 
   get(name: string): string | undefined {
     return this.vars.get(name);

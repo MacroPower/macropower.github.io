@@ -173,13 +173,18 @@ class CaptureSink implements Sink {
 // both streams into one buffer written once.
 class FileSink implements Sink {
   private buf = "";
-  constructor(
-    private readonly vfs: Vfs,
-    private readonly path: string,
-    /** The target as the user wrote it, for bash-style diagnostics. */
-    readonly name: string,
-    private readonly append: boolean,
-  ) {}
+  private readonly vfs: Vfs;
+  private readonly path: string;
+  /** The target as the user wrote it, for bash-style diagnostics. */
+  readonly name: string;
+  private readonly append: boolean;
+
+  constructor(vfs: Vfs, path: string, name: string, append: boolean) {
+    this.vfs = vfs;
+    this.path = path;
+    this.name = name;
+    this.append = append;
+  }
   write(s: string): void { this.buf += s; }
   writeln(s: string): void { this.buf += `${s}\n`; }
   flush(): string | undefined { return this.vfs.writeFile(this.path, this.buf, { append: this.append }); }
@@ -344,11 +349,12 @@ export class Shell {
   private readonly termSink: Sink;
   private readonly errSink: Sink;
 
-  constructor(
-    private readonly term: TerminalIO,
-    readonly data: ShellData,
-    opts: ShellOptions = {},
-  ) {
+  private readonly term: TerminalIO;
+  readonly data: ShellData;
+
+  constructor(term: TerminalIO, data: ShellData, opts: ShellOptions = {}) {
+    this.term = term;
+    this.data = data;
     this.onExit = opts.onExit;
     this.vfs = buildFs(data);
     this.cwdPath = this.vfs.homePath;

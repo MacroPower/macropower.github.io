@@ -173,10 +173,13 @@ function splitPath(absPath: string): { parentPath: string; base: string } {
 }
 
 export class Vfs {
-  constructor(
-    readonly root: DirNode,
-    readonly homePath: string,
-  ) {}
+  readonly root: DirNode;
+  readonly homePath: string;
+
+  constructor(root: DirNode, homePath: string) {
+    this.root = root;
+    this.homePath = homePath;
+  }
 
   // Normalize `input` against `cwd` to an absolute path with no trailing slash
   // (root stays "/"). Leading ~ expands to home; absolute input restarts from

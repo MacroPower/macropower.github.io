@@ -71,10 +71,12 @@ export class Readline {
   private savedBuffer = "";
   private savedCursor = 0;
 
-  constructor(
-    private readonly term: TerminalIO,
-    private readonly opts: ReadlineOptions,
-  ) {
+  private readonly term: TerminalIO;
+  private readonly opts: ReadlineOptions;
+
+  constructor(term: TerminalIO, opts: ReadlineOptions) {
+    this.term = term;
+    this.opts = opts;
     if (opts.history) this.history.push(...opts.history);
     this.term.onData((d) => { this.handle(d); });
   }

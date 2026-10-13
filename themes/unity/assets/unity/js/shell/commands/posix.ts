@@ -34,7 +34,13 @@ class TestError extends Error {}
 // arg-count special cases of the POSIX grammar.
 class TestEval {
   private i = 0;
-  constructor(private readonly toks: string[], private readonly ctx: CommandContext) {}
+  private readonly toks: string[];
+  private readonly ctx: CommandContext;
+
+  constructor(toks: string[], ctx: CommandContext) {
+    this.toks = toks;
+    this.ctx = ctx;
+  }
 
   eval(): boolean {
     const r = this.orExpr();
