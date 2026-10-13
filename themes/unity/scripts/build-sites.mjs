@@ -65,6 +65,8 @@ const SITES = {
 [languages.de]
   label = "Deutsch"
   weight = 2
+  [languages.de.params.desktop]
+    languageBadge = "DE"
 `,
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
@@ -72,6 +74,10 @@ const SITES = {
     check: (out) => [
       !read(join(out, "de/about/index.html")).includes('hreflang="x-default" href="https://example.org/about/"')
         && "de/about/index.html lacks an x-default link to the English page",
+      !read(join(out, "de/about/index.html")).includes('class="up-lang-badge" aria-hidden="true">DE<')
+        && "de/about/index.html ignores the language's badge",
+      !read(join(out, "about/index.html")).includes('class="up-lang-badge" aria-hidden="true">En<')
+        && "about/index.html lacks the default En badge",
     ].filter(Boolean),
   },
   // A section outside mainSections renders as a plain list of its pages.

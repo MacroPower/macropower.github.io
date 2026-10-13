@@ -1,7 +1,8 @@
 {{- /*
   The language indicator, after Unity's keyboard-layout badge. It renders
-  only on a multilingual site. The badge shows the current language, and
-  the dropdown lists every language, each row leading to this page's
+  only on a multilingual site. The badge shows the current language's
+  params.desktop.languageBadge, or else the first two letters of its
+  name, and the dropdown lists every language, each row leading to this page's
   translation or, when the page has none, to that language's home page.
 
   The rows are links, which the HUD indexes and the panel's arrow-key
@@ -23,7 +24,7 @@
   {{- end }}
 <div class="up-panel-item">
   <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="lang" aria-label="{{ partial "ui/t" "language" }}" aria-haspopup="true" aria-expanded="false">
-    <span class="up-lang-badge" aria-hidden="true">{{ substr $current 0 2 | strings.FirstUpper }}</span>
+    <span class="up-lang-badge" aria-hidden="true">{{ site.Params.desktop.languageBadge | default (substr $current 0 2 | strings.FirstUpper) }}</span>
   </button>
   <div class="up-dropdown" data-dropdown-for="lang" data-align="right" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "ui/t" "language" }}</div>
