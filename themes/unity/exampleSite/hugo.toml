@@ -23,6 +23,10 @@ mainSections = ["posts"]
   # Maximum number of items in the RSS feed.
   limit = 10
 
+# Production builds include Hugo's Google Analytics tag when this is set.
+# [services.googleAnalytics]
+#   id = "G-XXXXXXXXXX"
+
 [permalinks]
   # Optional; the theme works with any permalink shape.
   posts = "/posts/:year/:month/:title/"
@@ -50,6 +54,10 @@ mainSections = ["posts"]
 [params]
   # Site description for <meta name="description"> and the feeds.
   description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."
+
+  # Default share image for Open Graph and Twitter cards, under static/
+  # or assets/. A page's own images front matter replaces it.
+  # images = ["img/share.png"]
 
   # Browser UI color emitted as <meta name="theme-color">.
   themeColor = "#1b1c1d"
