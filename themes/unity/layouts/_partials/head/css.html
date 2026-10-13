@@ -4,8 +4,11 @@
   target browsers and publishes the fonts main.css references with hashed
   names, so the preloads read their URLs from the build's artifacts.
 
-  A site's assets/css/custom.css goes through the same build and lands after
-  the theme's rules, so its rules win on equal specificity.
+  The syntax highlighter's classes for the site's markup.highlight.style
+  follow the theme's rules, so a site that sets markup.highlight.noClasses
+  to false gets colored code without inline styles. A site's
+  assets/css/custom.css goes through the same build and lands last, so
+  its rules win on equal specificity.
 
   Context: the page. Call it through partialCached keyed on whether the
   page is the home terminal (is-terminal.html), the only input that
@@ -29,9 +32,10 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- $css := $main -}}
+{{- $parts := slice $main (css.ChromaStyles (dict "targetPath" "css/chroma.css") | css.Build (merge $opts (dict "targetPath" "css/chroma.css"))) -}}
 {{- with resources.Get "css/custom.css" -}}
-  {{- $css = slice $main (. | css.Build (merge $opts (dict "targetPath" "css/custom.css"))) | resources.Concat "css/main.css" -}}
+  {{- $parts = $parts | append (. | css.Build (merge $opts (dict "targetPath" "css/custom.css"))) -}}
 {{- end -}}
+{{- $css := $parts | resources.Concat "css/main.css" -}}
 {{- $css = $css | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

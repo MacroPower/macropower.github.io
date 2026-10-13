@@ -35,7 +35,10 @@ mainSections = ["posts"]
 
 [markup]
   [markup.highlight]
-    style = "monokai"
+    # Classes instead of inline styles. The theme's stylesheet carries the
+    # classes for this style, and pages need no style attributes.
+    noClasses = false
+    style     = "monokai"
   # Passes TeX between these delimiters through to the theme's math
   # render hook, which renders it to MathML at build time.
   [markup.goldmark.extensions.passthrough]
