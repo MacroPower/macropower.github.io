@@ -9,11 +9,10 @@
   registry's launcher set (shared with launcher.html) with a browser-window
   fallback for pages off the launcher.
 */ -}}
-{{- $current := .RelPermalink -}}
 {{- $reg := partialCached "site-pages.html" . -}}
 {{- $icon := "launcher/browser-window" -}}
 {{- range $k, $p := $reg.pages -}}
-  {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}{{ $icon = $p.icon }}{{ end -}}
+  {{- if partial "ui/is-current.html" (dict "page" $ "entry" $p) }}{{ $icon = $p.icon }}{{ end -}}
 {{- end -}}
 <div class="up-hud" data-up-hud hidden>
   <div class="up-hud-backdrop" data-hud-backdrop aria-hidden="true"></div>

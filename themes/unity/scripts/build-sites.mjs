@@ -165,6 +165,24 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // Pages published as .html files, where a section's URL ends in
+  // index.html.
+  ugly: {
+    files: {
+      "hugo.toml": `${BARE}uglyURLs = true
+mainSections = ["posts"]
+[[menu.main]]
+  identifier = "blog"
+  name = "Blog"
+  pageRef = "/posts"
+`,
+      "content/posts/first.md": page("First"),
+    },
+    check: (out) => [
+      !/class="up-launcher-tile is-active"[^>]*data-launcher="blog"/.test(read(join(out, "posts/first.html")))
+        && "posts/first.html leaves the Blog launcher tile inactive",
+    ].filter(Boolean),
+  },
   // A home page in a plain window instead of the terminal.
   homepage: {
     files: {

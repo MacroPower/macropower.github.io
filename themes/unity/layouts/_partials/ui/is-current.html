@@ -1,0 +1,12 @@
+{{- /*
+  Whether the page is a site-pages.html entry or, when the entry's match
+  is "prefix", lies under it. Both URLs drop a trailing index.html first,
+  so on a site with uglyURLs a section's /posts/index.html still contains
+  /posts/first.html.
+
+  Args (dict): page  — the page;
+               entry — a site-pages.html entry, with url and match.
+*/ -}}
+{{- $current := replaceRE `index\.html$` "" .page.RelPermalink -}}
+{{- $url := replaceRE `index\.html$` "" .entry.url -}}
+{{- return (cond (eq .entry.match "prefix") (hasPrefix $current $url) (eq $current $url)) -}}

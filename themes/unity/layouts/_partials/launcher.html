@@ -1,9 +1,8 @@
-{{ $current := .RelPermalink }}
 {{- $reg := partialCached "site-pages.html" . -}}
 {{- $tiles := slice -}}
 {{- range $reg.launcherOrder -}}
   {{- $p := index $reg.pages . -}}
-  {{- $active := cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) -}}
+  {{- $active := partial "ui/is-current.html" (dict "page" $ "entry" $p) -}}
   {{- $tiles = $tiles | append (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" $active) -}}
 {{- end -}}
 <nav class="up-launcher" aria-label="{{ partial "ui/t" "launcher" }}">
@@ -26,7 +25,7 @@
        the current page, where it also carries data-page-current. */}}
   {{- range $reg.runningOrder -}}
     {{- $p := index $reg.pages . -}}
-    {{- if cond (eq $p.match "prefix") (hasPrefix $current $p.url) (eq $current $p.url) }}
+    {{- if partial "ui/is-current.html" (dict "page" $ "entry" $p) }}
   {{ partial "ui/launcher-tile.html" (dict "key" . "label" $p.label "icon" $p.icon "url" $p.url "active" true) }}
     {{- end -}}
   {{- end }}
