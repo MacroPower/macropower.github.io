@@ -8,15 +8,16 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 
 ## Features
 
-- **Home terminal.** An xterm.js shell with a bash-like parser (pipes, redirections, globbing, command substitution, arithmetic), a writable virtual filesystem seeded from your content, about 60 commands, tab completion, history, and a neofetch banner built from your site params. A differential test suite checks the shell core against real bash.
-- **Desktop chrome.** Top panel menus and indicators, launcher dock, Dash search (Super), HUD menu search (Alt), lock screen, NotifyOSD bubbles, and a trash window.
+- **Home terminal.** An xterm.js shell with a bash-like parser (pipes, redirections, globbing, command substitution, arithmetic), a writable virtual filesystem seeded from your content, about 60 commands, tab completion, history, and a neofetch banner built from your site params. A differential test suite checks the shell core against real bash. A site that prefers a plain home page can switch the terminal off.
+- **Desktop chrome.** Top panel menus and indicators, launcher dock, Dash search (Super), HUD menu search (Alt), lock screen, NotifyOSD bubbles, and a trash window. The HUD, the lock screen, and the Trash each switch off with one param.
 - **Blog.** A Nautilus-style post list with filtering, sorting, search, category and series lenses, a focused post reader, and a posts-only RSS feed.
 - **Projects page.** An icon-grid file manager over a YAML data file or your GitHub repositories, with drag-to-reorder, rubber-band selection, and a preview pane.
 - **CV page.** An Evince-style PDF viewer (vendored pdf.js) with thumbnails, zoom, and print and source actions.
 - **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
-- **Translations.** Every label, dialog, and notification goes through Hugo's i18n, dates follow the page's language, and a multilingual site gets a language indicator in the top panel.
+- **Translations.** Every label, dialog, and notification goes through Hugo's i18n, and a string your translation lacks shows in English rather than empty. Dates and the calendar follow the page's language, post bodies lay out right to left where the language does, and a multilingual site gets a language indicator in the top panel.
 - **Markdown.** Heading anchors, GitHub-style alerts, build-time MathML math, and responsive images.
 - **Accessibility and print.** A skip link, real landmarks, keyboard focus that follows each window, and a print stylesheet that puts a post on plain paper without the desktop.
+- **Content Security Policy.** The theme renders no inline script or style attribute, so its pages run under `script-src 'self'`. See [Customizing](#customizing) for the one exception.
 - **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
 
 Hugo partials server-render everything, and Hugo's built-in esbuild bundles the TypeScript and the stylesheet, so a site needs nothing but Hugo: no Node, npm, or Dart Sass. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
