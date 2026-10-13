@@ -469,12 +469,23 @@ async function netClick(row: HTMLElement): Promise<void> {
     body: t("js_panel_net_established_body", { name }) });
 }
 
+// The panel's data-vol-playlist JSON, which playlist.html writes as
+// {url, title} objects. Entries without a string url drop out.
+function parsePlaylist(raw: unknown): audio.PlaylistEntry[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((entry: unknown) => {
+    if (typeof entry !== "object" || entry === null) return [];
+    const { url, title } = entry as Partial<Record<keyof audio.PlaylistEntry, unknown>>;
+    return typeof url === "string" ? [{ url, title: typeof title === "string" ? title : "" }] : [];
+  });
+}
+
 export function initTopPanel(): void {
   const panel = document.querySelector<HTMLElement>(".up-top-panel[data-ssr]");
   if (!panel) return;
   if (panel.dataset.volPlaylist) {
     try {
-      audio.configure(JSON.parse(panel.dataset.volPlaylist) as string[]);
+      audio.configure(parsePlaylist(JSON.parse(panel.dataset.volPlaylist)));
     } catch {
       // Malformed playlist attribute; the player just stays unconfigured.
     }
@@ -707,9 +718,9 @@ export function initTopPanel(): void {
   const playBtn = panel.querySelector<HTMLElement>(".up-vol-play");
   const nowPlaying = panel.querySelector<HTMLElement>("[data-vol-nowplaying]");
 
-  // The label only ever shows the anonymous "Track N" — which track is which
-  // is a surprise. Paused still names the selection so the next-track button
-  // gives visible feedback before anything plays.
+  // The label shows the track's title, or "Track N" for an anonymous one.
+  // Paused still names the selection so the next-track button gives
+  // visible feedback before anything plays.
   const syncNowPlaying = (): void => {
     if (!nowPlaying) return;
     const name = audio.trackName();

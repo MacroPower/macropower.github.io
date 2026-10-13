@@ -204,6 +204,23 @@ mainSections = ["posts"]
       ].filter(Boolean);
     },
   },
+  // A Studio playlist that names one track and leaves the other anonymous.
+  studio: {
+    files: {
+      "hugo.toml": `${BARE}[params.studio]
+  playlist = [{ path = "midi/a.mid", title = "Opening Theme" }, "midi/b.mid"]
+`,
+      "assets/midi/a.mid": "MThd",
+      "assets/midi/b.mid": "MThd",
+    },
+    check: (out) => {
+      const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
+      return [
+        !dash.includes(">Opening Theme</span>") && "the Dash does not name the titled track",
+        !dash.includes(">Track 2</span>") && "the Dash does not number the anonymous track",
+      ].filter(Boolean);
+    },
+  },
   // A desktop with its optional parts switched off.
   minimal: {
     files: {

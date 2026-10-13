@@ -67,12 +67,12 @@
     <button class="up-dash-more" data-dash-more type="button" hidden></button>
   </header>
   <div class="up-dash-grid" data-dash-grid>
-    {{- range $i, $u := . }}
+    {{- range $i, $track := . }}
     <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
             data-dash-action="music:{{ $i }}"
-            data-keywords="{{ partial "ui/t" "kw_track" }}">
+            data-keywords="{{ partial "ui/t" "kw_track" }}{{ with $track.title }} {{ . }}{{ end }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "icon.html" "launcher/cassette-tape" }}</span>
-      <span class="up-dash-tile-label">{{ partial "ui/t" (slice "track_n" (dict "N" (add $i 1))) }}</span>
+      <span class="up-dash-tile-label">{{ $track.title | default (partial "ui/t" (slice "track_n" (dict "N" (add $i 1)))) }}</span>
     </button>
     {{- end }}
   </div>

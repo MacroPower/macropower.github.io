@@ -129,10 +129,15 @@ mainSections = ["posts"]
 
   # The Studio plays MIDI files from the site's assets/. Without a
   # playlist it plays every assets/midi/*.mid and *.midi file in file-name
-  # order, and a site with no MIDI files gets no Studio. This example ships
-  # two public-domain tunes under assets/midi/.
+  # order, and a site with no MIDI files gets no Studio. An entry is a path
+  # or a { path, title } table, and a track without a title shows as
+  # "Track N". This example ships two public-domain tunes under
+  # assets/midi/.
   # [params.studio]
-  #   playlist = ["midi/ode-to-joy.mid", "midi/ah-vous-dirai-je.mid"]
+  #   playlist = [
+  #     { path = "midi/ode-to-joy.mid", title = "Ode to Joy" },
+  #     "midi/ah-vous-dirai-je.mid",
+  #   ]
 
   # Social links: terminal banner rows and JSON-LD sameAs. `short`
   # overrides the terminal label. A "github" entry also powers the

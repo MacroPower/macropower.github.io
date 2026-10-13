@@ -297,12 +297,20 @@ let noiseBuf: AudioBuffer | null = null;
 // them all; each is dropped on its own "ended" event.
 const voices = new Set<AudioScheduledSourceNode>();
 
-// MIDI source + streaming-playback state. The playlist is a list of .mid
-// URLs; display names are deliberately anonymous ("Track 1") so what each one
-// is stays a surprise until you press play. Parsed songs are cached per URL,
-// so flipping back to a track is instant (and keeps its note edits — both are
-// session-only anyway).
-let playlist: string[] = [];
+// MIDI source + streaming-playback state. The playlist comes from the
+// theme's playlist.html. A track without a title shows as "Track 1" and so
+// on, so what it is stays a surprise until you press play. Parsed songs are
+// cached per URL, so flipping back to a track is instant (and keeps its note
+// edits — both are session-only anyway).
+
+/** One Studio track: its MIDI file's URL and its title, empty for an
+ *  anonymous track. */
+export interface PlaylistEntry {
+  url: string;
+  title: string;
+}
+
+let playlist: PlaylistEntry[] = [];
 let trackIdx = 0;
 const songCache = new Map<string, Promise<MidiSong | null>>();
 let song: MidiSong | null = null;
@@ -316,13 +324,13 @@ let pausedAt = 0; // beats; where pause left off / where a stopped-state seek po
 
 // Point the player at the bundled MIDI playlist; each entry is fetched lazily
 // on its first play/selection.
-export function configure(urls: string[]): void {
-  playlist = urls.filter(Boolean);
+export function configure(entries: readonly PlaylistEntry[]): void {
+  playlist = entries.filter((e) => e.url);
   trackIdx = 0;
 }
 
 function loadSong(): Promise<MidiSong | null> {
-  const url = playlist[trackIdx];
+  const url = playlist[trackIdx]?.url;
   if (!url) return Promise.resolve(null);
   let p = songCache.get(url);
   if (!p) {
@@ -340,7 +348,7 @@ function loadSong(): Promise<MidiSong | null> {
   return p.then((s) => {
     // A stale resolve (the user switched tracks mid-fetch) must not clobber
     // the engine's active song.
-    if (url === playlist[trackIdx]) {
+    if (url === playlist[trackIdx]?.url) {
       song = s;
       quantizeActive = s ? computeQuantize(s) : true;
       splitVoices = s ? computeSplitVoices(s) : false;
@@ -891,9 +899,11 @@ export function isPlaying(): boolean {
   return playing;
 }
 
-// Anonymous display label — the playlist never exposes real song names.
+// The active track's title, or "Track N" for an anonymous one.
 export function trackName(): string {
-  return playlist.length ? t("js_sound_track", { n: trackIdx + 1 }) : "";
+  const entry = playlist[trackIdx];
+  if (!entry) return "";
+  return entry.title || t("js_sound_track", { n: trackIdx + 1 });
 }
 
 // The active tempo: the Studio override if set, else the file's tempo.

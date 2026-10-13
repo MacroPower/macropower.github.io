@@ -139,7 +139,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The guest login a visitor gets in the home terminal. |
 | `projects.github` | | A GitHub account whose public repositories fill the projects page when the site has no `data/projects.yaml`. |
 | `projects.minStars`, `projects.minForks`, `projects.recentMonths` | `100`, `6`, `6` | The thresholds behind the projects sidebar's Starred, Forks, and Recent filters. |
-| `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. |
+| `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. An entry is a path or a `{path, title}` table. A track without a title shows as "Track N". |
 
 ### Menu
 
