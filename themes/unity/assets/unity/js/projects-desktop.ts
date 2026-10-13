@@ -22,7 +22,8 @@
 import { t } from "./i18n";
 
 // Brand names for the common forges, so a project's open action reads
-// "Open on GitHub" rather than "Open on github.com".
+// "Open on GitHub" rather than "Open on github.com". The projects sidebar's
+// Devices section (page/projects-sidebar.html) lists the same hosts.
 const FORGES: Record<string, string> = {
   "github.com": "GitHub",
   "gitlab.com": "GitLab",

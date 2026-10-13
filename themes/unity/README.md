@@ -122,7 +122,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `author.name`, `author.email` | site title | The banner name, JSON-LD author, and the Messages indicator's Compose target. A plain string `author = "Jane Doe"` sets the name. |
 | `author.jobTitle`, `author.focus` | | The terminal banner's title row and the focus line under it. `jobTitle` is also the home page's JSON-LD `jobTitle`. |
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
-| `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button and the projects sidebar's GitHub link; a `twitter` entry sets the card metadata. |
+| `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button. Every entry on GitHub, GitLab, Codeberg, Bitbucket, or sourcehut gets a link in the projects sidebar, and a `twitter` entry sets the card metadata. |
 | `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |

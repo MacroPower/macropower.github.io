@@ -39,6 +39,8 @@ const SITES = {
           .map((p) => `sitemap.xml lists the noindex page ${p}/`),
         // The home's Markdown body, for crawlers and visitors without JavaScript.
         !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
+        !read(join(out, "projects/index.html")).includes('href="https://github.com/jane"')
+          && "the projects sidebar lacks the GitHub social link",
       ].filter(Boolean);
     },
   },

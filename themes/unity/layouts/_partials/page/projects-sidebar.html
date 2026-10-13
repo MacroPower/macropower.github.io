@@ -5,13 +5,11 @@
     {{- $counts = merge $counts (dict . (add (index $counts .) 1)) -}}
   {{- end -}}
 {{- end -}}
-{{- $github := partial "ui/social-url.html" "github" -}}
 
 {{- $iconAll := partial "icon.html" "glyphs/sidebar-all" -}}
 {{- $iconStarred := partial "icon.html" "glyphs/star" -}}
 {{- $iconRecent := partial "icon.html" "glyphs/clock" -}}
 {{- $iconForks := partial "icon.html" "glyphs/fork" -}}
-{{- $iconGithub := partial "icon.html" "glyphs/github" -}}
 
 {{- $places := slice
     (dict "tag" "button" "label" (partial "ui/t" "all")     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))
@@ -53,14 +51,22 @@
     (dict "label" (partial "ui/t" "languages") "items" $langs)
 -}}
 
-{{- with $github -}}
-  {{- $sections = $sections | append (dict
-      "label" (partial "ui/t" "devices")
-      "items" (slice (dict
-        "label" "github.com"
-        "url" .
-        "icon" $iconGithub
-        "attrs" (dict "target" "_blank" "rel" "noopener")))) -}}
+{{- /* Devices: the site's social links on a code forge, in
+      params.social order. The hosts match FORGES in projects-desktop.ts. */ -}}
+{{- $forges := slice "github.com" "gitlab.com" "codeberg.org" "bitbucket.org" "git.sr.ht" -}}
+{{- $devices := slice -}}
+{{- range partialCached "socials.html" . -}}
+  {{- $host := strings.TrimPrefix "www." (urls.Parse .url).Host -}}
+  {{- if in $forges $host -}}
+    {{- $devices = $devices | append (dict
+        "label" $host
+        "url" .url
+        "icon" (partial "icon.html" (cond (eq $host "github.com") "glyphs/github" "glyphs/code"))
+        "attrs" (dict "target" "_blank" "rel" "noopener")) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $devices -}}
+  {{- $sections = $sections | append (dict "label" (partial "ui/t" "devices") "items" .) -}}
 {{- end -}}
 
 {{ partial "page/naut-sidebar.html" (dict "ariaLabel" (partial "ui/t" "filters") "sections" $sections) }}
