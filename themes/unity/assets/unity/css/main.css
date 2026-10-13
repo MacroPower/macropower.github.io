@@ -1580,7 +1580,7 @@ a.up-sponsor-card[href]:hover{
 .up-reader{overflow:auto;background:var(--content-bg);position:relative}
 .up-reader-up{
   display:inline-flex;align-items:center;gap:5px;
-  margin:14px 16px 0;padding:3px 8px 3px 6px;width:fit-content;
+  margin:14px 16px 0;padding-block:3px;padding-inline:6px 8px;width:fit-content;
   font-size:12px;color:#3A3733;text-decoration:none;
   /* recipe: raised-button */
   background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
@@ -1633,7 +1633,7 @@ a.up-sponsor-card[href]:hover{
    glyph rule sits outside the Markdown bodies' block, so a heading in
    any other content still shows its link. */
   .up-heading-anchor{
-    margin-left:.35em;color:var(--content-muted);font-weight:400;
+    margin-inline-start:.35em;color:var(--content-muted);font-weight:400;
     text-decoration:none;opacity:0;transition:opacity .12s ease;
     &:hover{color:var(--orange-light);text-decoration:none}
     &:focus-visible{opacity:1}
@@ -1643,11 +1643,11 @@ a.up-sponsor-card[href]:hover{
   h3{font-size:17px}
   h4{font-size:15px;color:#3A3733}
   ul,
-  ol{padding-left:1.4em}
+  ol{padding-inline-start:1.4em}
   li{margin:4px 0}
   blockquote{
-    margin-left:0;padding:8px 14px;color:#5A5550;
-    background:#F4F1ED;border-left:3px solid #C9C5C1;
+    margin-inline-start:0;padding:8px 14px;color:#5A5550;
+    background:#F4F1ED;border-inline-start:3px solid #C9C5C1;
   }
   img{max-width:100%;height:auto;border-radius:3px}
   table{
@@ -1656,7 +1656,7 @@ a.up-sponsor-card[href]:hover{
   }
   th,
   td{
-    border:1px solid var(--content-line);padding:6px 10px;text-align:left;
+    border:1px solid var(--content-line);padding:6px 10px;text-align:start;
   }
   th{background:#F2EFEC;font-weight:500}
   code{
@@ -1686,8 +1686,8 @@ a.up-sponsor-card[href]:hover{
   margin:0 0 20px;padding:8px 14px;font-size:14px;
   background:#F4F1ED;border:1px solid var(--content-line);border-radius:3px;
   > summary{cursor:pointer;font-weight:500;color:#3A3733}
-  ul{list-style:none;margin:6px 0 0;padding-left:0}
-  ul ul{margin:2px 0 0;padding-left:1.1em}
+  ul{list-style:none;margin:6px 0 0;padding-inline-start:0}
+  ul ul{margin:2px 0 0;padding-inline-start:1.1em}
   li{margin:3px 0}
   a{color:#2B4E8E;text-decoration:none}
   a:hover{color:var(--orange-light);text-decoration:underline}
@@ -1712,14 +1712,14 @@ a.up-sponsor-card[href]:hover{
 .up-alert-icon{display:inline-flex;flex:none}
 .up-alert-icon svg{width:16px;height:16px}
 .up-alert-body{
-  padding:4px 12px 9px 35px;
+  padding-block:4px 9px;padding-inline:35px 12px;
   > :last-child{margin-bottom:0}
 }
 details.up-alert{
   > summary{cursor:pointer;list-style:none;padding-bottom:7px}
   > summary::-webkit-details-marker{display:none}
   > summary::after{
-    content:"";margin-left:auto;width:0;height:0;
+    content:"";margin-inline-start:auto;width:0;height:0;
     border:4px solid transparent;border-top-color:currentColor;
     border-bottom-width:0;transition:transform .12s ease;
   }
@@ -1734,7 +1734,7 @@ details.up-alert{
   &:hover .up-code-copy{opacity:1;transform:translateY(0)}
 }
 .up-code-copy{
-  position:absolute;top:6px;right:6px;
+  position:absolute;top:6px;inset-inline-end:6px;
   font:inherit;font-size:11px;line-height:1;
   padding:3px 8px;color:#E8E5E2;
   background:linear-gradient(180deg,#3F3D3A 0%,#2A2825 100%);
