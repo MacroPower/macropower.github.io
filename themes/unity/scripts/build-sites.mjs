@@ -41,6 +41,15 @@ const SITES = {
         !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
         !read(join(out, "projects/index.html")).includes('href="https://github.com/jane"')
           && "the projects sidebar lacks the GitHub social link",
+        // Nothing a Content Security Policy without 'unsafe-inline' blocks.
+        ...htmlFiles(out).flatMap((file) => {
+          const html = read(file);
+          const name = relative(out, file);
+          return [
+            /<[a-z][^>]*\sstyle="/.test(html) && `${name} has a style attribute`,
+            /<script(?![^>]*\ssrc=)(?![^>]*\stype="application\/(?:ld\+)?json")[^>]*>/.test(html) && `${name} has an inline script`,
+          ];
+        }),
       ].filter(Boolean);
     },
   },

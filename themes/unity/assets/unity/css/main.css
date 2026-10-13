@@ -210,6 +210,13 @@ button{font-family:inherit}
   white-space:nowrap;
 }
 
+/* An inline SVG that only defines symbols and gradients for other icons
+   to reference, such as lang-symbols.svg, takes no space. */
+.up-svg-defs{position:absolute}
+/* The charging bolt's outline matches the panel behind it, so the bolt
+   reads as cut out of the battery. */
+.up-bat-bolt{stroke:var(--panel-grad-2,#252423)}
+
 /* =========================================================================
    chrome: wallpaper, top panel, launcher, window chrome
    ========================================================================= */
