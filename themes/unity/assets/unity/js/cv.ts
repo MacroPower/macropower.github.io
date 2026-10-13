@@ -42,18 +42,25 @@ import { t } from "./i18n";
   // 100% means the PDF's own point size at CSS 96dpi, matching Evince.
   const PT_TO_CSS = 96 / 72;
   const ZOOM_STEPS = [0.5, 0.7, 0.85, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
+  const ZOOM_MIN = Math.min(...ZOOM_STEPS);
+  const ZOOM_MAX = Math.max(...ZOOM_STEPS);
   // CSS px width of a thumbnail; .up-docv-thumb-frame is sized by its canvas.
   const THUMB_WIDTH = 104;
   // Backing-store cap (CSS scale x devicePixelRatio) so deep zoom on a hidpi
   // screen cannot allocate absurd canvases.
   const MAX_RENDER_SCALE = 5;
 
+  /** One PDF page and the elements that show it. */
+  interface Sheet {
+    page: PDFPageProxy;
+    el: HTMLElement;
+    canvas: HTMLCanvasElement;
+    thumb: HTMLButtonElement;
+    thumbCanvas: HTMLCanvasElement;
+  }
+
   let doc: PDFDocumentProxy | null = null;
-  let pdfPages: PDFPageProxy[] = [];
-  let sheets: HTMLElement[] = [];
-  let canvases: HTMLCanvasElement[] = [];
-  let thumbs: HTMLButtonElement[] = [];
-  let thumbCanvases: HTMLCanvasElement[] = [];
+  let sheets: Sheet[] = [];
   let maxPagePtWidth = 0;
   let current = 1;
   let fitWidth = true;
@@ -81,9 +88,8 @@ import { t } from "./i18n";
     const pct = (scale / PT_TO_CSS) * 100;
     if (zoomReadout) zoomReadout.textContent = t("js_cv_zoom_percent", { percent: Math.round(pct) });
     const z = scale / PT_TO_CSS;
-    if (zoomOutBtn) zoomOutBtn.disabled = !doc || z <= ZOOM_STEPS[0] + 1e-3;
-    if (zoomInBtn)
-      zoomInBtn.disabled = !doc || z >= ZOOM_STEPS[ZOOM_STEPS.length - 1] - 1e-3;
+    if (zoomOutBtn) zoomOutBtn.disabled = !doc || z <= ZOOM_MIN + 1e-3;
+    if (zoomInBtn) zoomInBtn.disabled = !doc || z >= ZOOM_MAX - 1e-3;
     if (zoomFitBtn) zoomFitBtn.setAttribute("aria-pressed", String(fitWidth));
   }
 
@@ -99,8 +105,7 @@ import { t } from "./i18n";
     const gen = generation;
     const dpr = window.devicePixelRatio || 1;
     const out = Math.max(1, Math.min(dpr, MAX_RENDER_SCALE / scale));
-    pdfPages.forEach((page, i) => {
-      const canvas = canvases[i];
+    for (const { page, canvas } of sheets) {
       const vp = page.getViewport({ scale });
       canvas.style.width = `${Math.floor(vp.width)}px`;
       canvas.style.height = `${Math.floor(vp.height)}px`;
@@ -119,7 +124,7 @@ import { t } from "./i18n";
         .catch(() => {
           /* stale or failed render; the sheet keeps its last paint */
         });
-    });
+    }
     updateZoomUI();
   }
 
@@ -137,14 +142,14 @@ import { t } from "./i18n";
     if (pageInput) pageInput.value = String(n);
     if (prevBtn) prevBtn.disabled = n <= 1;
     if (nextBtn) nextBtn.disabled = !doc || n >= doc.numPages;
-    thumbs.forEach((t, i) => {
+    sheets.forEach(({ thumb }, i) => {
       const active = i === n - 1;
-      t.classList.toggle("is-active", active);
+      thumb.classList.toggle("is-active", active);
       if (active) {
-        t.setAttribute("aria-current", "page");
-        t.scrollIntoView({ block: "nearest" });
+        thumb.setAttribute("aria-current", "page");
+        thumb.scrollIntoView({ block: "nearest" });
       } else {
-        t.removeAttribute("aria-current");
+        thumb.removeAttribute("aria-current");
       }
     });
   }
@@ -155,7 +160,7 @@ import { t } from "./i18n";
     const sheet = sheets[target - 1];
     if (!sheet) return;
     // A little breathing room above the sheet, mirroring the well's padding.
-    const top = Math.max(0, sheet.offsetTop - 14);
+    const top = Math.max(0, sheet.el.offsetTop - 14);
     view.scrollTo({ top, behavior: reduceMotion() ? "auto" : "smooth" });
     setCurrent(target);
   }
@@ -165,9 +170,9 @@ import { t } from "./i18n";
     if (!sheets.length) return;
     const ref = view.scrollTop + view.clientHeight / 3;
     let n = 1;
-    for (let i = 0; i < sheets.length; i++) {
-      if (sheets[i].offsetTop <= ref) n = i + 1;
-    }
+    sheets.forEach(({ el }, i) => {
+      if (el.offsetTop <= ref) n = i + 1;
+    });
     if (n !== current) setCurrent(n);
   }
 
@@ -197,17 +202,16 @@ import { t } from "./i18n";
     });
   }
 
-  function buildDom(numPages: number): void {
-    for (let n = 1; n <= numPages; n++) {
-      const sheet = document.createElement("div");
-      sheet.className = "up-docv-sheet";
+  function buildDom(pages: PDFPageProxy[]): Sheet[] {
+    return pages.map((page, i) => {
+      const n = i + 1;
+      const el = document.createElement("div");
+      el.className = "up-docv-sheet";
       const canvas = document.createElement("canvas");
       canvas.setAttribute("role", "img");
       canvas.setAttribute("aria-label", t("js_cv_page", { page: n }));
-      sheet.appendChild(canvas);
-      pagesEl.appendChild(sheet);
-      sheets.push(sheet);
-      canvases.push(canvas);
+      el.appendChild(canvas);
+      pagesEl.appendChild(el);
 
       const thumb = document.createElement("button");
       thumb.type = "button";
@@ -215,17 +219,16 @@ import { t } from "./i18n";
       thumb.setAttribute("aria-label", t("js_cv_go_to_page", { page: n }));
       const frame = document.createElement("span");
       frame.className = "up-docv-thumb-frame";
-      const tc = document.createElement("canvas");
-      frame.appendChild(tc);
+      const thumbCanvas = document.createElement("canvas");
+      frame.appendChild(thumbCanvas);
       const num = document.createElement("span");
       num.className = "up-docv-thumb-num";
       num.textContent = String(n);
       thumb.append(frame, num);
       thumb.addEventListener("click", () => goTo(n));
       thumbsEl.appendChild(thumb);
-      thumbs.push(thumb);
-      thumbCanvases.push(tc);
-    }
+      return { page, el, canvas, thumb, thumbCanvas };
+    });
   }
 
   function showError(err: unknown): void {
@@ -300,16 +303,16 @@ import { t } from "./i18n";
   getDocument({ url, enableHWA: true })
     .promise.then(async (d) => {
       doc = d;
-      pdfPages = await Promise.all(
+      const pages = await Promise.all(
         Array.from({ length: d.numPages }, (_, i) => d.getPage(i + 1)),
       );
       maxPagePtWidth = Math.max(
-        ...pdfPages.map((p) => p.getViewport({ scale: 1 }).width),
+        ...pages.map((p) => p.getViewport({ scale: 1 }).width),
       );
       if (pageCount) pageCount.textContent = String(d.numPages);
-      buildDom(d.numPages);
+      sheets = buildDom(pages);
       if (loadingEl) loadingEl.hidden = true;
-      pdfPages.forEach((p, i) => renderThumb(p, thumbCanvases[i]));
+      for (const { page, thumbCanvas } of sheets) renderThumb(page, thumbCanvas);
       for (const el of [pageInput, prevBtn, nextBtn, zoomOutBtn, zoomInBtn, zoomFitBtn]) {
         if (el) el.disabled = false;
       }

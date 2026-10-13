@@ -106,7 +106,7 @@ export class Sfx {
         // A pentatonic step that climbs with every card sent up, so filling
         // a foundation plays a rising scale.
         const scale = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28];
-        const semis = scale[Math.max(0, Math.min(scale.length - 1, arg))];
+        const semis = scale[Math.max(0, Math.min(scale.length - 1, arg))]!;
         const f = 523.25 * Math.pow(2, semis / 12);
         this.chime(t, f, 0.32);
         this.chime(t + 0.02, f * 2, 0.16, 0.5);

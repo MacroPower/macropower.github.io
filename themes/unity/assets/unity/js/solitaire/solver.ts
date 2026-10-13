@@ -18,7 +18,7 @@
 // speculative run splits. Deals that blow the budget return null; the
 // caller deals again.
 
-import { isRed, type Card, type Klondike, type Loc } from "./klondike";
+import { isRed, itemAt, type Card, type Klondike, type Loc, type Suit } from "./klondike";
 
 export interface SolverMove {
   /** The lead card of the run being played. */
@@ -39,7 +39,8 @@ const ABORT = new Error("solver budget exhausted");
 export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
   const cols: Card[][] = game.tableau.map((c) => c.slice());
   const down: number[] = game.tableau.map((c) => c.filter((x) => !x.faceUp).length);
-  const found: number[] = game.foundations.map((f) => f.length);
+  const found: [number, number, number, number] = [0, 0, 0, 0];
+  for (const [suit, f] of game.foundations.entries()) found[suit] = f.length;
   const pool: Card[] = [...game.stock, ...game.waste];
   const inPool = new Array<boolean>(52).fill(false);
   for (const c of pool) inPool[c.id] = true;
@@ -56,33 +57,34 @@ export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
   // below can still need it as a base.
   const safe = (c: Card): boolean => {
     if (c.rank <= 2) return true;
-    const opp = isRed(c.suit) ? [2, 3] : [0, 1];
+    const opp: [Suit, Suit] = isRed(c.suit) ? [2, 3] : [0, 1];
     return found[opp[0]] >= c.rank - 1 && found[opp[1]] >= c.rank - 1;
   };
 
   const canStack = (lead: Card, col: number): boolean => {
-    const dest = cols[col];
-    if (dest.length === 0) return lead.rank === 13;
-    const top = dest[dest.length - 1];
+    const top = itemAt(cols, col).at(-1);
+    if (!top) return lead.rank === 13;
     return top.rank === lead.rank + 1 && isRed(top.suit) !== isRed(lead.suit);
   };
 
   /** Expose the next card when a column's face-up run is fully gone. */
   const flipIfBare = (col: number): boolean => {
-    if (down[col] > 0 && cols[col].length === down[col]) {
-      down[col]--;
+    const hidden = itemAt(down, col);
+    if (hidden > 0 && itemAt(cols, col).length === hidden) {
+      down[col] = hidden - 1;
       return true;
     }
     return false;
   };
 
   const tableauToFoundation = (col: number): Step => {
-    const card = cols[col][cols[col].length - 1];
+    const column = itemAt(cols, col);
+    const card = itemAt(column, column.length - 1);
     let flipped = false;
     return {
       move: { card, from: "tableau", to: { kind: "foundation", pile: card.suit } },
-      apply() { cols[col].pop(); found[card.suit]++; flipped = flipIfBare(col); },
-      undo() { if (flipped) down[col]++; found[card.suit]--; cols[col].push(card); },
+      apply() { column.pop(); found[card.suit]++; flipped = flipIfBare(col); },
+      undo() { if (flipped) down[col] = itemAt(down, col) + 1; found[card.suit]--; column.push(card); },
     };
   };
 
@@ -92,20 +94,25 @@ export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
     undo() { found[card.suit]--; inPool[card.id] = true; },
   });
 
-  const poolToTableau = (card: Card, col: number): Step => ({
-    move: { card, from: "stock", to: { kind: "tableau", pile: col } },
-    apply() { inPool[card.id] = false; cols[col].push(card); },
-    undo() { cols[col].pop(); inPool[card.id] = true; },
-  });
+  const poolToTableau = (card: Card, col: number): Step => {
+    const column = itemAt(cols, col);
+    return {
+      move: { card, from: "stock", to: { kind: "tableau", pile: col } },
+      apply() { inPool[card.id] = false; column.push(card); },
+      undo() { column.pop(); inPool[card.id] = true; },
+    };
+  };
 
   const tableauToTableau = (col: number, index: number, dest: number): Step => {
-    const card = cols[col][index];
+    const source = itemAt(cols, col);
+    const target = itemAt(cols, dest);
+    const card = itemAt(source, index);
     let run: Card[] = [];
     let flipped = false;
     return {
       move: { card, from: "tableau", to: { kind: "tableau", pile: dest } },
-      apply() { run = cols[col].splice(index); cols[dest].push(...run); flipped = flipIfBare(col); },
-      undo() { if (flipped) down[col]++; cols[dest].splice(cols[dest].length - run.length); cols[col].push(...run); },
+      apply() { run = source.splice(index); target.push(...run); flipped = flipIfBare(col); },
+      undo() { if (flipped) down[col] = itemAt(down, col) + 1; target.splice(target.length - run.length); source.push(...run); },
     };
   };
 
@@ -116,29 +123,28 @@ export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
     const poolPlays: Step[] = [];
     const splits: Step[] = [];
 
-    for (let col = 0; col < 7; col++) {
-      const column = cols[col];
-      if (column.length === 0) continue;
-      const top = column[column.length - 1];
-      if (canFound(top)) (safe(top) ? forced : foundations).push(tableauToFoundation(col));
+    for (const [col, column] of cols.entries()) {
+      const top = column.at(-1);
+      if (top && canFound(top)) (safe(top) ? forced : foundations).push(tableauToFoundation(col));
     }
     for (const card of pool) {
       if (inPool[card.id] && canFound(card)) (safe(card) ? forced : foundations).push(poolToFoundation(card));
     }
-    if (forced.length) return [forced[0]];
+    const [first] = forced;
+    if (first) return [first];
 
     // The first empty column stands for all of them.
     const emptyCol = cols.findIndex((c) => c.length === 0);
-    for (let col = 0; col < 7; col++) {
-      const column = cols[col];
-      for (let index = down[col]; index < column.length; index++) {
-        const lead = column[index];
+    for (const [col, column] of cols.entries()) {
+      const hidden = itemAt(down, col);
+      for (let index = hidden; index < column.length; index++) {
+        const lead = itemAt(column, index);
         // A king already at the base of a column has nowhere better to be.
         if (index === 0 && lead.rank === 13) continue;
-        const useful = index === down[col] && (down[col] > 0 || index === 0);
+        const useful = index === hidden && (hidden > 0 || index === 0);
         for (let dest = 0; dest < 7; dest++) {
           if (dest === col) continue;
-          if (cols[dest].length === 0 && dest !== emptyCol) continue;
+          if (itemAt(cols, dest).length === 0 && dest !== emptyCol) continue;
           if (!canStack(lead, dest)) continue;
           (useful ? uncovers : splits).push(tableauToTableau(col, index, dest));
         }
@@ -147,7 +153,7 @@ export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
     for (const card of pool) {
       if (!inPool[card.id]) continue;
       for (let dest = 0; dest < 7; dest++) {
-        if (cols[dest].length === 0 && dest !== emptyCol) continue;
+        if (itemAt(cols, dest).length === 0 && dest !== emptyCol) continue;
         if (canStack(card, dest)) poolPlays.push(poolToTableau(card, dest));
       }
     }
@@ -185,8 +191,8 @@ export function locate(game: Klondike, move: SolverMove): { from: Loc; index: nu
     const top = game.waste[game.waste.length - 1];
     return top && top.id === move.card.id ? { from: { kind: "waste", pile: 0 }, index: game.waste.length - 1 } : null;
   }
-  for (let col = 0; col < 7; col++) {
-    const index = game.tableau[col].indexOf(move.card);
+  for (const [col, column] of game.tableau.entries()) {
+    const index = column.indexOf(move.card);
     if (index >= 0) return { from: { kind: "tableau", pile: col }, index };
   }
   return null;

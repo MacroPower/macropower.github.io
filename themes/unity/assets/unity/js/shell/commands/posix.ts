@@ -260,7 +260,7 @@ export const printf: Command = {
 function formatOne(
   conv: string,
   arg: string | undefined,
-  o: { left: boolean; zero: boolean; width: number; prec?: number },
+  o: { left: boolean; zero: boolean; width: number; prec: number | undefined },
   toInt: (s: string | undefined) => number,
 ): string {
   let body: string;

@@ -51,10 +51,10 @@ describe("parseMidi", () => {
     expect(song.durationBeats).toBeCloseTo(1.5, 9);
     expect(song.notes).toHaveLength(2);
     expect(song.notes[0]).toMatchObject({ pitch: 60, channel: 0 });
-    expect(song.notes[0].start).toBeCloseTo(0, 9);
-    expect(song.notes[0].dur).toBeCloseTo(1, 9);
-    expect(song.notes[1].start).toBeCloseTo(1, 9);
-    expect(song.notes[1].dur).toBeCloseTo(0.5, 9);
+    expect(song.notes[0]?.start).toBeCloseTo(0, 9);
+    expect(song.notes[0]?.dur).toBeCloseTo(1, 9);
+    expect(song.notes[1]?.start).toBeCloseTo(1, 9);
+    expect(song.notes[1]?.dur).toBeCloseTo(0.5, 9);
   });
 
   it("records the MIDI channel", () => {
@@ -63,7 +63,7 @@ describe("parseMidi", () => {
       { delta: 0, bytes: on(36, 9) },
       { delta: 24, bytes: off(36, 9) },
     ]));
-    expect(song.notes[0].channel).toBe(9);
+    expect(song.notes[0]?.channel).toBe(9);
   });
 
   it("normalizes note-on velocity to 0..1", () => {
@@ -74,8 +74,8 @@ describe("parseMidi", () => {
       { delta: 0, bytes: on(62, 0, 64) },
       { delta: 48, bytes: off(62) },
     ]));
-    expect(song.notes[0].vel).toBeCloseTo(1, 9);
-    expect(song.notes[1].vel).toBeCloseTo(64 / 127, 9);
+    expect(song.notes[0]?.vel).toBeCloseTo(1, 9);
+    expect(song.notes[1]?.vel).toBeCloseTo(64 / 127, 9);
   });
 
   it("trims a silent lead-in so playback starts on the first note", () => {
@@ -84,7 +84,7 @@ describe("parseMidi", () => {
       { delta: 192, bytes: on(60) }, // first onset at raw beat 2
       { delta: 96, bytes: off(60) },
     ]));
-    expect(song.notes[0].start).toBeCloseTo(0, 9);
+    expect(song.notes[0]?.start).toBeCloseTo(0, 9);
     expect(song.durationBeats).toBeCloseTo(1, 9);
   });
 
@@ -128,10 +128,10 @@ describe("parseMidi", () => {
       { delta: 96, bytes: off(62) }, // raw beat 1..2 under 60
     ]));
     expect(song.bpm).toBeCloseTo(60, 6);
-    expect(song.notes[0].start).toBeCloseTo(0, 9);
-    expect(song.notes[0].dur).toBeCloseTo(0.5, 9);
-    expect(song.notes[1].start).toBeCloseTo(0.5, 9);
-    expect(song.notes[1].dur).toBeCloseTo(1, 9);
+    expect(song.notes[0]?.start).toBeCloseTo(0, 9);
+    expect(song.notes[0]?.dur).toBeCloseTo(0.5, 9);
+    expect(song.notes[1]?.start).toBeCloseTo(0.5, 9);
+    expect(song.notes[1]?.dur).toBeCloseTo(1, 9);
   });
 
   it("keeps single-tempo timing exact (no warp applied)", () => {
@@ -144,7 +144,7 @@ describe("parseMidi", () => {
       { delta: 0, bytes: on(62) },
       { delta: 32, bytes: off(62) },
     ]));
-    expect(song.notes[0].dur).toBeCloseTo(1 / 3, 9);
-    expect(song.notes[1].start).toBeCloseTo(1 / 3, 9);
+    expect(song.notes[0]?.dur).toBeCloseTo(1 / 3, 9);
+    expect(song.notes[1]?.start).toBeCloseTo(1 / 3, 9);
   });
 });

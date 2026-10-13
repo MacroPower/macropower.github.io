@@ -21,12 +21,12 @@ export const NOTIFY_EVENT = "up:notify";
 
 export interface NotifyOpts {
   title: string;
-  body?: string;
+  body?: string | undefined;
   /** A key from the SSR'd icon template (info, warning, music, ...) or a
    *  freedesktop-style alias (dialog-information, audio-volume-high, ...). */
-  icon?: string;
+  icon?: string | undefined;
   /** Display time; clamped to 1–20s like notify-send's expire-time. */
-  timeoutMs?: number;
+  timeoutMs?: number | undefined;
 }
 
 export interface NotifyValueOpts {

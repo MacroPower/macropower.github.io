@@ -25,7 +25,7 @@ describe("solve", () => {
     g.waste = [];
     g.tableau = [[], [], [], [], [], [], []];
     for (let suit = 0; suit < 4; suit++) {
-      for (let rank = 13; rank >= 1; rank--) g.tableau[suit].push(card(suit as Suit, rank));
+      for (let rank = 13; rank >= 1; rank--) g.tableau[suit]!.push(card(suit as Suit, rank));
     }
     const moves = solve(g);
     expect(moves).not.toBeNull();

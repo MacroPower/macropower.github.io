@@ -48,9 +48,9 @@ export interface ReadlineOptions {
   /** Ctrl-D on an empty line. */
   onEof?: () => void;
   /** History to seed (e.g. restored from a previous session). */
-  history?: string[];
+  history?: string[] | undefined;
   /** Called after each accepted line so the host can persist history. */
-  onHistoryChange?: (history: readonly string[]) => void;
+  onHistoryChange?: ((history: readonly string[]) => void) | undefined;
 }
 
 // Renderer-agnostic single-line editor. Owns the line buffer, cursor, kill

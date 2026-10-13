@@ -23,7 +23,8 @@ const KEYS_W = 46; // sticky key column
 const RULER_H = 20; // sticky bar ruler
 const ROW_H = 10; // one semitone
 const DRUM_GAP = 7; // band between the pitched grid and the drum lane
-const ZOOMS = [12, 18, 26, 38, 56]; // px per beat
+const ZOOMS = [12, 18, 26, 38, 56] as const; // px per beat
+const ZOOM_DEFAULT = 2;
 const PITCH_MIN = 21; // A0
 const PITCH_MAX = 108; // C8
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -50,7 +51,7 @@ interface Track {
   strip: audio.ChannelStrip;
 }
 
-const KEYS_COLORS = ["#E8C25A", "#B98AE8", "#5AC8C0", "#E8975A"];
+const KEYS_COLORS = ["#E8C25A", "#B98AE8", "#5AC8C0", "#E8975A"] as const;
 
 // Group the flat note list by mixer-strip key (the MIDI channel, except that
 // a single-channel song splits into its bass/lead voices — audio.stripKey)
@@ -77,7 +78,7 @@ function deriveTracks(song: MidiSong): Track[] {
     else if (i === pitched.length - 1) { name = t("js_studio_track_lead"); color = "#6FE07C"; }
     else {
       name = pitched.length > 3 ? t("js_studio_track_keys_n", { n: keysIdx + 1 }) : t("js_studio_track_keys");
-      color = KEYS_COLORS[keysIdx % KEYS_COLORS.length];
+      color = KEYS_COLORS[keysIdx % KEYS_COLORS.length] ?? KEYS_COLORS[0];
       keysIdx++;
     }
     tracks.push({ channel: key & 0xff, name, color, notes, strip: audio.strip(key) });
@@ -424,14 +425,14 @@ export function initDaw(): void {
   let pitchLo = 48;
   let pitchHi = 84;
   let hasDrums = false;
-  let zoomIdx = 2;
+  let zoomIdx: number = ZOOM_DEFAULT;
   let follow = true;
   let dirty = true;
   let raf = 0;
   let programmaticScroll = false;
   let dpr = 1;
 
-  const pxb = (): number => ZOOMS[zoomIdx];
+  const pxb = (): number => ZOOMS[zoomIdx] ?? ZOOMS[ZOOM_DEFAULT];
   const rows = (): number => pitchHi - pitchLo + 1;
   const drumTop = (): number => RULER_H + rows() * ROW_H + DRUM_GAP;
   const contentW = (): number => song ? KEYS_W + Math.ceil(song.durationBeats + 4) * pxb() : 0;
@@ -1132,9 +1133,9 @@ export function initDaw(): void {
       g.fillRect(0, dt - DRUM_GAP, KEYS_W, DRUM_GAP + DRUM_ROWS.length * ROW_H + 8);
       g.font = '9px "Ubuntu Mono", monospace';
       g.fillStyle = "#8E939B";
-      for (let i = 0; i < DRUM_ROWS.length; i++) {
-        g.fillText(DRUM_ROWS[i].label, 6, dt + i * ROW_H + ROW_H / 2 + 0.5);
-      }
+      DRUM_ROWS.forEach((row, i) => {
+        g.fillText(row.label, 6, dt + i * ROW_H + ROW_H / 2 + 0.5);
+      });
     }
     g.fillStyle = "rgba(255,255,255,.10)";
     g.fillRect(KEYS_W - 1, RULER_H, 1, vh - RULER_H);
@@ -1231,10 +1232,10 @@ export function initDaw(): void {
       const hz = 440 * Math.pow(2, (pitch - 69) / 12);
       setStatus(`${noteName(pitch)} · ${hz.toFixed(1)} Hz`);
     } else if (hasDrums) {
-      const di = Math.floor((cy - drumTop()) / ROW_H);
-      if (di >= 0 && di < DRUM_ROWS.length) {
-        audio.auditionNote(DRUM_ROWS[di].pitch, 9);
-        setStatus(drumLabel(DRUM_ROWS[di].pitch));
+      const row = DRUM_ROWS[Math.floor((cy - drumTop()) / ROW_H)];
+      if (row) {
+        audio.auditionNote(row.pitch, 9);
+        setStatus(drumLabel(row.pitch));
       }
     }
   };

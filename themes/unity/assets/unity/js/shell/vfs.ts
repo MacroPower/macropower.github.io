@@ -37,7 +37,7 @@ interface BaseNode {
   mode: string;
   mtime: string;
   size: number;
-  url?: string;
+  url?: string | undefined;
 }
 
 export interface FileNode extends BaseNode {
@@ -78,7 +78,7 @@ function file(
     mode?: string;
     mtime: string;
     size: number;
-    url?: string;
+    url?: string | undefined;
     content: () => string[];
   },
 ): FileNode {
@@ -95,7 +95,7 @@ function file(
 
 function dir(
   name: string,
-  opts: { mtime: string; url?: string; children: FsNode[] },
+  opts: { mtime: string; url?: string | undefined; children: FsNode[] },
 ): DirNode {
   const children = new Map<string, FsNode>();
   for (const child of opts.children) children.set(child.name, child);

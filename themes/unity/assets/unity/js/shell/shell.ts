@@ -344,7 +344,7 @@ export class Shell {
   // Set by CommandContext.requestExit (the `exit` builtin); consumed after the
   // line finishes so exit ends the line's whole `&&`/`;` chain first.
   private exitRequested = false;
-  private readonly onExit?: () => void;
+  private readonly onExit: (() => void) | undefined;
 
   private readonly termSink: Sink;
   private readonly errSink: Sink;

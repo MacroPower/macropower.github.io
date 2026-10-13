@@ -7,7 +7,7 @@
 // once into offscreen canvases and cached, so a frame is only drawImage
 // calls.
 
-import { isRed, RANK_LABELS, type Suit } from "./klondike";
+import { isRed, itemAt, RANK_LABELS, type Suit } from "./klondike";
 
 export const CARD_W = 31;
 export const CARD_H = 43;
@@ -53,7 +53,7 @@ export function suitColor(suit: Suit): string {
   return isRed(suit) ? PAL.red : PAL.black;
 }
 
-type Rows = string[];
+type Rows = [string, ...string[]];
 
 interface BlitOpts {
   rot180?: boolean;
@@ -68,10 +68,9 @@ export function blit(
 ): void {
   const h = rows.length;
   const w = rows[0].length;
-  for (let j = 0; j < h; j++) {
-    const row = rows[j];
+  for (const [j, row] of rows.entries()) {
     for (let i = 0; i < w; i++) {
-      const ch = row[i];
+      const ch = row.charAt(i);
       if (ch === "." || ch === " ") continue;
       const color = colors[ch] ?? colors["#"];
       if (!color) continue;
@@ -93,7 +92,7 @@ export function pxRoundRect(
   ctx.fillStyle = color;
   for (let j = 0; j < h; j++) {
     const edge = Math.min(j, h - 1 - j);
-    const inset = edge < insets.length ? insets[edge] : 0;
+    const inset = insets[edge] ?? 0;
     ctx.fillRect(x + inset, y + j, w - inset * 2, 1);
   }
 }
@@ -113,7 +112,7 @@ export function pxRoundOutline(
   ctx.fillStyle = color;
   for (let j = 0; j < h; j++) {
     const edge = Math.min(j, h - 1 - j);
-    const oi = edge < outer.length ? outer[edge] : 0;
+    const oi = outer[edge] ?? 0;
     const left = x + oi;
     const right = x + w - oi;
     if (j === 0 || j === h - 1) {
@@ -121,7 +120,7 @@ export function pxRoundOutline(
       continue;
     }
     const innerEdge = Math.min(j - 1, h - 2 - j);
-    const ii = innerEdge < inner.length ? inner[innerEdge] : 0;
+    const ii = inner[innerEdge] ?? 0;
     const innerLeft = x + 1 + ii;
     const innerRight = x + w - 1 - ii;
     ctx.fillRect(left, y + j, Math.max(1, innerLeft - left), 1);
@@ -145,7 +144,7 @@ export function ctx2d(c: HTMLCanvasElement): CanvasRenderingContext2D {
 
 // ---- font ----------------------------------------------------------------
 
-const FONT: Record<string, Rows> = {
+const FONT: { [ch: string]: Rows; "?": Rows } = {
   A: [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
   B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
   C: [".###.", "#...#", "#....", "#....", "#....", "#...#", ".###."],
@@ -209,7 +208,7 @@ function glyph(ch: string): Rows {
 export function textWidth(text: string): number {
   let w = 0;
   for (let i = 0; i < text.length; i++) {
-    w += glyph(text[i])[0].length;
+    w += glyph(text.charAt(i))[0].length;
     if (i < text.length - 1) w += LETTER_GAP;
   }
   return w;
@@ -236,7 +235,7 @@ export function drawText(
 ): number {
   let cx = x;
   for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
+    const ch = text.charAt(i);
     if (shadow) ctx.drawImage(glyphSprite(ch, shadow), cx + 1, y + 1);
     ctx.drawImage(glyphSprite(ch, color), cx, y);
     cx += glyph(ch)[0].length + LETTER_GAP;
@@ -246,7 +245,7 @@ export function drawText(
 
 // ---- pips ----------------------------------------------------------------
 
-const PIP_SMALL: Rows[] = [
+const PIP_SMALL: Record<Suit, Rows> = [
   // hearts
   [".#.#.", "#####", "#####", ".###.", "..#.."],
   // diamonds
@@ -257,7 +256,7 @@ const PIP_SMALL: Rows[] = [
   ["..#..", ".###.", "#####", "#####", "..#.."],
 ];
 
-const PIP_BIG: Rows[] = [
+const PIP_BIG: Record<Suit, Rows> = [
   [
     ".###...###.",
     "#####.#####",
@@ -427,7 +426,7 @@ function drawCardBase(ctx: CanvasRenderingContext2D): void {
 }
 
 function drawIndex(ctx: CanvasRenderingContext2D, rank: number, suit: Suit, color: string): void {
-  const label = RANK_LABELS[rank];
+  const label = itemAt(RANK_LABELS, rank);
   const rw = textWidth(label);
   // Top-left index, then the same index rotated into the bottom-right
   // corner so a card reads either way up.
@@ -437,9 +436,9 @@ function drawIndex(ctx: CanvasRenderingContext2D, rank: number, suit: Suit, colo
   const iy = CARD_H - 3;
   for (let i = 0; i < label.length; i++) {
     // drawText has no rotation, so mirror glyph by glyph.
-    const rows = glyph(label[i]);
+    const rows = glyph(label.charAt(i));
     let offset = 0;
-    for (let k = 0; k < i; k++) offset += glyph(label[k])[0].length + LETTER_GAP;
+    for (let k = 0; k < i; k++) offset += glyph(label.charAt(k))[0].length + LETTER_GAP;
     blit(ctx, rows, ix - offset - rows[0].length, iy - FONT_H, { "#": color }, { rot180: true });
   }
   blit(ctx, PIP_SMALL[suit], ix - rw - 2 - 5, iy - 1 - 5, { "#": color }, { rot180: true });
@@ -460,14 +459,14 @@ export function cardFace(suit: Suit, rank: number): HTMLCanvasElement {
   if (rank === 1) {
     drawPipBig(ctx, suit, 10, 16, color);
   } else if (rank <= 10) {
-    for (const [col, y] of PIP_LAYOUT[rank]) {
+    for (const [col, y] of itemAt(PIP_LAYOUT, rank)) {
       drawPipSmall(ctx, suit, PIP_X[col], y, color, y >= 22);
     }
   } else {
     // Framed portrait panel.
     pxRoundRect(ctx, 5, 11, 21, 21, 1, color);
     pxRoundRect(ctx, 6, 12, 19, 19, 1, PAL.parchment);
-    blit(ctx, BUSTS[rank], 7, 13, bustColors(suit));
+    blit(ctx, itemAt(BUSTS, rank), 7, 13, bustColors(suit));
   }
   faceCache.set(key, sprite);
   return sprite;
@@ -552,15 +551,17 @@ export function slotSprite(kind: SlotKind, suit: Suit = 0): HTMLCanvasElement {
 
 // ---- HUD icons ---------------------------------------------------------------
 
-export const ICONS: Record<string, Rows> = {
+export const ICONS = {
   star: ["...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "#.....#"],
   clock: [".#####.", "#..#..#", "#..#..#", "#..##.#", "#.....#", "#.....#", ".#####."],
   cards: ["..#####", "..#...#", "#####.#", "#...#.#", "#...###", "#...#..", "#####.."],
   soundOn: ["...#.....", "..##..#..", "####...#.", "####.#.#.", "####...#.", "..##..#..", "...#....."],
   soundOff: ["...#.....", "..##.#.#.", "####..#..", "####..#..", "####.#.#.", "..##.....", "...#....."],
-};
+} satisfies Record<string, Rows>;
 
-export function drawIcon(ctx: CanvasRenderingContext2D, name: string, x: number, y: number, color: string, shadow?: string): number {
+export type IconName = keyof typeof ICONS;
+
+export function drawIcon(ctx: CanvasRenderingContext2D, name: IconName, x: number, y: number, color: string, shadow?: string): number {
   const rows = ICONS[name];
   if (shadow) blit(ctx, rows, x + 1, y + 1, { "#": shadow });
   blit(ctx, rows, x, y, { "#": color });
@@ -583,9 +584,9 @@ export function renderFelt(w: number, h: number): HTMLCanvasElement {
       // under the tableau rather than a pinpoint.
       const d = Math.hypot(x - cx, y - cy) / maxD;
       const level = Math.min(2, Math.max(0, d * 2.6 - 0.5));
-      const threshold = bayer[(y & 3) * 4 + (x & 3)] / 16;
+      const threshold = bayer[(y & 3) * 4 + (x & 3)]! / 16;
       const idx = Math.min(2, Math.floor(level + threshold));
-      const rgb = shades[idx];
+      const rgb = shades[idx]!;
       const o = (y * w + x) * 4;
       img.data[o] = rgb[0];
       img.data[o + 1] = rgb[1];

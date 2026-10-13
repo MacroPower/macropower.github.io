@@ -14,7 +14,12 @@ import { color, PALETTE } from "../ansi";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
-function dispatchNotify(detail: { summary: string; body?: string; icon?: string; timeoutMs?: number }): void {
+function dispatchNotify(detail: {
+  summary: string;
+  body: string | undefined;
+  icon: string | undefined;
+  timeoutMs: number | undefined;
+}): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent("up:notify", { detail }));
 }
@@ -32,15 +37,14 @@ export const notifySend: Command = {
     let icon: string | undefined;
     let timeoutMs: number | undefined;
     let optionsDone = false;
-    const args = ctx.args;
-    for (let i = 0; i < args.length; i++) {
-      const a = args[i];
+    const args = ctx.args.values();
+    for (const a of args) {
       if (optionsDone) { operands.push(a); continue; }
       if (a === "--") { optionsDone = true; continue; }
       const takeValue = (flag: string): string | undefined => {
         const eq = a.indexOf("=");
         if (a.startsWith("--") && eq !== -1) return a.slice(eq + 1);
-        const v = args[++i];
+        const v = args.next().value;
         if (v === undefined) ctx.errln(red(`notify-send: option '${flag}' requires a value`));
         return v;
       };
@@ -70,15 +74,16 @@ export const notifySend: Command = {
         operands.push(a);
       }
     }
-    if (operands.length === 0) {
+    const [summary, body, ...extra] = operands;
+    if (summary === undefined) {
       ctx.errln(red("notify-send: no summary specified"));
       return 1;
     }
-    if (operands.length > 2) {
+    if (extra.length) {
       ctx.errln(red("notify-send: invalid number of options"));
       return 1;
     }
-    dispatchNotify({ summary: operands[0], body: operands[1], icon, timeoutMs });
+    dispatchNotify({ summary, body, icon, timeoutMs });
     return 0;
   },
 };

@@ -99,11 +99,11 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
   let rawEnd = 0;
   for (const n of notes) rawEnd = Math.max(rawEnd, n.start + n.dur);
   const songEndTick = rawEnd * division;
-  let us = tempos.length ? tempos[0].us : 500000;
+  let us = tempos[0]?.us ?? 500000;
   let bestSpan = -1;
-  for (let i = 0; i < tempos.length; i++) {
-    const span = (i + 1 < tempos.length ? tempos[i + 1].tick : songEndTick) - tempos[i].tick;
-    if (span > bestSpan) { bestSpan = span; us = tempos[i].us; }
+  for (const [i, t] of tempos.entries()) {
+    const span = (tempos[i + 1]?.tick ?? songEndTick) - t.tick;
+    if (span > bestSpan) { bestSpan = span; us = t.us; }
   }
   const bpm = 60000000 / us;
 
@@ -115,16 +115,19 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
   // the first set_tempo, so a lone late set_tempo still means two segments.
   interface Seg { beat: number; spb: number; sec: number; }
   const segs: Seg[] = [];
-  if (!tempos.length || tempos[0].tick > 0) segs.push({ beat: 0, spb: 0.5, sec: 0 });
+  const firstTempo = tempos[0];
+  if (!firstTempo || firstTempo.tick > 0) segs.push({ beat: 0, spb: 0.5, sec: 0 });
   for (const t of tempos) segs.push({ beat: t.tick / division, spb: t.us / 1e6, sec: 0 });
-  if (segs.length > 1) {
-    for (let i = 1; i < segs.length; i++) {
-      segs[i].sec = segs[i - 1].sec + (segs[i].beat - segs[i - 1].beat) * segs[i - 1].spb;
+  const [head, ...rest] = segs;
+  if (head && rest.length) {
+    let prev = head;
+    for (const seg of rest) {
+      seg.sec = prev.sec + (seg.beat - prev.beat) * prev.spb;
+      prev = seg;
     }
     const secAt = (beat: number): number => {
-      let i = segs.length - 1;
-      while (i > 0 && segs[i].beat > beat) i--;
-      return segs[i].sec + (beat - segs[i].beat) * segs[i].spb;
+      const seg = rest.findLast((s) => s.beat <= beat) ?? head;
+      return seg.sec + (beat - seg.beat) * seg.spb;
     };
     const scale = bpm / 60; // seconds → dominant-tempo beats
     for (const n of notes) {
@@ -138,7 +141,7 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
 
   // Trim any silent lead-in so playback (and each loop) starts on the first note
   // instead of waiting out an empty count-in.
-  const offset = notes.length ? notes[0].start : 0;
+  const offset = notes[0]?.start ?? 0;
   let durationBeats = 0;
   for (const n of notes) {
     n.start -= offset;

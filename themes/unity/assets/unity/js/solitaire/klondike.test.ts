@@ -123,7 +123,7 @@ describe("move", () => {
     expect(record).toMatchObject({ type: "move", count: 2, flipped: true, score: 5 });
     expect(g.tableau[1].map((c) => c.rank)).toEqual([9, 8, 7]);
     expect(g.tableau[0]).toHaveLength(1);
-    expect(g.tableau[0][0].faceUp).toBe(true);
+    expect(g.tableau[0]?.[0]?.faceUp).toBe(true);
     expect(g.score).toBe(5);
     expect(g.moves).toBe(1);
   });
@@ -189,7 +189,7 @@ describe("undo", () => {
     g.move(T(0), 1, T(1));
     expect(g.undo()?.type).toBe("move");
     expect(JSON.stringify([g.tableau, g.score, g.moves])).toBe(before);
-    expect(g.tableau[0][0].faceUp).toBe(false);
+    expect(g.tableau[0]?.[0]?.faceUp).toBe(false);
     expect(g.undo()).toBeNull();
   });
 
@@ -251,7 +251,7 @@ describe("auto-complete and win", () => {
     const g = rigged();
     g.tableau[0] = [card(0, 2, false), card(0, 1)];
     expect(g.autoCompleteAvailable()).toBe(false);
-    g.tableau[0][0].faceUp = true;
+    g.tableau[0]![0]!.faceUp = true;
     expect(g.autoCompleteAvailable()).toBe(true);
     g.stock = [card(3, 3, false)];
     expect(g.autoCompleteAvailable()).toBe(false);
@@ -261,7 +261,7 @@ describe("auto-complete and win", () => {
     const g = rigged();
     for (let suit = 0; suit < 4; suit++) {
       for (let rank = 13; rank >= 1; rank--) {
-        g.tableau[suit].push(card(suit as Suit, rank));
+        g.tableau[suit]!.push(card(suit as Suit, rank));
       }
     }
     expect(g.autoCompleteAvailable()).toBe(true);

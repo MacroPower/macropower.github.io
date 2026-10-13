@@ -15,7 +15,8 @@ describe("cat / file reads", () => {
     expect(sh.run("cat README.md").stdout).toBe("# Hello\n\nWelcome aboard.\n");
   });
   it("hints only at what the site has", () => {
-    const sh = makeShell({ ...TEST_DATA, socials: [], blog: undefined });
+    const { blog: _blog, ...withoutBlog } = TEST_DATA;
+    const sh = makeShell({ ...withoutBlog, socials: [] });
     expect(sh.run("cat README.md").stdout).toBe(
       "Welcome to Me Example's terminal.\nTry: ls, cat about.txt, help.\n",
     );

@@ -73,6 +73,13 @@ export function sameLoc(a: Loc, b: Loc): boolean {
   return a.kind === b.kind && a.pile === b.pile;
 }
 
+/** Returns `xs[i]` and throws a RangeError when `xs` has no element at `i`. */
+export function itemAt<T>(xs: { readonly [i: number]: T }, i: number): T {
+  const x = xs[i];
+  if (x === undefined) throw new RangeError(`no element at index ${i}`);
+  return x;
+}
+
 export type Rng = () => number;
 
 function makeDeck(): Card[] {
@@ -88,7 +95,7 @@ function makeDeck(): Card[] {
 function shuffle<T>(items: T[], rng: Rng): T[] {
   for (let i = items.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
-    [items[i], items[j]] = [items[j], items[i]];
+    [items[i], items[j]] = [itemAt(items, j), itemAt(items, i)];
   }
   return items;
 }
@@ -109,10 +116,11 @@ export class Klondike {
     // Deal left to right, one row at a time, so column c holds c+1 cards
     // with only the last face up.
     for (let row = 0; row < 7; row++) {
-      for (let col = row; col < 7; col++) {
+      for (const [col, column] of this.tableau.entries()) {
+        if (col < row) continue;
         const card = deck.pop()!;
         card.faceUp = col === row;
-        this.tableau[col].push(card);
+        column.push(card);
       }
     }
     this.stock = deck;
@@ -122,8 +130,8 @@ export class Klondike {
     switch (loc.kind) {
       case "stock": return this.stock;
       case "waste": return this.waste;
-      case "foundation": return this.foundations[loc.pile];
-      case "tableau": return this.tableau[loc.pile];
+      case "foundation": return itemAt(this.foundations, loc.pile);
+      case "tableau": return itemAt(this.tableau, loc.pile);
     }
   }
 
@@ -134,33 +142,34 @@ export class Klondike {
 
   /** The run a player may pick up starting at `index` of `from`, or null
    *  when that card cannot be moved (face down, buried in the waste, ...). */
-  runAt(from: Loc, index: number): Card[] | null {
+  runAt(from: Loc, index: number): [Card, ...Card[]] | null {
     const pile = this.pile(from);
-    if (index < 0 || index >= pile.length) return null;
+    const card = pile[index];
+    if (!card) return null;
     switch (from.kind) {
       case "stock":
         return null;
       case "waste":
       case "foundation":
-        return index === pile.length - 1 ? [pile[index]] : null;
+        return index === pile.length - 1 ? [card] : null;
       case "tableau":
         // Face-up tableau cards always form a valid run down to the top of
         // the column (nothing else can be placed there), so any face-up card
         // starts a movable run.
-        return pile[index].faceUp ? pile.slice(index) : null;
+        return card.faceUp ? [card, ...pile.slice(index + 1)] : null;
     }
   }
 
   canDrop(run: Card[], to: Loc): boolean {
-    if (run.length === 0) return false;
     const lead = run[0];
+    if (!lead) return false;
     const dest = this.pile(to);
     switch (to.kind) {
       case "foundation":
         return run.length === 1 && lead.suit === to.pile && lead.rank === dest.length + 1;
       case "tableau": {
-        if (dest.length === 0) return lead.rank === 13;
-        const top = dest[dest.length - 1];
+        const top = dest.at(-1);
+        if (!top) return lead.rank === 13;
         return top.faceUp && top.rank === lead.rank + 1 && isRed(top.suit) !== isRed(lead.suit);
       }
       default:
@@ -179,8 +188,9 @@ export class Klondike {
     dest.push(...src.splice(index, run.length));
 
     let flipped = false;
-    if (from.kind === "tableau" && src.length > 0 && !src[src.length - 1].faceUp) {
-      src[src.length - 1].faceUp = true;
+    const exposed = src.at(-1);
+    if (from.kind === "tableau" && exposed && !exposed.faceUp) {
+      exposed.faceUp = true;
       flipped = true;
     }
 
@@ -235,7 +245,7 @@ export class Klondike {
       case "move": {
         const src = this.pile(record.from);
         const dest = this.pile(record.to);
-        if (record.flipped) src[src.length - 1].faceUp = false;
+        if (record.flipped) itemAt(src, src.length - 1).faceUp = false;
         src.push(...dest.splice(dest.length - record.count, record.count));
         this.score = Math.max(0, this.score - record.score);
         break;
@@ -275,10 +285,10 @@ export class Klondike {
       if (this.canDrop(run, to)) return to;
     }
     const kingAtBase = from.kind === "tableau" && index === 0 && run[0].rank === 13;
-    for (let col = 0; col < 7; col++) {
+    for (const [col, column] of this.tableau.entries()) {
       const to: Loc = { kind: "tableau", pile: col };
       if (sameLoc(from, to)) continue;
-      if (kingAtBase && this.tableau[col].length === 0) continue;
+      if (kingAtBase && column.length === 0) continue;
       if (this.canDrop(run, to)) return to;
     }
     return null;
@@ -296,9 +306,9 @@ export class Klondike {
 
     // Tableau tops and the waste top to the foundations.
     const tops: { from: Loc; index: number }[] = [];
-    for (let col = 0; col < 7; col++) {
-      if (this.tableau[col].length > 0) {
-        tops.push({ from: { kind: "tableau", pile: col }, index: this.tableau[col].length - 1 });
+    for (const [col, column] of this.tableau.entries()) {
+      if (column.length > 0) {
+        tops.push({ from: { kind: "tableau", pile: col }, index: column.length - 1 });
       }
     }
     if (this.waste.length > 0) tops.push({ from: { kind: "waste", pile: 0 }, index: this.waste.length - 1 });
@@ -310,15 +320,15 @@ export class Klondike {
     }
 
     // Tableau runs to other columns.
-    for (let col = 0; col < 7; col++) {
-      const column = this.tableau[col];
+    for (const [col, column] of this.tableau.entries()) {
       const first = column.findIndex((c) => c.faceUp);
       if (first < 0) continue;
-      for (let index = first; index < column.length; index++) {
+      for (const [index, lead] of column.entries()) {
+        if (index < first) continue;
         const run = column.slice(index);
         const from: Loc = { kind: "tableau", pile: col };
         // Moving the base king of a column elsewhere frees nothing.
-        if (index === 0 && run[0].rank === 13) continue;
+        if (index === 0 && lead.rank === 13) continue;
         // Splitting a face-up run only helps when it uncovers a card.
         if (index > first) continue;
         for (let dest = 0; dest < 7; dest++) {
@@ -355,7 +365,7 @@ export class Klondike {
   /** Play the lowest-ranked available top card to its foundation. Returns
    *  the move made, or null when nothing fits. */
   autoStep(): MoveRecord | null {
-    let best: { from: Loc; index: number; rank: number } | null = null;
+    let best: { from: Loc; index: number; card: Card } | null = null;
     const consider = (from: Loc): void => {
       const pile = this.pile(from);
       if (pile.length === 0) return;
@@ -364,14 +374,13 @@ export class Klondike {
       if (!run) return;
       const card = run[0];
       if (!this.canDrop(run, { kind: "foundation", pile: card.suit })) return;
-      if (!best || card.rank < best.rank) best = { from, index, rank: card.rank };
+      if (!best || card.rank < best.card.rank) best = { from, index, card };
     };
     for (let col = 0; col < 7; col++) consider({ kind: "tableau", pile: col });
     consider({ kind: "waste", pile: 0 });
     if (!best) return null;
-    const chosen: { from: Loc; index: number; rank: number } = best;
-    const card = this.pile(chosen.from)[chosen.index];
-    return this.move(chosen.from, chosen.index, { kind: "foundation", pile: card.suit });
+    const chosen: { from: Loc; index: number; card: Card } = best;
+    return this.move(chosen.from, chosen.index, { kind: "foundation", pile: chosen.card.suit });
   }
 
   private applyScore(delta: number): number {

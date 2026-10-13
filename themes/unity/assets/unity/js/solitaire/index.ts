@@ -14,11 +14,11 @@
 
 import { t, tn } from "../i18n";
 import {
-  Klondike, sameLoc, type Card, type Hint, type Loc, type Suit,
+  Klondike, itemAt, sameLoc, type Card, type Hint, type Loc, type Suit,
 } from "./klondike";
 import {
   CARD_H, CARD_W, PAL, cardBack, cardFace, ctx2d, drawIcon, drawText,
-  makeCanvas, pxRoundRect, pxRoundOutline, renderFelt, slotSprite, textWidth, ICONS,
+  makeCanvas, pxRoundRect, pxRoundOutline, renderFelt, slotSprite, textWidth, ICONS, type IconName,
 } from "./sprites";
 import { Sfx } from "./sound";
 import { locate, solve, type SolverMove } from "./solver";
@@ -59,8 +59,8 @@ interface Tween {
   /** In-flight cards draw above the table in tween start order. */
   z: number;
   started: boolean;
-  onStart?: () => void;
-  onDone?: () => void;
+  onStart?: (() => void) | undefined;
+  onDone?: (() => void) | undefined;
 }
 
 interface Flip {
@@ -100,7 +100,7 @@ interface Popup {
 
 interface Press {
   placement: Placement;
-  run: Card[];
+  run: [Card, ...Card[]];
   /** Per-card offset from the pointer at pickup. */
   offsets: { dx: number; dy: number }[];
   startX: number;
@@ -119,7 +119,7 @@ interface Bouncer {
 interface Button {
   id: string;
   label?: string;
-  icon?: string;
+  icon?: IconName;
   color: string;
   dark: string;
   x: number;
@@ -489,7 +489,7 @@ function cardName(card: Card): string {
     const order = new Map<number, number>();
     let n = 0;
     for (let row = 0; row < 7; row++) {
-      for (let col = row; col < 7; col++) order.set(game.tableau[col][row].id, n++);
+      for (const column of game.tableau.slice(row)) order.set(itemAt(column, row).id, n++);
     }
     dealing = true;
     computeLayout();
@@ -538,7 +538,7 @@ function cardName(card: Card): string {
 
   function foundationEffects(card: Card, to: Loc): void {
     const pos = slotPos(to);
-    const count = game.foundations[to.pile].length;
+    const count = game.pile(to).length;
     sfx.play("foundation", Math.max(0, count - 1));
     burst(pos.x + CARD_W / 2, pos.y + CARD_H / 2, card.suit, 14);
     popups.push({ text: "+10", x: pos.x + CARD_W / 2, y: pos.y + 14, t0: performance.now(), color: PAL.gold });
@@ -562,6 +562,7 @@ function cardName(card: Card): string {
 
   function applyMove(from: Loc, index: number, to: Loc, source: "drag" | "click" | "auto"): boolean {
     const card = game.pile(from)[index];
+    if (!card) return false;
     const record = game.move(from, index, to);
     if (!record) return false;
     touch();
@@ -576,7 +577,7 @@ function cardName(card: Card): string {
     else landed();
     if (record.flipped) {
       const src = game.pile(from);
-      const exposed = placementById.get(src[src.length - 1].id);
+      const exposed = placementById.get(src.at(-1)?.id ?? -1);
       if (exposed) popups.push({ text: "+5", x: exposed.x + CARD_W / 2, y: exposed.y + 14, t0: performance.now() + 150, color: PAL.white });
     }
     if (record.score !== 0) bumpScore();
@@ -644,18 +645,19 @@ function cardName(card: Card): string {
   function showHint(): void {
     if (autoRunning || won) return;
     const hints = game.hints();
-    if (hints.length === 0) {
+    const next = hints[hintCursor % hints.length];
+    if (!next) {
       hint = null;
       sfx.play("invalid");
       announce(t("js_solitaire_no_moves"));
       return;
     }
-    hint = hints[hintCursor % hints.length];
+    hint = next;
     hintCursor++;
     hintT0 = performance.now();
     sfx.play("hint");
     if (hint.type === "draw") announce(t("js_solitaire_hint_draw"));
-    else announce(t("js_solitaire_hint_move", { move: describeMove(game.pile(hint.from)[hint.index], hint.to) }));
+    else announce(t("js_solitaire_hint_move", { move: describeMove(itemAt(game.pile(hint.from), hint.index), hint.to) }));
     requestFrame();
   }
 
@@ -671,7 +673,8 @@ function cardName(card: Card): string {
         syncControls();
         return;
       }
-      const card = game.pile(record.to)[game.pile(record.to).length - 1];
+      const foundation = game.pile(record.to);
+      const card = itemAt(foundation, foundation.length - 1);
       sync();
       const tween = tweenOf(card.id);
       const landed = (): void => foundationEffects(card, record.to);
@@ -754,8 +757,8 @@ function cardName(card: Card): string {
       // Kings first, cycling across the four foundations.
       cascadeQueue = [];
       for (let i = 12; i >= 0; i--) {
-        for (let f = 0; f < 4; f++) {
-          const card = game.foundations[f][i];
+        for (const foundation of game.foundations) {
+          const card = foundation[i];
           if (card) cascadeQueue.push(card);
         }
       }
@@ -791,12 +794,12 @@ function cardName(card: Card): string {
         autoTimer = window.setTimeout(step, 100);
         return;
       }
-      if (won || next >= moves.length) {
+      const move = moves[next];
+      if (won || !move) {
         autoRunning = false;
         syncControls();
         return;
       }
-      const move = moves[next];
       const at = locate(game, move);
       if (!at) {
         if (move.from !== "stock" || !drawCard()) {
@@ -889,7 +892,7 @@ function cardName(card: Card): string {
     return 7 + 3 + textWidth(text) + 6;
   }
 
-  function drawChip(x: number, y: number, icon: string, text: string, color: string): void {
+  function drawChip(x: number, y: number, icon: IconName, text: string, color: string): void {
     const w = chipWidth(text);
     pxRoundRect(loCtx, x, y + 1, w, 13, 2, PAL.ink);
     pxRoundRect(loCtx, x, y, w, 13, 2, PAL.slate);
@@ -908,14 +911,13 @@ function cardName(card: Card): string {
     // Readouts, right-aligned; on the second row when the HUD wraps.
     const y = (hudRows === 2 ? top + HUD_ROW : top) + 3;
     const score = Math.round(scoreShown);
-    const chips: [string, string, string][] = [
+    const chips: [IconName, string, string][] = [
       ["star", String(score), PAL.gold],
       ["clock", formatTime(elapsed()), PAL.white],
       ["cards", String(game.moves), PAL.white],
     ];
     let x = W - 4;
-    for (let i = chips.length - 1; i >= 0; i--) {
-      const [icon, text, color] = chips[i];
+    for (const [i, [icon, text, color]] of [...chips.entries()].reverse()) {
       x -= chipWidth(text);
       let shake = 0;
       if (i === 0 && scoreShake > 0.02) shake = Math.round(Math.sin(now / 18) * scoreShake * 2);
@@ -997,7 +999,7 @@ function cardName(card: Card): string {
     const f = flips.find((x) => x.id === id);
     if (!f || now < f.t0) return { sx: 1, faceUp: null };
     const t = clamp((now - f.t0) / f.dur, 0, 1);
-    const v = views[id];
+    const v = itemAt(views, id);
     if (t >= 0.5 && !f.swapped) {
       f.swapped = true;
       v.faceUp = f.to;
@@ -1041,7 +1043,7 @@ function cardName(card: Card): string {
     const run = game.runAt(hint.from, hint.index);
     const lead = placementById.get(game.pile(hint.from)[hint.index]?.id ?? -1);
     if (run && lead) {
-      const last = placementById.get(run[run.length - 1].id) ?? lead;
+      const last = placementById.get(run.at(-1)?.id ?? -1) ?? lead;
       drawHighlight(lead.x, lead.y, CARD_W, last.y + CARD_H - lead.y, color);
     }
     const target = pileRect(hint.to);
@@ -1086,7 +1088,7 @@ function cardName(card: Card): string {
     let x = Math.round(cx / 2 - textWidth(text) / 2);
     const yy = Math.round(y / 2);
     for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
+      const ch = text.charAt(i);
       const dy = jiggle ? Math.round(Math.sin(now / 130 + i * 0.7) * 1.5) : 0;
       drawText(loCtx, ch, x, yy + dy, color, shadow);
       x += textWidth(ch) + 1;
@@ -1138,7 +1140,7 @@ function cardName(card: Card): string {
         t.started = true;
         t.onStart?.();
       }
-      const v = views[t.id];
+      const v = itemAt(views, t.id);
       const p = clamp((now - t.t0) / t.dur, 0, 1);
       const wob = wobbleIds.has(t.id) && now < wobbleUntil;
       const e = wob ? 1 : easeOutBack(p);
@@ -1159,7 +1161,7 @@ function cardName(card: Card): string {
     // every card to land before the cascade takes over the frame.
     if (game.won() && !won && tweens.length === 0) startWin();
     for (const f of flips) {
-      if (now >= f.t0 + f.dur) views[f.id].faceUp = f.to;
+      if (now >= f.t0 + f.dur) itemAt(views, f.id).faceUp = f.to;
     }
     flips = flips.filter((f) => now < f.t0 + f.dur);
     if (scoreShake > 0) scoreShake = Math.max(0, scoreShake - dt / 260);
@@ -1228,7 +1230,7 @@ function cardName(card: Card): string {
       for (const t of inFlight) {
         const p = placementById.get(t.id);
         if (!p || held.has(t.id)) continue;
-        const v = views[t.id];
+        const v = itemAt(views, t.id);
         const f = flipScale(t.id, now);
         drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y, 0, f.sx, 1);
       }
@@ -1311,11 +1313,7 @@ function cardName(card: Card): string {
   }
 
   function placementAt(lx: number, ly: number): Placement | null {
-    for (let i = placements.length - 1; i >= 0; i--) {
-      const p = placements[i];
-      if (lx >= p.x && lx < p.x + CARD_W && ly >= p.y && ly < p.y + CARD_H) return p;
-    }
-    return null;
+    return placements.findLast((p) => lx >= p.x && lx < p.x + CARD_W && ly >= p.y && ly < p.y + CARD_H) ?? null;
   }
 
   function inRect(lx: number, ly: number, r: { x: number; y: number; w: number; h: number }): boolean {
@@ -1427,8 +1425,9 @@ function cardName(card: Card): string {
         dragVel = dragVel * 0.5 + dx * 0.5;
         press.run.forEach((card, i) => {
           const v = viewOf(card);
-          v.x = x + press!.offsets[i].dx;
-          v.y = y + press!.offsets[i].dy;
+          const offset = itemAt(press!.offsets, i);
+          v.x = x + offset.dx;
+          v.y = y + offset.dy;
         });
         dropTarget = findDropTarget(press);
         updateCursor();

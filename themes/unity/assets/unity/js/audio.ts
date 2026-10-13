@@ -32,14 +32,14 @@ const quant = (beats: number): number => Math.round(beats / QUANT) * QUANT;
 let quantizeActive = true; // recomputed whenever the active song changes
 
 function computeQuantize(s: MidiSong): boolean {
-  const n = Math.min(s.notes.length, 4000);
-  if (!n) return true;
+  const sample = s.notes.slice(0, 4000);
+  if (!sample.length) return true;
   let onGrid = 0;
-  for (let i = 0; i < n; i++) {
-    const r = s.notes[i].start / QUANT;
+  for (const note of sample) {
+    const r = note.start / QUANT;
     if (Math.abs(r - Math.round(r)) * QUANT < 0.02) onGrid++;
   }
-  return onGrid / n >= 0.9;
+  return onGrid / sample.length >= 0.9;
 }
 
 const clamp = (v: number, lo: number, hi: number): number => Math.min(Math.max(v, lo), hi);
@@ -178,7 +178,13 @@ export type PatchKey =
 // Synth-section selector picks for "auto" strips' melody register.
 export type VoiceKey = Exclude<PatchKey, "auto">;
 
-export const PATCHES: { key: PatchKey; label: string }[] = [
+export interface Patch {
+  key: PatchKey;
+  label: string;
+}
+
+// Non-empty, so PATCHES[0] ("auto") is always a fallback.
+export const PATCHES: readonly [Patch, ...Patch[]] = [
   { key: "auto", label: t("js_sound_auto") },
   { key: "sine", label: t("js_sound_sine") },
   { key: "square", label: t("js_sound_square") },
@@ -697,8 +703,8 @@ function pump(audio: AudioContext, out: AudioNode): void {
   const notes = song.notes;
   let anySolo = false;
   for (const s of strips.values()) if (s.solo) { anySolo = true; break; }
-  while (noteIdx < notes.length) {
-    const n = notes[noteIdx];
+  let n: MidiNote | undefined;
+  while ((n = notes[noteIdx]) !== undefined) {
     const base = loopBase + swungStart(n.start) * secPerBeat;
     if (base > horizon) break;
     if (n.dead) { noteIdx++; continue; } // muted from the piano roll
@@ -727,10 +733,8 @@ function pump(audio: AudioContext, out: AudioNode): void {
 // seek doesn't replay everything before the entry point.
 function noteIndexAt(beat: number): number {
   if (!song) return 0;
-  let i = 0;
-  const notes = song.notes;
-  while (i < notes.length && notes[i].start < beat) i++;
-  return i;
+  const i = song.notes.findIndex((n) => n.start >= beat);
+  return i === -1 ? song.notes.length : i;
 }
 
 function startPlayer(audio: AudioContext, out: AudioNode): void {
