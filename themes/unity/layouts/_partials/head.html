@@ -12,7 +12,7 @@
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
 {{ partial "head/meta.html" . }}
-{{ partialCached "head/css.html" . .IsHome }}
+{{ partialCached "head/css.html" . (partial "is-terminal.html" .) }}
 {{- /* Every page advertises the site feed, and a section or taxonomy
       page also advertises its own. */}}
 {{- with site.Home.OutputFormats.Get "rss" }}

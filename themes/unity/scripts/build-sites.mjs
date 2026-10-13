@@ -29,12 +29,17 @@ const SITES = {
   example: {
     source: join(theme, "exampleSite"),
     flags: ["--printUnusedTemplates", "--themesDir", themesDir],
-    // The solitaire and icon pages set noindex.
     check: (out) => {
       const sitemap = read(join(out, "sitemap.xml"));
-      return ["solitaire", "icons"]
-        .filter((p) => sitemap.includes(`/${p}/</loc>`))
-        .map((p) => `sitemap.xml lists the noindex page ${p}/`);
+      const home = read(join(out, "index.html"));
+      return [
+        // The solitaire and icon pages set noindex.
+        ...["solitaire", "icons"]
+          .filter((p) => sitemap.includes(`/${p}/</loc>`))
+          .map((p) => `sitemap.xml lists the noindex page ${p}/`),
+        // The home's Markdown body, for crawlers and visitors without JavaScript.
+        !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
+      ].filter(Boolean);
     },
   },
   // The example site served from a subdirectory, as on a GitHub project page.
@@ -157,6 +162,21 @@ const SITES = {
         !home.includes(">Skip to content</a>") && "index.html lacks the English skip link",
         !home.includes("data-trash-count>6 items<") && "the Trash count lacks its English plural",
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
+      ].filter(Boolean);
+    },
+  },
+  // A home page in a plain window instead of the terminal.
+  homepage: {
+    files: {
+      "hugo.toml": `${BARE}[params.home]\n  layout = "page"\n`,
+      "content/_index.md": page("Welcome"),
+    },
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      return [
+        !home.includes("Body of Welcome.") && "index.html omits the home's content",
+        home.includes("data-shell") && "index.html still renders the terminal",
+        home.includes("/js/shell.") && "index.html still loads the shell bundle",
       ].filter(Boolean);
     },
   },

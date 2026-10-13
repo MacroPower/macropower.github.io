@@ -42,7 +42,7 @@
 
   {{/* blog.js and projects.js no-op without their root data attribute
        ([data-blog-kind] / [data-projects-kind]); ship each only to the
-       layouts that emit it, mirroring the shell bundle's IsHome gate. */}}
+       layouts that emit it, mirroring the shell bundle's is-terminal gate. */}}
   {{ if or (partial "in-blog.html" .) (in (slice "taxonomy" "term") .Kind) }}
   {{ partialCached "ui/script.html" (dict "entry" "unity/js/blog.ts" "target" "js/blog.js") "unity/js/blog.ts" }}
   {{ end }}
@@ -69,7 +69,7 @@
   {{ partialCached "ui/script.html" (dict "entry" "unity/js/icons.ts" "target" "js/icons.js") "unity/js/icons.ts" }}
   {{ end }}
 
-  {{ if .IsHome }}
+  {{ if partial "is-terminal.html" . }}
   {{ partialCached "ui/script.html" (dict "entry" "unity/js/shell/index.ts" "target" "js/shell.js") "unity/js/shell/index.ts" }}
   {{ end }}
 

@@ -64,6 +64,10 @@
       { name = "ngrok-tunnel", mono = true },
     ]
 
+  [params.home]
+    # terminal, or page for the home's content in a plain window.
+    layout = "terminal"
+
   [params.projects]
     # Thresholds behind the projects sidebar's Starred, Forks, and Recent
     # filters.

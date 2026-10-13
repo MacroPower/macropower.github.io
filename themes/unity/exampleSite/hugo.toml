@@ -115,6 +115,11 @@ mainSections = ["posts"]
   #   minForks     = 6
   #   recentMonths = 6
 
+  # The home page is the terminal. layout = "page" renders the home's
+  # content in a plain window instead.
+  # [params.home]
+  #   layout = "page"
+
   # The home terminal is an SSH session into the site as a guest login.
   # Both default from the site: "user" and the host of baseURL.
   # [params.terminal]

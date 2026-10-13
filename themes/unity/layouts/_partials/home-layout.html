@@ -1,0 +1,11 @@
+{{- /*
+  The home page's layout from params.home.layout: "terminal", the
+  default, or "page". Call it through partialCached, so the build warns
+  about an unknown value once.
+*/ -}}
+{{- $layout := site.Params.home.layout | default "terminal" -}}
+{{- if not (in (slice "terminal" "page") $layout) -}}
+  {{- warnf "unity: params.home.layout %q is not terminal or page" $layout -}}
+  {{- $layout = "terminal" -}}
+{{- end -}}
+{{- return $layout -}}

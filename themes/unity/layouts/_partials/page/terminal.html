@@ -1,0 +1,156 @@
+{{- /*
+  The home terminal: an xterm.js shell over a virtual filesystem seeded
+  from the site. home.html renders it unless params.home.layout is "page".
+  assets/unity/js/shell/index.ts reads the data-shell-data payload, and
+  the visually hidden banner below it is the page's content for screen
+  readers, crawlers, and visitors without JavaScript.
+
+  Context: the home page.
+*/ -}}
+{{- /* The terminal plays an SSH session into the site's host as a guest
+      login. params.terminal.user and params.terminal.host rename both. */ -}}
+{{- $user := site.Params.terminal.user | default "user" -}}
+{{- $host := site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
+{{- /* since: the date the banner's uptime counts from. It is the owner's
+      birth date when params.author.born is set, otherwise the date of the
+      oldest content page, otherwise empty. The shell bundle turns it into
+      the uptime on page load, so a page built days ago still shows the
+      current value. */ -}}
+{{- $author := partialCached "author.html" . -}}
+{{- $since := "" -}}
+{{- with $author.born -}}
+  {{- $since = . -}}
+{{- else -}}
+  {{- with site.RegularPages.ByDate -}}
+    {{- $since = (index . 0).Date.UTC.Format "2006-01-02" -}}
+  {{- end -}}
+{{- end -}}
+{{- /* Mask codes (O Y G B P C R M, space = no color) are mapped to truecolor
+      in banner.ts. The theme ships defaults; a site overrides them by
+      providing its own assets/unity/home/ascii.txt + colors.txt. */ -}}
+{{- $ascii := "" -}}{{- with resources.Get "unity/home/ascii.txt" -}}{{- $ascii = .Content -}}{{- end -}}
+{{- $colors := "" -}}{{- with resources.Get "unity/home/colors.txt" -}}{{- $colors = .Content -}}{{- end -}}
+{{- $socials := slice -}}
+{{- range partialCached "socials.html" . -}}
+  {{- $label := .short | default .name -}}
+  {{- $display := .url | strings.TrimPrefix "http://" | strings.TrimPrefix "https://" | strings.TrimPrefix "www." -}}
+  {{- $socials = $socials | append (dict "label" $label "url" .url "display" $display) -}}
+{{- end -}}
+{{- /* The shell's virtual filesystem reads these instead of hardcoding site
+      content; adding a post or page flows through automatically. Posts carry
+      only metadata (the VFS renders a card) -- their full bodies would bloat
+      this inline island -- while top-level pages carry RawContent so `cat`
+      prints the markdown. The blog section itself (see
+      _partials/blog-section.html) names the directory the posts live in. */ -}}
+{{- $blogSection := partialCached "blog-section.html" . -}}
+{{- $posts := slice -}}
+{{- range partialCached "blog-posts.html" . -}}
+  {{- $posts = $posts | append (dict
+      "slug" (partial "ui/file-name.html" .)
+      "title" .Title
+      "date" (.Date.Format "2006-01-02")
+      "categories" (partial "post-categories.html" .)
+      "url" .RelPermalink
+      "permalink" .Permalink
+  ) -}}
+{{- end -}}
+{{- $pages := slice -}}
+{{- range where site.RegularPages "Section" "" -}}
+  {{- $pages = $pages | append (dict
+      "slug" (partial "ui/file-name.html" .)
+      "date" (.Date.Format "2006-01-02")
+      "url" .RelPermalink
+      "content" .RawContent
+  ) -}}
+{{- end -}}
+{{- $payload := dict
+    "handle" $user
+    "host" $host
+    "name" $author.name
+    "title" $author.jobTitle
+    "focus" $author.focus
+    "since" $since
+    "socials" $socials
+    "posts" $posts
+    "pages" $pages
+    "ascii" $ascii
+    "colors" $colors
+-}}
+{{- with $blogSection -}}
+  {{- $payload = merge $payload (dict "blog" (dict "dir" .Section "url" .RelPermalink)) -}}
+{{- end -}}
+{{- with strings.TrimSpace .RawContent -}}
+  {{- $payload = merge $payload (dict "readme" .) -}}
+{{- end -}}
+{{- with index (where site.Pages "Layout" "solitaire") 0 -}}
+  {{- $payload = merge $payload (dict "solitaire" .RelPermalink) -}}
+{{- end -}}
+<section class="up-shell up-neofetch up-selectable" data-shell aria-label="{{ partial "ui/t" "terminal" }}">
+  {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
+        would double-encode the JSON. jsonify already \u-escapes < > & so the
+        payload is safe to emit verbatim. */ -}}
+  <script type="application/json" data-shell-data>{{ $payload | jsonify | safeJS }}</script>
+  {{- /* Visually hidden equivalent of the terminal's neofetch banner. The
+        xterm canvas never reaches the accessibility tree, so this is the home
+        page's only screen-reader content: its missing <h1>, the title, and
+        real links for the social URLs and launcher destinations. */ -}}
+  <div class="up-sr-only">
+    <h1>{{ $payload.name }}</h1>
+    {{- with $payload.title }}
+    <p>{{ . }}</p>
+    {{- end }}
+    {{- with $payload.focus }}
+    <p>{{ . }}</p>
+    {{- end }}
+    {{- with .Content }}
+    <div class="up-page-body">{{ . }}</div>
+    {{- end }}
+    <h2>{{ partial "ui/t" "links" }}</h2>
+    <ul>
+      {{- range $socials }}
+      <li><a href="{{ .url }}">{{ .label }}: {{ .display }}</a></li>
+      {{- end }}
+    </ul>
+    <nav aria-label="{{ partial "ui/t" "site" }}">
+      <h2>{{ partial "ui/t" "explore" }}</h2>
+      {{- /* Same launcher pages as the dock, in the same order, minus Home
+            (this is the home page) — sourced from the site-pages registry so
+            this fallback nav can never drift from the desktop chrome. */ -}}
+      {{- $reg := partialCached "site-pages.html" . -}}
+      <ul>
+        {{- range $reg.launcherOrder }}{{ if ne . "home" }}{{ $p := index $reg.pages . }}
+        <li><a href="{{ $p.url }}">{{ $p.label }}</a></li>
+        {{- end }}{{ end }}
+      </ul>
+    </nav>
+    {{- with $posts }}
+    <h2>{{ partial "ui/t" "posts" }}</h2>
+    <ul>
+      {{- range . }}
+      <li><a href="{{ .url }}">{{ .title }}</a> ({{ .date }})</li>
+      {{- end }}
+    </ul>
+    {{- end }}
+  </div>
+  <div class="up-shell-term" data-shell-mount></div>
+  <noscript>
+    {{- /* Without JS the terminal never mounts; un-hide the banner block so
+          the page still shows the owner's name, links, and posts instead of
+          a lone error line. */}}
+    <style>
+      [data-shell] .up-sr-only{
+        position:static !important; width:auto; height:auto;
+        margin:0; padding:6px 2px; border:0;
+        overflow:visible; clip-path:none; white-space:normal;
+      }
+      [data-shell] .up-sr-only a{color:var(--aod-blue); text-decoration:none}
+      [data-shell] .up-sr-only a:hover{color:var(--aod-cyan); text-decoration:underline}
+      [data-shell] .up-sr-only h1{margin:0 0 2px; font-size:1.5em}
+      [data-shell] .up-sr-only h2{margin:14px 0 4px; font-size:1.1em}
+      [data-shell] .up-sr-only p, [data-shell] .up-sr-only ul{margin:2px 0}
+      [data-shell] .up-sr-only ul{padding-left:1.2em}
+      [data-shell]{overflow:auto}
+    </style>
+    <div class="up-shell-noscript">{{ $user }}@{{ $host }}: {{ partial "ui/t" "terminal_requires_js" }}</div>
+  </noscript>
+</section>

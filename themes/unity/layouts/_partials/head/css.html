@@ -7,8 +7,9 @@
   A site's assets/css/custom.css goes through the same build and lands after
   the theme's rules, so its rules win on equal specificity.
 
-  Context: the page. Call it through partialCached keyed on .IsHome, the
-  only input that changes the output.
+  Context: the page. Call it through partialCached keyed on whether the
+  page is the home terminal (is-terminal.html), the only input that
+  changes the output.
 */ -}}
 {{- $opts := dict
   "minify" hugo.IsProduction
@@ -19,7 +20,7 @@
 {{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
       terminal. */ -}}
 {{- $preload := slice "ubuntu-400-latin" -}}
-{{- if .IsHome }}{{ $preload = $preload | append "ubuntu-mono-400-latin" }}{{ end -}}
+{{- if partial "is-terminal.html" . }}{{ $preload = $preload | append "ubuntu-mono-400-latin" }}{{ end -}}
 {{- range $main.Data.Artifacts -}}
   {{- if eq .MediaType.MainType "font" -}}
     {{- $face := replaceRE `-[A-Z0-9]+\.woff2$` "" (path.Base .RelPermalink) -}}
