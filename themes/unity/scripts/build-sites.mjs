@@ -160,6 +160,27 @@ const SITES = {
       ].filter(Boolean);
     },
   },
+  // A desktop with its optional parts switched off.
+  minimal: {
+    files: {
+      "hugo.toml": `${BARE}[params.desktop]
+  lock  = false
+  hud   = false
+  trash = false
+`,
+    },
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      return [
+        home.includes("data-up-lock") && "index.html keeps the lock screen",
+        home.includes('"dlg:lock"') && "index.html keeps the Lock action",
+        home.includes("data-up-hud") && "index.html keeps the HUD",
+        home.includes('data-up-window="trash"') && "index.html keeps the Trash window",
+        home.includes("data-launcher-trash") && "index.html keeps the Trash launcher tile",
+        home.includes('"dlg:github"') && "index.html offers View source without a repoUrl",
+      ].filter(Boolean);
+    },
+  },
   // An owner named only by an author name that is not a unix login.
   login: {
     files: {

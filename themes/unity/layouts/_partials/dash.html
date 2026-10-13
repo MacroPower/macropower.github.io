@@ -44,18 +44,24 @@
   {{- $apps = $apps | append (dict "label" (partial "ui/t" "studio") "icon" "launcher/piano" "action" "studio"
         "kw" (partial "ui/t" "kw_studio")) -}}
 {{- end -}}
+{{- if ne site.Params.desktop.trash false -}}
+  {{- $apps = $apps | append (dict "label" (partial "ui/t" "trash") "icon" "launcher/trash" "action" "trash"
+        "kw" (partial "ui/t" "kw_trash")) -}}
+{{- end -}}
 {{- $apps = $apps | append (slice
-  (dict "label" (partial "ui/t" "trash") "icon" "launcher/trash" "action" "trash"
-        "kw" (partial "ui/t" "kw_trash"))
   (dict "label" (partial "ui/t" "appearance") "icon" "launcher/paint" "action" "prefs"
         "kw" (partial "ui/t" "kw_appearance"))
   (dict "label" (partial "ui/t" "shortcuts") "icon" "launcher/typewriter-key" "action" "shortcuts"
         "kw" (partial "ui/t" "kw_shortcuts"))
-  (dict "label" (partial "ui/t" "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
-        "kw" (partial "ui/t" "kw_lock"))
-  (dict "label" (partial "ui/t" "log_out_app") "icon" "launcher/doorway" "action" "logout"
-        "kw" (partial "ui/t" "kw_logout"))
 ) -}}
+{{- if ne site.Params.desktop.lock false -}}
+  {{- $apps = $apps | append (slice
+    (dict "label" (partial "ui/t" "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
+          "kw" (partial "ui/t" "kw_lock"))
+    (dict "label" (partial "ui/t" "log_out_app") "icon" "launcher/doorway" "action" "logout"
+          "kw" (partial "ui/t" "kw_logout"))
+  ) -}}
+{{- end -}}
 {{- $posts := partialCached "blog-posts.html" . -}}
 {{- $projects := partialCached "projects-data.html" . -}}
 {{- $src := "" -}}

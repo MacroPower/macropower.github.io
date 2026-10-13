@@ -39,16 +39,17 @@
     (dict "label" (partial "ui/t" "show_top_panel") "check" true)
   )) }}
 
-  {{- $helpItems := slice
-    (dict "label" (partial "ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts")
-    (dict "sep" true)
-    (dict "label" (partial "ui/t" "view_source") "action" "dlg:github")
-  -}}
+  {{- $helpExtras := slice -}}
+  {{- with site.Params.repoUrl -}}
+    {{- $helpExtras = $helpExtras | append (dict "label" (partial "ui/t" "view_source") "action" "dlg:github") -}}
+  {{- end -}}
   {{- /* The icon vault is a hidden page; offer it only when the site
        registers it (an "icons" menu entry, typically dash/launcher=false). */ -}}
   {{- if index $reg.pages "icons" -}}
-    {{- $helpItems = $helpItems | append (dict "label" (partial "ui/t" "icon_vault") "action" "nav:icons") -}}
+    {{- $helpExtras = $helpExtras | append (dict "label" (partial "ui/t" "icon_vault") "action" "nav:icons") -}}
   {{- end -}}
+  {{- $helpItems := slice (dict "label" (partial "ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}
+  {{- with $helpExtras }}{{ $helpItems = $helpItems | append (dict "sep" true) | append . }}{{ end -}}
   {{ partial "ui/panel-menu.html" (dict "menu" "help" "label" (partial "ui/t" "menu_help") "items" $helpItems) }}
 
   <div class="up-panel-spacer"></div>
@@ -168,9 +169,10 @@
     <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ $handle }}</div>
       <div class="up-dropdown-body">
-        {{ partial "ui/dropdown-row.html" (dict "label" (partial "ui/t" "lock_screen") "action" "dlg:lock") }}
+        {{- $lock := ne site.Params.desktop.lock false }}
+        {{ if $lock }}{{ partial "ui/dropdown-row.html" (dict "label" (partial "ui/t" "lock_screen") "action" "dlg:lock") }}{{ end }}
         {{ partial "ui/dropdown-row.html" (dict "label" (partial "ui/t" "restart_session") "action" "reload") }}
-        {{ partial "ui/dropdown-row.html" (dict "label" (partial "ui/t" "log_out") "action" "dlg:logout" "danger" true) }}
+        {{ if $lock }}{{ partial "ui/dropdown-row.html" (dict "label" (partial "ui/t" "log_out") "action" "dlg:logout" "danger" true) }}{{ end }}
       </div>
     </div>
   </div>

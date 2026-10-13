@@ -38,7 +38,9 @@
 
   <div class="up-launcher-spacer"></div>
 
+  {{- if ne site.Params.desktop.trash false }}
   {{ partial "ui/launcher-tile.html" (dict "tag" "button" "key" "trash" "label" (partial "ui/t" "trash") "icon" "launcher/trash" "trash" true) }}
+  {{- end }}
 </nav>
 
 {{- /* The desktop's corner watermark. params.desktop.label replaces the

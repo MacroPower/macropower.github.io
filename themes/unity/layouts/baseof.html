@@ -29,12 +29,12 @@
           once per language. One that starts reading the page must switch
           to partial. */}}
     {{ partialCached "dialog-host.html" . }}
-    {{ partialCached "trash-window.html" . }}
+    {{ if ne site.Params.desktop.trash false }}{{ partialCached "trash-window.html" . }}{{ end }}
     {{ if partialCached "playlist.html" . }}{{ partialCached "daw-window.html" . }}{{ end }}
     {{ partialCached "dash.html" . }}
-    {{ partial "hud.html" . }}
+    {{ if ne site.Params.desktop.hud false }}{{ partial "hud.html" . }}{{ end }}
     {{ partialCached "notify-host.html" . }}
-    {{ partialCached "lock-screen.html" . }}
+    {{ if ne site.Params.desktop.lock false }}{{ partialCached "lock-screen.html" . }}{{ end }}
   </div>
 
   {{ partialCached "ui/runtime.html" . site.Language.Name }}

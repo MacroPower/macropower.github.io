@@ -27,12 +27,15 @@ interface ShortcutSection {
   rows: ShortcutRow[];
 }
 
+// A site can turn the HUD off, and its Alt tap with it.
+const hasHud = typeof document !== "undefined" && document.querySelector("[data-up-hud]") !== null;
+
 const SECTIONS: ShortcutSection[] = [
   {
     title: t("js_shortcuts_desktop"),
     rows: [
       { combos: [["Super"]], desc: t("js_shortcuts_open_dash") },
-      { combos: [["Alt"]], desc: t("js_shortcuts_open_hud") },
+      ...(hasHud ? [{ combos: [["Alt"]], desc: t("js_shortcuts_open_hud") }] : []),
       { combos: [["Esc"]], desc: t("js_shortcuts_dismiss") },
       { combos: [["Enter"]], desc: t("js_shortcuts_confirm_dialog") },
       { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_window"), gesture: true },

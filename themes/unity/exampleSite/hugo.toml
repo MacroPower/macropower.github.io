@@ -74,8 +74,13 @@ mainSections = ["posts"]
     # accent = "aubergine"
     # The corner watermark's lines; an empty list removes it.
     # label = ["jane/personal-site", "est. 2024"]
-    # The Trash window's contents. A trailing slash marks a folder.
+    # The Trash window's contents. A trailing slash marks a folder, and
+    # false removes the Trash.
     # trash = ["draft-v2-final.docx", "old-site/"]
+    # false removes the lock screen with its Lock and Log Out actions.
+    # lock = false
+    # false removes the HUD and its Alt tap.
+    # hud = false
     # The network indicator's access points; the first starts connected.
     # networks = ["home-wifi", { name = "wg0", mono = true }]
     # The owner's login on the lock screen, the user menu, and the post

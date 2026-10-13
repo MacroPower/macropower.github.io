@@ -118,14 +118,16 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `description` | | `<meta name="description">` and the RSS channel description. |
 | `images` | | Default share image for Open Graph and Twitter cards. |
 | `themeColor` | | Emitted as `<meta name="theme-color">`. |
-| `repoUrl` | | Linked from Help > View source. |
+| `repoUrl` | | Linked from Help > View source, which shows only when this is set. |
 | `author.name`, `author.email` | site title | The banner name, JSON-LD author, and the Messages indicator's Compose target. A plain string `author = "Jane Doe"` sets the name. |
 | `author.jobTitle`, `author.focus` | | The terminal banner's title row and the focus line under it. `jobTitle` is also the home page's JSON-LD `jobTitle`. |
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
 | `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button and the projects sidebar's GitHub link; a `twitter` entry sets the card metadata. |
 | `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
-| `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. |
+| `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |
+| `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
+| `desktop.hud` | `true` | `false` removes the HUD and its Alt tap, which some keyboard and screen reader users rely on for the browser's own menus. |
 | `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
 | `blog.dateFormat`, `blog.listDateFormat` | `Jan 2, 2006`, `2006-01-02` | Date formats in the post reader and post list. |

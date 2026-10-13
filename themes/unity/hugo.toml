@@ -43,7 +43,12 @@
     toc = false
 
   [params.desktop]
-    # Names in the Trash window. A trailing slash marks a folder.
+    # The lock screen, with the Lock and Log Out actions that open it.
+    lock = true
+    # The HUD, which a tap of Alt opens to search the panel's menus.
+    hud = true
+    # Names in the Trash window. A trailing slash marks a folder. false
+    # removes the Trash from the launcher, the Dash, and the desktop.
     trash = [
       "old-resume-FINAL-v3.pdf",
       "passwords.txt",
