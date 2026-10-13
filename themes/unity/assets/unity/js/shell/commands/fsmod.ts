@@ -123,9 +123,9 @@ export const cp: Command = {
   run(ctx) {
     const { flags, operands } = splitFlags(ctx.args);
     const recursive = flags.has("r") || flags.has("R");
-    if (operands.length < 2) { ctx.errln(red("cp: missing destination file operand")); return 1; }
-    const dest = operands[operands.length - 1] as string;
     const srcs = operands.slice(0, -1);
+    const dest = operands.at(-1);
+    if (dest === undefined || srcs.length === 0) { ctx.errln(red("cp: missing destination file operand")); return 1; }
     const destAbs = ctx.vfs.resolvePath(ctx.cwd(), dest);
     const destNode = ctx.vfs.lookup(destAbs);
     if (srcs.length > 1 && destNode?.kind !== "dir") {
@@ -160,9 +160,9 @@ export const mv: Command = {
   complete: pathComplete,
   run(ctx) {
     const { operands } = splitFlags(ctx.args);
-    if (operands.length < 2) { ctx.errln(red("mv: missing destination file operand")); return 1; }
-    const dest = operands[operands.length - 1] as string;
     const srcs = operands.slice(0, -1);
+    const dest = operands.at(-1);
+    if (dest === undefined || srcs.length === 0) { ctx.errln(red("mv: missing destination file operand")); return 1; }
     const destAbs = ctx.vfs.resolvePath(ctx.cwd(), dest);
     const destNode = ctx.vfs.lookup(destAbs);
     if (srcs.length > 1 && destNode?.kind !== "dir") {

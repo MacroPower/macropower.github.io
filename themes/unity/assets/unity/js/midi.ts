@@ -76,9 +76,9 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
           if (!arr) { arr = []; pending.set(key, arr); }
           arr.push([tick, vel]);
         } else {
-          const arr = pending.get(key);
-          if (arr?.length) {
-            const [s, v] = arr.shift() as [number, number];
+          const on = pending.get(key)?.shift();
+          if (on) {
+            const [s, v] = on;
             notes.push({ channel: ch, pitch, start: s / division, dur: (tick - s) / division, vel: v / 127 });
           }
         }

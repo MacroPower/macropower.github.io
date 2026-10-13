@@ -611,8 +611,9 @@ export class Shell {
     // Leading NAME=value assignments configure the environment. The RHS is
     // expanded without word splitting (bash assignment semantics).
     let wi = 0;
-    while (wi < cmd.words.length && isAssignmentWord(cmd.words[wi] as Word)) {
-      const tok = expandNoSplit(cmd.words[wi] as Word, exp);
+    for (const w of cmd.words) {
+      if (!isAssignmentWord(w)) break;
+      const tok = expandNoSplit(w, exp);
       const eq = tok.indexOf("=");
       this.env.set(tok.slice(0, eq), tok.slice(eq + 1), { export: this.env.isExported(tok.slice(0, eq)) });
       wi += 1;
@@ -621,8 +622,7 @@ export class Shell {
     // Expand the remaining words into fields, then apply filename globbing to
     // any word that carried an unquoted glob metacharacter.
     let argv: string[] = [];
-    for (let k = wi; k < cmd.words.length; k += 1) {
-      const w = cmd.words[k] as Word;
+    for (const w of cmd.words.slice(wi)) {
       const fields = expandFields(w, exp);
       if (!w.hasUnquotedGlob) { argv.push(...fields); continue; }
       for (const f of fields) {

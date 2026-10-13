@@ -230,7 +230,7 @@ export const cut: Command = {
     if (spec === undefined) { ctx.errln(red("cut: you must specify a list of bytes, characters, or fields")); return 1; }
     const ranges = parseRanges(spec);
     if (!ranges) { ctx.errln(red(`cut: invalid field value '${spec}'`)); return 1; }
-    const d = delim.length > 0 ? (delim[0] as string) : "\t";
+    const d = delim[0] ?? "\t";
     const { lines, code } = inputLines(ctx, "cut", files);
     for (const line of lines) {
       if (charSpec !== undefined) {
@@ -254,13 +254,16 @@ function expandSet(s: string): string[] {
   const esc: Record<string, string> = { n: "\n", t: "\t", r: "\r", "\\": "\\" };
   let i = 0;
   while (i < s.length) {
-    if (s[i] === "\\" && i + 1 < s.length) { const e = s[i + 1] as string; out.push(esc[e] ?? e); i += 2; continue; }
-    if (s[i + 1] === "-" && i + 2 < s.length && s[i + 2] !== "\\") {
-      const a = (s[i] as string).charCodeAt(0);
-      const b = (s[i + 2] as string).charCodeAt(0);
+    const ch = s.charAt(i);
+    const next = s[i + 1];
+    const end = s[i + 2];
+    if (ch === "\\" && next !== undefined) { out.push(esc[next] ?? next); i += 2; continue; }
+    if (next === "-" && end !== undefined && end !== "\\") {
+      const a = ch.charCodeAt(0);
+      const b = end.charCodeAt(0);
       if (a <= b) { for (let c = a; c <= b; c += 1) out.push(String.fromCharCode(c)); i += 3; continue; }
     }
-    out.push(s[i] as string);
+    out.push(ch);
     i += 1;
   }
   return out;
@@ -307,7 +310,7 @@ export const uniq: Command = {
       let j = i + 1;
       while (j < lines.length && lines[j] === lines[i]) j += 1;
       if (count) ctx.writeln(`${String(j - i).padStart(7)} ${lines[i]}`);
-      else ctx.writeln(lines[i] as string);
+      else ctx.writeln(lines[i]!);
       i = j;
     }
     return code;
@@ -335,7 +338,7 @@ export const tac: Command = {
   complete: pathComplete,
   run(ctx) {
     const { lines, code } = inputLines(ctx, "tac", ctx.args);
-    for (let i = lines.length - 1; i >= 0; i -= 1) ctx.writeln(lines[i] as string);
+    for (const line of [...lines].reverse()) ctx.writeln(line);
     return code;
   },
 };
@@ -369,14 +372,13 @@ export const seq: Command = {
   usage: "seq LAST | seq FIRST LAST | seq FIRST STEP LAST",
   details: "Print numbers from FIRST (default 1) to LAST in increments of STEP (default 1), one per line. Fractional values print with their natural precision rather than GNU seq's uniform decimal width.",
   run(ctx) {
-    const nums = ctx.args.map(Number);
+    const [a, b, c, ...extra] = ctx.args.map(Number);
+    if (a === undefined || extra.length > 0) { ctx.errln(red("seq: missing operand")); return 1; }
     let first = 1;
     let step = 1;
-    let last: number;
-    if (nums.length === 1) { last = nums[0] as number; }
-    else if (nums.length === 2) { first = nums[0] as number; last = nums[1] as number; }
-    else if (nums.length === 3) { first = nums[0] as number; step = nums[1] as number; last = nums[2] as number; }
-    else { ctx.errln(red("seq: missing operand")); return 1; }
+    let last = a;
+    if (b !== undefined && c !== undefined) { first = a; step = b; last = c; }
+    else if (b !== undefined) { first = a; last = b; }
     if ([first, step, last].some((n) => !Number.isFinite(n)) || step === 0) {
       ctx.errln(red(`seq: invalid argument`));
       return 1;

@@ -84,8 +84,8 @@ interface SortState {
 
   sortBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      const k = btn.getAttribute("data-up-sort") as SortKey | null;
-      if (!k) return;
+      const k = btn.getAttribute("data-up-sort");
+      if (k !== "name" && k !== "date") return;
       if (sortState.key === k) {
         sortState.dir = sortState.dir === "desc" ? "asc" : "desc";
       } else {

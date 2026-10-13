@@ -26,8 +26,9 @@ export const find: Command = {
     const paths: string[] = [];
     let namePat: string | undefined;
     let typeFilter: string | undefined;
-    let i = 0;
-    while (i < args.length && !(args[i] as string).startsWith("-")) { paths.push(args[i] as string); i += 1; }
+    const firstPredicate = args.findIndex((a) => a.startsWith("-"));
+    let i = firstPredicate === -1 ? args.length : firstPredicate;
+    paths.push(...args.slice(0, i));
     for (; i < args.length; i += 1) {
       const a = args[i];
       if (a === "-name") { namePat = args[i + 1]; i += 1; }
@@ -40,7 +41,7 @@ export const find: Command = {
     const matches = (path: string, node: FsNode): boolean => {
       if (typeFilter === "f" && node.kind !== "file") return false;
       if (typeFilter === "d" && node.kind !== "dir") return false;
-      if (re) return re.test((path.split("/").pop() as string) || path);
+      if (re) return re.test(path.split("/").pop() || path);
       return true;
     };
 

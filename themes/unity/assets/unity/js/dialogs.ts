@@ -131,7 +131,7 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
       resolve(null);
       return;
     }
-    const frag = template.content.cloneNode(true) as DocumentFragment;
+    const frag = document.importNode(template.content, true);
     const root = document.createElement("div");
     root.className = "up-dialog-stage";
     root.style.zIndex = String(1000 + stack.length * 2);

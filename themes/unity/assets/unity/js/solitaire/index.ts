@@ -14,7 +14,7 @@
 
 import { t, tn } from "../i18n";
 import {
-  Klondike, itemAt, sameLoc, type Card, type Hint, type Loc, type Suit,
+  Klondike, SUITS, itemAt, sameLoc, type Card, type Hint, type Loc, type Suit,
 } from "./klondike";
 import {
   CARD_H, CARD_W, PAL, cardBack, cardFace, ctx2d, drawIcon, drawText,
@@ -1017,9 +1017,9 @@ function cardName(card: Card): string {
     loCtx.drawImage(slotSprite("stock"), stock.x, stock.y);
     const waste = slotPos(WASTE);
     loCtx.drawImage(slotSprite("tableau"), waste.x, waste.y);
-    for (let f = 0; f < 4; f++) {
+    for (const f of SUITS) {
       const p = slotPos({ kind: "foundation", pile: f });
-      loCtx.drawImage(slotSprite("foundation", f as Suit), p.x, p.y);
+      loCtx.drawImage(slotSprite("foundation", f), p.x, p.y);
     }
     for (let c = 0; c < 7; c++) {
       const p = slotPos({ kind: "tableau", pile: c });

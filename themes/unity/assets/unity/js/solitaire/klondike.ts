@@ -11,7 +11,8 @@
 // taking one back down), floored at zero.
 
 /** 0 hearts, 1 diamonds, 2 clubs, 3 spades. */
-export type Suit = 0 | 1 | 2 | 3;
+export const SUITS = [0, 1, 2, 3] as const;
+export type Suit = (typeof SUITS)[number];
 
 export interface Card {
   /** Stable identity, 0..51: suit * 13 + rank - 1. */
@@ -84,9 +85,9 @@ export type Rng = () => number;
 
 function makeDeck(): Card[] {
   const deck: Card[] = [];
-  for (let suit = 0; suit < 4; suit++) {
+  for (const suit of SUITS) {
     for (let rank = 1; rank <= 13; rank++) {
-      deck.push({ id: suit * 13 + rank - 1, suit: suit as Suit, rank, faceUp: false });
+      deck.push({ id: suit * 13 + rank - 1, suit, rank, faceUp: false });
     }
   }
   return deck;
