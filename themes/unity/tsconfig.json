@@ -1,44 +1,27 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "module": "ESNext",
+    "target": "es2023",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "preserve",
     "moduleResolution": "bundler",
-    "strict": true,
+    "moduleDetection": "force",
     "noEmit": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "noUncheckedSideEffectImports": true,
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "resolveJsonModule": true,
-    "useDefineForClassFields": true,
-    "verbatimModuleSyntax": false,
+    "skipLibCheck": true,
     "paths": {
-      "@xterm/xterm": [
-        "./assets/unity/third_party/xterm/xterm.d.ts"
-      ],
-      "@xterm/addon-fit": [
-        "./assets/unity/third_party/xterm/addon-fit.d.ts"
-      ],
-      "@xterm/addon-web-links": [
-        "./assets/unity/third_party/xterm/addon-web-links.d.ts"
-      ]
+      "@xterm/xterm": ["./assets/unity/third_party/xterm/xterm.d.ts"],
+      "@xterm/addon-fit": ["./assets/unity/third_party/xterm/addon-fit.d.ts"],
+      "@xterm/addon-web-links": ["./assets/unity/third_party/xterm/addon-web-links.d.ts"]
     }
   },
-  "include": [
-    "assets/unity/js/**/*"
-  ],
-  "exclude": [
-    "**/*.test.ts",
-    "**/testkit.ts"
-  ]
+  "include": ["assets/unity/js/**/*"],
+  "exclude": ["**/*.test.ts", "**/testkit.ts"]
 }
