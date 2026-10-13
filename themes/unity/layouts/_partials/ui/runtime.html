@@ -19,6 +19,7 @@
   "handle" (partial "ui/author-handle.html" .)
   "repo" (site.Params.repoUrl | default "")
   "rss" $rss
+  "hotspot" (site.Params.desktop.hotspot | default "personal-site")
   "nav" $nav
 -}}
 {{- $js := printf "window.UP_SITE=%s;window.UP_I18N=%s;" ($site | jsonify) (partial "ui/i18n.html" . | jsonify) -}}

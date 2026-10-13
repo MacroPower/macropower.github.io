@@ -129,6 +129,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
 | `desktop.hud` | `true` | `false` removes the HUD and its Alt tap, which some keyboard and screen reader users rely on for the browser's own menus. |
 | `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
+| `desktop.hotspot` | `personal-site` | The network name the network indicator's hotspot broadcasts. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
 | `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. Hugo's `:date_medium` follows the page's language. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |

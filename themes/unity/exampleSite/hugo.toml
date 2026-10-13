@@ -83,6 +83,8 @@ mainSections = ["posts"]
     # hud = false
     # The network indicator's access points; the first starts connected.
     # networks = ["home-wifi", { name = "wg0", mono = true }]
+    # The network name the hotspot broadcasts once a visitor enables it.
+    # hotspot = "jane-laptop"
     # The owner's login on the lock screen, the user menu, and the post
     # sign-offs. user defaults to the author's first name, lowercased.
     # user = "jane"

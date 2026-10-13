@@ -30,6 +30,8 @@ export interface UPSite {
   handle: string;
   repo: string;
   rss: string;
+  /** The network name the network indicator's hotspot broadcasts. */
+  hotspot: string;
   /** nav:<key> action targets, from the theme's site-pages.html registry. */
   nav: Record<string, string>;
 }

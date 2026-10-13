@@ -9,7 +9,7 @@ import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
 
-const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", nav: {} };
+const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 // nav:<key> targets are SSR'd into UP_SITE.nav from the site-pages.html
@@ -318,8 +318,7 @@ async function showSubscribe(site: UPSite): Promise<void> {
 // directly (dispatchAction has no panel ref); session-only.
 const hotspot = { active: false };
 
-// The simulated hotspot's network name and client count.
-const HOTSPOT_SSID = "personal-site";
+// The simulated hotspot's client count.
 const HOTSPOT_DEVICES = 2;
 
 async function handleHotspot(): Promise<void> {
@@ -349,6 +348,7 @@ async function handleHotspot(): Promise<void> {
   });
   if (r !== "on") return;
 
+  const ssid = getSite().hotspot || "personal-site";
   hotspot.active = true;
   indicator?.classList.add("is-hotspot");
   if (trigger) trigger.textContent = t("js_panel_disable_hotspot");
@@ -356,11 +356,11 @@ async function handleHotspot(): Promise<void> {
     const status = document.createElement("div");
     status.className = "up-dropdown-row is-hotspot-status";
     status.setAttribute("data-hotspot-status", "");
-    status.textContent = tn("js_panel_hotspot_status", HOTSPOT_DEVICES, { name: HOTSPOT_SSID });
+    status.textContent = tn("js_panel_hotspot_status", HOTSPOT_DEVICES, { name: ssid });
     body.insertBefore(status, body.firstChild);
   }
   notify({ icon: "network", title: t("js_panel_hotspot_active_title"),
-    body: t("js_panel_hotspot_active_body", { name: HOTSPOT_SSID }) });
+    body: t("js_panel_hotspot_active_body", { name: ssid }) });
 }
 
 // Exported for dash.ts: the Dash's app tiles reuse the panel's action
