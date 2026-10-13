@@ -21,6 +21,6 @@
 {{- end -}}
 <iframe src="https://open.spotify.com/embed/{{ $type }}/{{ $id | urlquery }}"
     title="{{ T "spotify_player" (dict "Type" $type) }}"
-    width="{{ $width }}" height="{{ $height }}" style="border:0"
+    width="{{ $width }}" height="{{ $height }}"
     loading="lazy"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>

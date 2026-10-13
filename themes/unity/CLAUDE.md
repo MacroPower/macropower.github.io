@@ -35,7 +35,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 TypeScript types the JavaScript surface but not the DOM. Each module selects its root by a `data-*` attribute and no-ops when the attribute is absent. Renaming any `data-*` attribute or `up-` class a module reads breaks it silently, so grep `assets/unity/js/` before renaming anything in a partial. The larger partials list the attributes their module reads in a header comment. The HUD indexes the top panel's rendered menus as its search index, so that markup is a contract too.
 
-`baseof.html` injects `window.UP_SITE` before the bundles load. The `Window` augmentation in `assets/unity/js/types.ts` must match it.
+`_partials/ui/runtime.html` publishes `window.UP_SITE` and `window.UP_I18N` in a per-language script that loads before the bundles. The theme renders no inline script, so it runs under a Content Security Policy without `'unsafe-inline'`. Keep it that way, and pass page data in a `<script type="application/json">` block like the home terminal's. The `Window` augmentation in `assets/unity/js/types.ts` must match those globals.
 
 ## Cross-bundle contracts
 

@@ -139,7 +139,7 @@
       <div class="up-dropdown-body">
         <div class="up-bat-headline" data-bat-headline>{{ T "battery_discharging" (dict "Percent" 76) }}</div>
         <div class="up-bat-detail" data-bat-detail>{{ T "battery_remaining" }}</div>
-        <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill style="width:76%"></div></div>
+        <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill></div></div>
         {{ partial "ui/dropdown-row.html" (dict "label" (T "enable_power_saver") "action" "dlg:power-saver") }}
         {{ partial "ui/dropdown-row.html" (dict "label" (T "power_settings") "action" "dlg:power") }}
       </div>

@@ -17,10 +17,8 @@
   count naming its form. assets/unity/js/i18n.ts reads larger counts at 100
   plus the count modulo 100, where CLDR's integer rules repeat.
 
-  Emits a deferred <script> setting window.UP_I18N, published once per
-  language and cached across pages. baseof.html renders it before the
-  bundles, which run in document order. Call it through partialCached
-  keyed on the language.
+  Returns a dict of strings and plurals, which ui/runtime.html publishes
+  as window.UP_I18N once per language.
 */ -}}
 {{- $strings := dict -}}
 {{- $plurals := dict -}}
@@ -55,8 +53,4 @@
   {{- if gt (len .) 8 }}{{ $list = printf "%s, and %d more" $list (sub (len .) 8) }}{{ end -}}
   {{- warnf "unity: the %q translation lacks %d of the theme's i18n keys, so pages show those strings empty or in English: %s. Copy the missing keys from the theme's i18n/en.toml." site.Language.Name (len .) $list -}}
 {{- end -}}
-{{- $data := dict "strings" $strings "plurals" $plurals -}}
-{{- $js := printf "window.UP_I18N=%s;" ($data | jsonify) -}}
-{{- $path := printf "js/i18n.%s.js" site.Language.Name -}}
-{{- $res := resources.FromString $path $js | minify | fingerprint -}}
-<script defer src="{{ $res.RelPermalink }}" integrity="{{ $res.Data.Integrity }}"></script>
+{{- return dict "strings" $strings "plurals" $plurals -}}

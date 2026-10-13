@@ -80,7 +80,7 @@
 <section class="up-shell up-neofetch up-selectable" data-shell aria-label="{{ T "terminal" }}">
   {{- /* safeJS: Go's html/template JS-escapes any value inside a <script>, which
         would double-encode the JSON. jsonify already \u-escapes < > & so the
-        payload is safe to emit verbatim. Same pattern as UP_SITE in baseof.html. */ -}}
+        payload is safe to emit verbatim. */ -}}
   <script type="application/json" data-shell-data>{{ $payload | jsonify | safeJS }}</script>
   {{- /* Visually hidden equivalent of the terminal's neofetch banner. The
         xterm canvas never reaches the accessibility tree, so this is the home

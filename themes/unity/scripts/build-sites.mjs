@@ -150,7 +150,7 @@ const SITES = {
     },
     warns: /the "de" translation lacks \d+ of the theme's i18n keys/,
     check: (out) => {
-      const js = readdirSync(join(out, "js")).find((f) => f.startsWith("i18n."));
+      const js = readdirSync(join(out, "js")).find((f) => f.startsWith("runtime."));
       return [
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
       ].filter(Boolean);

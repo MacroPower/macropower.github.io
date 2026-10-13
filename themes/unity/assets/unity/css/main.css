@@ -1075,9 +1075,13 @@ a.up-sponsor-card[href]:hover{
 .up-icons-grid[data-kind="glyph"] .up-icons-art svg{
   width:var(--icp-size,24px); height:var(--icp-size,24px);
 }
-.up-icons-grid[data-kind="app"] .up-icons-art,
-.up-icons-grid[data-kind="flat"] .up-icons-art{
+/* icons.ts sets --icp-size from the size picker. The fallbacks match each
+   kind's default size in icons.html. */
+.up-icons-grid[data-kind="app"] .up-icons-art{
   width:var(--icp-size,56px); height:var(--icp-size,56px);
+}
+.up-icons-grid[data-kind="flat"] .up-icons-art{
+  width:var(--icp-size,64px); height:var(--icp-size,64px);
 }
 .up-icons-grid[data-kind="app"] .up-icons-art svg,
 .up-icons-grid[data-kind="flat"] .up-icons-art svg{ width:100%; height:100%; }
@@ -1610,6 +1614,7 @@ a.up-sponsor-card[href]:hover{
   table,
   figure{margin:0 0 14px}
   p:last-child{margin-bottom:0}
+  iframe{border:0;max-width:100%}
   h1,
   h2,
   h3,
@@ -2386,7 +2391,8 @@ details.up-alert{
   margin-left:14px; margin-right:14px;
 }
 .up-bat-bar-fill{
-  height:100%;
+  /* The level the headline reads until top-panel.ts sets the real one. */
+  width:76%; height:100%;
   background:linear-gradient(90deg,var(--orange),var(--orange-light));
 }
 
