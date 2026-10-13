@@ -11,6 +11,7 @@
 
   The shims point the xterm and pdf.js package imports at the copies
   vendored under assets/unity/third_party/, so a site builds without npm.
+  Call it through partialCached keyed on the entry.
 */ -}}
 {{- $shims := dict
   "@xterm/xterm" "unity/third_party/xterm/xterm.mjs"
