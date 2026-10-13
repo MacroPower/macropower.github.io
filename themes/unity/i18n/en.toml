@@ -1159,3 +1159,5 @@ other = "MOVES {moves}"
 other = "YOU WIN!"
 [js_solitaire_banner_new_game]
 other = "NEW GAME"
+[js_shell_reconnect]
+other = "Reconnect to the terminal"

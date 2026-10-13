@@ -4,6 +4,7 @@ import { writeBanner } from "./banner";
 import { formatUptime } from "./uptime";
 import { color, PALETTE } from "./ansi";
 import { registerAll } from "./commands/all";
+import { t } from "../i18n";
 
 // Keyed by the home page's path, which is the site's root, so two sites
 // on one origin (user.github.io/a/ and /b/) keep separate histories.
@@ -73,6 +74,9 @@ function saveHistory(items: readonly string[]): void {
     overlay.className = "up-shell-reconnect";
     overlay.tabIndex = 0;
     overlay.setAttribute("role", "button");
+    // The overlay's text imitates ssh in English, so its accessible name
+    // comes from the page's language instead.
+    overlay.setAttribute("aria-label", t("js_shell_reconnect"));
 
     const logout = document.createElement("div");
     logout.textContent = "logout";
