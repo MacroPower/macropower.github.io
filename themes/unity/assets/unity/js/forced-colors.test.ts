@@ -27,6 +27,29 @@ const STATE = /\.is-(active|on|selected|current|focused|anchor)\b|\[aria-(presse
 // The system colors forced colors keeps as written.
 const SYSTEM = /\b(Canvas|CanvasText|LinkText|VisitedText|ActiveText|ButtonFace|ButtonText|ButtonBorder|Field|FieldText|Highlight|HighlightText|SelectedItem|SelectedItemText|Mark|MarkText|GrayText|AccentColor|AccentColorText)\b/;
 
+// The class, ARIA, and :not() parts of a selector that name a state.
+const STATE_PART = /\.is-[\w-]+|\[aria-[\w-]+(?:="[^"]*")?\]|:not\([^)]*\)/g;
+
+// The color that an outline names, from the longhand or from the last
+// word of the shorthand.
+const ringColor = (d: ReadonlyMap<string, string>): string | undefined =>
+  d.get("outline-color") ?? d.get("outline")?.split(/\s+/).at(-1);
+
+// The selectors of the rules that fill with Highlight.
+const fills = forced
+  .filter((r) => (r.decls.get("background") ?? r.decls.get("background-color")) === "Highlight")
+  .map((r) => r.selector);
+// Whether a selector names a filled element, in any further state, or an
+// element inside one.
+const onFill = (s: string): boolean =>
+  fills.some((f) => s.startsWith(f) && /^(?:$|[\s.:[])/.test(s.slice(f.length)));
+
+// The color of each focus and cursor ring that the block names, by
+// selector. A later rule replaces an earlier one.
+const rings = new Map(forced
+  .filter((r) => /:focus|\.is-focused\b/.test(r.selector) && ringColor(r.decls) !== undefined)
+  .map((r) => [r.selector, ringColor(r.decls)!]));
+
 describe("forced colors", () => {
   it("rings every focus state that draws no outline", () => {
     // Each of these keeps another cue, or never takes focus from a key.
@@ -52,8 +75,6 @@ describe("forced colors", () => {
   it("marks every state that only paints colors", () => {
     // Each of these keeps a cue that forced colors leaves alone.
     const skip = [
-      // The focused window also stacks above the others.
-      ".up-window-chrome.is-focused",
       // The launcher tile of the focused window shows a second arrow.
       ".up-launcher-tile.is-focused",
       // The glyph of the network row's dot changes too.
@@ -67,8 +88,69 @@ describe("forced colors", () => {
       .filter((r) => [...r.decls.keys()].every((p) => COLOR_ONLY.has(p)))
       .map((r) => r.selector)
       .filter((s) => !skip.some((prefix) => s.startsWith(prefix)));
-    expect(states).toEqual(expect.arrayContaining([".up-naut-item.is-active", ".up-dash-lens.is-active", ".up-hud-row.is-selected"]));
+    expect(states).toEqual(expect.arrayContaining([
+      ".up-naut-item.is-active", ".up-dash-lens.is-active", ".up-hud-row.is-selected",
+      ".up-window-chrome.is-focused", ".up-window-chrome.is-focused .up-titlebar",
+    ]));
     expect(states.filter((s) => !forcedSelectors.has(s))).toEqual([]);
+  });
+
+  it("paints every focus ring Highlight, or HighlightText on a fill", () => {
+    // Forced colors swaps the color of each ring that main.css draws for
+    // one the browser picks, so the block names each ring's color.
+    const drawn = screen
+      .filter((r) => r.selector.includes(":focus") && !removesOutline(r.decls) && ringColor(r.decls) !== undefined)
+      .map((r) => r.selector);
+    expect(drawn).toEqual(expect.arrayContaining([".up-tl:focus-visible", ".up-naut-item.is-active:focus-visible"]));
+    expect(drawn.filter((s) => !rings.has(s))).toEqual([]);
+    const off = [...rings]
+      .filter(([s, color]) => color !== (onFill(s) ? "HighlightText" : "Highlight"))
+      .map(([s, color]) => `${s} ${color}`);
+    expect(off).toEqual([]);
+  });
+
+  it("rings every element that opts out of forced colors", () => {
+    // The browser's own ring keeps its usual color on an element that
+    // opts out, so the block names the ring of each one that takes focus.
+    // Each of these takes no focus, or takes its ring from another class.
+    const skip = new Map([
+      [".up-hud-row", "focus stays in the HUD's field"],
+      [".up-docv-zoom-readout", "rings as .up-docv-btn"],
+      [".up-dlg-titlebar", "takes no focus"],
+    ]);
+    const optOut = forced
+      .filter((r) => r.decls.get("forced-color-adjust") === "none" && !/\s|::/.test(r.selector))
+      .map((r) => r.selector);
+    expect(optOut).toEqual(expect.arrayContaining([".up-accent-swatch", ".up-daw-patchmenu-item.is-on"]));
+    const problems = optOut.flatMap((s) => {
+      const base = s.replace(STATE_PART, "");
+      if (skip.has(base)) return [];
+      const states = [`${base}:focus-visible`, `${base}:focus`];
+      if (!states.some((state) => rings.has(state))) return [`${s} draws the browser's ring`];
+      // A ring inside the element's edge sits on its fill.
+      const offset = rules
+        .filter((r) => states.includes(r.selector) && r.decls.has("outline-offset"))
+        .at(-1)?.decls.get("outline-offset") ?? "0";
+      return Number.parseFloat(offset) < 0 && rings.get(`${s}:focus-visible`) !== "HighlightText"
+        ? [`${s} rings its fill in Highlight`]
+        : [];
+    });
+    expect(problems).toEqual([]);
+  });
+
+  it("edges every surface that a shadow outlines", () => {
+    // A shadow with no offset or blur draws an edge, and forced colors
+    // drops it with every other shadow. A rule that also draws a border
+    // keeps that edge.
+    const outlined = screen
+      .filter((r) => !STATE.test(r.selector) && !r.selector.includes(":"))
+      .filter((r) => /(?:^|,)\s*0 0 0 [\d.]+px(?![^,]*inset)/.test(r.decls.get("box-shadow") ?? ""))
+      .filter((r) => ![...r.decls.keys()].some((p) => p.startsWith("border") && !p.includes("radius")))
+      .map((r) => r.selector);
+    expect(outlined).toEqual(expect.arrayContaining([".up-window-chrome", ".up-docv-sheet"]));
+    const bare = outlined.filter((s) =>
+      !forced.some((r) => r.selector === s && SYSTEM.test(r.decls.get("border") ?? r.decls.get("outline") ?? "")));
+    expect(bare).toEqual([]);
   });
 
   it("hides the resting bar of each row that bars its selection", () => {
@@ -100,7 +182,7 @@ describe("forced colors", () => {
         .map(([prop, value]) => `${r.selector} ${prop}:${value}`));
     expect(authored).toEqual([]);
     const colors = forced.flatMap((r) =>
-      ["color", "background", "border-color", "border-inline-start-color", "outline-color"]
+      ["color", "background", "border", "border-color", "border-inline-start-color", "outline", "outline-color"]
         .flatMap((p) => (r.decls.has(p) ? [r.decls.get(p)!] : [])));
     expect(colors.every((v) => SYSTEM.test(v) || /^(inherit|none)$/.test(v))).toBe(true);
   });

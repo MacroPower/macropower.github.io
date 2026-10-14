@@ -4223,25 +4223,92 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    forced colors: a Windows contrast theme or another palette the user
    forces on every page. The browser replaces each color with a system
    color and drops every shadow and gradient, so a state that only tints,
-   glows, or fills disappears. Here each focus state that draws no outline
-   gets a CanvasText ring, and each selected, current, or pressed state
-   fills with Highlight. A fill opts out of forced colors, because the
-   browser otherwise paints a Canvas plate behind its text, so the fill
-   and every rule inside it name their colors here. forced-colors.test.ts
-   fails when a state that paints only colors has no rule here.
+   glows, or fills disappears. Here every focus ring paints Highlight, or
+   HighlightText where it sits on a Highlight fill. Each selected,
+   current, or pressed state fills with Highlight, and so does the
+   focused window's titlebar. A fill opts out of forced colors, because
+   the browser otherwise paints a Canvas plate behind its text, so the
+   fill and every rule inside it name their colors here.
+   forced-colors.test.ts fails when a ring, an edge that only a shadow
+   draws, or a state that paints only colors has no rule here.
    ========================================================================= */
 @media (forced-colors: active){
-  /* Fields and small buttons, ringed outside their border. */
+  /* Fields and small buttons that draw no ring outside forced colors,
+     ringed outside their border. */
   .up-docv-pagenum:focus,
   .up-dash-search:focus,
   .up-hud-input:focus,
   .up-lock-input:focus,
   .up-dash-more:focus-visible,
-  .up-dash-lens:focus-visible{outline:2px solid CanvasText;outline-offset:1px}
+  .up-dash-lens:focus-visible{outline:2px solid Highlight;outline-offset:1px}
+  /* Controls that opt out of forced colors below, where the browser's
+     own ring keeps its usual color. */
+  .up-pref-toggle:focus-visible,
+  .up-accent-swatch:focus-visible,
+  .up-daw-btn:focus-visible{outline:2px solid Highlight;outline-offset:1px}
   /* Tiles, menu rows, and panes, ringed inside their edge. */
   .up-dash-tile:focus,
   .up-ctx-item:focus-visible,
-  .up-docv-view:focus-visible{outline:2px solid CanvasText;outline-offset:-2px}
+  .up-docv-view:focus-visible{outline:2px solid Highlight;outline-offset:-2px}
+  /* The rings that main.css paints with an accent or with white. Forced
+     colors swaps each color for one the browser picks, so each ring
+     names Highlight here. */
+  .up-sol-canvas:focus-visible,
+  .up-icons-seg button:focus-visible,
+  .up-icons-cell:focus-visible,
+  .up-daw-lcd:focus-visible,
+  .up-daw-section-title:focus-visible,
+  .up-daw-ms:focus-visible,
+  .up-daw-patch:focus-visible,
+  .up-daw-patchmenu-item:focus-visible,
+  .up-daw-wave:focus-visible,
+  .up-daw-time:focus-visible,
+  .up-daw-knob-dial:focus-visible,
+  .up-launcher-tile:focus-visible,
+  .up-panel-menu:focus-visible,
+  .up-indicator:focus-visible,
+  .up-menu-item:focus-visible,
+  .up-dropdown-row:focus-visible,
+  .up-tl:focus-visible,
+  .up-naut-item:focus-visible,
+  .up-post-row:focus-visible,
+  .up-project-tile:focus-visible,
+  .up-trash-tile:focus-visible,
+  .up-docv-thumb:focus-visible,
+  .up-dlg-btn:focus-visible,
+  .up-skip-link:focus,
+  .up-pathbar-btn:focus-visible,
+  .up-pathbar-arrow:focus-visible,
+  .up-pathbar-icon-btn:focus-visible,
+  .up-pathbar-search-input:focus-visible,
+  .up-docv-btn:focus-visible,
+  .up-reader-up:focus-visible,
+  .up-code-copy:focus-visible{outline-color:Highlight}
+
+  /* Each window and each CV page draws its edge with a shadow. */
+  .up-window-chrome{border:1px solid CanvasText}
+  .up-docv-sheet{outline:1px solid CanvasText}
+  /* The focused window's frame and titlebar paint Highlight. So do a
+     dialog's, because a dialog holds focus until it closes. */
+  .up-window-chrome.is-focused,
+  .up-dialog{border-color:Highlight}
+  .up-window-chrome.is-focused .up-titlebar,
+  .up-dlg-titlebar{
+    forced-color-adjust:none;
+    background:Highlight;color:HighlightText;border-color:Highlight;
+  }
+  .up-window-chrome.is-focused .up-titlebar-text,
+  .up-dlg-title{color:HighlightText}
+  /* Each bead keeps its glyph and drops its face, as on the titlebar of
+     a window without focus. */
+  .up-window-chrome.is-focused .up-tl-close,
+  .up-window-chrome.is-focused .up-tl-min,
+  .up-window-chrome.is-focused .up-tl-max,
+  .up-window-chrome.is-focused .up-tl:hover,
+  .up-dlg-close,
+  .up-dlg-close:hover{background:none;color:HighlightText;box-shadow:none}
+  .up-window-chrome.is-focused .up-titlebar .up-tl:focus-visible,
+  .up-dlg-titlebar .up-dlg-close:focus-visible{outline:2px solid HighlightText;outline-offset:1px}
 
   /* Forced colors paints a transparent border, so each resting row's
      bar takes the page color and only the selected row shows one. */
@@ -4297,7 +4364,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   /* The keyboard cursor of a list or grid, while focus sits elsewhere. */
   .up-post-row.is-focused,
   .up-project-tile.is-focused,
-  .up-trash-tile.is-focused{outline:2px dashed CanvasText;outline-offset:-2px}
+  .up-trash-tile.is-focused{outline:2px dashed Highlight;outline-offset:-2px}
   .up-post-row.is-active.is-focused,
   .up-project-tile.is-active.is-focused,
   .up-trash-tile.is-active.is-focused{outline-color:HighlightText;box-shadow:none}
@@ -4312,5 +4379,6 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-naut-item.is-active:focus-visible,
   .up-post-row.is-active:focus-visible,
   .up-project-tile.is-active:focus-visible,
-  .up-trash-tile.is-active:focus-visible{outline-color:HighlightText}
+  .up-trash-tile.is-active:focus-visible,
+  .up-daw-patchmenu-item.is-on:focus-visible{outline-color:HighlightText}
 }
