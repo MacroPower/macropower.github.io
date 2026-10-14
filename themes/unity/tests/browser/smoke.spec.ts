@@ -1,9 +1,14 @@
 // Loads the built example site in Chromium under the Content Security
-// Policy that README.md documents. Every page must start the desktop
-// without an uncaught exception or a console error. app.ts logs a console
-// error for each module that fails to start. Chromium logs one for each
-// inline script or style that the policy blocks. The other tests each
+// Policy that README.md documents. Every page must load and start the
+// desktop without an uncaught exception or a console error. app.ts logs a
+// console error for each module that fails to start. Chromium logs one for
+// each inline script or style that the policy blocks. The other tests each
 // drive one feature, such as the home terminal or the Dash.
+//
+// The test of each page waits until the page's own startup settles, such
+// as the home terminal's boot. The error check then waits one frame and
+// one task more. It misses an error from a later timer, such as the
+// clock's next tick.
 import { readdirSync, readFileSync } from "node:fs";
 import { join, sep } from "node:path";
 
@@ -29,6 +34,10 @@ const test = base.extend<{ problems: string[] }>({
       if (msg.type() === "error") problems.push(`console error: ${msg.text()}`);
     });
     await use(problems);
+    // The page reports an error from a timer or a frame callback only when
+    // the callback runs. Wait one frame and one task, so the callbacks that
+    // are already due run before the check.
+    await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => setTimeout(r))));
     expect(problems, "the page reported errors").toEqual([]);
   }, { auto: true }],
 });
@@ -61,10 +70,24 @@ function painted(canvas: Locator): Promise<number> {
   });
 }
 
+// Waits for the startup that a page's own bundle runs after app.ts adds
+// the up-ready class to the body. The home terminal boots after its fonts
+// load, and the CV and the solitaire table each paint a canvas.
+async function started(page: Page): Promise<void> {
+  const shell = page.locator("[data-shell]");
+  if (await shell.count()) await expect(shell).toHaveAttribute("data-shell-ready", "");
+  if (await page.locator("[data-docv-pages]").count()) {
+    await expect.poll(() => painted(page.locator("[data-docv-pages] canvas").first())).toBeGreaterThan(0);
+  }
+  const table = page.locator("[data-sol-canvas]");
+  if (await table.count()) await expect.poll(() => painted(table)).toBeGreaterThan(0);
+}
+
 test.describe("every page", () => {
   for (const path of pages()) {
     test(path, async ({ page }) => {
       await open(page, path);
+      await started(page);
     });
   }
 });
