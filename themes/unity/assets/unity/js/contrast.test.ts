@@ -79,6 +79,8 @@ function textColors(list: Rule[], selector: string): { selector: string; color: 
 
 interface Preset {
   name: string;
+  color: string | undefined;
+  light: string | undefined;
   lighter: string | undefined;
   dark: string | undefined;
   darker: string | undefined;
@@ -91,10 +93,22 @@ const presets: Preset[] = [...accentPresets];
 const fallback = rules.find((r) => r.selector === ":root" && r.decls.has("--up-accent-dark"))?.decls;
 presets.push({
   name: "fallback",
+  color: fallback?.get("--up-accent"),
+  light: fallback?.get("--up-accent-light"),
   lighter: fallback?.get("--up-accent-lighter"),
   dark: fallback?.get("--up-accent-dark"),
   darker: fallback?.get("--up-accent-darker"),
 });
+
+// The custom properties in props with a preset's accent shades in place
+// of the internal accent block's.
+function withPreset(props: ReadonlyMap<string, string>, p: Preset): ReadonlyMap<string, string> {
+  const shades = [
+    ["--up-accent", p.color], ["--up-accent-light", p.light], ["--up-accent-lighter", p.lighter],
+    ["--up-accent-dark", p.dark], ["--up-accent-darker", p.darker],
+  ] as const;
+  return new Map([...props, ...shades.flatMap(([name, hex]) => (hex === undefined ? [] : [[name, hex] as const]))]);
+}
 
 // The color stops of a background, in 0-255. A translucent stop sits on
 // white, the lightest backdrop, where light text contrasts least.
@@ -189,14 +203,56 @@ function surfaceColors(value: string, props: ReadonlyMap<string, string>): (numb
     .map((stop) => color(stop.replace(/\s+[\d.]+%$/, ""), props));
 }
 
+// True when a value reads a custom property whose name matches `name`,
+// directly or through the internal tokens that the :root blocks declare.
+function reads(value: string, name: RegExp, depth = 0): boolean {
+  return [...value.matchAll(/var\((--up-[\w-]+)\)/g)].some((m) => {
+    if (name.test(m[1]!)) return true;
+    const next = rootProps.get(m[1]!);
+    return depth < 4 && next !== undefined && reads(next, name, depth + 1);
+  });
+}
+
 // True when a value reads a content token or the sidebar's, directly or
 // through the internal tokens mixed from them.
-function readsContent(value: string, depth = 0): boolean {
-  if (/var\(--up-(content-[\w-]+|sidebar-bg)\)/.test(value)) return true;
-  return depth < 4 && [...value.matchAll(/var\((--up-[\w-]+)\)/g)].some((m) => {
-    const next = rootProps.get(m[1]!);
-    return next !== undefined && readsContent(next, depth + 1);
-  });
+const readsContent = (value: string): boolean => reads(value, /^--up-(content-[\w-]+|sidebar-bg)$/);
+
+// The accent shades that text on a light surface reads, and the lighter
+// shade that text and marks on a dark surface read.
+const ACCENT = /^--up-accent(-light|-dark|-darker)?$/;
+const LIGHTER = /^--up-accent-lighter$/;
+
+// The content surfaces, which the content inks and accent text sit on.
+const CONTENT_SURFACES: readonly string[] = ["--up-content-bg", "--up-content-raised", "--up-content-sunken", "--up-content-shade"];
+
+// The rules that paint a page, without the :root blocks that declare the
+// tokens and without the frames of an animation.
+const painting = screen.filter((r) => r.selector !== ":root" && !r.media.includes("@keyframes"));
+
+// The values that a rule paints its accent with: its text color, each
+// custom property that reads the lighter shade, or else its background.
+function accentPaints(r: Rule): string[] {
+  const text = r.decls.get("color");
+  if (text !== undefined) return [text];
+  const props = [...r.decls].filter(([prop, value]) => prop.startsWith("--") && reads(value, LIGHTER)).map(([, value]) => value);
+  if (props.length > 0) return props;
+  const background = fill(r);
+  return background === undefined ? [] : [background];
+}
+
+// The frames of each animation that a rule runs, each with the color and
+// the opacity that it sets.
+function frames(r: Rule): { color: string | undefined; opacity: number }[] {
+  const names = (r.decls.get("animation") ?? r.decls.get("animation-name") ?? "").split(/[\s,]+/).filter(Boolean);
+  return rules
+    .filter((k) => names.some((name) => k.media.endsWith(`@keyframes ${name}`)))
+    .map((k) => ({ color: k.decls.get("color"), opacity: Number(k.decls.get("opacity") ?? 1) }));
+}
+
+// A translucent rgba() color, such as a trough over a surface.
+function translucent(value: string | undefined): { rgb: number[]; alpha: number } | undefined {
+  const m = /^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/.exec(value?.trim() ?? "");
+  return m ? { rgb: [m[1], m[2], m[3]].map(Number), alpha: Number(m[4]) } : undefined;
 }
 
 // True when a value paints an opaque color that it writes out, or that
@@ -216,15 +272,21 @@ function paintsLiteral(value: string): boolean {
 // Each rule that paints accent text or a mark on a dark surface, by
 // selector. Each names the rule that paints the surface and the contrast
 // that the shade keeps there. Text needs 4.5:1, and a mark, such as a
-// state's dot or an icon, needs 3:1. A row that fills with the accent
-// under the pointer also names the rule that repaints the text there.
-const ON_DARK = new Map<string, { surface: string; min: number; hover?: string }>([
-  [".up-dropdown-row.is-hotspot-status", { surface: ".up-dropdown", min: 4.5, hover: ".up-dropdown-row.is-hotspot-status:hover" }],
-  [".up-net-row.is-on .up-net-row-dot", { surface: ".up-dropdown", min: 3, hover: ".up-net-row:hover .up-net-row-dot" }],
-  [".up-lang-row.is-on::before", { surface: ".up-dropdown", min: 3, hover: ".up-lang-row:hover::before" }],
+// state's dot, an icon, or a bar's fill, needs 3:1. A bar names the rule
+// that paints its translucent trough over the surface. A rule whose
+// surface lightens under the pointer, such as a row that fills with the
+// accent, names the rules that repaint its text there.
+const ON_DARK = new Map<string, { surface: string; trough?: string; min: number; hover?: readonly string[] }>([
+  [".up-dropdown-row.is-hotspot-status", { surface: ".up-dropdown", min: 4.5, hover: [".up-dropdown-row.is-hotspot-status:hover"] }],
+  [".up-net-row.is-on .up-net-row-dot", { surface: ".up-dropdown", min: 3, hover: [".up-net-row:hover .up-net-row-dot"] }],
+  [".up-lang-row.is-on::before", { surface: ".up-dropdown", min: 3, hover: [".up-lang-row:hover::before"] }],
   [".up-vol-play.is-playing", { surface: ".up-dropdown", min: 3 }],
   [".up-vol-slider", { surface: ".up-dropdown", min: 3 }],
-  [".up-indicator.is-hotspot", { surface: ".up-top-panel", min: 3 }],
+  [".up-indicator.is-hotspot", {
+    surface: ".up-top-panel", min: 3, hover: [".up-indicator.is-hotspot:hover", ".up-indicator.is-hotspot.is-open"],
+  }],
+  [".up-bat-bar-fill", { surface: ".up-dropdown", trough: ".up-bat-bar", min: 3 }],
+  [".up-notify-bar-fill", { surface: ".up-notify-bubble", trough: ".up-notify-bar", min: 3 }],
 ]);
 
 // A fill that reads the base accent or its lighter shade, which contrast
@@ -273,13 +335,12 @@ describe("contrast", () => {
   });
 
   it("keeps each content ink at 4.5:1 on each content surface", () => {
-    const surfaces = ["--up-content-bg", "--up-content-raised", "--up-content-sunken", "--up-content-shade"];
     const inks = ["--up-content-fg", "--up-content-muted", "--up-content-ink", "--up-content-label"];
     // The sidebar shows the full text color and the labels.
     const sidebar = ["--up-content-fg", "--up-content-label"];
     const low = PAIRS.flatMap(([pair, props]) => {
       const pairs = [
-        ...surfaces.flatMap((surface) => inks.map((ink) => [ink, surface] as const)),
+        ...CONTENT_SURFACES.flatMap((surface) => inks.map((ink) => [ink, surface] as const)),
         ...sidebar.map((ink) => [ink, "--up-sidebar-bg"] as const),
       ];
       return pairs.flatMap(([ink, surface]) => {
@@ -289,6 +350,31 @@ describe("contrast", () => {
         return under.some((u) => contrast(fg, u!) < 4.5) ? [`${ink} on ${surface} under ${pair}`] : [];
       });
     });
+    expect(low).toEqual([]);
+  });
+
+  it("keeps accent text at 4.5:1 on each content surface for each preset", () => {
+    // Accent text on a dark surface reads the lighter shade, and ON_DARK
+    // checks it. Every other accent text, such as a link under the
+    // pointer, sits on a content surface.
+    const texts = painting.filter((r) => {
+      const ink = r.decls.get("color");
+      return ink !== undefined && reads(ink, ACCENT) && !reads(ink, LIGHTER);
+    });
+    expect(texts.map((r) => r.selector)).toEqual(expect.arrayContaining([
+      ".up-reader-body a:hover", ".up-reader-license a:hover", ".up-toc a:hover", ".up-projects-noscript a:hover",
+      ".up-404-links a:hover", ".up-dlg-content-body a:hover", ".up-icons-no",
+    ]));
+    const low = PAIRS.flatMap(([pair, base]) => presets.flatMap((p) => {
+      const props = withPreset(base, p);
+      return texts.flatMap((r) => {
+        const ink = color(r.decls.get("color")!, props);
+        if (!ink) return [`${r.selector} has a color that this test cannot read for ${p.name}`];
+        const short = CONTENT_SURFACES.filter((surface) =>
+          surfaceColors(`var(${surface})`, props).some((u) => !u || contrast(ink, u) < 4.5));
+        return short.length > 0 ? [`${r.selector} for ${p.name} under ${pair} on ${short.join(", ")}`] : [];
+      });
+    }));
     expect(low).toEqual([]);
   });
 
@@ -354,36 +440,60 @@ describe("contrast", () => {
 
   it("paints accent text and marks on a dark surface with the lighter shade", () => {
     // A control that draws its parts from tokens, such as the volume
-    // slider, paints the shade through a custom property.
-    const lighter = screen
+    // slider, paints the shade through a custom property. A bar's fill
+    // paints it through a recipe token.
+    const lighter = painting
       .filter((r) => [...r.decls].some(([prop, value]) =>
-        (prop === "color" || prop.startsWith("--")) && /var\(--up-accent-lighter\)/.test(value)))
+        (prop === "color" || prop.startsWith("--") || prop.startsWith("background")) && reads(value, LIGHTER)))
       .map((r) => r.selector);
     expect(lighter).toEqual(expect.arrayContaining([...ON_DARK.keys()]));
     expect(lighter.filter((s) => !ON_DARK.has(s))).toEqual([]);
   });
 
   it("keeps the lighter shade readable on each dark surface", () => {
-    const low = [...ON_DARK].flatMap(([selector, { surface, min }]) => {
+    const low = [...ON_DARK].flatMap(([selector, { surface, trough, min }]) => {
       const rule = screen.find((r) => r.selector === surface);
-      const under = rule ? stops(fill(rule) ?? "") : [];
+      let under = rule ? stops(fill(rule) ?? "") : [];
       if (under.length === 0) return [`${surface} has no background that this test reads`];
-      return presets.flatMap(({ name, lighter }) => {
-        if (lighter === undefined || !/^#[0-9a-f]{6}$/i.test(lighter)) return [`${name} has no #rrggbb lighter shade`];
-        return under
-          .filter((stop) => contrast(rgb(lighter), stop) < min)
-          .map((stop) => `${selector} on ${stop.map(Math.round).join(",")} for ${name}`);
+      if (trough !== undefined) {
+        const bar = screen.find((r) => r.selector === trough);
+        const layer = translucent(bar ? fill(bar) : undefined);
+        if (!layer) return [`${trough} has no translucent background that this test reads`];
+        under = under.map((stop) => over(layer.rgb, layer.alpha, stop));
+      }
+      const own = screen.filter((r) => r.selector === selector);
+      const paints = own.flatMap(accentPaints);
+      if (paints.length === 0) return [`${selector} paints nothing that this test reads`];
+      // Each frame of an animation paints its own color, or else the
+      // rule's, at its own opacity.
+      const inks = [
+        ...paints.map((value) => ({ value, alpha: 1 })),
+        ...own.flatMap(frames).map((f) => ({ value: f.color ?? paints[0]!, alpha: f.opacity })),
+      ];
+      return presets.flatMap((p) => {
+        const props = withPreset(rootProps, p);
+        return inks.flatMap(({ value, alpha }) => surfaceColors(value, props).flatMap((ink) => {
+          if (!ink) return [`${selector} paints ${value}, which this test cannot read for ${p.name}`];
+          return under
+            .filter((stop) => contrast(over(ink, alpha, stop), stop) < min)
+            .map((stop) => `${selector} ${value} at ${alpha} on ${stop.map(Math.round).join(",")} for ${p.name}`);
+        }));
       });
     });
     expect(low).toEqual([]);
   });
 
-  it("repaints accent text in a row that fills with the accent under the pointer", () => {
-    const bare = [...ON_DARK].flatMap(([selector, { hover }]) => {
-      if (hover === undefined) return [];
+  it("repaints accent text where its surface turns lighter under the pointer", () => {
+    const bare = [...ON_DARK].flatMap(([selector, { hover = [] }]) => {
       const at = screen.findLastIndex((r) => r.selector === selector && r.decls.has("color"));
-      const fix = screen.findLastIndex((r) => r.selector === hover && r.decls.has("color"));
-      return fix > at && !/--up-accent/.test(screen[fix]!.decls.get("color")!) ? [] : [selector];
+      // An animation of the color overrides the repaint, so the repaint
+      // stops it.
+      const animated = screen.filter((r) => r.selector === selector).flatMap(frames).some((f) => f.color !== undefined);
+      return hover.filter((state) => {
+        const fix = screen.findLastIndex((r) => r.selector === state && r.decls.has("color"));
+        if (fix <= at || /--up-accent/.test(screen[fix]!.decls.get("color")!)) return true;
+        return animated && screen[fix]!.decls.get("animation") !== "none";
+      });
     });
     expect(bare).toEqual([]);
   });

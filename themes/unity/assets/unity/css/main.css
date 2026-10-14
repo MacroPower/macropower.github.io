@@ -206,6 +206,16 @@
      section labels and counts. */
   --up-content-ink:color-mix(in srgb, var(--up-content-fg) 94%, var(--up-content-bg));
   --up-content-label:color-mix(in srgb, var(--up-content-fg) 80%, var(--up-content-bg));
+  /* Accent text on a content surface, such as a link under the pointer.
+     It mixes the light accent shade half and half with the text color,
+     so it keeps 4.5:1 with every content surface for each built-in
+     preset, and it turns light with a light --up-content-fg. */
+  --up-content-accent:color-mix(in srgb, var(--up-accent-light) 50%, var(--up-content-fg));
+  /* The bar-fill recipe's gradient, for the battery menu's level bar and
+     the volume bubble's. It starts at the lighter accent shade, which
+     keeps 3:1 with the bar's trough on the dark surfaces, and brightens
+     toward the level. */
+  --up-bar-fill:linear-gradient(90deg,var(--up-accent-lighter),color-mix(in srgb, var(--up-accent-lighter) 70%, #fff));
   /* The raised-button recipe's values, for the GTK push button. The
      raised-button-checked recipe paints a toggle that is on with the
      pressed background. */
@@ -700,7 +710,7 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-page-children a:hover,
 .up-sponsors-main p a:hover,
 .up-page-body a:hover,
-.up-reader-body a:hover{color:var(--up-accent-light);text-decoration:underline}
+.up-reader-body a:hover{color:var(--up-content-accent);text-decoration:underline}
 .up-page-header h1{font-size:24px;font-weight:500;letter-spacing:-.01em;margin:0 0 16px}
 .up-page-body{font-size:14.5px;line-height:1.65}
 .up-page-children{
@@ -1118,7 +1128,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-no{
   font-family:var(--up-font-mono); font-size:11px; font-weight:700;
-  letter-spacing:.14em; color:var(--up-accent);
+  letter-spacing:.14em; color:var(--up-content-accent);
 }
 .up-icons-section-head h2{
   margin:0; font-size:20px; font-weight:400; letter-spacing:-.01em;
@@ -1729,7 +1739,7 @@ a.up-sponsor-card[href]:hover{
   font-size:11.5px;color:var(--up-content-muted);
   p{margin:0}
   a{color:inherit;text-decoration:underline;text-decoration-color:#C4BFB9}
-  a:hover{color:var(--up-accent-light);text-decoration-color:currentColor}
+  a:hover{color:var(--up-content-accent);text-decoration-color:currentColor}
 }
 /* ---------- Markdown prose (post reader and plain pages) ---------- */
 :is(.up-reader-body, .up-page-body){
@@ -1755,7 +1765,7 @@ a.up-sponsor-card[href]:hover{
   .up-heading-anchor{
     margin-inline-start:.35em;color:var(--up-content-muted);font-weight:400;
     text-decoration:none;opacity:0;transition:opacity .12s ease;
-    &:hover{color:var(--up-accent-light);text-decoration:none}
+    &:hover{color:var(--up-content-accent);text-decoration:none}
     &:focus-visible{opacity:1}
   }
   :is(h1, h2, h3, h4, h5, h6):hover > .up-heading-anchor{opacity:1}
@@ -1828,7 +1838,7 @@ a.up-sponsor-card[href]:hover{
   ul ul{margin:2px 0 0;padding-inline-start:1.1em}
   li{margin:3px 0}
   a{color:var(--up-link);text-decoration:none}
-  a:hover{color:var(--up-accent-light);text-decoration:underline}
+  a:hover{color:var(--up-content-accent);text-decoration:underline}
 }
 
 /* GitHub-style alerts from render-blockquote.html, drawn as GTK info bars
@@ -2230,7 +2240,7 @@ details.up-alert{
   background:var(--up-content-bg);
   li{padding:5px 0;border-bottom:1px dashed var(--up-content-line)}
   a{color:var(--up-link);text-decoration:none}
-  a:hover{color:var(--up-accent-light);text-decoration:underline}
+  a:hover{color:var(--up-content-accent);text-decoration:underline}
 }
 /* The grid's sidebar and preview pane do nothing without JavaScript, and
    their collapsed height overlaps the list, so this block hides the grid.
@@ -2254,7 +2264,7 @@ details.up-alert{
 .up-404-links{
   margin-top:10px;display:flex;gap:18px;
   a{color:var(--up-link);text-decoration:none}
-  a:hover{color:var(--up-accent-light);text-decoration:underline}
+  a:hover{color:var(--up-content-accent);text-decoration:underline}
 }
 
 /* ---------- Responsive collapse ---------- */
@@ -2502,15 +2512,19 @@ details.up-alert{
   &:hover::before{color:inherit}
 }
 
-/* Net indicator while a hotspot is broadcasting: accent-tinted with a gentle
-   pulse (reduce-motion neutralizes the animation via the global rule). */
+/* The net indicator while a hotspot is broadcasting. It pulses from the
+   lighter accent shade toward white, so every frame keeps 3:1 with the
+   panel, and reduce motion stops the pulse. Under the pointer or with
+   its menu open, the indicator sits on a lighter highlight, so the icon
+   turns white and stops pulsing. */
 .up-indicator.is-hotspot{
   color:var(--up-accent-lighter);
   animation:upHotspotPulse 1.8s ease-in-out infinite;
+  &:hover,
+  &.is-open{color:#fff;animation:none}
 }
 @keyframes upHotspotPulse{
-  0%,100%{opacity:1}
-  50%{opacity:.55}
+  50%{color:color-mix(in srgb, var(--up-accent-lighter) 55%, #fff)}
 }
 .up-dropdown-row.is-hotspot-status{
   color:var(--up-accent-lighter); font-weight:600;
@@ -2624,7 +2638,8 @@ details.up-alert{
 .up-bat-bar-fill{
   /* The level the headline reads until top-panel.ts sets the real one. */
   width:76%; height:100%;
-  background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
+  /* recipe: bar-fill */
+  background:var(--up-bar-fill);
   /* The fill brightens from the start edge toward the level. */
   [dir="rtl"] &{transform:scaleX(-1)}
 }
@@ -2779,7 +2794,7 @@ details.up-alert{
 }
 .up-dlg-content-body a{
   color:var(--up-link); text-decoration:none;
-  &:hover{color:var(--up-accent-light); text-decoration:underline}
+  &:hover{color:var(--up-content-accent); text-decoration:underline}
 }
 .up-dlg-content-details{
   margin-top:12px; padding:10px 12px;
@@ -3361,7 +3376,8 @@ body.up-reduce-motion *{
 }
 .up-notify-bar-fill{
   display:block; height:100%;
-  background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
+  /* recipe: bar-fill */
+  background:var(--up-bar-fill);
   /* The fill brightens from the start edge toward the level. */
   [dir="rtl"] &{transform:scaleX(-1)}
 }
