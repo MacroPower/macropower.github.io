@@ -39,6 +39,15 @@ const HEX = /^#[0-9a-f]{6}$/i;
 const surfaces = ["--up-sidebar-bg", "--up-content-bg"].flatMap((name) =>
   siteTokens.get(name)?.match(/#[0-9a-f]{6}\b/gi) ?? []);
 
+// The dark surfaces under the rings that paint --up-accent-lighter: each
+// stop of the titlebar gradients, which the code block's copy button
+// repeats, and the Studio's surfaces and buttons.
+const studio = rules.find((r) => r.selector === ".up-daw-body" && r.decls.has("--up-daw-bg"))?.decls;
+const darkSurfaces = [
+  ...["--up-chrome-1", "--up-chrome-2", "--up-chrome-inactive-1", "--up-chrome-inactive-2"].map((name) => siteTokens.get(name)),
+  ...["--up-daw-bg", "--up-daw-panel", "--up-daw-btn-bg", "--up-daw-btn-bg-hover"].map((name) => studio?.get(name)),
+].flatMap((value) => value?.match(/#[0-9a-f]{6}\b/gi) ?? []);
+
 describe("focus rings", () => {
   it("draws every accent ring 2px solid in a plain accent token", () => {
     const rings = rules
@@ -48,7 +57,7 @@ describe("focus rings", () => {
         return outline && accent.test(outline) ? [`${r.selector} ${outline}`] : [];
       });
     expect(rings.length).toBeGreaterThan(0);
-    const weak = rings.filter((ring) => !/ 2px solid var\(--up-accent(-light)?\)$/.test(ring));
+    const weak = rings.filter((ring) => !/ 2px solid var\(--up-accent(-lighter)?\)$/.test(ring));
     expect(weak).toEqual([]);
   });
 
@@ -89,15 +98,27 @@ describe("focus rings", () => {
       ".up-icons-cell", ".up-icons-seg button",
     ].filter((base) => !/var\(--up-accent\)/.test(ringColor(`${base}:focus-visible`) ?? ""));
     expect(onLight).toEqual([]);
+    // These rings sit on the dark surfaces, where --up-accent-light
+    // contrasts less than 3:1 for some presets.
+    const onDark = [
+      ".up-launcher-tile", ".up-tl", ".up-code-copy", ".up-daw-lcd", ".up-daw-section-title",
+      ".up-daw-ms", ".up-daw-patch", ".up-daw-patchmenu-item", ".up-daw-wave", ".up-daw-time", ".up-daw-knob-dial",
+    ].filter((base) => !/var\(--up-accent-lighter\)/.test(ringColor(`${base}:focus-visible`) ?? ""));
+    expect(onDark).toEqual([]);
     expect(presets.map((p) => p.name)).toEqual(expect.arrayContaining(["orange", "green", "aubergine", "blue"]));
     expect(surfaces.length).toBeGreaterThan(1);
-    const low = presets.flatMap(({ name, color, light }) => {
-      if (!color || !HEX.test(color) || !light || !HEX.test(light)) return [`${name}: color ${color} or light ${light} is not #rrggbb`];
+    expect(darkSurfaces.length).toBeGreaterThan(7);
+    const low = presets.flatMap(({ name, color, light, lighter }) => {
+      if (!color || !HEX.test(color) || !light || !HEX.test(light) || !lighter || !HEX.test(lighter)) {
+        return [`${name}: color ${color}, light ${light}, or lighter ${lighter} is not #rrggbb`];
+      }
       return [
         // The white ring sits on a selected row's fill, which starts at light.
         ...(contrast(light, "#ffffff") < 3 ? [`${name}: white on light ${light}`] : []),
         // The --up-accent ring sits on the light surfaces.
         ...surfaces.filter((s) => contrast(color, s) < 3).map((s) => `${name}: color ${color} on ${s}`),
+        // The --up-accent-lighter ring sits on the dark surfaces.
+        ...darkSurfaces.filter((s) => contrast(lighter, s) < 3).map((s) => `${name}: lighter ${lighter} on ${s}`),
       ];
     });
     expect(low).toEqual([]);

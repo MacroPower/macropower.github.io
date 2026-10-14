@@ -225,7 +225,7 @@
 :root{
   --up-accent:#DD4814;
   --up-accent-light:#E95420;
-  /* Accent text and marks on the dark panel and its menus. */
+  /* Accent text, marks, and focus rings on a dark surface. */
   --up-accent-lighter:#FF6C3D;
   --up-accent-dark:#B23B11;
   --up-accent-darker:#922F0C;
@@ -3591,7 +3591,7 @@ body.up-reduce-motion *{
   text-shadow:0 0 4px var(--up-daw-lcd-glow);
   &.is-spin{cursor:ns-resize; touch-action:none} /* BPM drag-spinbox (daw.ts) */
   &.is-trk{min-width:28px; text-align:center}
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
 }
 .up-daw-trk{
   display:flex; align-items:center; gap:3px;
@@ -3674,7 +3674,7 @@ body.up-reduce-motion *{
     transform:rotate(90deg);
     transition:transform .12s ease;
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:-2px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:-2px}
 }
 .up-daw-track{
   display:flex; align-items:center; gap:5px;
@@ -3724,7 +3724,7 @@ body.up-reduce-motion *{
     color:#D6FF7E; background:#26330F; border-color:#3F5417;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px var(--up-daw-lcd-glow);
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
 }
 /* per-strip instrument selector + its popover */
 .up-daw-patch{
@@ -3753,7 +3753,7 @@ body.up-reduce-motion *{
     color:var(--up-daw-lcd);
     filter:drop-shadow(0 0 2px var(--up-daw-lcd-glow));
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
 }
 .up-daw-patch-blank{flex-shrink:0; width:24px}
 .up-daw-patchmenu{
@@ -3780,7 +3780,7 @@ body.up-reduce-motion *{
     text-shadow:0 0 3px var(--up-daw-lcd-glow);
     svg{opacity:1; filter:drop-shadow(0 0 2px var(--up-daw-lcd-glow))}
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:-2px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:-2px}
 }
 
 .up-daw-waves{
@@ -3813,7 +3813,7 @@ body.up-reduce-motion *{
     background:#1E2126; border-color:#3F5417;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
 }
 .up-daw-knobs{
   display:flex; flex-wrap:wrap; gap:6px 10px;
@@ -3854,7 +3854,7 @@ body.up-reduce-motion *{
     background:#1E2126; border-color:#3F5417;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
 }
 
 /* ---- rotary knobs ---- */
@@ -3894,7 +3894,7 @@ body.up-reduce-motion *{
     transform:rotate(var(--up-rot));
     box-shadow:0 0 2px rgba(0,0,0,.6);
   }
-  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:3px}
+  &:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:3px}
 }
 .up-daw-knob.is-sm .up-daw-knob-dial{
   width:20px; height:20px;
@@ -4007,11 +4007,11 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    accessibility: focus rings on interactive surfaces. Every ring keeps a
    contrast of at least 3:1 with the surface under it. A ring on a light
    surface paints --up-accent, and a ring on a dark surface paints the
-   brighter --up-accent-light. focus-ring.test.ts checks each preset's
-   shades against white and the light surfaces.
+   brighter --up-accent-lighter. focus-ring.test.ts checks each preset's
+   shades against white, the light surfaces, and the dark ones.
    ========================================================================= */
 .up-launcher-tile:focus-visible{
-  outline:2px solid var(--up-accent-light);
+  outline:2px solid var(--up-accent-lighter);
   outline-offset:-2px;
   border-radius:4px;
 }
@@ -4026,7 +4026,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline-offset:-1px;
 }
 .up-tl:focus-visible{
-  outline:2px solid var(--up-accent-light);
+  outline:2px solid var(--up-accent-lighter);
   outline-offset:1px;
 }
 .up-naut-item:focus-visible,
@@ -4073,7 +4073,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 }
 /* The copy button sits on the dark code block. */
 .up-code-copy:focus-visible{
-  outline:2px solid var(--up-accent-light);
+  outline:2px solid var(--up-accent-lighter);
   outline-offset:1px;
 }
 
