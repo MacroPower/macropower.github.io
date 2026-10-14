@@ -8,8 +8,10 @@ export interface Messages {
   js_blog_copy: never;
   js_blog_copy_code: never;
   js_blog_copy_failed: never;
-  js_blog_sorted_asc: never;
-  js_blog_sorted_desc: never;
+  js_blog_date_sorted_asc: never;
+  js_blog_date_sorted_desc: never;
+  js_blog_name_sorted_asc: never;
+  js_blog_name_sorted_desc: never;
   js_cancel: never;
   js_close: never;
   js_cv_go_to_page: "page";

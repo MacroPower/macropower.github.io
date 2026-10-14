@@ -39,6 +39,13 @@ interface SortState {
   /* ----- Sortable columns -------------------------------------------------- */
   const sortState: SortState = { key: "date", dir: "desc" };
 
+  // The name of the column the list sorts by, for screen readers. It
+  // starts with the name the column shows.
+  function sortedLabel({ key, dir }: SortState): string {
+    if (key === "name") return dir === "desc" ? t("js_blog_name_sorted_desc") : t("js_blog_name_sorted_asc");
+    return dir === "desc" ? t("js_blog_date_sorted_desc") : t("js_blog_date_sorted_asc");
+  }
+
   function applySort(): void {
     if (!listBody) return;
     const rows = Array.from(
@@ -65,16 +72,15 @@ interface SortState {
     sortBtns.forEach((btn) => {
       const k = btn.getAttribute("data-up-sort");
       const caret = btn.querySelector<HTMLElement>(".up-post-list-caret");
-      const sr = btn.querySelector<HTMLElement>("[data-up-sort-sr]");
       btn.classList.remove("is-sorted", "is-asc", "is-desc");
       if (k === key) {
         btn.classList.add("is-sorted", sortState.dir === "desc" ? "is-desc" : "is-asc");
         btn.setAttribute("aria-pressed", "true");
-        if (sr) sr.textContent = sortState.dir === "desc" ? t("js_blog_sorted_desc") : t("js_blog_sorted_asc");
+        btn.setAttribute("aria-label", sortedLabel(sortState));
         if (caret) caret.textContent = sortState.dir === "desc" ? "▾" : "▴";
       } else {
         btn.setAttribute("aria-pressed", "false");
-        if (sr) sr.textContent = "";
+        btn.removeAttribute("aria-label");
         if (caret) caret.textContent = "";
       }
     });

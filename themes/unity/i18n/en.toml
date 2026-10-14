@@ -66,8 +66,10 @@ other = "Select a post"
 other = "Name"
 [col_date]
 other = "Date"
-[sorted_descending]
-other = "sorted descending"
+# The date column's name for screen readers while the list sorts by it.
+# It starts with the col_date string, which the column shows.
+[col_date_sorted_desc]
+other = "Date, sorted descending"
 [no_posts_match]
 other = "No posts match."
 # A taxonomy page without terms. {{ .Plural }} is the page's title.
@@ -776,10 +778,16 @@ other = "Clean Up Icons"
 other = "{visible} / {count}"
 
 # Blog
-[js_blog_sorted_desc]
-other = "sorted descending"
-[js_blog_sorted_asc]
-other = "sorted ascending"
+# A column's name for screen readers while the list sorts by it. Each
+# starts with the col_name or col_date string, which the column shows.
+[js_blog_name_sorted_asc]
+other = "Name, sorted ascending"
+[js_blog_name_sorted_desc]
+other = "Name, sorted descending"
+[js_blog_date_sorted_asc]
+other = "Date, sorted ascending"
+[js_blog_date_sorted_desc]
+other = "Date, sorted descending"
 [js_blog_copy_code]
 other = "Copy code"
 [js_blog_copy]

@@ -86,9 +86,10 @@ const SITES: Record<string, SiteSpec> = {
           && "the projects sidebar lacks the GitHub social link",
         !read(join(out, "about/index.html")).includes('<a class="up-menu-item" href="/privacy/"')
           && "the Help menu lacks the menu.help link to the privacy page",
-        // Each list's search names its own list, and the Spotify player
-        // names its type.
+        // Each list's search names its own list, the post list's sorted
+        // column names its order, and the Spotify player names its type.
         ...([["posts/index.html", ' aria-label="Search posts"'], ["projects/index.html", ' aria-label="Filter projects"'],
+          ["posts/index.html", ' aria-label="Date, sorted descending"'],
           ["posts/2024/02/welcome-to-the-desktop/index.html", ' title="Spotify album player"']] as const)
           .filter(([file, text]) => !read(join(out, file)).includes(text))
           .map(([file, text]) => `${file} lacks${text}`),
