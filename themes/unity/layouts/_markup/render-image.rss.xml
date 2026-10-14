@@ -1,6 +1,6 @@
 {{- /* Feed images: render-image.html's resolution, with absolute URLs
       and without the loading hints feed readers ignore. */ -}}
-{{- $img := partial "markup/image.html" (dict "page" .PageInner "dest" .Destination "absolute" true) -}}
+{{- $img := partial "unity/markup/image.html" (dict "page" .PageInner "dest" .Destination "absolute" true) -}}
 <img src="{{ $img.src }}" alt="{{ .PlainText }}"
   {{- with .Title }} title="{{ . }}"{{ end }}
   {{- with $img.width }} width="{{ . }}" height="{{ $img.height }}"{{ end }}>

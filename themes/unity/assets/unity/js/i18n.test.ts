@@ -163,21 +163,21 @@ describe("template strings", () => {
     text: readFileSync(path, "utf8").replace(/\{\{-?\s*\/\*[\s\S]*?\*\/\s*-?\}\}/g, ""),
   }));
 
-  it("go through ui/t, which falls back to the theme's English", () => {
+  it("go through unity/ui/t, which falls back to the theme's English", () => {
     const direct = files
-      .filter((f) => f.name !== "_partials/ui/t.html" && f.name !== "_partials/ui/i18n.html")
+      .filter((f) => f.name !== "_partials/unity/ui/t.html" && f.name !== "_partials/unity/ui/i18n.html")
       .flatMap((f) => [...f.text.matchAll(/(?<![\w.$])T ["(]/g)].map(() => f.name));
     expect(direct).toEqual([]);
   });
 
   it("name only keys en.toml defines", () => {
     const keys = files.flatMap((f) =>
-      [...f.text.matchAll(/partial "ui\/t" (?:\(slice )?"([a-z0-9_]+)"/g)].map((m) => m[1]!));
+      [...f.text.matchAll(/partial "unity\/ui\/t" (?:\(slice )?"([a-z0-9_]+)"/g)].map((m) => m[1]!));
     expect(keys.length).toBeGreaterThan(0);
     expect(keys.filter((k) => !english.has(k))).toEqual([]);
   });
 
-  it("use only {{ .Name }} placeholders, which ui/t can fill", () => {
+  it("use only {{ .Name }} placeholders, which unity/ui/t can fill", () => {
     for (const [key, forms] of english) {
       if (key.startsWith("js_")) continue;
       for (const text of Object.values(forms)) {

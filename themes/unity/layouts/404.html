@@ -2,11 +2,11 @@
   <article class="up-404 up-selectable">
     <div class="up-empty-pane">
       <div class="up-empty-pane-inner">
-        <span class="up-empty-pane-icon" aria-hidden="true">{{ partial "icon.html" "flat/empty-folder" }}</span>
-        <h1 class="up-empty-pane-hint">{{ partial "ui/t" "page_does_not_exist" }}</h1>
+        <span class="up-empty-pane-icon" aria-hidden="true">{{ partial "unity/icon.html" "flat/empty-folder" }}</span>
+        <h1 class="up-empty-pane-hint">{{ partial "unity/ui/t" "page_does_not_exist" }}</h1>
         <div class="up-empty-pane-tagline" aria-hidden="true">bash: cd: 404: No such file or directory</div>
-        {{- $reg := partialCached "site-pages.html" . -}}
-        <nav class="up-404-links" aria-label="{{ partial "ui/t" "places_instead" }}">
+        {{- $reg := partialCached "unity/site-pages.html" . -}}
+        <nav class="up-404-links" aria-label="{{ partial "unity/ui/t" "places_instead" }}">
           {{- range $reg.launcherOrder }}{{ with index $reg.pages . }}
           <a href="{{ .url }}">{{ .label }}</a>
           {{- end }}{{ end }}

@@ -1,7 +1,7 @@
-{{- /* Markdown images. _partials/markup/image.html resolves the source
+{{- /* Markdown images. _partials/unity/markup/image.html resolves the source
       and its dimensions. Every image loads lazily and decodes off the
       critical path. */ -}}
-{{- $img := partial "markup/image.html" (dict "page" .PageInner "dest" .Destination) -}}
+{{- $img := partial "unity/markup/image.html" (dict "page" .PageInner "dest" .Destination) -}}
 <img src="{{ $img.src }}" alt="{{ .PlainText }}"
   {{- with .Title }} title="{{ . }}"{{ end }}
   {{- with $img.width }} width="{{ . }}" height="{{ $img.height }}"{{ end }}

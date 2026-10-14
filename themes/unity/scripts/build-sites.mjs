@@ -107,16 +107,20 @@ const SITES = {
       ].filter(Boolean);
     },
   },
-  // A site whose own assets use common names. The theme keeps its files
-  // under assets/unity/, so these must not replace any of them.
+  // A site whose own assets and partials use common names. The theme keeps
+  // its files under assets/unity/ and layouts/_partials/unity/, so these
+  // must not replace any of them.
   clash: {
     files: {
-      "hugo.toml": BARE,
+      "hugo.toml": `${BARE}[params.author]\n  name = "Jane Doe"\n`,
       "content/about.md": page("About"),
       "assets/css/main.css": "/* SITE-CSS */ body{color:red}\n",
       "assets/js/app.ts": 'console.log("SITE-JS");\n',
       "assets/icons/launcher/home.svg": '<svg><!-- SITE-ICON --></svg>\n',
       "assets/home/ascii.txt": "SITE-ASCII\n",
+      "layouts/_partials/author.html": '<span class="author">PARTIAL-AUTHOR</span>\n',
+      "layouts/_partials/icon.html": '<i class="icon">PARTIAL-ICON</i>\n',
+      "layouts/_partials/head.html": '<meta name="generator" content="PARTIAL-HEAD">\n',
     },
     check: (out) => {
       const text = (dir) => readdirSync(join(out, dir)).map((f) => read(join(out, dir, f))).join("");
@@ -127,6 +131,11 @@ const SITES = {
         text("js").includes("SITE-JS") && "the site's js/app.ts replaced the theme's script",
         pages.includes("SITE-ICON") && "the site's icons/ replaced a theme icon",
         pages.includes("SITE-ASCII") && "the site's home/ascii.txt replaced the terminal art",
+        ...["author", "icon", "head"]
+          .filter((name) => pages.includes(`PARTIAL-${name.toUpperCase()}`))
+          .map((name) => `the site's _partials/${name}.html replaced the theme's partial`),
+        !pages.includes('class="up-top-panel"') && "the pages lack the theme's top panel",
+        !pages.includes('"name":"Jane Doe"') && "index.html does not name the author",
       ].filter(Boolean);
     },
   },

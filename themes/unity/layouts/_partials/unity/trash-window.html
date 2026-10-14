@@ -1,0 +1,59 @@
+{{- /* The Trash's contents come from params.desktop.trash, a list of
+      names in which a trailing slash marks a folder. */ -}}
+{{- $handle := partial "unity/ui/author-handle.html" . -}}
+{{- $files := slice -}}
+{{- range site.Params.desktop.trash -}}
+  {{- if hasSuffix . "/" -}}
+    {{- $files = $files | append (dict "icon" "flat/empty-folder" "label" (strings.TrimSuffix "/" .)) -}}
+  {{- else -}}
+    {{- $files = $files | append (dict "icon" "flat/empty-file" "label" .) -}}
+  {{- end -}}
+{{- end -}}
+<div class="up-window-stage up-trash-stage" data-up-window="trash" hidden>
+  <section class="up-window-chrome" aria-label="{{ partial "unity/ui/t" "trash" }}" tabindex="-1">
+    <div class="up-titlebar" data-titlebar>
+      {{ partial "unity/ui/window-controls.html" (dict) }}
+      <span class="up-titlebar-text">{{ partial "unity/ui/t" "trash" }}</span>
+    </div>
+    <div class="up-window-body">
+      {{- /* Inline crumbs rather than unity/page/nav-pathbar.html: the
+             partial's wrap chrome, nav landmark, and history arrows are
+             page-window furniture the trash window doesn't want. Keep the
+             markup in sync with the partial's
+             .up-pathbar-btn/.up-pathbar-label shape. */}}
+      <div class="up-pathbar">
+        <div class="up-pathbar-crumbs">
+          <span class="up-pathbar-btn">
+            {{- partial "unity/icon.html" "glyphs/home" -}}
+            <span class="up-pathbar-label">{{ $handle }}</span>
+          </span>
+          <span class="up-pathbar-btn is-current" aria-current="location">
+            <span class="up-pathbar-label">{{ partial "unity/ui/t" "trash" }}</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="up-trash-files" data-trash-files>
+        {{- range $files }}
+        <button type="button" class="up-trash-tile" data-trash-tile data-name="{{ .label }}">
+          <span class="up-trash-tile-icon">{{ partial "unity/icon.html" .icon }}</span>
+          <span class="up-trash-tile-label">{{ .label }}</span>
+        </button>
+        {{- end }}
+      </div>
+
+      <div class="up-trash-empty" hidden>
+        {{ partial "unity/icon.html" "flat/trash-empty" }}
+        <div class="up-trash-empty-headline">{{ partial "unity/ui/t" "trash_is_empty" }}</div>
+        <div class="up-trash-empty-detail">
+          {{ partial "unity/ui/t" "nothing_thrown_away" }}
+        </div>
+      </div>
+
+      <div class="up-trash-footer">
+        <span class="up-trash-count" data-trash-count>{{ partial "unity/ui/t" (slice "items_count" (len $files)) }}</span>
+        <button type="button" class="up-trash-empty-btn" data-trash-empty>{{ partial "unity/ui/t" "empty_trash" }}</button>
+      </div>
+    </div>
+  </section>
+</div>

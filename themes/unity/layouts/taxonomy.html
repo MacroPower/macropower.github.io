@@ -4,33 +4,33 @@
   {{- $plural := .Data.Plural -}}
   {{- $terms := .Data.Terms.Alphabetical -}}
   {{- $segments := slice -}}
-  {{- with partialCached "blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
+  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
   {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
   <article class="up-blog up-selectable" data-blog-kind="taxonomy">
     <h1 class="up-sr-only">{{ .Title }}</h1>
-    {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
+    {{ partial "unity/page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
-      {{ partial "page/post-sidebar.html" . }}
+      {{ partial "unity/page/post-sidebar.html" . }}
       <section class="up-post-list" aria-label="{{ .Title }}">
         <header class="up-post-list-header">
-          <span>{{ partial "ui/t" "col_name" }}</span>
-          <span>{{ partial "ui/t" "posts" }}</span>
+          <span>{{ partial "unity/ui/t" "col_name" }}</span>
+          <span>{{ partial "unity/ui/t" "posts" }}</span>
         </header>
         {{- range $terms }}
-          {{ partial "page/post-row.html" (dict
+          {{ partial "unity/page/post-row.html" (dict
               "url" .Page.RelPermalink
               "title" .Page.Title
               "chips" (slice (.Page.Title | lower))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">{{ partial "ui/t" (slice "no_terms_yet" (dict "Plural" (lower .Title))) }}</div>
+          <div class="up-post-empty">{{ partial "unity/ui/t" (slice "no_terms_yet" (dict "Plural" (lower .Title))) }}</div>
         {{- end }}
       </section>
-      {{ partial "page/empty-pane.html" (dict
-          "ariaLabel" (partial "ui/t" "post_reader")
-          "icon" (partial "icon.html" "flat/empty-file")
-          "hint" (partial "ui/t" "select_a_post")
-          "tagline" (partial "ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" $plural)))) }}
+      {{ partial "unity/page/empty-pane.html" (dict
+          "ariaLabel" (partial "unity/ui/t" "post_reader")
+          "icon" (partial "unity/icon.html" "flat/empty-file")
+          "hint" (partial "unity/ui/t" "select_a_post")
+          "tagline" (partial "unity/ui/term-prompt.html" (dict "path" "~" "cmd" (printf "ls %s/ | less" $plural)))) }}
     </div>
   </article>
 {{ end }}

@@ -7,7 +7,7 @@
 // draw, the deal) animates without special cases. Session-only: nothing is
 // persisted, a reload deals a fresh game.
 //
-// DOM contract (page/solitaire.html): [data-solitaire] root with
+// DOM contract (unity/page/solitaire.html): [data-solitaire] root with
 // [data-sol-stage] (the sized area), [data-sol-canvas], [data-sol-live] (the
 // aria-live status line), and [data-sol-action="<id>"] buttons that mirror
 // the on-canvas controls for keyboard and screen-reader users.

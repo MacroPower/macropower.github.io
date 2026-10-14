@@ -1,0 +1,38 @@
+{{- /*
+  Resolves a Markdown link destination for render-link.html and its feed
+  twin. A relative destination resolves to a page, then a page bundle
+  resource, then a site asset, so `[intro](other-post.md)` links to that
+  post's permalink. A root-relative destination that matches none of
+  them resolves under the site's baseURL (see site-url.html), so
+  `/files/cv.pdf` keeps working when the site is served from a subpath.
+  External URLs pass through. In-page `#anchors` and other relative
+  paths pass through too, except in absolute mode, where they resolve
+  against the page's permalink, because a feed reader shows the item
+  away from the page.
+
+  Args (dict): page     - the page whose links to resolve (.PageInner)
+               dest     - the link destination
+               absolute - true for a URL with scheme and host
+*/ -}}
+{{- $u := urls.Parse .dest -}}
+{{- $href := $u.String -}}
+{{- if and $href (not $u.IsAbs) (not $u.Host) -}}
+  {{- $suffix := "" -}}
+  {{- with $u.RawQuery }}{{ $suffix = printf "?%s" . }}{{ end -}}
+  {{- with $u.EscapedFragment }}{{ $suffix = printf "%s#%s" $suffix . }}{{ end -}}
+  {{- if not $u.Path -}}
+    {{- if .absolute }}{{ $href = printf "%s%s" .page.Permalink $suffix }}{{ end -}}
+  {{- else -}}
+    {{- $path := strings.TrimPrefix "./" $u.Path -}}
+    {{- with or (.page.GetPage $path) (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
+      {{- $href = printf "%s%s" (cond $.absolute .Permalink .RelPermalink) $suffix -}}
+    {{- else -}}
+      {{- if hasPrefix $u.Path "/" -}}
+        {{- $href = printf "%s%s" (partial "unity/markup/site-url.html" (dict "path" $u.EscapedPath "absolute" .absolute)) $suffix -}}
+      {{- else if .absolute -}}
+        {{- $href = printf "%s%s" (urls.JoinPath .page.Permalink $u.EscapedPath) $suffix -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $href -}}

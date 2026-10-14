@@ -1,0 +1,16 @@
+{{- $handle := partial "unity/ui/author-handle.html" . -}}
+<div class="up-lock" data-up-lock role="dialog" aria-modal="true" aria-label="{{ partial "unity/ui/t" "lock_screen" }}" hidden>
+  <div class="up-lock-backdrop" aria-hidden="true"></div>
+  <div class="up-lock-inner">
+    <div class="up-lock-time" data-lock-clock>00:00</div>
+    <div class="up-lock-date" data-lock-date></div>
+    <div class="up-lock-card">
+      <div class="up-lock-user">{{ $handle }}</div>
+      <form class="up-lock-form" data-lock-form>
+        <input class="up-lock-input" data-lock-input type="password"
+               placeholder="{{ partial "unity/ui/t" "password" }}" aria-label="{{ partial "unity/ui/t" "password" }}" autocomplete="off">
+      </form>
+      <div class="up-lock-hint" data-lock-hint></div>
+    </div>
+  </div>
+</div>

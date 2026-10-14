@@ -1,11 +1,11 @@
 {{- /*
-  The home page. It is the terminal (_partials/page/terminal.html), or with
+  The home page. It is the terminal (_partials/unity/page/terminal.html), or with
   params.home.layout = "page", the home's content in a plain window.
 */ -}}
 {{ define "main" }}
-  {{- if partial "is-terminal.html" . -}}
-    {{ partial "page/terminal.html" . }}
+  {{- if partial "unity/is-terminal.html" . -}}
+    {{ partial "unity/page/terminal.html" . }}
   {{- else -}}
-    {{ partial "ui/page.html" (dict "title" (or .Title site.Title) "content" .Content) }}
+    {{ partial "unity/ui/page.html" (dict "title" (or .Title site.Title) "content" .Content) }}
   {{- end -}}
 {{ end }}

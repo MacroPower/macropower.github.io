@@ -1,5 +1,5 @@
-{{- /* Markdown links. _partials/markup/link-url.html resolves the
+{{- /* Markdown links. _partials/unity/markup/link-url.html resolves the
       destination. */ -}}
-{{- $href := partial "markup/link-url.html" (dict "page" .PageInner "dest" .Destination) -}}
+{{- $href := partial "unity/markup/link-url.html" (dict "page" .PageInner "dest" .Destination) -}}
 <a href="{{ $href }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
 {{- /**/ -}}

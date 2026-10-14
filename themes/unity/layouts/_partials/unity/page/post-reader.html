@@ -1,0 +1,38 @@
+{{- $dateFmt := site.Params.blog.dateFormat | default ":date_medium" -}}
+
+<article class="up-reader" data-up-reader>
+  <a class="up-reader-up" href="{{ .FirstSection.RelPermalink }}" aria-label="{{ partial "unity/ui/t" "back_to_all_posts" }}">
+    {{ partial "unity/icon.html" "glyphs/pathbar-back" }}
+    <span>{{ partial "unity/ui/t" "all_posts" }}</span>
+  </a>
+  <div class="up-reader-inner up-selectable">
+    <div class="up-reader-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format $dateFmt .Date }}</time>
+      {{- if site.Params.blog.readingTime }}
+        <span class="up-reader-meta-sep">·</span>
+        <span>{{ partial "unity/ui/t" (slice "reading_time" .ReadingTime) }}</span>
+      {{- end }}
+      {{- range partial "unity/post-categories.html" . }}
+        <span class="up-reader-meta-sep">·</span>
+        <span class="up-reader-chip">#{{ . }}</span>
+      {{- end }}
+    </div>
+    <h1 class="up-reader-title">{{ .Title }}</h1>
+    {{- /* The table of contents, shown when params.blog.toc or the post's
+          toc front matter asks for it and the post has two headings or
+          more within Hugo's tableOfContents levels. */}}
+    {{- $toc := site.Params.blog.toc }}
+    {{- if isset .Params "toc" }}{{ $toc = .Params.toc }}{{ end }}
+    {{- if and $toc (ge (len (findRE `<li>` .TableOfContents)) 2) }}
+    <details class="up-toc" open>
+      <summary>{{ partial "unity/ui/t" "contents" }}</summary>
+      {{ .TableOfContents }}
+    </details>
+    {{- end }}
+    <div class="up-reader-body" data-up-reader-body>
+      {{ .Content }}
+    </div>
+    {{ partial "extend-post.html" . }}
+    <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" (printf "~/%s" .Section)) }}</div>
+  </div>
+</article>

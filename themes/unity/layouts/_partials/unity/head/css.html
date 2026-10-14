@@ -1,0 +1,41 @@
+{{- /*
+  Bundles assets/unity/css/main.css through css.Build and emits the stylesheet
+  link plus font preloads. css.Build lowers the native nesting for the
+  target browsers and publishes the fonts main.css references with hashed
+  names, so the preloads read their URLs from the build's artifacts.
+
+  The syntax highlighter's classes for the site's markup.highlight.style
+  follow the theme's rules, so a site that sets markup.highlight.noClasses
+  to false gets colored code without inline styles. A site's
+  assets/css/custom.css goes through the same build and lands last, so
+  its rules win on equal specificity.
+
+  Context: the page. Call it through partialCached keyed on whether the
+  page is the home terminal (unity/is-terminal.html), the only input that
+  changes the output.
+*/ -}}
+{{- $opts := dict
+  "minify" hugo.IsProduction
+  "sourceMap" (cond hugo.IsDevelopment "inline" "none")
+  "target" (slice "chrome115" "edge115" "firefox116" "ios16.4" "opera101" "safari16.4")
+-}}
+{{- $main := resources.Get "unity/css/main.css" | css.Build (merge $opts (dict "targetPath" "css/main.css")) -}}
+{{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
+      terminal. */ -}}
+{{- $preload := slice "ubuntu-400-latin" -}}
+{{- if partial "unity/is-terminal.html" . }}{{ $preload = $preload | append "ubuntu-mono-400-latin" }}{{ end -}}
+{{- range $main.Data.Artifacts -}}
+  {{- if eq .MediaType.MainType "font" -}}
+    {{- $face := replaceRE `-[A-Z0-9]+\.woff2$` "" (path.Base .RelPermalink) -}}
+    {{- if in $preload $face }}
+<link rel="preload" as="font" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}" crossorigin>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $parts := slice $main (css.ChromaStyles (dict "targetPath" "css/chroma.css") | css.Build (merge $opts (dict "targetPath" "css/chroma.css"))) -}}
+{{- with resources.Get "css/custom.css" -}}
+  {{- $parts = $parts | append (. | css.Build (merge $opts (dict "targetPath" "css/custom.css"))) -}}
+{{- end -}}
+{{- $css := $parts | resources.Concat "css/main.css" -}}
+{{- $css = $css | resources.Fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

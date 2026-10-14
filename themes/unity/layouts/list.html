@@ -1,9 +1,9 @@
-{{- /* Section lists. The blog section (see _partials/blog-section.html)
+{{- /* Section lists. The blog section (see _partials/unity/blog-section.html)
      gets the Nautilus-style post browser; every other section renders as
      a plain page listing its children. */ -}}
 {{ define "main" }}
-  {{- if partial "in-blog.html" . -}}
-    {{ partial "page/blog-list.html" . }}
+  {{- if partial "unity/in-blog.html" . -}}
+    {{ partial "unity/page/blog-list.html" . }}
   {{- else -}}
     {{- $children := slice -}}
     {{- range .Pages -}}
@@ -12,6 +12,6 @@
           "title" .Title
           "description" (or .Description .Summary | plainify | htmlUnescape | strings.TrimSpace | truncate 160 | htmlUnescape)) -}}
     {{- end -}}
-    {{ partial "ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
+    {{ partial "unity/ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
   {{- end -}}
 {{ end }}

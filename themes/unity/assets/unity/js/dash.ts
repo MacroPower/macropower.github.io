@@ -1,10 +1,10 @@
 // The Unity Dash: the translucent search overlay behind the launcher's BFB
 // (the Dash button) and a Super tap. Everything searchable is server-rendered
 // as tiles grouped in category sections; this module only filters, ranks, and
-// dispatches — it never invents content. partials/dash.html renders the apps
-// section into the page, and the root's data-dash-src names a fragment with
-// the remaining sections, which this module fetches once, on the first open
-// or when the pointer nears the BFB.
+// dispatches — it never invents content. _partials/unity/dash.html renders
+// the apps section into the page, and the root's data-dash-src names a
+// fragment with the remaining sections, which this module fetches once, on
+// the first open or when the pointer nears the BFB.
 //
 // Interaction model (GNOME-style real focus, no aria-activedescendant): the
 // search input holds focus; arrows walk the visible tile grid with real DOM

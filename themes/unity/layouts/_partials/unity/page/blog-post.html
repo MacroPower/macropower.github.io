@@ -1,0 +1,27 @@
+{{- /* A single post: pathbar with older/newer arrows, the reading-progress
+     bar, and the reader. Rendered by single.html for pages in the blog
+     section. The arrows step by date through every post in the post's
+     top-level section, across any nested sections. */ -}}
+{{- $older := "" -}}
+{{- $newer := "" -}}
+{{- $posts := (where (partialCached "unity/blog-posts.html" .) "Section" .Section).ByDate -}}
+{{- range $i, $p := $posts -}}
+  {{- if eq $p $ -}}
+    {{- if $i }}{{ $older = index $posts (sub $i 1) }}{{ end -}}
+    {{- $newer = index $posts (add $i 1) -}}
+  {{- end -}}
+{{- end -}}
+{{- $prevURL := "" }}{{ with $older }}{{ $prevURL = .RelPermalink }}{{ end }}
+{{- $nextURL := "" }}{{ with $newer }}{{ $nextURL = .RelPermalink }}{{ end }}
+{{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = .Title }}{{ end }}
+{{- $nextTitle := "" }}{{ with $newer }}{{ $nextTitle = .Title }}{{ end }}
+<article class="up-blog up-selectable" data-blog-kind="post">
+  {{ partial "unity/page/nav-pathbar.html" (dict
+      "segments" (partial "unity/page/crumbs.html" .)
+      "prevURL" $prevURL "prevTitle" $prevTitle
+      "nextURL" $nextURL "nextTitle" $nextTitle) }}
+  <div class="up-reader-progress" data-up-reader-progress aria-hidden="true">
+    <div class="up-reader-progress-bar" data-up-reader-progress-bar></div>
+  </div>
+  {{ partial "unity/page/post-reader.html" . }}
+</article>

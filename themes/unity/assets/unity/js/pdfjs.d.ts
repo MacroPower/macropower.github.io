@@ -1,4 +1,4 @@
-// The slice of the pdf.js API cv.ts uses. _partials/ui/script.html shims
+// The slice of the pdf.js API cv.ts uses. _partials/unity/ui/script.html shims
 // "pdfjs-dist" to the build vendored under assets/unity/third_party/pdf-js/, which
 // ships without type declarations.
 declare module "pdfjs-dist" {

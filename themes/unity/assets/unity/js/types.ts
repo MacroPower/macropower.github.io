@@ -1,8 +1,8 @@
 // Shared types for unity's TypeScript modules, plus ambient
 // augmentation of `window` for the runtime surface those modules share.
-// Keep in lockstep with the JS objects assigned in _partials/ui/runtime.html
-// (UP_SITE and UP_I18N), page-window.ts (UP_PAGE_WINDOW_STATE), and
-// dialogs.ts (uiDialog). events.ts types the custom DOM events.
+// Keep in lockstep with the JS objects assigned in
+// _partials/unity/ui/runtime.html (UP_SITE and UP_I18N), page-window.ts
+// (UP_PAGE_WINDOW_STATE), and dialogs.ts (uiDialog). events.ts types the custom DOM events.
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
 
@@ -32,12 +32,13 @@ export interface UPSite {
   rss: string;
   /** The network name the network indicator's hotspot broadcasts. */
   hotspot: string;
-  /** nav:<key> action targets, from the theme's site-pages.html registry. */
+  /** nav:<key> action targets, from the theme's unity/site-pages.html
+   *  registry. */
   nav: Record<string, string>;
 }
 
-/** Runtime UI strings from the theme's _partials/ui/i18n.html; read them
- *  through t() and tn() in i18n.ts. */
+/** Runtime UI strings from the theme's _partials/unity/ui/i18n.html; read
+ *  them through t() and tn() in i18n.ts. */
 export interface UPI18n {
   strings: Record<string, string>;
   /** Plural keys: the distinct forms, and one digit per count from 0 to

@@ -1,20 +1,20 @@
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 {{- /* Every feed: the home page's, the blog section's, and each taxonomy
        and term's. The home feed covers blog posts only (the mainSections,
-       see _partials/blog-section.html), since the CV, sponsors, and other
+       see _partials/unity/blog-section.html), since the CV, sponsors, and other
        utility pages would otherwise surface as phantom entries. Each item
        carries the post's summary, or its whole body when
        params.blog.feedFullContent is set. */}}
 {{- $pages := .Pages }}
 {{- if .IsHome }}
-  {{- $pages = partialCached "blog-posts.html" . }}
+  {{- $pages = partialCached "unity/blog-posts.html" . }}
 {{- else if .IsSection }}
   {{- $pages = .RegularPagesRecursive }}
 {{- end }}
 {{- $limit := site.Config.Services.RSS.Limit }}
 {{- if ge $limit 1 }}{{ $pages = $pages | first $limit }}{{ end }}
 {{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) }}
-{{- $author := partialCached "author.html" . }}
+{{- $author := partialCached "unity/author.html" . }}
 {{- $contact := "" }}
 {{- with $author.email }}{{ $contact = printf "%s (%s)" . $author.name }}{{ end }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

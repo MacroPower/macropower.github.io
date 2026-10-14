@@ -1,6 +1,6 @@
-// Runtime UI strings. _partials/ui/i18n.html renders every js_ key in the
+// Runtime UI strings. _partials/unity/ui/i18n.html renders every js_ key in the
 // theme's i18n/en.toml through Hugo's T for the page's language, and
-// _partials/ui/runtime.html ships the result as window.UP_I18N, so a
+// _partials/unity/ui/runtime.html ships the result as window.UP_I18N, so a
 // site's i18n/<lang>.toml translates the text the scripts write. Values
 // use {name} placeholders. A missing key renders as the key itself, which
 // i18n.test.ts keeps from happening.

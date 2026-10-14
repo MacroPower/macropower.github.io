@@ -1,0 +1,13 @@
+{{- /*
+  A folder icon with the language emblem in its corner. Languages the
+  sprite lacks get the generic emblem (see lang-symbol.html).
+
+  Args (dict): language - the project's language name
+*/ -}}
+{{- $sym := partialCached "unity/page/icons/lang-symbol.html" .language .language -}}
+<span class="up-project-folder" aria-hidden="true">
+  {{ partial "unity/icon.html" "page/folder" }}
+  <span class="up-project-folder-emblem">
+    <svg viewBox="0 0 24 24"><use href="#{{ $sym }}"/></svg>
+  </span>
+</span>

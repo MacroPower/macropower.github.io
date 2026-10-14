@@ -1,0 +1,17 @@
+{{- /*
+  The owner's unix-style handle on the desktop: params.desktop.user, else
+  the first word of the author's name, lowercased and stripped to letters,
+  digits, dashes, and underscores, else "user".
+  Shared by unity/ui/runtime.html's UP_SITE global and the terminal-prompt
+  fiction (unity/ui/term-prompt.html) so the desktop never disagrees about
+  who is logged in. The home terminal's guest login is params.terminal.user
+  instead, because a visitor, not the owner, opens that session.
+*/ -}}
+{{- $handle := site.Params.desktop.user | default "" -}}
+{{- if not $handle -}}
+  {{- with site.Params.author -}}
+    {{- $first := index (split (partialCached "unity/author.html" .).name " ") 0 -}}
+    {{- $handle = $first | lower | replaceRE `[^\p{L}\p{N}_-]` "" -}}
+  {{- end -}}
+{{- end -}}
+{{- return (default "user" $handle) -}}

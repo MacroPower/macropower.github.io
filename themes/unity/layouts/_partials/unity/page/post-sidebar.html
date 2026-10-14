@@ -1,0 +1,53 @@
+{{- $here := .RelPermalink -}}
+{{- $postsPage := partialCached "unity/blog-section.html" . -}}
+{{- $tax := partialCached "unity/blog-taxonomies.html" . -}}
+{{- $rssURL := "" -}}
+{{- with and $postsPage ($postsPage.OutputFormats.Get "rss") -}}
+  {{- $rssURL = .RelPermalink -}}
+{{- end -}}
+
+{{- $iconAll := partial "unity/icon.html" "glyphs/sidebar-all" -}}
+{{- $iconCategory := partial "unity/icon.html" "glyphs/sidebar-category" -}}
+{{- $iconSeries := partial "unity/icon.html" "glyphs/sidebar-series" -}}
+{{- $iconRss := partial "unity/icon.html" "glyphs/sidebar-rss" -}}
+
+{{- $places := slice -}}
+{{- with $postsPage -}}
+  {{- $places = $places | append (dict
+      "label" (partial "unity/ui/t" "all")
+      "url" .RelPermalink
+      "icon" $iconAll
+      "count" (len .RegularPagesRecursive)
+      "active" (eq $here .RelPermalink)) -}}
+{{- end -}}
+{{- range (index site.Taxonomies $tax.category).Alphabetical -}}
+  {{- $places = $places | append (dict
+      "label" .Page.Title
+      "url" .Page.RelPermalink
+      "icon" $iconCategory
+      "count" .Count
+      "active" (eq $here .Page.RelPermalink)) -}}
+{{- end -}}
+
+{{- $sections := slice (dict "label" (partial "unity/ui/t" "places") "items" $places) -}}
+
+{{- with (index site.Taxonomies $tax.series).Alphabetical -}}
+  {{- $items := slice -}}
+  {{- range . -}}
+    {{- $items = $items | append (dict
+        "label" .Page.Title
+        "url" .Page.RelPermalink
+        "icon" $iconSeries
+        "count" .Count
+        "active" (eq $here .Page.RelPermalink)) -}}
+  {{- end -}}
+  {{- $sections = $sections | append (dict "label" (partial "unity/ui/t" "series") "items" $items) -}}
+{{- end -}}
+
+{{- with $rssURL -}}
+  {{- $sections = $sections | append (dict
+      "label" (partial "unity/ui/t" "feeds")
+      "items" (slice (dict "label" (partial "unity/ui/t" "rss") "url" . "icon" $iconRss))) -}}
+{{- end -}}
+
+{{ partial "unity/page/naut-sidebar.html" (dict "ariaLabel" (partial "unity/ui/t" "filters") "sections" $sections) }}

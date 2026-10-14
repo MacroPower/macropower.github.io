@@ -1,0 +1,35 @@
+{{- /*
+  The Studio's MIDI playlist as a slice of {url, title} dicts, empty when
+  the site ships no MIDI files. params.studio.playlist lists entries under
+  assets/ in play order, each a path or a {path, title} table. Without it,
+  every assets/midi/*.mid and *.midi file plays in file-name order. An
+  entry without a title shows as "Track N" in the player and the Dash, so
+  what it is stays a surprise until someone presses play.
+
+  Every Studio surface reads this partial: unity/top-panel.html (the Sound
+  menu's player), unity/dash.html (the Music category and the Studio tile),
+  unity/launcher.html (the running-app tile), and baseof.html (the Studio
+  window). An empty playlist leaves the Studio out of the desktop.
+*/ -}}
+{{- $tracks := slice -}}
+{{- with site.Params.studio.playlist -}}
+  {{- range . -}}
+    {{- $path := . -}}
+    {{- $title := "" -}}
+    {{- if reflect.IsMap . }}{{ $path = .path }}{{ $title = .title | default "" }}{{ end -}}
+    {{- with resources.Get $path -}}
+      {{- $tracks = $tracks | append (dict "url" .RelPermalink "title" $title) -}}
+    {{- else -}}
+      {{- warnf "unity: params.studio.playlist names %q, which is not under assets/" $path -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $files := slice -}}
+  {{- range slice "midi/*.mid" "midi/*.midi" -}}
+    {{- range resources.Match . }}{{ $files = $files | append . }}{{ end -}}
+  {{- end -}}
+  {{- range sort $files "Name" -}}
+    {{- $tracks = $tracks | append (dict "url" .RelPermalink "title" "") -}}
+  {{- end -}}
+{{- end -}}
+{{- return $tracks -}}

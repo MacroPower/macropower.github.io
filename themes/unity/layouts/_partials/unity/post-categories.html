@@ -1,0 +1,13 @@
+{{- /*
+  The post's terms in the blog's category taxonomy (see
+  unity/blog-taxonomies.html), as a slice of strings in front matter order.
+  Hugo accepts a single string for a taxonomy, so this wraps one.
+
+  Context: the page.
+*/ -}}
+{{- $tax := partialCached "unity/blog-taxonomies.html" . -}}
+{{- $terms := index .Params $tax.category | default slice -}}
+{{- if not (reflect.IsSlice $terms) }}{{ $terms = slice $terms }}{{ end -}}
+{{- $out := slice -}}
+{{- range $terms }}{{ $out = $out | append (printf "%v" .) }}{{ end -}}
+{{- return $out -}}

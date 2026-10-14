@@ -1,6 +1,6 @@
 {{- /*
   Hugo's embedded sitemap, minus every page whose front matter sets
-  noindex. head/meta.html asks search engines to skip those pages, and a
+  noindex. unity/head/meta.html asks search engines to skip those pages, and a
   sitemap that lists them anyway reads as a contradiction to a crawler.
 */ -}}
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}

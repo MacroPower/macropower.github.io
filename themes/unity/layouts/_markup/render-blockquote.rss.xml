@@ -3,7 +3,7 @@
       styles and icon. */ -}}
 <blockquote>
 {{- if eq .Type "alert" }}
-  {{- $title := or .AlertTitle (partial "ui/t" (printf "alert_%s" (lower .AlertType))) (partial "ui/t" "alert_note") }}
+  {{- $title := or .AlertTitle (partial "unity/ui/t" (printf "alert_%s" (lower .AlertType))) (partial "unity/ui/t" "alert_note") }}
   <p><strong>{{ $title }}</strong></p>
 {{- end }}
   {{ .Text }}

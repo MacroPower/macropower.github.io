@@ -1,0 +1,20 @@
+{{- /*
+  The URL of a root-relative path under the site's baseURL, for the
+  render hooks and unity/ui/resolve-url.html. A path that already starts with
+  the baseURL's own path, such as /sub/files/x.pdf on a site at
+  https://example.org/sub/, passes through, so content written for the
+  subpath keeps working.
+
+  Args (dict): path     - an escaped path starting with "/"
+               absolute - true for a URL with scheme and host
+*/ -}}
+{{- $base := urls.Parse site.BaseURL -}}
+{{- $out := "" -}}
+{{- if and (ne $base.Path "") (ne $base.Path "/") (hasPrefix .path $base.Path) -}}
+  {{- $out = .path -}}
+  {{- if .absolute }}{{ $out = printf "%s://%s%s" $base.Scheme $base.Host .path }}{{ end -}}
+{{- else -}}
+  {{- $p := strings.TrimPrefix "/" .path -}}
+  {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
+{{- end -}}
+{{- return $out -}}

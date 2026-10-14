@@ -16,61 +16,61 @@
 {{- end -}}
 <html lang="{{ site.Language.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}"
   {{- with $accent }} data-up-accent="{{ . }}"{{ end }}>
-<head>{{ partial "head.html" . }}</head>
+<head>{{ partial "unity/head.html" . }}</head>
 <body>
-  <a class="up-skip-link" href="#up-main">{{ partial "ui/t" "skip_to_content" }}</a>
+  <a class="up-skip-link" href="#up-main">{{ partial "unity/ui/t" "skip_to_content" }}</a>
   <div id="up-root">
-    {{ partial "top-panel.html" . }}
-    {{ partial "launcher.html" . }}
-    {{ partial "window-frame-open.html" . }}
+    {{ partial "unity/top-panel.html" . }}
+    {{ partial "unity/launcher.html" . }}
+    {{ partial "unity/window-frame-open.html" . }}
     {{ block "main" . }}{{ .Content }}{{ end }}
-    {{ partial "window-frame-close.html" . }}
+    {{ partial "unity/window-frame-close.html" . }}
     {{- /* The partials from here down never read the page, so each renders
           once per language. One that starts reading the page must switch
           to partial. */}}
-    {{ partialCached "dialog-host.html" . }}
-    {{ if ne site.Params.desktop.trash false }}{{ partialCached "trash-window.html" . }}{{ end }}
-    {{ if partialCached "playlist.html" . }}{{ partialCached "daw-window.html" . }}{{ end }}
-    {{ partialCached "dash.html" . }}
-    {{ if ne site.Params.desktop.hud false }}{{ partial "hud.html" . }}{{ end }}
-    {{ partialCached "notify-host.html" . }}
-    {{ if ne site.Params.desktop.lock false }}{{ partialCached "lock-screen.html" . }}{{ end }}
+    {{ partialCached "unity/dialog-host.html" . }}
+    {{ if ne site.Params.desktop.trash false }}{{ partialCached "unity/trash-window.html" . }}{{ end }}
+    {{ if partialCached "unity/playlist.html" . }}{{ partialCached "unity/daw-window.html" . }}{{ end }}
+    {{ partialCached "unity/dash.html" . }}
+    {{ if ne site.Params.desktop.hud false }}{{ partial "unity/hud.html" . }}{{ end }}
+    {{ partialCached "unity/notify-host.html" . }}
+    {{ if ne site.Params.desktop.lock false }}{{ partialCached "unity/lock-screen.html" . }}{{ end }}
   </div>
 
-  {{ partialCached "ui/runtime.html" . site.Language.Name }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/app.ts" "target" "js/app.js") "unity/js/app.ts" }}
+  {{ partialCached "unity/ui/runtime.html" . site.Language.Name }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/app.ts" "target" "js/app.js") "unity/js/app.ts" }}
 
   {{/* blog.js and projects.js no-op without their root data attribute
        ([data-blog-kind] / [data-projects-kind]); ship each only to the
        layouts that emit it, mirroring the shell bundle's is-terminal gate. */}}
-  {{ if or (partial "in-blog.html" .) (in (slice "taxonomy" "term") .Kind) }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/blog.ts" "target" "js/blog.js") "unity/js/blog.ts" }}
+  {{ if or (partial "unity/in-blog.html" .) (in (slice "taxonomy" "term") .Kind) }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/blog.ts" "target" "js/blog.js") "unity/js/blog.ts" }}
   {{ end }}
 
   {{ if eq .Layout "projects" }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/projects.ts" "target" "js/projects.js") "unity/js/projects.ts" }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/projects.ts" "target" "js/projects.js") "unity/js/projects.ts" }}
   {{ end }}
 
   {{/* cv.js no-ops without [data-cv-viewer], emitted only by pages that
        select the CV viewer via `layout = "cv"` front matter. */}}
   {{ if eq .Layout "cv" }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/cv.ts" "target" "js/cv.js") "unity/js/cv.ts" }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/cv.ts" "target" "js/cv.js") "unity/js/cv.ts" }}
   {{ end }}
 
   {{/* The solitaire bundle no-ops without [data-solitaire], emitted only
        by pages that select the table via `layout = "solitaire"`. */}}
   {{ if eq .Layout "solitaire" }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/solitaire/index.ts" "target" "js/solitaire.js") "unity/js/solitaire/index.ts" }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/solitaire/index.ts" "target" "js/solitaire.js") "unity/js/solitaire/index.ts" }}
   {{ end }}
 
   {{/* icons.js no-ops without [data-icon-vault], emitted only by pages
        that select the vault via `layout = "icons"`. */}}
   {{ if eq .Layout "icons" }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/icons.ts" "target" "js/icons.js") "unity/js/icons.ts" }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/icons.ts" "target" "js/icons.js") "unity/js/icons.ts" }}
   {{ end }}
 
-  {{ if partial "is-terminal.html" . }}
-  {{ partialCached "ui/script.html" (dict "entry" "unity/js/shell/index.ts" "target" "js/shell.js") "unity/js/shell/index.ts" }}
+  {{ if partial "unity/is-terminal.html" . }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/shell/index.ts" "target" "js/shell.js") "unity/js/shell/index.ts" }}
   {{ end }}
 
   {{ partial "extend-footer.html" . }}

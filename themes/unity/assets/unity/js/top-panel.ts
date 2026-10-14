@@ -13,7 +13,7 @@ import { eventElement, indexOfFocused } from "./dom";
 const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {} };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
-// nav:<key> targets are SSR'd into UP_SITE.nav from the site-pages.html
+// nav:<key> targets are SSR'd into UP_SITE.nav from the unity/site-pages.html
 // registry, so the URL map lives in one place on the Hugo side.
 function navigate(key: string): void {
   const url = getSite().nav[key];
@@ -470,7 +470,7 @@ async function netClick(row: HTMLElement): Promise<void> {
     body: t("js_panel_net_established_body", { name }) });
 }
 
-// The panel's data-vol-playlist JSON, which playlist.html writes as
+// The panel's data-vol-playlist JSON, which unity/playlist.html writes as
 // {url, title} objects. Entries without a string url drop out.
 function parsePlaylist(raw: unknown): audio.PlaylistEntry[] {
   if (!Array.isArray(raw)) return [];

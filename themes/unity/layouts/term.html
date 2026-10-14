@@ -1,15 +1,15 @@
 {{ define "main" }}
   {{- $plural := .Data.Plural -}}
   {{- $segments := slice -}}
-  {{- with partialCached "blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
+  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
   {{- $segments = $segments | append
         (dict "label" .Parent.Title "url" .Parent.RelPermalink)
         (dict "label" .Title "url" .RelPermalink) -}}
   <article class="up-blog up-selectable" data-blog-kind="term">
-    {{ partial "page/nav-pathbar.html" (dict "segments" $segments) }}
+    {{ partial "unity/page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
-      {{ partial "page/post-sidebar.html" . }}
-      {{ partial "page/post-list.html" (dict
+      {{ partial "unity/page/post-sidebar.html" . }}
+      {{ partial "unity/page/post-list.html" (dict
           "pages" .Pages
           "here" "") }}
       <div class="up-reader up-reader-term">
@@ -17,15 +17,15 @@
           <div class="up-reader-meta">
             <span>{{ .Parent.Title }}</span>
             <span class="up-reader-meta-sep">·</span>
-            <span>{{ partial "ui/t" (slice "posts_count" (len .Pages)) }}</span>
+            <span>{{ partial "unity/ui/t" (slice "posts_count" (len .Pages)) }}</span>
           </div>
           <h1 class="up-reader-title">{{ .Title }}</h1>
           <div class="up-reader-body">
             {{ .Content }}
-            <p>{{ partial "ui/t" (slice "posts_tagged" (len .Pages)) }}
+            <p>{{ partial "unity/ui/t" (slice "posts_tagged" (len .Pages)) }}
               <span class="up-reader-chip">#{{ .Title | lower }}</span>.</p>
           </div>
-          <div class="up-reader-signoff">— {{ partial "ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ .Title | lower }}" {{ with partialCached "blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
+          <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ .Title | lower }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
         </div>
       </div>
     </div>

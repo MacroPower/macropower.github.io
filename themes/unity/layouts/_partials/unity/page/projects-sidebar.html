@@ -1,0 +1,72 @@
+{{- $projects := .projects -}}
+{{- $counts := dict "starred" 0 "recent" 0 "forks" 0 -}}
+{{- range $projects -}}
+  {{- range partial "unity/page/project-filters.html" . -}}
+    {{- $counts = merge $counts (dict . (add (index $counts .) 1)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $iconAll := partial "unity/icon.html" "glyphs/sidebar-all" -}}
+{{- $iconStarred := partial "unity/icon.html" "glyphs/star" -}}
+{{- $iconRecent := partial "unity/icon.html" "glyphs/clock" -}}
+{{- $iconForks := partial "unity/icon.html" "glyphs/fork" -}}
+
+{{- $places := slice
+    (dict "tag" "button" "label" (partial "unity/ui/t" "all")     "icon" $iconAll     "count" (len $projects) "active" true  "attrs" (dict "data-projects-filter" "all"))
+    (dict "tag" "button" "label" (partial "unity/ui/t" "starred") "icon" $iconStarred "count" $counts.starred                "attrs" (dict "data-projects-filter" "starred"))
+    (dict "tag" "button" "label" (partial "unity/ui/t" "recent")  "icon" $iconRecent  "count" $counts.recent                 "attrs" (dict "data-projects-filter" "recent"))
+    (dict "tag" "button" "label" (partial "unity/ui/t" "forks")   "icon" $iconForks   "count" $counts.forks                  "attrs" (dict "data-projects-filter" "forks"))
+-}}
+
+{{/* Build language histogram, then sort the keys into a stable alphabetical
+     slice. Ranging a Hugo dict directly walks it in non-deterministic order,
+     which shifts the rendered sidebar across builds. */}}
+{{- $langCounts := dict -}}
+{{- range $projects -}}
+  {{- with .language -}}
+    {{- $n := index $langCounts . | default 0 -}}
+    {{- $langCounts = merge $langCounts (dict . (add $n 1)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $langNames := slice -}}
+{{- range $name, $_ := $langCounts -}}
+  {{- $langNames = $langNames | append $name -}}
+{{- end -}}
+{{- $langNames = sort $langNames -}}
+{{- $langs := slice -}}
+{{- range $langNames -}}
+  {{- $sym := partialCached "unity/page/icons/lang-symbol.html" . . -}}
+  {{- $icon := printf `<svg viewBox="0 0 24 24" width="14" height="14"><use href="#%s"/></svg>` $sym -}}
+  {{- $langs = $langs | append (dict
+      "tag" "button"
+      "label" .
+      "icon" $icon
+      "iconClass" "up-lang-icon"
+      "count" (index $langCounts .)
+      "attrs" (dict "data-projects-filter" (printf "lang:%s" .))) -}}
+{{- end -}}
+
+{{- $sections := slice
+    (dict "label" (partial "unity/ui/t" "places") "items" $places)
+    (dict "label" (partial "unity/ui/t" "languages") "items" $langs)
+-}}
+
+{{- /* Devices: the site's social links on a code forge, in
+      params.social order. The hosts match FORGES in projects-desktop.ts. */ -}}
+{{- $forges := slice "github.com" "gitlab.com" "codeberg.org" "bitbucket.org" "git.sr.ht" -}}
+{{- $devices := slice -}}
+{{- range partialCached "unity/socials.html" . -}}
+  {{- $host := strings.TrimPrefix "www." (urls.Parse .url).Host -}}
+  {{- if in $forges $host -}}
+    {{- $devices = $devices | append (dict
+        "label" $host
+        "url" .url
+        "icon" (partial "unity/icon.html" (cond (eq $host "github.com") "glyphs/github" "glyphs/code"))
+        "attrs" (dict "target" "_blank" "rel" "noopener")) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $devices -}}
+  {{- $sections = $sections | append (dict "label" (partial "unity/ui/t" "devices") "items" .) -}}
+{{- end -}}
+
+{{ partial "unity/page/naut-sidebar.html" (dict "ariaLabel" (partial "unity/ui/t" "filters") "sections" $sections) }}

@@ -1,0 +1,15 @@
+{{- $projects := .projects -}}
+<template id="up-project-folder-tpl">
+  <span class="up-project-folder up-project-folder-lg" aria-hidden="true">
+    {{ partial "unity/icon.html" "page/folder" }}
+    <span class="up-project-folder-emblem">
+      <svg viewBox="0 0 24 24"><use data-emblem-use href=""/></svg>
+    </span>
+  </span>
+</template>
+<section class="up-project-grid" data-up-project-grid aria-label="{{ partial "unity/ui/t" "projects" }}">
+  {{- range $projects }}
+    {{ partial "unity/page/project-tile.html" . }}
+  {{- end }}
+  <div class="up-project-grid-empty" data-up-project-empty hidden>{{ partial "unity/ui/t" "no_projects_match" }}</div>
+</section>

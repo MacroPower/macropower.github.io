@@ -1,0 +1,16 @@
+{{/* Paired with unity/window-frame-close.html. Opens
+       <div.up-window-stage> > <section.up-window-chrome> >
+       <div.up-titlebar> + opening <main#up-main.up-window-body>, the
+       target of baseof.html's skip link. It takes no tabindex: a
+       focused <main> would capture the arrow and page keys a click
+       inside the window means for the scrolling pane within it.
+     The content layout's `{{ define "main" }}` body fills the slot;
+     it must emit inner content only — no extra outer wrapper,
+     no overridden titlebar text. */}}
+<div class="up-window-stage">
+  <section class="up-window-chrome" data-page-window>
+    <div class="up-titlebar" data-titlebar>
+      {{ partial "unity/ui/window-controls.html" (dict "max" true) }}
+      <span class="up-titlebar-text">{{ with .Title }}{{ . }}{{ else }}{{ site.Title }}{{ end }}</span>
+    </div>
+    <main id="up-main" class="up-window-body up-selectable">

@@ -1,0 +1,27 @@
+{{- /*
+  Resolves a URL from front matter the way the Markdown render hooks do.
+  An absolute or protocol-relative URL passes through. Anything else
+  resolves to a resource in the page's bundle, then to one under assets/,
+  and otherwise to a path under the site's baseURL (see
+  unity/markup/site-url.html), so "/files/cv.pdf" keeps working when the site
+  is served from a subpath.
+
+  Args (dict): page     - the page whose bundle to search
+               url      - the URL to resolve
+               absolute - true for a URL with scheme and host, as feeds
+                          and share metadata need
+*/ -}}
+{{- $u := urls.Parse .url -}}
+{{- $out := .url -}}
+{{- if not (or $u.IsAbs $u.Host) -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
+    {{- $out = cond $.absolute .Permalink .RelPermalink -}}
+  {{- else -}}
+    {{- $escaped := printf "/%s" (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.EscapedPath)) -}}
+    {{- $out = partial "unity/markup/site-url.html" (dict "path" $escaped "absolute" .absolute) -}}
+  {{- end -}}
+  {{- with $u.RawQuery }}{{ $out = printf "%s?%s" $out . }}{{ end -}}
+  {{- with $u.EscapedFragment }}{{ $out = printf "%s#%s" $out . }}{{ end -}}
+{{- end -}}
+{{- return $out -}}

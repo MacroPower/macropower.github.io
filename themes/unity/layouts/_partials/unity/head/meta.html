@@ -1,0 +1,126 @@
+{{- /*
+  The page's search and share metadata: description, canonical link,
+  language alternates, Open Graph, Twitter card, and JSON-LD. The home
+  page describes the site through params.description, because its own
+  body is the terminal's README. Other pages use their description front
+  matter, then their summary, then params.description.
+
+  Front matter: description, images (see unity/page-images.html), noindex, and
+  canonicalURL, which points the canonical link at the original of a
+  syndicated post.
+
+  Context: the page.
+*/ -}}
+{{- $description := .Description -}}
+{{- if not $description -}}
+  {{- $description = cond .IsHome site.Params.description (or .Summary site.Params.description) -}}
+{{- end -}}
+{{- $description = $description | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace -}}
+{{- $images := partial "unity/page-images.html" . -}}
+{{- $author := partialCached "unity/author.html" . -}}
+{{- $isPost := and .IsPage (partial "unity/in-blog.html" .) -}}
+{{- /* The locale as a BCP 47 tag for JSON-LD, and as Open Graph's
+      language_TERRITORY, which takes a region but no script subtag:
+      zh-Hant-TW becomes zh_TW and de becomes de. */ -}}
+{{- $locale := replace (or .Params.locale site.Language.Locale) "_" "-" -}}
+{{- $subtags := split $locale "-" -}}
+{{- $ogLocale := lower (index $subtags 0) -}}
+{{- if gt (len $subtags) 1 -}}
+  {{- $region := index $subtags (sub (len $subtags) 1) -}}
+  {{- if or (eq (len $region) 2) (findRE `^\d{3}$` $region) -}}
+    {{- $ogLocale = printf "%s_%s" $ogLocale (upper $region) -}}
+  {{- end -}}
+{{- end }}
+{{- if or .Params.noindex (eq .Kind "404") }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
+{{- with $description }}
+<meta name="description" content="{{ truncate 200 . | htmlUnescape }}">
+{{- end }}
+<link rel="canonical" href="{{ .Params.canonicalURL | default .Permalink }}">
+{{- if .IsTranslated }}
+{{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+{{- if .Language.IsDefault }}
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{- end }}
+{{- end }}
+{{- end }}
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ or .Title site.Title }}">
+{{- with $description }}
+<meta property="og:description" content="{{ . }}">
+{{- end }}
+{{- with $ogLocale }}
+<meta property="og:locale" content="{{ . }}">
+{{- end }}
+{{- if .IsPage }}
+<meta property="og:type" content="article">
+{{- $iso := "2006-01-02T15:04:05-07:00" }}
+{{- with .PublishDate }}
+<meta property="article:published_time" content="{{ .Format $iso }}">
+{{- end }}
+{{- with .Lastmod }}
+<meta property="article:modified_time" content="{{ .Format $iso }}">
+{{- end }}
+{{- with .Section }}
+<meta property="article:section" content="{{ . }}">
+{{- end }}
+{{- if $isPost }}
+{{- range first 6 (partial "unity/post-categories.html" .) }}
+<meta property="article:tag" content="{{ . }}">
+{{- end }}
+{{- range .GetTerms (partialCached "unity/blog-taxonomies.html" .).series }}
+{{- range first 7 .Pages }}{{ if ne $ . }}
+<meta property="og:see_also" content="{{ .Permalink }}">
+{{- end }}{{ end }}
+{{- end }}
+{{- end }}
+{{- else }}
+<meta property="og:type" content="website">
+{{- end }}
+{{- range first 6 $images }}
+<meta property="og:image" content="{{ . }}">
+{{- end }}
+{{- with index $images 0 }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ . }}">
+{{- else }}
+<meta name="twitter:card" content="summary">
+{{- end }}
+<meta name="twitter:title" content="{{ or .Title site.Title }}">
+{{- with $description }}
+<meta name="twitter:description" content="{{ . }}">
+{{- end }}
+{{- with or (partial "unity/ui/social-url.html" "twitter") (partial "unity/ui/social-url.html" "x") }}
+<meta name="twitter:site" content="@{{ path.Base . }}">
+{{- end }}
+{{- if .IsHome }}
+{{- $sameAs := slice }}
+{{- range partialCached "unity/socials.html" . }}{{ $sameAs = $sameAs | append .url }}{{ end }}
+{{- $person := dict
+  "@context" "https://schema.org"
+  "@type" "Person"
+  "name" $author.name
+  "url" site.Home.Permalink
+  "sameAs" $sameAs
+}}
+{{- with $author.jobTitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
+<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
+{{- else if $isPost }}
+{{- $ld := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "url" .Permalink
+  "mainEntityOfPage" .Permalink
+  "inLanguage" $locale
+  "datePublished" (.PublishDate.Format "2006-01-02")
+  "dateModified" (.Lastmod.Format "2006-01-02")
+  "description" $description
+  "author" (dict "@type" "Person" "name" $author.name "url" site.Home.Permalink)
+}}
+{{- with $images }}{{ $ld = merge $ld (dict "image" .) }}{{ end }}
+<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+{{- end }}

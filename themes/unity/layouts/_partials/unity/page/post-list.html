@@ -1,0 +1,36 @@
+{{- $pages := .pages -}}
+{{- $here := .here -}}
+{{- $dateFmt := site.Params.blog.listDateFormat | default "2006-01-02" -}}
+
+<section class="up-post-list" aria-label="{{ partial "unity/ui/t" "posts" }}" data-up-post-list>
+  <header class="up-post-list-header">
+    <button type="button" class="up-post-list-col" data-up-sort="name" aria-pressed="false">
+      <span>{{ partial "unity/ui/t" "col_name" }}</span>
+      <span class="up-sr-only" data-up-sort-sr></span>
+      <span class="up-post-list-caret" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="up-post-list-col is-sorted is-desc" data-up-sort="date" aria-pressed="true">
+      <span>{{ partial "unity/ui/t" "col_date" }}</span>
+      <span class="up-sr-only" data-up-sort-sr>{{ partial "unity/ui/t" "sorted_descending" }}</span>
+      <span class="up-post-list-caret" aria-hidden="true">▾</span>
+    </button>
+  </header>
+  <div class="up-post-list-body" data-up-post-list-body>
+    {{- range $pages.ByDate.Reverse }}
+      {{- $isActive := and (ne $here "") (eq $here .RelPermalink) }}
+      {{- $tagList := slice }}
+      {{- $chips := partial "unity/post-categories.html" . }}
+      {{- range $chips }}{{ $tagList = $tagList | append (lower .) }}{{ end }}
+      {{- $iso := .Date.Format "2006-01-02" }}
+      {{ partial "unity/page/post-row.html" (dict
+          "url" .RelPermalink
+          "title" .Title
+          "active" $isActive
+          "chips" $chips
+          "date" (time.Format $dateFmt .Date)
+          "datetime" $iso
+          "filter" (dict "title" (lower .Title) "tags" (delimit $tagList " ") "date" $iso)) }}
+    {{- end }}
+    <div class="up-post-empty" data-up-post-empty hidden>{{ partial "unity/ui/t" "no_posts_match" }}</div>
+  </div>
+</section>

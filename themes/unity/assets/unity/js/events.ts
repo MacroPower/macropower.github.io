@@ -18,7 +18,7 @@ export const NOTIFY_EVENT = "up:notify";
 export interface UPNotifyDetail {
   summary: string;
   body?: string | undefined;
-  /** A key from notify-host.html's icon template, such as info or music,
+  /** A key from unity/notify-host.html's icon template, such as info or music,
    *  or a freedesktop-style alias such as dialog-information. */
   icon?: string | undefined;
   /** Display time, clamped to 1-20s like notify-send's expire-time. */

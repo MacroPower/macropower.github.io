@@ -1,0 +1,140 @@
+{{- /*
+  The Unity Dash: a translucent search overlay anchored under the top panel at
+  the launcher's right edge, opened from the launcher's BFB (the Dash button)
+  or a Super tap. Everything searchable is server-rendered as tiles; dash.ts
+  only filters, ranks, and dispatches — it never invents content. The apps
+  category renders here. The files, projects, and music categories render
+  once per language in unity/dash/results.html, which dash.ts fetches from
+  data-dash-src the first time the Dash opens.
+
+  Categories:
+    apps     — site pages plus the desktop "applications" (Studio, Trash,
+               Appearance, ...). Page tiles are real <a>; app tiles are
+               <button data-dash-action> dispatched by dash.ts.
+    files    — blog posts (newest first), real <a>.
+    projects — unity/projects-data.html's projects, real <a> to GitHub
+               (new tab, like the projects grid's open behavior).
+    music    — the Studio playlist as buttons named by each track's title,
+               or "Track N" without one
+               (music:<i> selects the track, opens the Studio, and plays).
+
+  DOM contract (read by dash.ts): [data-up-dash], [data-dash-src],
+  [data-dash-backdrop],
+  [data-dash-search], [data-dash-results], [data-dash-section],
+  [data-dash-grid], [data-dash-more], [data-dash-cap], [data-dash-tile],
+  [data-dash-action], data-keywords, [data-dash-lens], [data-dash-empty],
+  [data-dash-status] — plus [data-dash-open] on the launcher's BFB tile.
+
+  Sections with data-dash-cap collapse to that many matches behind a Unity
+  "See N more results" expander; the rest always show every match.
+*/ -}}
+{{- /* Page tiles come from the shared unity/site-pages.html registry; the
+       desktop "applications" (Studio, Trash, ...) are Dash-only. */ -}}
+{{- $reg := partialCached "unity/site-pages.html" . -}}
+{{- $apps := slice -}}
+{{- range $reg.dashOrder -}}
+  {{- $p := index $reg.pages . -}}
+  {{- $apps = $apps | append (dict
+      "label" (or $p.dashLabel $p.label)
+      "icon" (or $p.dashIcon $p.icon)
+      "url" $p.url
+      "kw" $p.kw) -}}
+{{- end -}}
+{{- $playlist := partialCached "unity/playlist.html" . -}}
+{{- with $playlist -}}
+  {{- $apps = $apps | append (dict "label" (partial "unity/ui/t" "studio") "icon" "launcher/piano" "action" "studio"
+        "kw" (partial "unity/ui/t" "kw_studio")) -}}
+{{- end -}}
+{{- if ne site.Params.desktop.trash false -}}
+  {{- $apps = $apps | append (dict "label" (partial "unity/ui/t" "trash") "icon" "launcher/trash" "action" "trash"
+        "kw" (partial "unity/ui/t" "kw_trash")) -}}
+{{- end -}}
+{{- $apps = $apps | append (slice
+  (dict "label" (partial "unity/ui/t" "appearance") "icon" "launcher/paint" "action" "prefs"
+        "kw" (partial "unity/ui/t" "kw_appearance"))
+  (dict "label" (partial "unity/ui/t" "shortcuts") "icon" "launcher/typewriter-key" "action" "shortcuts"
+        "kw" (partial "unity/ui/t" "kw_shortcuts"))
+) -}}
+{{- if ne site.Params.desktop.lock false -}}
+  {{- $apps = $apps | append (slice
+    (dict "label" (partial "unity/ui/t" "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
+          "kw" (partial "unity/ui/t" "kw_lock"))
+    (dict "label" (partial "unity/ui/t" "log_out_app") "icon" "launcher/doorway" "action" "logout"
+          "kw" (partial "unity/ui/t" "kw_logout"))
+  ) -}}
+{{- end -}}
+{{- $posts := partialCached "unity/blog-posts.html" . -}}
+{{- $projects := partialCached "unity/projects-data.html" . -}}
+{{- $src := "" -}}
+{{- if or $posts $projects $playlist -}}
+  {{- $src = partialCached "unity/dash/results-url.html" . site.Language.Name -}}
+{{- end -}}
+<div class="up-dash" data-up-dash hidden{{ with $src }} data-dash-src="{{ . }}"{{ end }}>
+  <div class="up-dash-backdrop" data-dash-backdrop aria-hidden="true"></div>
+  <section class="up-dash-panel" role="dialog" aria-modal="true" aria-label="{{ partial "unity/ui/t" "dash_search" }}">
+    <div class="up-dash-searchbar">
+      <span class="up-dash-search-icon" aria-hidden="true">{{ partial "unity/icon.html" "glyphs/search" }}</span>
+      <input class="up-dash-search" data-dash-search type="text"
+             placeholder="{{ partial "unity/ui/t" "search_your_computer" }}" aria-label="{{ partial "unity/ui/t" "search_your_computer" }}"
+             autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="up-dash-results" data-dash-results>
+
+      <section class="up-dash-section" data-dash-section="apps" aria-label="{{ partial "unity/ui/t" "applications" }}">
+        <header class="up-dash-cat">
+          <span class="up-dash-cat-icon" aria-hidden="true">{{ partial "unity/icon.html" "glyphs/dash-apps" }}</span>
+          <span class="up-dash-cat-label">{{ partial "unity/ui/t" "applications" }}</span>
+          <button class="up-dash-more" data-dash-more type="button" hidden></button>
+        </header>
+        <div class="up-dash-grid" data-dash-grid>
+          {{- range $apps }}
+          {{- if .url }}
+          <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
+             data-keywords="{{ .kw }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon.html" .icon }}</span>
+            <span class="up-dash-tile-label">{{ .label }}</span>
+          </a>
+          {{- else }}
+          <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
+                  data-dash-action="{{ .action }}" data-keywords="{{ .kw }}">
+            <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon.html" .icon }}</span>
+            <span class="up-dash-tile-label">{{ .label }}</span>
+          </button>
+          {{- end }}
+          {{- end }}
+        </div>
+      </section>
+
+      <div class="up-dash-empty" data-dash-empty hidden>
+        <span class="up-dash-empty-icon" aria-hidden="true">{{ partial "unity/icon.html" "glyphs/search" }}</span>
+        <p>{{ partial "unity/ui/t" "dash_no_results" }}</p>
+      </div>
+    </div>
+
+    <div class="up-dash-lenses" role="group" aria-label="{{ partial "unity/ui/t" "filter_results" }}">
+      <button class="up-dash-lens is-active" data-dash-lens="home" type="button" aria-pressed="true" title="{{ partial "unity/ui/t" "home" }}">
+        {{ partial "unity/icon.html" "glyphs/home" }}
+      </button>
+      <button class="up-dash-lens" data-dash-lens="apps" type="button" aria-pressed="false" title="{{ partial "unity/ui/t" "applications" }}">
+        {{ partial "unity/icon.html" "glyphs/dash-apps" }}
+      </button>
+      {{- if $posts }}
+      <button class="up-dash-lens" data-dash-lens="files" type="button" aria-pressed="false" title="{{ partial "unity/ui/t" "files_and_folders" }}">
+        {{ partial "unity/icon.html" "glyphs/folder" }}
+      </button>
+      {{- end }}
+      {{- if $projects }}
+      <button class="up-dash-lens" data-dash-lens="projects" type="button" aria-pressed="false" title="{{ partial "unity/ui/t" "projects" }}">
+        {{ partial "unity/icon.html" "glyphs/code" }}
+      </button>
+      {{- end }}
+      {{- with $playlist }}
+      <button class="up-dash-lens" data-dash-lens="music" type="button" aria-pressed="false" title="{{ partial "unity/ui/t" "music" }}">
+        {{ partial "unity/icon.html" "glyphs/dash-music" }}
+      </button>
+      {{- end }}
+    </div>
+
+    <div class="up-sr-only" data-dash-status role="status"></div>
+  </section>
+</div>

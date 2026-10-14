@@ -118,7 +118,7 @@ mainSections = ["posts"]
 # Home is implicit. Per-entry [menu.main.params]: icon, match, kw, dashLabel,
 # dashIcon, launcher (false keeps a page off the dock, "running" docks it only
 # while it is open), dash (false keeps it out of the Dash). See the theme's
-# _partials/site-pages.html.
+# _partials/unity/site-pages.html.
 [menu]
   [[menu.main]]
     identifier = "cv"
