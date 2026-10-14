@@ -69,9 +69,15 @@
   {{- end -}}
   {{- $entry = printf "%s\n@layer unity.theme{:root{--up-wallpaper:url(%q) center/cover no-repeat}}" $entry $url -}}
 {{- end -}}
+{{- /* importContext takes a copy of the highlighter's classes. Given the
+      css.ChromaStyles resource itself, css.Build builds the stylesheet
+      again in each language. On a site that gives each language its own
+      baseURL, each of those builds writes into every language's
+      directory, and Hugo warns of duplicate target paths. */ -}}
+{{- $chroma := resources.FromString "unity/css/chroma.css" (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")).Content -}}
 {{- $main := resources.FromString "unity/css/entry.css" $entry | css.Build (dict
   "externals" $externals
-  "importContext" (slice (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")))
+  "importContext" (slice $chroma)
   "minify" hugo.IsProduction
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")
   "target" (slice "chrome115" "edge115" "firefox121" "ios16.4" "opera101" "safari16.4")
