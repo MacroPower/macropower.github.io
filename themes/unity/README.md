@@ -140,6 +140,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
 | `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button. Every entry on GitHub, GitLab, Codeberg, Bitbucket, or sourcehut gets a link in the projects sidebar, and a `twitter` entry sets the card metadata. |
 | `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
+| `desktop.wallpaper` | the aubergine gradient | An image that covers the desktop and the lock screen, given as a path under `assets/` or `static/` or as a URL. A `--up-wallpaper` that your `custom.css` sets beats it. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |
 | `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
@@ -207,7 +208,7 @@ The theme's render hooks extend Hugo's Markdown:
 
   | Property | Default | Paints |
   | --- | --- | --- |
-  | `--up-wallpaper` | The aubergine gradient | The desktop and the lock screen. It takes any `background` value. |
+  | `--up-wallpaper` | The aubergine gradient, or the image that `params.desktop.wallpaper` names | The desktop and the lock screen. It takes any `background` value. |
   | `--up-panel-grad-1`, `--up-panel-grad-2` | `#3F3D3A`, `#252423` | The top panel, as a gradient from top to bottom. |
   | `--up-chrome-1`, `--up-chrome-2` | `#3F3D3A`, `#2A2825` | The titlebar of the focused window and of every dialog, as a gradient. |
   | `--up-chrome-inactive-1`, `--up-chrome-inactive-2` | `#4D4A47`, `#3B3835` | The titlebar of an unfocused window, as a gradient. |

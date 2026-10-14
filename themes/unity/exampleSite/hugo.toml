@@ -83,6 +83,10 @@ mainSections = ["posts"]
     # green, aubergine, or blue. Visitors can switch it in Edit >
     # Preferences.
     # accent = "aubergine"
+    # An image that covers the desktop and the lock screen in place of
+    # the aubergine gradient. Give a path under assets/ or static/, or a
+    # URL.
+    # wallpaper = "images/wallpaper.jpg"
     # The corner watermark's lines; an empty list removes it.
     # label = ["jane/personal-site", "est. 2024"]
     # The Trash window's contents. A trailing slash marks a folder, and

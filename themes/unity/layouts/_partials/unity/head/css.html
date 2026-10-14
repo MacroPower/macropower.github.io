@@ -14,6 +14,14 @@
   !important declarations. css.Build moves an external @import in it to
   the top of the output, where browsers honor it.
 
+  params.desktop.wallpaper sets --up-wallpaper to an image in a rule that
+  follows main.css in the unity.theme layer, so the rule beats main.css's
+  default and custom.css beats the rule. css.Build publishes an image under
+  assets/ with a hashed name and leaves a URL as written. A path under
+  static/ resolves against the site's baseURL and goes in externals, so
+  css.Build leaves it as written too. The partial never searches the page's
+  bundle, because partialCached shares one result across pages.
+
   Context: the page. Call it through partialCached keyed on whether the
   page is the home terminal (unity/is-terminal.html), the only input that
   changes the output.
@@ -23,7 +31,23 @@
 @import "/unity/css/chroma.css" layer(unity.chroma);
 ` -}}
 {{- if resources.Get "css/custom.css" }}{{ $entry = print $entry `@import "/css/custom.css";` }}{{ end -}}
+{{- $externals := slice -}}
+{{- with site.Params.desktop.wallpaper -}}
+  {{- $u := urls.Parse . -}}
+  {{- $url := . -}}
+  {{- if not (or $u.IsAbs $u.Host) -}}
+    {{- $path := strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.Path) -}}
+    {{- if resources.Get $path -}}
+      {{- $url = printf "/%s" $path -}}
+    {{- else -}}
+      {{- $url = partial "unity/markup/site-url.html" (dict "path" (printf "/%s" (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.EscapedPath)))) -}}
+      {{- $externals = $externals | append $url -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $entry = printf "%s\n@layer unity.theme{:root{--up-wallpaper:url(%q) center/cover no-repeat}}" $entry $url -}}
+{{- end -}}
 {{- $main := resources.FromString "unity/css/entry.css" $entry | css.Build (dict
+  "externals" $externals
   "importContext" (slice (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")))
   "minify" hugo.IsProduction
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")

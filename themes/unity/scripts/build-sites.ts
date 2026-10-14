@@ -424,6 +424,27 @@ mainSections = ["posts"]
       ];
     },
   },
+  // A wallpaper image under assets/ on a site served from a subdirectory.
+  // The build must publish the image under the subdirectory.
+  wallpaper: {
+    files: {
+      "hugo.toml": `${config("https://example.org/sub/")}[params.desktop]\n  wallpaper = "images/wall.png"\n`,
+      "assets/images/wall.png": "PNG",
+    },
+    check: (out) => wallpaperCheck(out, (url) =>
+      !(url.startsWith("/sub/") && existsSync(join(out, url.slice("/sub/".length))))
+        && `the wallpaper rule names ${url}, which the build did not publish under /sub/`),
+  },
+  // A wallpaper under static/, which css.Build must leave as written
+  // apart from the subdirectory.
+  wallstatic: {
+    files: {
+      "hugo.toml": `${config("https://example.org/sub/")}[params.desktop]\n  wallpaper = "/img/wall.png"\n`,
+      "static/img/wall.png": "PNG",
+    },
+    check: (out) => wallpaperCheck(out, (url) =>
+      url !== "/sub/img/wall.png" && `the wallpaper rule names ${url}, not /sub/img/wall.png`),
+  },
   // An owner named only by an author name that is not a unix login.
   login: {
     files: {
@@ -521,6 +542,22 @@ function layerAt(css: string, i: number): string {
     else open.push(m[1] ?? "");
   }
   return open.filter(Boolean).at(-1) ?? "";
+}
+
+// Checks the image that params.desktop.wallpaper puts in the stylesheet
+// that index.html links, on a site served from /sub/. The stylesheet must
+// declare --up-wallpaper twice in the unity.theme layer, main.css's
+// default first and the param's image second, so the image beats the
+// default and custom.css beats the image. expect(url) checks the image's
+// URL.
+function wallpaperCheck(out: string, expect: (url: string) => string | false): (string | false)[] {
+  const href = /<link rel="stylesheet" href="\/sub\/([^"]+)"/.exec(read(join(out, "index.html")))?.[1];
+  const css = href ? read(join(out, href)) : "";
+  const decls = [...css.matchAll(/--up-wallpaper:\s*([^;}]+)/g)];
+  const url = decls.length === 2 && decls.every((m) => layerAt(css, m.index) === "unity.theme")
+    ? /^url\("?([^")]+)"?\) center\/cover no-repeat$/.exec(decls[1]![1]!.trim())?.[1]
+    : undefined;
+  return [url === undefined ? "the stylesheet lacks the wallpaper param's rule after main.css's default in the unity.theme layer" : expect(url)];
 }
 
 function htmlFiles(dir: string): string[] {
