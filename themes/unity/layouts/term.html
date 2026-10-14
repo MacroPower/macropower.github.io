@@ -26,13 +26,12 @@
           <div class="up-reader-body">
             {{ .Content }}
             {{- /* The translation holds the whole sentence, so it sets the
-                  word order and punctuation around the chip. Translations
-                  are text, so the template passes a NUL as {{ .Tag }},
-                  escapes the sentence, and then replaces the NUL with the
-                  chip's markup. */}}
-            {{- $chip := printf `<span dir="auto" class="up-reader-chip">#%s</span>` (lower $title | htmlEscape) }}
-            {{- $tagged := partial "unity/ui/t" (slice "posts_tagged" (dict "Count" (len .Pages) "Tag" "\x00")) | htmlEscape }}
-            <p>{{ replace $tagged "\x00" $chip | safeHTML }}</p>
+                  word order and punctuation around the chip. */}}
+            <p>
+              {{- range partial "unity/ui/slots.html" (partial "unity/ui/t" (slice "posts_tagged" (dict "Count" (len .Pages) "Tag" "\x01"))) -}}
+                {{- if eq . "\x01" }}<span dir="auto" class="up-reader-chip">#{{ lower $title }}</span>{{ else }}{{ . }}{{ end -}}
+              {{- end -}}
+            </p>
           </div>
           <div class="up-reader-signoff">— <bdi dir="ltr">{{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ lower $title }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</bdi></div>
         </div>

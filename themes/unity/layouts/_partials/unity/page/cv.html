@@ -36,10 +36,17 @@
         </button>
       </div>
       <div class="up-docv-pageentry">
-        <input class="up-docv-pagenum" data-docv-pagenum type="text"
-               inputmode="numeric" value="1" disabled
-               aria-label="{{ partial "unity/ui/t" "page_number" }}" autocomplete="off">
-        <span class="up-docv-pagecount">{{ partial "unity/ui/t" "page_count_of" }} <span data-docv-pagecount>…</span></span>
+        {{- range partial "unity/ui/slots.html" (partial "unity/ui/t" (slice "page_of_total" (dict "Page" "\x01" "Total" "\x02"))) -}}
+          {{- if eq . "\x01" -}}
+            <input class="up-docv-pagenum" data-docv-pagenum type="text"
+                   inputmode="numeric" value="1" disabled
+                   aria-label="{{ partial "unity/ui/t" "page_number" }}" autocomplete="off">
+          {{- else if eq . "\x02" -}}
+            <span data-docv-pagecount>…</span>
+          {{- else -}}
+            {{ . }}
+          {{- end -}}
+        {{- end -}}
       </div>
       <span class="up-docv-sep" aria-hidden="true"></span>
       <div class="up-docv-group">

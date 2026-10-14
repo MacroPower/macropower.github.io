@@ -1,0 +1,17 @@
+{{- /*
+  Splits a translated sentence around the values that render as markup,
+  so the translation sets where each one goes. The caller passes a
+  control character from "\x01" to "\x08" as each such value, then ranges
+  over the pieces. A piece that equals one of those characters is a
+  slot, where the caller renders that value's markup. Every other piece
+  is text from the translation, which html/template escapes.
+
+    {{ $s := partial "unity/ui/t" (slice "sound_output" (dict "Device" "\x01")) }}
+    {{ range partial "unity/ui/slots.html" $s }}
+      {{- if eq . "\x01" }}<strong>{{ $device }}</strong>{{ else }}{{ . }}{{ end -}}
+    {{ end }}
+
+  Context: the translated sentence. Returns a slice of strings, some of
+  them empty.
+*/ -}}
+{{- return split (replaceRE "[\x01-\x08]" "\x00${0}\x00" .) "\x00" -}}

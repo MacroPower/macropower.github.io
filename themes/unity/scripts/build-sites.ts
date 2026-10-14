@@ -711,6 +711,41 @@ other = "{{ .Plural }}: noch keine."
       return want.map(([file, text]) => !read(join(out, file)).includes(text) && `${file} lacks ${text}`);
     },
   },
+  // Sentences that hold markup, such as the cv page's page number box,
+  // in English and in a Japanese translation that moves the markup.
+  // Each sentence comes whole from the translation, and each piece of
+  // markup lands where the translation puts its placeholder.
+  sentences: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]\n  weight = 1\n[languages.ja]\n  weight = 2\n`,
+      "i18n/ja.toml": `[page_of_total]
+other = "全 {{ .Total }} ページ中 {{ .Page }} ページ目"
+[sound_output]
+other = "出力：{{ .Device }}"
+[built_in_audio]
+other = "内蔵オーディオ"
+[terminal_needs_js]
+other = "{{ .Login }}：このターミナルには JavaScript が必要です。"
+`,
+      "content/cv.md": page("CV", "layout = 'cv'\npdf = '/cv.pdf'\n"),
+      "content/cv.ja.md": page("履歴書", "layout = 'cv'\npdf = '/cv.pdf'\n"),
+      "static/cv.pdf": "%PDF-1.4\n",
+    },
+    check: (out) => {
+      const box = "<input [^>]*data-docv-pagenum[^>]*>";
+      const count = "<span data-docv-pagecount>…</span>";
+      const want: [file: string, pattern: RegExp][] = [
+        ["cv/index.html", new RegExp(`<div class="up-docv-pageentry">${box} of ${count}</div>`)],
+        ["ja/cv/index.html", new RegExp(`<div class="up-docv-pageentry">全 ${count} ページ中 ${box} ページ目</div>`)],
+        ["index.html", /<div class="up-dropdown-meta">Output: <span class="up-dropdown-meta-strong">Built-in audio<\/span><\/div>/],
+        ["ja/index.html", /<div class="up-dropdown-meta">出力：<span class="up-dropdown-meta-strong">内蔵オーディオ<\/span><\/div>/],
+        ["index.html", /<div class="up-shell-noscript"><bdi dir="ltr">user@example\.org<\/bdi>: this terminal requires JavaScript\.<\/div>/],
+        ["ja/index.html", /<div class="up-shell-noscript"><bdi dir="ltr">user@example\.org<\/bdi>：このターミナルには JavaScript が必要です。<\/div>/],
+      ];
+      return want.map(([file, pattern]) =>
+        !pattern.test(read(join(out, file)).replace(/\s+/g, " ")) && `${file} does not match ${pattern}`);
+    },
+  },
   // A non-English default language whose translation covers two keys.
   // The build must say so, and the other strings, in templates and
   // scripts alike, must fall back to English.

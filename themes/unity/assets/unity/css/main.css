@@ -824,7 +824,9 @@ body.up-resizing *{ cursor:inherit !important; }
     border-color:var(--up-btn-border-checked);color:var(--up-btn-fg-checked);
   }
 }
-.up-docv-pageentry{display:inline-flex;align-items:center;gap:6px;margin:0 2px}
+/* The page entry renders a translated sentence around its box, so its
+   own spaces separate the box from the text. */
+.up-docv-pageentry{margin:0 2px;color:#5A554E;white-space:nowrap;font-variant-numeric:tabular-nums}
 .up-docv-pagenum{
   width:34px;height:22px;padding:0 2px;
   font:inherit;font-size:12px;font-variant-numeric:tabular-nums;text-align:center;
@@ -838,7 +840,6 @@ body.up-resizing *{ cursor:inherit !important; }
   }
   &:disabled{color:#B4ADA7;background:#F1EFEC}
 }
-.up-docv-pagecount{color:#5A554E;white-space:nowrap;font-variant-numeric:tabular-nums}
 .up-docv-sep{
   width:1px;align-self:stretch;margin:2px 4px;
   background:rgba(0,0,0,.14);

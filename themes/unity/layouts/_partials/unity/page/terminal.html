@@ -139,6 +139,10 @@
     {{- /* Without JS the terminal never mounts, so main.css shows the
           banner block under @media (scripting: none), and this error
           line follows it. */}}
-    <div class="up-shell-noscript"><bdi dir="ltr">{{ $login.user }}@{{ $login.host }}</bdi>: {{ partial "unity/ui/t" "terminal_requires_js" }}</div>
+    <div class="up-shell-noscript">
+      {{- range partial "unity/ui/slots.html" (partial "unity/ui/t" (slice "terminal_needs_js" (dict "Login" "\x01"))) -}}
+        {{- if eq . "\x01" }}<bdi dir="ltr">{{ $login.user }}@{{ $login.host }}</bdi>{{ else }}{{ . }}{{ end -}}
+      {{- end -}}
+    </div>
   </noscript>
 </section>

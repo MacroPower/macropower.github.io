@@ -23,7 +23,11 @@
         <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="{{ partial "unity/ui/t" "volume" }}">
         <span class="up-vol-readout" data-vol-readout>62</span>
       </div>
-      <div class="up-dropdown-meta">{{ partial "unity/ui/t" "output" }} <span class="up-dropdown-meta-strong">{{ partial "unity/ui/t" "built_in_audio" }}</span></div>
+      <div class="up-dropdown-meta">
+        {{- range partial "unity/ui/slots.html" (partial "unity/ui/t" (slice "sound_output" (dict "Device" "\x01"))) -}}
+          {{- if eq . "\x01" }}<span class="up-dropdown-meta-strong">{{ partial "unity/ui/t" "built_in_audio" }}</span>{{ else }}{{ . }}{{ end -}}
+        {{- end -}}
+      </div>
       {{- if $playlist }}
       <div class="up-dropdown-meta-em">
         <button type="button" class="up-vol-play" data-action="vol-play" aria-label="{{ partial "unity/ui/t" "play_pause" }}">

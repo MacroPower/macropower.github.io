@@ -160,8 +160,10 @@ other = "Links"
 other = "Site"
 [explore]
 other = "Explore"
-[terminal_requires_js]
-other = "this terminal requires JavaScript."
+# The error line under the terminal's banner without JavaScript.
+# {{ .Login }} is the terminal's user@host.
+[terminal_needs_js]
+other = "{{ .Login }}: this terminal requires JavaScript."
 
 # 404
 [page_not_found]
@@ -182,8 +184,10 @@ other = "Previous page"
 other = "Next page"
 [page_number]
 other = "Page number"
-[page_count_of]
-other = "of"
+# The page entry. {{ .Page }} is the page number box, and {{ .Total }}
+# is the number of pages.
+[page_of_total]
+other = "{{ .Page }} of {{ .Total }}"
 [zoom_out]
 other = "Zoom out"
 [zoom_in]
@@ -324,8 +328,9 @@ other = "Enable hotspot"
 other = "Volume"
 [toggle_mute]
 other = "Toggle mute"
-[output]
-other = "Output:"
+# {{ .Device }} is the name of the device, the built_in_audio string.
+[sound_output]
+other = "Output: {{ .Device }}"
 [built_in_audio]
 other = "Built-in audio"
 [play_pause]
