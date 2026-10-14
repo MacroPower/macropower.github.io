@@ -16,7 +16,7 @@ interface AccentDef {
 // [data-up-accent="<name>"] rule, and the site's params.desktop.accent picks
 // the one <html> starts with. Keep the names in sync with main.css and the
 // list in baseof.html.
-const ACCENTS: AccentDef[] = [
+const ACCENTS: readonly AccentDef[] = [
   { name: "orange", label: t("js_prefs_accent_orange") },
   { name: "green", label: t("js_prefs_accent_green") },
   { name: "aubergine", label: t("js_prefs_accent_aubergine") },

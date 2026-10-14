@@ -507,7 +507,7 @@ export function initDaw(): void {
       const buttons = new Map<audio.VoiceKey, HTMLButtonElement>();
       for (const p of audio.PATCHES) {
         if (p.key === "auto") continue;
-        const key = p.key as audio.VoiceKey;
+        const key = p.key;
         const b = document.createElement("button");
         b.type = "button";
         b.className = "up-daw-wave";

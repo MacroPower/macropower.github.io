@@ -43,7 +43,7 @@ const FADE_MS = 300;
 // freedesktop icon names (what notify-send users will reach for) mapped onto
 // the keys the SSR'd template actually ships. Unknown names simply render no
 // icon, matching the real daemon's behavior for a missing theme icon.
-const ICON_ALIASES: Record<string, string> = {
+const ICON_ALIASES: Readonly<Record<string, string>> = {
   "dialog-information": "info",
   "dialog-warning": "warning",
   "dialog-error": "warning",

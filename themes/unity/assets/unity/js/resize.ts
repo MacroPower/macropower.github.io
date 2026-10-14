@@ -17,7 +17,7 @@ interface Dir {
   bottom?: boolean;
 }
 
-const DIRS: Dir[] = [
+const DIRS: readonly Dir[] = [
   { cls: "up-resize-n", top: true },
   { cls: "up-resize-s", bottom: true },
   { cls: "up-resize-w", left: true },

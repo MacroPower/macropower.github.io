@@ -26,7 +26,7 @@ const FONT_FAMILY = '"Ubuntu Mono", ui-monospace, Menlo, monospace';
 // Font shorthand probes for document.fonts.load()/check(): the faces xterm
 // actually renders (regular + ANSI-bold). index.ts gates construction on
 // loading these; the constructor backstop checks them.
-export const FONT_PROBES = ['16px "Ubuntu Mono"', '700 16px "Ubuntu Mono"'];
+export const FONT_PROBES: readonly string[] = ['16px "Ubuntu Mono"', '700 16px "Ubuntu Mono"'];
 
 export class XtermTerminal implements TerminalIO {
   private readonly term: Terminal;

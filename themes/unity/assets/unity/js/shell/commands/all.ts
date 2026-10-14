@@ -23,7 +23,7 @@ import {
 } from "./builtins";
 import { colon, printf, test, testBracket } from "./posix";
 
-export const ALL_COMMANDS: Command[] = [
+export const ALL_COMMANDS: readonly Command[] = [
   help, man,
   neofetch, whoami, pwd, ls, cd, open, cat,
   echo, grep, head, tail, wc, sort,

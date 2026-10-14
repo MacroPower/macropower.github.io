@@ -98,7 +98,7 @@ export interface SynthParams {
   velSens: number; // 0..1 velocity-to-loudness sensitivity
 }
 
-export const PARAM_DEFAULTS: SynthParams = {
+export const PARAM_DEFAULTS: Readonly<SynthParams> = {
   wave: "square",
   attack: 0.008,
   release: 1,
@@ -119,7 +119,9 @@ export const PARAM_DEFAULTS: SynthParams = {
 
 const params: SynthParams = { ...PARAM_DEFAULTS };
 
-export function getParams(): SynthParams {
+// The live params, typed read-only so that every write goes through
+// setParam, which also updates the audio graph.
+export function getParams(): Readonly<SynthParams> {
   return params;
 }
 

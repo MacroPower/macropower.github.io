@@ -85,7 +85,7 @@ export const PALETTE_BRIGHT = {
 } as const;
 
 // Maps neofetch color-mask letters (assets/unity/home/colors.txt) to palette hex values.
-export const MASK_COLORS: Record<string, string> = {
+export const MASK_COLORS: Readonly<Record<string, string>> = {
   O: PALETTE.orange,
   Y: PALETTE.yellow,
   G: PALETTE.green,

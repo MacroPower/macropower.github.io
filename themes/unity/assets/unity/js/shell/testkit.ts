@@ -29,7 +29,7 @@ export class CaptureTerminal implements TerminalIO {
 
 // A deterministic data fixture: fixed handle/host/posts/pages so the VFS and
 // every ls/glob/cat output is stable across runs.
-export const TEST_DATA: ShellData = {
+export const TEST_DATA: Readonly<ShellData> = {
   handle: "me",
   host: "example.com",
   name: "Me Example",

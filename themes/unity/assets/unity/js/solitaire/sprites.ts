@@ -47,13 +47,13 @@ export const PAL = {
   amberDark: "#B8741E",
   grey: "#6E7A7E",
   greyDark: "#4B5457",
-};
+} as const;
 
 export function suitColor(suit: Suit): string {
   return isRed(suit) ? PAL.red : PAL.black;
 }
 
-type Rows = [string, ...string[]];
+type Rows = readonly [string, ...string[]];
 
 interface BlitOpts {
   rot180?: boolean;
@@ -557,7 +557,7 @@ export const ICONS = {
   cards: ["..#####", "..#...#", "#####.#", "#...#.#", "#...###", "#...#..", "#####.."],
   soundOn: ["...#.....", "..##..#..", "####...#.", "####.#.#.", "####...#.", "..##..#..", "...#....."],
   soundOff: ["...#.....", "..##.#.#.", "####..#..", "####..#..", "####.#.#.", "..##.....", "...#....."],
-} satisfies Record<string, Rows>;
+} as const satisfies Record<string, Rows>;
 
 export type IconName = keyof typeof ICONS;
 
