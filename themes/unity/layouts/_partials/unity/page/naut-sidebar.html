@@ -3,6 +3,11 @@
   zero or more <div.up-naut-section> blocks, each holding a label and a list
   of <a> or <button> items with optional icon + count chip.
 
+  A section with a label is a role="group" that its label names through
+  aria-labelledby, so a screen reader announces the label on entering the
+  group. Each label's id comes from its section's position, so a page must
+  render at most one sidebar, or the ids repeat.
+
   Caller params:
     class      string           extra classes appended after "up-naut-sidebar"
     ariaLabel  string           aria-label on the <aside> (default: "Navigation")
@@ -31,9 +36,10 @@
 {{- $ariaLabel := .ariaLabel | default (partial "unity/ui/t" "navigation") -}}
 {{- $sections := .sections -}}
 <aside class="up-naut-sidebar{{ with $class }} {{ . }}{{ end }}" aria-label="{{ $ariaLabel }}">
-  {{- range $sections }}
-    <div class="up-naut-section">
-      {{- with .label }}<div class="up-naut-section-label">{{ . }}</div>{{ end }}
+  {{- range $i, $_ := $sections }}
+    {{- $labelID := printf "up-naut-label-%d" $i }}
+    <div class="up-naut-section"{{ if .label }} role="group" aria-labelledby="{{ $labelID }}"{{ end }}>
+      {{- with .label }}<div id="{{ $labelID }}" class="up-naut-section-label">{{ . }}</div>{{ end }}
       {{- range .items }}
         {{- $tag := .tag | default "a" -}}
         {{- $active := .active -}}

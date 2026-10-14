@@ -108,6 +108,15 @@ const SITES: Record<string, SiteSpec> = {
             /<style[\s>]/.test(html) && `${name} has a style element`,
             /<[a-z][^>]*\son[a-z]+=/.test(html) && `${name} has an inline event handler`,
             /<script(?![^>]*\ssrc=)(?![^>]*\stype="application\/(?:ld\+)?json")[^>]*>/.test(html) && `${name} has an inline script`,
+            // Each aria-labelledby names one element, and each sidebar
+            // label names the group its section forms.
+            ...[...html.matchAll(/\saria-labelledby="([^"]+)"/g)]
+              .flatMap((m) => m[1]!.split(" "))
+              .filter((id) => html.split(` id="${id}"`).length !== 2)
+              .map((id) => `${name} has no single element with the id ${id}`),
+            html.split('class="up-naut-section-label"').length - 1
+              !== [...html.matchAll(/<div class="up-naut-section" role="group" aria-labelledby="([\w-]+)"><div id="\1" class="up-naut-section-label">/g)].length
+              && `${name} has a sidebar label that names no group`,
           ];
         }),
       ];
