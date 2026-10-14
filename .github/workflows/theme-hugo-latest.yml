@@ -1,0 +1,58 @@
+name: theme on latest hugo
+
+# gh-pages.yml builds the theme's test sites on the site's pinned Hugo
+# and on the theme's floor. This workflow builds them on the newest Hugo
+# release, the top of the range the theme supports. The weekly run
+# catches a Hugo release that breaks the theme when nothing in the
+# repository changes. A scheduled run in gh-pages.yml shares the
+# concurrency group of a push to main and cancels its deploy. This
+# workflow has its own file and group, so the weekly run never cancels
+# a deploy.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - themes/unity/**
+      - .github/workflows/theme-hugo-latest.yml
+  pull_request:
+    paths:
+      - themes/unity/**
+      - .github/workflows/theme-hugo-latest.yml
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-hugo-latest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  theme-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # The setup step prints the release that latest resolves to, so a
+      # failed run names the Hugo release that broke the theme.
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: false
+
+      # setup-node reads engines.node from the theme's package.json, so
+      # this workflow adds no Node pin to keep in sync with devbox.json.
+      # The build script imports only Node built-ins, so this job skips
+      # npm ci.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: themes/unity/package.json
+
+      - name: Build theme test sites
+        run: node themes/unity/scripts/build-sites.ts
