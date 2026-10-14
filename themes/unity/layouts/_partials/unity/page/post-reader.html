@@ -14,7 +14,7 @@
       {{- end }}
       {{- range partial "unity/post-categories.html" . }}
         <span class="up-reader-meta-sep">·</span>
-        <span class="up-reader-chip">#{{ . }}</span>
+        <span dir="auto" class="up-reader-chip">#{{ . }}</span>
       {{- end }}
     </div>
     <h1 class="up-reader-title">{{ partial "unity/page-title.html" . }}</h1>
@@ -33,6 +33,6 @@
       {{ .Content }}
     </div>
     {{ partial "extend-post.html" . }}
-    <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" (printf "~/%s" .Section)) }}</div>
+    <div class="up-reader-signoff">— <bdi dir="ltr">{{ partial "unity/ui/term-prompt.html" (dict "path" (printf "~/%s" .Section)) }}</bdi></div>
   </div>
 </article>

@@ -30,11 +30,11 @@
                   are text, so the template passes a NUL as {{ .Tag }},
                   escapes the sentence, and then replaces the NUL with the
                   chip's markup. */}}
-            {{- $chip := printf `<span class="up-reader-chip">#%s</span>` (lower $title | htmlEscape) }}
+            {{- $chip := printf `<span dir="auto" class="up-reader-chip">#%s</span>` (lower $title | htmlEscape) }}
             {{- $tagged := partial "unity/ui/t" (slice "posts_tagged" (dict "Count" (len .Pages) "Tag" "\x00")) | htmlEscape }}
             <p>{{ replace $tagged "\x00" $chip | safeHTML }}</p>
           </div>
-          <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ lower $title }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
+          <div class="up-reader-signoff">— <bdi dir="ltr">{{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ lower $title }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</bdi></div>
         </div>
       </div>
     </div>

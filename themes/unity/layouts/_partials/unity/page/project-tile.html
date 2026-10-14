@@ -28,5 +28,5 @@
         {{ with $p.license }}data-license="{{ . }}"{{ end }}
         data-url="{{ $p.url }}">
   {{ partial "unity/page/icons/folder-emblem.html" (dict "language" $p.language) }}
-  <span class="up-project-tile-label">{{ $p.name }}</span>
+  <span dir="auto" class="up-project-tile-label">{{ $p.name }}</span>
 </button>

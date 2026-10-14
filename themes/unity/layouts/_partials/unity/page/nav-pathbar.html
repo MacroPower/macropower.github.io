@@ -35,12 +35,12 @@
         {{- if $last -}}
           <span class="up-pathbar-btn is-current" aria-current="page">
             {{- $icon -}}
-            <span class="up-pathbar-label">{{ $seg.label }}</span>
+            <span dir="auto" class="up-pathbar-label">{{ $seg.label }}</span>
           </span>
         {{- else -}}
           <a class="up-pathbar-btn" href="{{ $seg.url }}">
             {{- $icon -}}
-            <span class="up-pathbar-label">{{ $seg.label }}</span>
+            <span dir="auto" class="up-pathbar-label">{{ $seg.label }}</span>
           </a>
         {{- end -}}
       {{ end }}

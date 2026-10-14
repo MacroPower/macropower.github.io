@@ -132,11 +132,13 @@
     </ul>
     {{- end }}
   </div>
-  <div class="up-shell-term" data-shell-mount></div>
+  {{- /* The terminal's output stays English and left to right, like the
+        bash it imitates, whatever the page's language. */}}
+  <div lang="en" dir="ltr" class="up-shell-term" data-shell-mount></div>
   <noscript>
     {{- /* Without JS the terminal never mounts, so main.css shows the
           banner block under @media (scripting: none), and this error
           line follows it. */}}
-    <div class="up-shell-noscript">{{ $login.user }}@{{ $login.host }}: {{ partial "unity/ui/t" "terminal_requires_js" }}</div>
+    <div class="up-shell-noscript"><bdi dir="ltr">{{ $login.user }}@{{ $login.host }}</bdi>: {{ partial "unity/ui/t" "terminal_requires_js" }}</div>
   </noscript>
 </section>

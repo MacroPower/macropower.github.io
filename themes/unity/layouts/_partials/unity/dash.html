@@ -94,13 +94,13 @@
           <a class="up-dash-tile" data-dash-tile href="{{ .url }}" tabindex="-1"
              data-keywords="{{ .kw }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" .icon }}</span>
-            <span class="up-dash-tile-label">{{ .label }}</span>
+            <span dir="auto" class="up-dash-tile-label">{{ .label }}</span>
           </a>
           {{- else }}
           <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
                   data-dash-action="{{ .action }}" data-keywords="{{ .kw }}">
             <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" .icon }}</span>
-            <span class="up-dash-tile-label">{{ .label }}</span>
+            <span dir="auto" class="up-dash-tile-label">{{ .label }}</span>
           </button>
           {{- end }}
           {{- end }}

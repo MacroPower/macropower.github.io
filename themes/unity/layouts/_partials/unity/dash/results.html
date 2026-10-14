@@ -33,7 +33,7 @@
        title="{{ $title }}"
        data-keywords="{{ partial "unity/ui/t" "kw_post" }} {{ delimit (partial "unity/post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" "launcher/article" }}</span>
-      <span class="up-dash-tile-label">{{ $title }}</span>
+      <span dir="auto" class="up-dash-tile-label">{{ $title }}</span>
     </a>
     {{- end }}
   </div>
@@ -54,7 +54,7 @@
        {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }} title="{{ .description }}"
        data-keywords="{{ partial "unity/ui/t" "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/page/icons/folder-emblem.html" (dict "language" .language) }}</span>
-      <span class="up-dash-tile-label">{{ .name }}</span>
+      <span dir="auto" class="up-dash-tile-label">{{ .name }}</span>
     </a>
     {{- end }}
   </div>
@@ -74,7 +74,7 @@
             data-dash-action="music:{{ $i }}"
             data-keywords="{{ partial "unity/ui/t" "kw_track" }}{{ with $track.title }} {{ . }}{{ end }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" "launcher/cassette-tape" }}</span>
-      <span class="up-dash-tile-label">{{ $track.title | default (partial "unity/ui/t" (slice "track_n" (dict "N" (add $i 1)))) }}</span>
+      <span dir="auto" class="up-dash-tile-label">{{ $track.title | default (partial "unity/ui/t" (slice "track_n" (dict "N" (add $i 1)))) }}</span>
     </button>
     {{- end }}
   </div>

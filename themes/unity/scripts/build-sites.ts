@@ -441,7 +441,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         ...["go", "home-lab"]
           .filter((term) => !list.includes(`href="/tags/${term}/"`))
           .map((term) => `posts/index.html has no lens for the tag ${term}`),
-        !list.includes('<span class="up-post-chip">#Home Lab</span>') && "posts/index.html lacks the post's tag chip",
+        !list.includes('<span dir="auto" class="up-post-chip">#Home Lab</span>') && "posts/index.html lacks the post's tag chip",
         !read(join(out, "tags/home-lab/index.html")).includes('href="/posts/one/"')
           && "tags/home-lab/index.html does not list the tagged post",
       ];
@@ -493,9 +493,9 @@ other = "{{ .Plural }}: noch keine."
     },
     check: (out) => {
       const want: [file: string, text: string][] = [
-        ["tags/intro/index.html", '<p>2 posts tagged <span class="up-reader-chip">#intro</span>.</p>'],
-        ["tags/rd/index.html", '<p>1 post tagged <span class="up-reader-chip">#r&amp;d</span>.</p>'],
-        ["de/tags/intro/index.html", '<p><span class="up-reader-chip">#intro</span>: 1 Beitrag</p>'],
+        ["tags/intro/index.html", '<p>2 posts tagged <span dir="auto" class="up-reader-chip">#intro</span>.</p>'],
+        ["tags/rd/index.html", '<p>1 post tagged <span dir="auto" class="up-reader-chip">#r&amp;d</span>.</p>'],
+        ["de/tags/intro/index.html", '<p><span dir="auto" class="up-reader-chip">#intro</span>: 1 Beitrag</p>'],
         ["categories/index.html", ">Categories: none yet.<"],
         ["de/categories/index.html", ">Kategorien: noch keine.<"],
       ];
@@ -583,7 +583,10 @@ other = "{{ .Plural }}: noch keine."
   },
   // A right-to-left default language without a translation of its own.
   // Each page sets dir="rtl" on <html>, which the stylesheet's logical
-  // properties and [dir="rtl"] rules follow.
+  // properties and [dir="rtl"] rules follow. Shell lines and the home
+  // terminal stay left to right, and the terminal stays English. Each
+  // name the desktop shows takes the direction of its first letter, so a
+  // Latin title keeps its punctuation at its end.
   rtl: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "ar"
@@ -592,12 +595,32 @@ ignoreLogs = ["unity-i18n-missing"]
 [languages.ar]
   direction = "rtl"
 `,
-      "content/posts/one.md": page("One"),
+      "content/posts/one.md": page("Hello, world!", "tags = ['a']\n"),
     },
-    check: (out) =>
-      ["index.html", "posts/index.html", "posts/one/index.html"]
-        .filter((p) => !/<html [^>]*\bdir="rtl"/.test(read(join(out, p))))
-        .map((p) => `${p} lacks dir="rtl" on <html>`),
+    check: (out) => {
+      const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
+      const want: [file: string, text: string][] = [
+        ["index.html", '<div lang="en" dir="ltr" class="up-shell-term" data-shell-mount>'],
+        ["index.html", '<span dir="auto" class="up-titlebar-text">user@example.org: ~</span>'],
+        ["index.html", '<bdi dir="ltr">/personal-site</bdi>'],
+        ["posts/index.html", '<div dir="auto" class="up-post-title">Hello, world!</div>'],
+        ["posts/index.html", '<span dir="auto" class="up-post-chip">#a</span>'],
+        ["posts/index.html", '<span dir="auto" class="up-pathbar-label">Posts</span>'],
+        ["posts/index.html", '<span dir="auto" class="up-naut-item-label">A</span>'],
+        ["posts/index.html", '<div dir="ltr" class="up-empty-pane-tagline"'],
+        ["posts/one/index.html", '<span dir="auto" class="up-reader-chip">#a</span>'],
+        ["posts/one/index.html", '— <bdi dir="ltr">user@unity:~/posts$</bdi>'],
+        ["tags/a/index.html", '— <bdi dir="ltr">user@unity:~$ grep -l "a" posts/*.md</bdi>'],
+        ["404.html", '<div lang="en" dir="ltr" class="up-empty-pane-tagline"'],
+      ];
+      return [
+        ...["index.html", "posts/index.html", "posts/one/index.html"]
+          .filter((p) => !/<html [^>]*\bdir="rtl"/.test(read(join(out, p))))
+          .map((p) => `${p} lacks dir="rtl" on <html>`),
+        ...want.map(([file, text]) => !read(join(out, file)).includes(text) && `${file} lacks ${text}`),
+        !dash.includes("<span dir=auto class=up-dash-tile-label>Hello, world!<") && "the Dash's post tile lacks dir=auto",
+      ];
+    },
   },
   // Pages and a section without a title. A post takes its date, and any
   // other page or section its file name.
@@ -611,7 +634,7 @@ ignoreLogs = ["unity-i18n-missing"]
     check: (out) => [
       !read(join(out, "posts/note/index.html")).includes('<h1 class="up-reader-title">Mar 5, 2024</h1>')
         && "posts/note/index.html is not titled by its date",
-      !read(join(out, "posts/index.html")).includes('<div class="up-post-title">Mar 5, 2024</div>')
+      !read(join(out, "posts/index.html")).includes('<div dir="auto" class="up-post-title">Mar 5, 2024</div>')
         && "posts/index.html lists the post without its date",
       !read(join(out, "index.xml")).includes("<title>Mar 5, 2024</title>") && "index.xml lists the post without its date",
       !read(join(out, "loose-leaf/index.html")).includes("<title>Loose Leaf | Notebook</title>")

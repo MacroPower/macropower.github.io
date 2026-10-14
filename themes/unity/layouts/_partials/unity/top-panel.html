@@ -5,7 +5,7 @@
 */ -}}
 {{- $playlist := partialCached "unity/playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
-  <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
+  <div dir="auto" class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ partial "unity/window-title.html" . }}
   </div>
 

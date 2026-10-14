@@ -22,10 +22,10 @@
   {{- with $filter }} data-up-post-row data-title="{{ .title }}" data-tags="{{ .tags }}" data-date="{{ .date }}"{{ end }}
   {{- if .active }} aria-current="page"{{ end }}>
   <div class="up-post-row-main">
-    <div class="up-post-title">{{ .title }}</div>
+    <div dir="auto" class="up-post-title">{{ .title }}</div>
     <div class="up-post-meta">
       {{- range .chips }}
-        <span class="up-post-chip">#{{ . }}</span>
+        <span dir="auto" class="up-post-chip">#{{ . }}</span>
       {{- end }}
     </div>
   </div>
