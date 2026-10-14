@@ -40,7 +40,14 @@ const SITES: Record<string, SiteSpec> = {
     check: (out) => {
       const sitemap = read(join(out, "sitemap.xml"));
       const home = read(join(out, "index.html"));
+      const bundles = readdirSync(join(out, "js"));
       return [
+        // esbuild keeps only legal comments, so each bundle that inlines a
+        // vendored library must carry that library's licence notice.
+        ...([["cv", "Mozilla Foundation"], ["shell", "The xterm.js authors"]] as const)
+          .filter(([name, notice]) =>
+            !bundles.some((f) => f.startsWith(`${name}.`) && read(join(out, "js", f)).includes(notice)))
+          .map(([name]) => `js/${name}.*.js lacks the licence notice of the library it inlines`),
         // The solitaire and icon pages set noindex.
         ...["solitaire", "icons"]
           .filter((p) => sitemap.includes(`/${p}/</loc>`))
