@@ -24,13 +24,14 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // Each site is a Hugo source directory built with extra flags, or the
 // files to write into a fresh one. check(out) reads the built site and
 // returns a failure message for each failed check and false for each
-// passed one. A site with warns builds with warnings allowed and must
-// print a warning matching that pattern. A files site with prepare runs
-// Hugo with those arguments against its fresh source before the build,
-// and its check reads what that run wrote from the source.
+// passed one. A site with warns builds with warnings allowed. Each of its
+// patterns must match a warning, and each warning must match one of its
+// patterns. A files site with prepare runs Hugo with those arguments
+// against its fresh source before the build, and its check reads what
+// that run wrote from the source.
 type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string>; prepare?: string[] }) & {
   check?: (out: string, source: string) => (string | false)[];
-  warns?: RegExp;
+  warns?: RegExp[];
 };
 
 const SITES: Record<string, SiteSpec> = {
@@ -215,7 +216,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       "hugo.toml": `${BARE}defaultContentLanguage = "de"\n`,
       "i18n/de.toml": '[home]\nother = "Startseite"\n',
     },
-    warns: /the "de" translation lacks \d+ of the theme's i18n keys/,
+    warns: [/the "de" translation lacks \d+ of the theme's i18n keys/],
     check: (out) => {
       const js = readdirSync(join(out, "js")).find((f) => f.startsWith("runtime."));
       const home = read(join(out, "index.html"));
@@ -224,6 +225,46 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         !home.includes(">Skip to content</a>") && "index.html lacks the English skip link",
         !home.includes("data-trash-count>6 items<") && "the Trash count lacks its English plural",
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
+      ];
+    },
+  },
+  // Config, data, and front matter that the theme rejects. Each mistake
+  // warns, and the build falls back to the default it replaces.
+  misconfigured: {
+    files: {
+      "hugo.toml": `${BARE}[params]
+  social = "jane"
+[params.desktop]
+  accent = "purple"
+[params.home]
+  layout = "grid"
+[params.studio]
+  playlist = ["../x.mid"]
+`,
+      "data/projects.yaml": "- name: named-project\n- description: nameless-project\n",
+      "content/cv.md": page("CV", "layout = 'cv'\n"),
+    },
+    warns: [
+      /params\.desktop\.accent "purple" is not /,
+      /params\.home\.layout "grid" is not /,
+      /params\.social should be a list /,
+      /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
+      /data\/projects has an entry without a name: .*nameless-project/,
+      /\/cv\/ uses layout cv but sets no pdf /,
+    ],
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      const cv = read(join(out, "cv/index.html"));
+      const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
+      return [
+        home.includes("data-up-accent") && "index.html sets the unknown accent",
+        !home.includes("data-shell") && "index.html does not fall back to the terminal",
+        home.includes("jane") && "index.html renders the malformed params.social",
+        home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",
+        !dash.includes("named-project") && "the Dash drops the named project",
+        dash.includes("nameless-project") && "the Dash lists the project without a name",
+        cv.includes("data-cv-viewer") && "cv/index.html renders the viewer without a pdf",
+        !/<div class="up-page-body"><p>Body of CV\./.test(cv) && "cv/index.html omits the page's body",
       ];
     },
   },
@@ -394,7 +435,14 @@ try {
       continue;
     }
     const problems = (site.check?.(out, source) ?? []).filter((p) => p !== false);
-    if (site.warns && !site.warns.test(run.log)) problems.push(`no warning matches ${site.warns}`);
+    const warns = site.warns;
+    if (warns) {
+      const warnings = run.log.split("\n").filter((line) => line.startsWith("WARN"));
+      problems.push(
+        ...warns.filter((p) => !warnings.some((w) => p.test(w))).map((p) => `no warning matches ${p}`),
+        ...warnings.filter((w) => !warns.some((p) => p.test(w))).map((w) => `unexpected warning: ${w}`),
+      );
+    }
     for (const p of problems) console.error(`     ${name}: ${p}`);
     console.log(`${problems.length ? "FAIL" : "ok  "} ${name}`);
     failed ||= problems.length > 0;
