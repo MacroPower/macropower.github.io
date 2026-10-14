@@ -26,6 +26,7 @@
   "hotspot" (site.Params.desktop.hotspot | default "personal-site")
   "nav" $nav
   "accents" $accents
+  "terminal" (eq (partialCached "unity/home-layout.html" .) "terminal")
 -}}
 {{- $js := printf "window.UP_SITE=%s;window.UP_I18N=%s;" ($site | jsonify) (partial "unity/ui/i18n.html" . | jsonify) -}}
 {{- $res := resources.FromString (printf "js/runtime.%s.js" site.Language.Name) $js | minify | fingerprint -}}

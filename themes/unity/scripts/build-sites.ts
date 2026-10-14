@@ -620,7 +620,8 @@ mainSections = ["posts"]
       ];
     },
   },
-  // A home page in a plain window instead of the terminal.
+  // A home page in a plain window instead of the terminal. The Dash and
+  // the shortcuts dialog drop the terminal with it.
   homepage: {
     files: {
       "hugo.toml": `${BARE}[params.home]\n  layout = "page"\n`,
@@ -628,10 +629,14 @@ mainSections = ["posts"]
     },
     check: (out) => {
       const home = read(join(out, "index.html"));
+      const tile = homeTile(home);
       return [
         !home.includes("Body of Welcome.") && "index.html omits the home's content",
         home.includes("data-shell") && "index.html still renders the terminal",
         home.includes("/js/shell.") && "index.html still loads the shell bundle",
+        !tile.includes('class="up-dash-tile-label">Home<') && "the Dash does not label the home page Home",
+        tile.includes("shell") && "the home page's Dash tile carries shell keywords",
+        !/terminal:(?:!1|false)\b/.test(runtime(out, "en")) && "UP_SITE does not say the site lacks the terminal",
       ];
     },
   },
@@ -686,6 +691,8 @@ mainSections = ["posts"]
         !home.includes('og:title" content="Jane Doe"') && "index.html's share title is not the site's title",
         !read(join(out, "de/index.html")).includes('class="up-titlebar-text">Lobby<')
           && "de/index.html's titlebar ignores the home's title",
+        !homeTile(home).includes('class="up-dash-tile-label">Terminal<') && "the Dash does not label the home terminal Terminal",
+        !/terminal:(?:!0|true)\b/.test(runtime(out, "en")) && "UP_SITE does not say the site has the terminal",
       ];
     },
   },
@@ -1169,6 +1176,17 @@ function iconImages(out: string): string[] {
 // namespace.
 function isSvgFile(file: string): boolean {
   return existsSync(file) && /^\s*<svg[^>]*\sxmlns="http:\/\/www\.w3\.org\/2000\/svg"/.test(read(file));
+}
+
+// The minified runtime script for a language, which sets window.UP_SITE.
+function runtime(out: string, lang: string): string {
+  const file = readdirSync(join(out, "js")).find((f) => f.startsWith(`runtime.${lang}.`));
+  return file ? read(join(out, "js", file)) : "";
+}
+
+// The home page's tile in the Dash's Applications category.
+function homeTile(html: string): string {
+  return /<a class="up-dash-tile" data-dash-tile href="\/"[\s\S]*?<\/a>/.exec(html)?.[0] ?? "";
 }
 
 // Each pattern matches a place that names a page but holds no text.

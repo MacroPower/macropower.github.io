@@ -22,7 +22,8 @@
                 launcher active state (default "prefix")
     kw        — the Dash's search haystack (defaults by identifier, else the
                 lowercased name)
-    dashLabel — Dash tile label override (the home page shows as "Terminal")
+    dashLabel — Dash tile label override (the home terminal shows as
+                "Terminal")
     dashIcon  — Dash tile icon override
     launcher  — set false to keep the page off the dock (still in the Dash);
                 set "running" to dock it only while it is the current page,
@@ -60,12 +61,20 @@
     "icon" "launcher/about"
     "kw" (partial "unity/ui/t" "kw_about"))
 -}}
+{{- /* The home terminal shows in the Dash as a Terminal app that shell
+      words find. A home page in a plain window keeps its Home label and
+      icon there. */ -}}
 {{- $home := dict
   "label" (partial "unity/ui/t" "home") "icon" "launcher/home"
-  "dashLabel" (partial "unity/ui/t" "terminal") "dashIcon" "launcher/terminal"
   "url" site.Home.RelPermalink "match" "exact"
-  "kw" (partial "unity/ui/t" "kw_home")
 -}}
+{{- if eq (partialCached "unity/home-layout.html" .) "terminal" -}}
+  {{- $home = merge $home (dict
+      "dashLabel" (partial "unity/ui/t" "terminal") "dashIcon" "launcher/terminal"
+      "kw" (partial "unity/ui/t" "kw_terminal")) -}}
+{{- else -}}
+  {{- $home = merge $home (dict "kw" (partial "unity/ui/t" "kw_home")) -}}
+{{- end -}}
 {{- $pages := dict -}}
 {{- $launcher := slice "home" -}}
 {{- $running := slice -}}

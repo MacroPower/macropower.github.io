@@ -26,7 +26,8 @@ const hugo = spawnSync("hugo", ["version"]).status === 0;
 // UPI18n gains or loses a field that its table lacks.
 const SITE_FIELDS = {
   handle: "string", repo: "string", rss: "string", hotspot: "string", nav: "object", accents: "object",
-} as const satisfies Record<keyof UPSite, "string" | "object">;
+  terminal: "boolean",
+} as const satisfies Record<keyof UPSite, "string" | "object" | "boolean">;
 const ACCENT_FIELDS = { name: "string", label: "string" } as const satisfies Record<keyof UPAccent, "string">;
 const I18N_FIELDS = { strings: "object", plurals: "object" } as const satisfies Record<keyof UPI18n, "object">;
 const PLURAL_FIELDS = { forms: "object", index: "string" } as const satisfies Record<keyof UPI18n["plurals"][string], "string" | "object">;

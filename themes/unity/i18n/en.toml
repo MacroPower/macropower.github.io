@@ -98,8 +98,10 @@ other = "RSS"
 
 # Dash search keywords. Each is a space-separated list of words that
 # find a tile when typed into the Dash; a translation can mix languages.
-[kw_home]
+[kw_terminal]
 other = "terminal shell bash console neofetch prompt tty home start"
+[kw_home]
+other = "home start front page welcome index"
 [kw_cv]
 other = "cv resume curriculum vitae pdf work experience career history"
 [kw_blog]

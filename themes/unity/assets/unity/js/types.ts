@@ -57,6 +57,8 @@ export interface UPSite {
   nav: Record<string, string>;
   /** The accent presets the Preferences dialog offers, in swatch order. */
   accents: UPAccent[];
+  /** Whether the home page is the terminal, from params.home.layout. */
+  terminal: boolean;
 }
 
 /** Runtime UI strings from the theme's _partials/unity/ui/i18n.html; read

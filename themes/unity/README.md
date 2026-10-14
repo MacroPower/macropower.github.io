@@ -156,7 +156,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `blog.toc` | `false` | Opens each post with a table of contents when it has two headings or more. A post's `toc` front matter overrides it. |
 | `blog.feedFullContent` | `false` | Puts each post's whole body in the RSS feed instead of its summary. |
 | `blog.taxonomies.category`, `blog.taxonomies.series` | `categories` or `tags`, `series` | The taxonomies behind the blog's Places and Series lenses and the post chips. Without `category`, the blog reads `categories`, or `tags` on a site that has tags and no categories. |
-| `home.layout` | `terminal` | `page` renders the home's content in a plain window instead of the terminal. |
+| `home.layout` | `terminal` | `page` renders the home's content in a plain window instead of the terminal. The Dash then lists the home page as Home, and the keyboard shortcuts dialog leaves out the terminal's keys. |
 | `terminal.user`, `terminal.host` | `user`, host of `baseURL` | The guest login a visitor gets in the home terminal. |
 | `projects.github` | | A GitHub account whose public repositories fill the projects page when the site has no `data/projects.yaml`. |
 | `projects.minStars`, `projects.minForks`, `projects.recentMonths` | `100`, `6`, `6` | The thresholds behind the projects sidebar's Starred, Forks, and Recent filters. |

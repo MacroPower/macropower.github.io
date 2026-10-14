@@ -21,83 +21,92 @@ interface ShortcutRow {
   loose?: boolean;
 }
 
-interface ShortcutSection {
+export interface ShortcutSection {
   title: string;
   hint?: string;
   rows: ShortcutRow[];
 }
 
-// A site can turn the HUD off, and its Alt tap with it.
-const hasHud = typeof document !== "undefined" && document.querySelector("[data-up-hud]") !== null;
-// A site can leave the sound indicator out of params.desktop.indicators,
-// and its scroll wheel with it.
-const hasVolume = typeof document !== "undefined" && document.querySelector('[data-indicator="vol"]') !== null;
+/** The parts of the desktop a site can leave out. Each takes its
+ *  shortcuts out of the dialog with it. */
+export interface ShortcutSurfaces {
+  /** The HUD and its Alt tap, which params.desktop.hud turns off. */
+  hud: boolean;
+  /** The sound indicator and its scroll wheel, which
+   *  params.desktop.indicators can leave out. */
+  volume: boolean;
+  /** The home terminal, which params.home.layout = "page" replaces. */
+  terminal: boolean;
+}
 
-const SECTIONS: readonly ShortcutSection[] = [
-  {
-    title: t("js_shortcuts_desktop"),
-    rows: [
-      { combos: [["Super"]], desc: t("js_shortcuts_open_dash") },
-      ...(hasHud ? [{ combos: [["Alt"]], desc: t("js_shortcuts_open_hud") }] : []),
-      { combos: [["Esc"]], desc: t("js_shortcuts_dismiss") },
-      { combos: [["Enter"]], desc: t("js_shortcuts_confirm_dialog") },
-      { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_window"), gesture: true },
-      { combos: [[t("js_shortcuts_double_click")]], desc: t("js_shortcuts_maximize"), gesture: true },
-      ...(hasVolume ? [{ combos: [[t("js_shortcuts_scroll")]], desc: t("js_shortcuts_volume"), gesture: true }] : []),
-    ],
-  },
-  {
-    title: t("js_shortcuts_dash_hud"),
-    hint: t("js_shortcuts_dash_hud_hint"),
-    rows: [
-      { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_results") },
-      { combos: [["Enter"]], desc: t("js_shortcuts_open_best") },
-      { combos: [["Tab"]], desc: t("js_shortcuts_jump_lens") },
-    ],
-  },
-  {
-    title: t("js_shortcuts_blog_projects"),
-    rows: [
-      { combos: [["/"], ["Ctrl", "F"]], desc: t("js_shortcuts_search") },
-      { combos: [[t("js_shortcuts_arrows")], ["H", "J", "K", "L"]], desc: t("js_shortcuts_move_selection"), loose: true },
-      { combos: [["Enter"]], desc: t("js_shortcuts_open_selected") },
-      { combos: [["Shift", "F10"]], desc: t("js_shortcuts_context_menu") },
-    ],
-  },
-  {
-    title: t("js_shortcuts_solitaire"),
-    hint: t("js_shortcuts_solitaire_hint"),
-    rows: [
-      { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_cards"), gesture: true },
-      { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_cursor") },
-      { combos: [["Space"], ["Enter"]], desc: t("js_shortcuts_hold_place") },
-      { combos: [["S"]], desc: t("js_shortcuts_draw_stock") },
-      { combos: [["Z"], ["Ctrl", "Z"]], desc: t("js_shortcuts_undo") },
-      { combos: [["H"]], desc: t("js_shortcuts_show_hint") },
-      { combos: [["P"]], desc: t("js_shortcuts_play_hint") },
-      { combos: [["N"]], desc: t("js_shortcuts_new_game") },
-      { combos: [["A"]], desc: t("js_shortcuts_auto_finish") },
-      { combos: [["D"]], desc: t("js_shortcuts_switch_draw") },
-      { combos: [["M"]], desc: t("js_shortcuts_toggle_sound") },
-      { combos: [["Esc"]], desc: t("js_shortcuts_drop_run") },
-    ],
-  },
-  {
-    title: t("js_shortcuts_terminal"),
-    hint: t("js_shortcuts_terminal_hint"),
-    rows: [
-      { combos: [["Ctrl", "A"], ["Ctrl", "E"]], desc: t("js_shortcuts_line_start_end") },
-      { combos: [["Ctrl", "W"]], desc: t("js_shortcuts_delete_word") },
-      { combos: [["Ctrl", "U"], ["Ctrl", "K"]], desc: t("js_shortcuts_cut_line") },
-      { combos: [["Ctrl", "Y"]], desc: t("js_shortcuts_paste_cut") },
-      { combos: [["Ctrl", "R"]], desc: t("js_shortcuts_search_history") },
-      { combos: [["Ctrl", "L"]], desc: t("js_shortcuts_clear_screen") },
-      { combos: [["Tab"]], desc: t("js_shortcuts_complete") },
-      { combos: [["Shift", "Tab"]], desc: t("js_shortcuts_leave_terminal") },
-      { combos: [[t("js_shortcuts_key_up")], [t("js_shortcuts_key_down")]], desc: t("js_shortcuts_step_history") },
-    ],
-  },
-];
+/** The dialog's sections for a desktop with the given surfaces. */
+export function shortcutSections(has: ShortcutSurfaces): ShortcutSection[] {
+  return [
+    {
+      title: t("js_shortcuts_desktop"),
+      rows: [
+        { combos: [["Super"]], desc: t("js_shortcuts_open_dash") },
+        ...(has.hud ? [{ combos: [["Alt"]], desc: t("js_shortcuts_open_hud") }] : []),
+        { combos: [["Esc"]], desc: t("js_shortcuts_dismiss") },
+        { combos: [["Enter"]], desc: t("js_shortcuts_confirm_dialog") },
+        { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_window"), gesture: true },
+        { combos: [[t("js_shortcuts_double_click")]], desc: t("js_shortcuts_maximize"), gesture: true },
+        ...(has.volume ? [{ combos: [[t("js_shortcuts_scroll")]], desc: t("js_shortcuts_volume"), gesture: true }] : []),
+      ],
+    },
+    {
+      title: t("js_shortcuts_dash_hud"),
+      hint: t("js_shortcuts_dash_hud_hint"),
+      rows: [
+        { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_results") },
+        { combos: [["Enter"]], desc: t("js_shortcuts_open_best") },
+        { combos: [["Tab"]], desc: t("js_shortcuts_jump_lens") },
+      ],
+    },
+    {
+      title: t("js_shortcuts_blog_projects"),
+      rows: [
+        { combos: [["/"], ["Ctrl", "F"]], desc: t("js_shortcuts_search") },
+        { combos: [[t("js_shortcuts_arrows")], ["H", "J", "K", "L"]], desc: t("js_shortcuts_move_selection"), loose: true },
+        { combos: [["Enter"]], desc: t("js_shortcuts_open_selected") },
+        { combos: [["Shift", "F10"]], desc: t("js_shortcuts_context_menu") },
+      ],
+    },
+    {
+      title: t("js_shortcuts_solitaire"),
+      hint: t("js_shortcuts_solitaire_hint"),
+      rows: [
+        { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_cards"), gesture: true },
+        { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_cursor") },
+        { combos: [["Space"], ["Enter"]], desc: t("js_shortcuts_hold_place") },
+        { combos: [["S"]], desc: t("js_shortcuts_draw_stock") },
+        { combos: [["Z"], ["Ctrl", "Z"]], desc: t("js_shortcuts_undo") },
+        { combos: [["H"]], desc: t("js_shortcuts_show_hint") },
+        { combos: [["P"]], desc: t("js_shortcuts_play_hint") },
+        { combos: [["N"]], desc: t("js_shortcuts_new_game") },
+        { combos: [["A"]], desc: t("js_shortcuts_auto_finish") },
+        { combos: [["D"]], desc: t("js_shortcuts_switch_draw") },
+        { combos: [["M"]], desc: t("js_shortcuts_toggle_sound") },
+        { combos: [["Esc"]], desc: t("js_shortcuts_drop_run") },
+      ],
+    },
+    ...(has.terminal ? [{
+      title: t("js_shortcuts_terminal"),
+      hint: t("js_shortcuts_terminal_hint"),
+      rows: [
+        { combos: [["Ctrl", "A"], ["Ctrl", "E"]], desc: t("js_shortcuts_line_start_end") },
+        { combos: [["Ctrl", "W"]], desc: t("js_shortcuts_delete_word") },
+        { combos: [["Ctrl", "U"], ["Ctrl", "K"]], desc: t("js_shortcuts_cut_line") },
+        { combos: [["Ctrl", "Y"]], desc: t("js_shortcuts_paste_cut") },
+        { combos: [["Ctrl", "R"]], desc: t("js_shortcuts_search_history") },
+        { combos: [["Ctrl", "L"]], desc: t("js_shortcuts_clear_screen") },
+        { combos: [["Tab"]], desc: t("js_shortcuts_complete") },
+        { combos: [["Shift", "Tab"]], desc: t("js_shortcuts_leave_terminal") },
+        { combos: [[t("js_shortcuts_key_up")], [t("js_shortcuts_key_down")]], desc: t("js_shortcuts_step_history") },
+      ],
+    }] : []),
+  ];
+}
 
 function join(text: string): HTMLElement {
   const span = document.createElement("span");
@@ -159,7 +168,12 @@ export function showShortcuts(): Promise<string | null> {
       render(content) {
         const list = document.createElement("div");
         list.className = "up-shortcuts";
-        list.append(...SECTIONS.map(buildSection));
+        const sections = shortcutSections({
+          hud: document.querySelector("[data-up-hud]") !== null,
+          volume: document.querySelector('[data-indicator="vol"]') !== null,
+          terminal: window.UP_SITE?.terminal !== false,
+        });
+        list.append(...sections.map(buildSection));
         content.appendChild(list);
       },
     }) ?? Promise.resolve<string | null>(null)
