@@ -35,8 +35,9 @@
     <managingEditor>{{ . }}</managingEditor>
     <webMaster>{{ . }}</webMaster>
     {{- end }}
+    {{- /* copyright takes Markdown, and RSS takes plain text. */}}
     {{- with site.Copyright }}
-    <copyright>{{ . }}</copyright>
+    <copyright>{{ . | markdownify | plainify | htmlUnescape }}</copyright>
     {{- end }}
     {{- /* The latest lastmod among the listed posts, so editing a post updates
           the lastBuildDate. */}}

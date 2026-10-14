@@ -7,8 +7,9 @@ title   = "Jane Doe"
 locale  = "en-us"
 theme   = "unity"
 
-# Used by the theme's RSS feeds. The home feed lists blog posts only.
-copyright = "Jane Doe"
+# Markdown. It shows under each post and, as plain text, in the RSS
+# feeds. The home feed lists blog posts only.
+copyright = "© 2024 Jane Doe. Posts are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)."
 
 enableRobotsTXT = true
 enableEmoji     = true

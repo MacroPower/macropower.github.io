@@ -1688,6 +1688,14 @@ a.up-sponsor-card[href]:hover{
   font-family:var(--up-font-mono);
   font-size:12px;color:var(--up-content-muted);
 }
+.up-reader-license{
+  margin-top:6px;
+  font-family:var(--up-font-mono);
+  font-size:11.5px;color:var(--up-content-muted);
+  p{margin:0}
+  a{color:inherit;text-decoration:underline;text-decoration-color:#C4BFB9}
+  a:hover{color:var(--up-accent-light);text-decoration-color:currentColor}
+}
 /* ---------- Markdown prose (post reader and plain pages) ---------- */
 :is(.up-reader-body, .up-page-body){
   p,

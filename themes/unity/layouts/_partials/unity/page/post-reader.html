@@ -34,5 +34,10 @@
     </div>
     {{ partial "extend-post.html" . }}
     <div class="up-reader-signoff">— <bdi dir="ltr">{{ partial "unity/ui/term-prompt.html" (dict "path" (printf "~/%s" .Section)) }}</bdi></div>
+    {{- /* The site's copyright, which takes Markdown, such as a link to the
+          posts' license. */}}
+    {{- with site.Copyright }}
+    <div class="up-reader-license">{{ . | markdownify }}</div>
+    {{- end }}
   </div>
 </article>

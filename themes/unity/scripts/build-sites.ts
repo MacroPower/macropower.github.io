@@ -407,12 +407,15 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
     },
   },
   // A blog without a title or params.description whose older post was
-  // edited last. RSS requires a channel description, which names the site
-  // by its host, and the lastBuildDate must follow the latest edit rather
-  // than the latest post.
+  // edited last, and a Markdown copyright. RSS requires a channel
+  // description, which names the site by its host, the lastBuildDate must
+  // follow the latest edit rather than the latest post, and the feed's
+  // copyright must be plain text.
   feed: {
     files: {
-      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
+`,
       "content/posts/old.md": page("Old", "date = 2024-01-01\nlastmod = 2024-06-01\n"),
       "content/posts/new.md": page("New", "date = 2024-03-01\n"),
     },
@@ -422,6 +425,10 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         !channel.includes("<description>Recent posts on example.org</description>")
           && "index.xml's channel description does not name the untitled site by its host",
         !channel.includes("<lastBuildDate>Sat, 01 Jun 2024 ") && "index.xml's lastBuildDate ignores the latest lastmod",
+        !channel.includes("<copyright>CC BY 4.0 &amp; Jane</copyright>") && "index.xml's copyright is not plain text",
+        !read(join(out, "posts/new/index.html")).includes(
+          '<div class="up-reader-license"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &amp; Jane</div>',
+        ) && "posts/new/index.html does not render the copyright's Markdown",
       ];
     },
   },

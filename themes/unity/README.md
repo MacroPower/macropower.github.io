@@ -119,7 +119,7 @@ mainSections = ["posts"]
     weight     = 2
 ```
 
-The theme also reads two of Hugo's own settings: `copyright` fills each feed's copyright, and `services.rss.limit` caps how many posts a feed lists.
+The theme also reads two of Hugo's own settings. `copyright` takes Markdown, such as a link to your posts' license, and shows under each post and as plain text in each feed. `services.rss.limit` caps how many posts a feed lists.
 
 ### Site settings
 
