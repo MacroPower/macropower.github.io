@@ -20,7 +20,8 @@
         _partials/unity/indicators/<name>.html once per language, with the
         site as context. A site adds an indicator by adding that partial and
         naming it in the list. */}}
-  {{- range site.Params.desktop.indicators }}
+  {{- $name := "params.desktop.indicators" }}
+  {{- range partialCached "unity/ui/list-param.html" (dict "name" $name "value" site.Params.desktop.indicators "fallback" slice) $name }}
     {{- $path := printf "unity/indicators/%s.html" . }}
     {{- if templates.Exists (printf "_partials/%s" $path) }}
   {{ partialCached $path site }}

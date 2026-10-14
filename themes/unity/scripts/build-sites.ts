@@ -990,6 +990,7 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
 [params.desktop]
   accent = "purple"
   indicators = ["clock", "nope"]
+  trash = true
 [params.desktop.accents.pale]
   label = "Pale"
 [params.desktop.accents."sea green"]
@@ -1011,6 +1012,7 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
       /params\.desktop\.accents\.pale has no color/,
       /params\.desktop\.accents\.sea green has a name with characters other than /,
       /params\.desktop\.indicators names "nope", but /,
+      /params\.desktop\.trash should be a list/,
       /params\.home\.layout "grid" is not /,
       /params\.social should be a list /,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
@@ -1029,6 +1031,7 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
         accentNames(out) !== "orange green aubergine blue"
           && `the Preferences dialog offers ${accentNames(out)}, not the theme's presets alone`,
         !home.includes('data-indicator="clock"') && "index.html drops the clock beside the unknown indicator",
+        !home.includes('data-up-window="trash"') && "index.html drops the Trash when params.desktop.trash is true",
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
         home.includes('data-launcher="ghost"') && "index.html docks the menu entry whose pageRef finds no page",
         home.includes("jane") && "index.html renders the malformed params.social",
@@ -1320,6 +1323,7 @@ mainSections = ["posts"]
   lock  = false
   hud   = false
   trash = false
+  label = false
   indicators = ["network", "clock", "user"]
 `,
     },
@@ -1334,6 +1338,7 @@ mainSections = ["posts"]
         home.includes("data-up-hud") && "index.html keeps the HUD",
         home.includes('data-up-window="trash"') && "index.html keeps the Trash window",
         home.includes("data-launcher-trash") && "index.html keeps the Trash launcher tile",
+        home.includes("up-desktop-label") && "index.html keeps the desktop label",
         home.includes('"dlg:github"') && "index.html offers View source without a repoUrl",
       ];
     },
@@ -1600,6 +1605,34 @@ mainSections = ["posts"]
     check: (out) => [
       !read(join(out, "index.html")).includes("github.com/jane") && "the home page drops a map-form params.social",
     ],
+  },
+  // A single name in each param that takes a list, which the theme reads
+  // as a list of one.
+  scalars: {
+    files: {
+      "hugo.toml": `${BARE}[params.desktop]
+  indicators = "network"
+  networks = "home-wifi"
+  label = "jane@desktop"
+  trash = "old-site/"
+[params.studio]
+  playlist = "music/a.mid"
+`,
+      "assets/music/a.mid": "MThd",
+    },
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      const keys = [...home.matchAll(/data-indicator="([a-z]+)"/g)].map((m) => m[1]).join(" ");
+      const networks = [...home.matchAll(/data-net-name="([^"]*)"(?! data-net-hidden)/g)].map((m) => m[1]).join(" ");
+      return [
+        keys !== "net" && `index.html renders the indicators "${keys}", not "net"`,
+        networks !== "home-wifi" && `index.html lists the networks "${networks}", not "home-wifi"`,
+        !/<div class="up-desktop-label">\s*<bdi dir="auto">jane@desktop<\/bdi>\s*<\/div>/.test(home)
+          && "index.html does not label the desktop jane@desktop",
+        !home.includes('data-trash-tile data-name="old-site"') && "the Trash window lacks the old-site folder",
+        !home.includes('data-up-window="daw"') && "index.html lacks the Studio for the single playlist path",
+      ];
+    },
   },
   // A site that collects its modules' Node packages. The theme's
   // package.hugo.json declares none, so the dev tooling in its

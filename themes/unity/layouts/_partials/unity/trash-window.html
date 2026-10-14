@@ -1,8 +1,9 @@
 {{- /* The Trash's contents come from params.desktop.trash, a list of
-      names in which a trailing slash marks a folder. */ -}}
+      names or a single name, in which a trailing slash marks a folder. */ -}}
 {{- $handle := partialCached "unity/ui/author-handle.html" . -}}
 {{- $files := slice -}}
-{{- range site.Params.desktop.trash -}}
+{{- $name := "params.desktop.trash" -}}
+{{- range partialCached "unity/ui/list-param.html" (dict "name" $name "value" site.Params.desktop.trash "fallback" slice) $name -}}
   {{- if hasSuffix . "/" -}}
     {{- $files = $files | append (dict "icon" "flat/empty-folder" "label" (strings.TrimSuffix "/" .)) -}}
   {{- else -}}

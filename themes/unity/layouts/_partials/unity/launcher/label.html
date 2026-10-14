@@ -1,21 +1,20 @@
 {{- /*
   The desktop's corner watermark. params.desktop.label replaces the
-  default lines, and an empty list removes the watermark. The default
-  lines imitate a path and a version string, so they read left to right
-  on every page. Each line a site sets takes the direction of its first
-  letter.
+  default lines, and an empty list or false removes the watermark. The
+  default lines imitate a path and a version string, so they read left
+  to right on every page. Each line a site sets takes the direction of
+  its first letter.
 
   unity/launcher.html calls this through partialCached, so it renders
   once per language and must never read the page. Context: the site.
 */ -}}
-{{- $label := slice
+{{- $default := slice
   (printf "%s/personal-site" ((partialCached "unity/author.html" .).name | lower | replaceRE " +" "-"))
   (printf `v1.0 · "aubergine" · %d` now.Year)
 -}}
-{{- $dir := "ltr" -}}
-{{- with site.Params.desktop -}}
-  {{- if isset . "label" }}{{ $label = .label }}{{ $dir = "auto" }}{{ end -}}
-{{- end -}}
+{{- $name := "params.desktop.label" -}}
+{{- $label := partialCached "unity/ui/list-param.html" (dict "name" $name "value" site.Params.desktop.label "fallback" $default) $name -}}
+{{- $dir := cond (eq $label $default) "ltr" "auto" -}}
 {{- with $label }}
 <div class="up-desktop-label">
   {{- range $i, $line := . }}{{ if $i }}<br>{{ end }}

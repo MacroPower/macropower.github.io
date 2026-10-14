@@ -1,10 +1,11 @@
 {{- /*
   The Studio's MIDI playlist as a slice of {url, title} dicts, empty when
   the site ships no MIDI files. params.studio.playlist lists entries under
-  assets/ in play order, each a path or a {path, title} table. Without it,
-  every assets/midi/*.mid and *.midi file plays in file-name order. An
-  entry without a title shows as "Track N" in the player and the Dash, so
-  what it is stays a surprise until someone presses play.
+  assets/ in play order, each a path or a {path, title} table, and a
+  single path also works. Without the param, every assets/midi/*.mid and
+  *.midi file plays in file-name order. An entry without a title shows
+  as "Track N" in the player and the Dash, so what it is stays a surprise
+  until someone presses play.
 
   Every Studio surface reads this partial: unity/top-panel.html (the
   tracks the player loads), unity/indicators/sound.html (the Sound menu's
@@ -14,7 +15,8 @@
   leaves the Studio out of the desktop and its code out of the bundle.
 */ -}}
 {{- $tracks := slice -}}
-{{- with site.Params.studio.playlist -}}
+{{- $name := "params.studio.playlist" -}}
+{{- with partialCached "unity/ui/list-param.html" (dict "name" $name "value" site.Params.studio.playlist "fallback" slice) $name -}}
   {{- range . -}}
     {{- $path := . -}}
     {{- $title := "" -}}

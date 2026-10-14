@@ -15,7 +15,8 @@
       {{- /* params.desktop.networks lists the access points, and the
             first one starts connected. An entry is a name or a
             {name, mono} table, where mono sets the name in monospace. */}}
-      {{- range $i, $n := site.Params.desktop.networks }}
+      {{- $name := "params.desktop.networks" }}
+      {{- range $i, $n := partialCached "unity/ui/list-param.html" (dict "name" $name "value" site.Params.desktop.networks "fallback" slice) $name }}
         {{- $row := cond (reflect.IsMap $n) $n (dict "name" $n) }}
       {{ partial "unity/ui/net-row.html" (dict "name" $row.name "mono" $row.mono "on" (eq $i 0) "strong" (eq $i 0)) }}
       {{- end }}

@@ -1,0 +1,26 @@
+{{- /*
+  A param that takes a list, as a list. A list passes unchanged, and a
+  string becomes a list of one, so a site can write a single name without
+  brackets. false and an empty string become an empty list, the same as
+  writing []. An unset param returns the fallback. Any other value, such
+  as true, a number, or a table, makes the build warn and returns the
+  fallback, so a mistake names its param instead of failing the build.
+
+  It reads nothing from the page, so call it through partialCached with
+  the param's name as the variant.
+
+  Arg: a dict of the param's name for the warning, such as
+  "params.desktop.trash", its value, and the fallback list.
+*/ -}}
+{{- $v := .value -}}
+{{- $out := .fallback -}}
+{{- if reflect.IsSlice $v -}}
+  {{- $out = $v -}}
+{{- else if eq (printf "%T" $v) "string" -}}
+  {{- $out = cond (eq $v "") slice (slice $v) -}}
+{{- else if eq $v false -}}
+  {{- $out = slice -}}
+{{- else if ne $v nil -}}
+  {{- warnf "unity: %s should be a list" .name -}}
+{{- end -}}
+{{- return $out -}}

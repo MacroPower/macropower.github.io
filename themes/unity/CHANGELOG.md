@@ -112,6 +112,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - A multilingual or multihost site builds its stylesheet once and publishes each font once, without Hugo's warnings about duplicate target paths.
 - Two builds of the same site write identical files, so a deploy rewrites only the pages that changed.
 - A value of `params.author.born` or of a project's `updated` that is not a date makes the build warn instead of failing it.
+- A single string in place of the list in `params.desktop.indicators`, `params.desktop.networks`, `params.desktop.trash`, `params.desktop.label`, or `params.studio.playlist` counts as a list of one. Another value that is not a list, such as `trash = true`, makes the build warn instead of failing it.
 - One undated page no longer makes the banner's uptime count from year 1.
 - Text pasted into the home terminal cannot clear the screen through a C1 control character.
 - The home terminal starts when a copy of `_partials/unity/page/terminal.html` leaves out a field of its data island.

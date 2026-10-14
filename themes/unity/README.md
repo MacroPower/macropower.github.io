@@ -165,14 +165,14 @@ The theme does not set these, so set them in your site:
 | `desktop.accents` | `orange`, `green`, `aubergine`, `blue` | The accent presets that Edit > Preferences offers. See **Accent colors** under [Customizing](#customizing). |
 | `desktop.wallpaper` | the aubergine gradient | An image that covers the desktop and the lock screen, given as a path under `assets/` or `static/` or as a URL. A `--up-wallpaper` that your `custom.css` sets beats it. |
 | `desktop.fontPreload` | `true` | `false` stops the pages from preloading the theme's Ubuntu fonts. See **Colors and fonts** under [Customizing](#customizing). |
-| `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
-| `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |
+| `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. A list or one line. An empty list or `false` removes it. |
+| `desktop.trash` | six joke files | The names in the Trash window. A list or one name. A trailing slash marks a folder. `false` removes the Trash. |
 | `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
 | `desktop.hud` | `true` | `false` removes the HUD and its Alt tap, which some keyboard and screen reader users rely on for the browser's own menus. |
-| `desktop.indicators` | `messages`, `network`, `sound`, `battery`, `clock`, `user` | The top panel's indicators, in order. Without `messages`, the panel loses its Compose and Subscribe actions. Without `sound`, the panel loses the Studio's player, but the Dash still opens the Studio. A multilingual site's language badge comes before the list. |
+| `desktop.indicators` | `messages`, `network`, `sound`, `battery`, `clock`, `user` | The top panel's indicators, in order. A list or one name. Without `messages`, the panel loses its Compose and Subscribe actions. Without `sound`, the panel loses the Studio's player, but the Dash still opens the Studio. A multilingual site's language badge comes before the list. |
 | `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
 | `desktop.hotspot` | `personal-site` | The network name the network indicator's hotspot broadcasts. |
-| `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
+| `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table, and one name also works in place of the list. |
 | `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. `blog.dateFormat` also titles a post without a title. Hugo's `:date_medium` follows the page's language. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
 | `blog.toc` | `false` | Opens each post with a table of contents when it has two headings or more. A post's `toc` front matter overrides it. |
@@ -185,7 +185,7 @@ The theme does not set these, so set them in your site:
 | `projects.exclude` | | Names of projects to leave out of the projects page and the Dash, whether they come from `data/projects.yaml` or `projects.github`. A list or one name. The match ignores case. |
 | `projects.languages` | every language | The languages to keep, such as `["Go", "Rust"]`. A project in any other language, or without one, drops out. The match ignores case. |
 | `projects.requireDescription` | `false` | `true` leaves out every project without a description. |
-| `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. An entry is a path or a `{path, title}` table. A track without a title shows as "Track N". |
+| `studio.playlist` | `assets/midi/*.mid` and `*.midi`, by file name | MIDI files under `assets/` that the Studio plays, in order. An entry is a path or a `{path, title}` table, and one path also works in place of the list. A track without a title shows as "Track N". |
 
 ### Menu
 
