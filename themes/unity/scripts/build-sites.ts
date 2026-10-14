@@ -55,6 +55,7 @@ const SITES: Record<string, SiteSpec> = {
       const current = (file: string): string =>
         [...read(join(out, file)).matchAll(/class="up-launcher-tile is-active"[^>]*data-launcher="([a-z]+)"/g)]
           .map((m) => m[1]).join(" ");
+      const welcome = read(join(out, "posts/2024/02/welcome-to-the-desktop/index.html"));
       return [
         // esbuild keeps only legal comments, so each bundle that inlines a
         // vendored library must carry that library's licence notice.
@@ -68,6 +69,11 @@ const SITES: Record<string, SiteSpec> = {
         ...([["layouts/baseof.html", /\$floor := "([^"]+)"/], ["README.md", /^- Hugo (\S+) or later/m]] as const)
           .filter(([file, pattern]) => pattern.exec(read(join(theme, file)))?.[1] !== floor)
           .map(([file]) => `${file} states a Hugo floor other than ${floor}, the one in hugo.toml`),
+        // The theme's markup and taxonomies, which the site takes with _merge.
+        !welcome.includes('<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">')
+          && "the welcome post's TeX block does not render as MathML",
+        !welcome.includes('<pre tabindex="0" class="chroma">') && "the welcome post's code is not highlighted with classes",
+        !sitemap.includes("/series/</loc>") && "sitemap.xml lacks the series taxonomy",
         // The solitaire and icon pages set noindex.
         ...["solitaire", "icons"]
           .filter((p) => sitemap.includes(`/${p}/</loc>`))

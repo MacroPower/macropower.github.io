@@ -90,9 +90,12 @@ theme   = "unity"
 # pages, which may not be the blog.
 mainSections = ["posts"]
 
+# Take the theme's taxonomies and Markdown settings (see Site settings).
 [taxonomies]
-  category = "categories"
-  series   = "series"
+  _merge = "deep"
+
+[markup]
+  _merge = "deep"
 
 [params]
   description = "Jane Doe's personal site."
@@ -120,12 +123,17 @@ The theme also reads two of Hugo's own settings: `copyright` fills each feed's c
 
 ### Site settings
 
-Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a theme's configuration, so the theme cannot set these for you:
+Hugo merges a theme's `taxonomies` and `markup` into a site only when the site sets `_merge = "deep"` on its own table, as the configuration example does. The theme's own configuration cannot set `_merge` for you. Keys your site sets win over the theme's.
+
+- `[taxonomies]` with `_merge` declares the theme's `categories` and `series` taxonomies, which back the blog's Places and Series lenses, in place of Hugo's default `categories` and `tags`. Add `tag = "tags"` beside `_merge` to keep tags. A site that merges the theme's taxonomies cannot remove any of them.
+- `[markup]` with `_merge` turns on [math](#markdown) and highlights code with classes instead of style attributes, so highlighted code passes a [Content Security Policy](#customizing).
+
+With `_merge` set, Hugo merges `markup` from every theme and module a site imports. A site that imports a module it does not trust copies the `[markup]` keys from the theme's `hugo.toml` instead of setting `_merge`.
+
+The theme does not set these, so set them in your site:
 
 - `mainSections` names the blog section. Without it, Hugo picks the section with the most pages.
-- `[taxonomies]` must list `series` for the Series lens, because Hugo's defaults are `tags` and `categories`.
 - `enableRobotsTXT = true` publishes the theme's `robots.txt`, which points crawlers at the sitemap.
-- `[markup.goldmark.extensions.passthrough]` turns on math. See [Markdown](#markdown).
 - `[build] noJSConfigInAssets = true` stops Hugo from writing an `assets/jsconfig.json` into your site each time it bundles the theme's scripts. Leave it unset if your editor reads that file.
 
 ### Params
@@ -210,15 +218,7 @@ The theme's render hooks extend Hugo's Markdown:
   > The alert starts collapsed.
   ```
 
-- **Math.** With Goldmark's passthrough extension enabled, TeX between the delimiters renders to MathML at build time, so math needs no script or stylesheet:
-
-  ```toml
-  [markup.goldmark.extensions.passthrough]
-    enable = true
-    [markup.goldmark.extensions.passthrough.delimiters]
-      block  = [['\[', '\]'], ['$$', '$$']]
-      inline = [['\(', '\)']]
-  ```
+- **Math.** On a site that merges the theme's `markup` (see [Site settings](#site-settings)), TeX between `\(` and `\)` renders inline, and TeX between `\[` and `\]` or between `$$` and `$$` renders as a block. The build renders it to MathML, so math does not need a script or stylesheet.
 
 ## Customizing
 
@@ -329,7 +329,7 @@ The theme's render hooks extend Hugo's Markdown:
   }
   ```
 - **Comments.** Add `layouts/_partials/extend-post.html` to your site. The post reader renders it after each post's body, with the post as its context.
-- **Content Security Policy.** The theme renders no inline script, event handler, style element, or style attribute, so its pages work under `script-src 'self'` and `style-src 'self'`, with or without JavaScript. When JavaScript runs, the home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime. Hugo's Google Analytics tag is an inline script. Hugo's default syntax highlighting writes style attributes, so set `markup.highlight.noClasses = false`, and the theme's stylesheet carries the classes for your `markup.highlight.style`.
+- **Content Security Policy.** The theme renders no inline script, event handler, style element, or style attribute, so its pages work under `script-src 'self'` and `style-src 'self'`, with or without JavaScript. When JavaScript runs, the home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime. Hugo's Google Analytics tag is an inline script. Hugo's default syntax highlighting writes style attributes. A site that merges the theme's `markup` (see [Site settings](#site-settings)) highlights code with classes instead, and the theme's stylesheet carries the classes for your `markup.highlight.style`.
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site, translate the values, and put each placeholder such as `{{ .Tag }}` where your language needs it. That covers the desktop's dialogs and notifications too, whose keys start with `js_` and use `{name}` placeholders instead of Go templates. The `kw_` keys hold the words the Dash search matches, so a translation can add words in its own language. A key your file leaves out shows the theme's English, whatever your default language, and the build warns once per language with the keys your file lacks. List `unity-i18n-missing` in `ignoreLogs` to silence that warning. The home terminal stays in English, like the bash it imitates.
 - **Languages.** On a multilingual site, a language badge joins the top panel's indicators. Its menu lists every language and leads to the current page's translation, or to that language's home page when the page has none. On a site that gives each language its own `baseURL`, each row leads to its language's host. The badge shows the first two letters of the language's name, and `[languages.<lang>.params.desktop] languageBadge` replaces them, so `pt` and `pt-br` can read `Pt` and `Br`. Set `[languages.<lang>] direction = "rtl"` for a right-to-left language. The home terminal and the Studio stay left to right, because a shell and a piano roll read left to right in every language.

@@ -31,25 +31,25 @@ mainSections = ["posts"]
   # Optional; the theme works with any permalink shape.
   posts = "/posts/:year/:month/:title/"
 
+# Hugo merges a theme's taxonomies and markup into a site only when the
+# site sets _merge = "deep" on its own table. Keys set here win over the
+# theme's.
 [taxonomies]
-  # The blog sidebar offers category and series lenses. To drive them from
-  # other taxonomies, set params.blog.taxonomies (see [params] below).
-  category = "categories"
-  series   = "series"
+  # The theme's categories and series taxonomies back the blog sidebar's
+  # lenses. To drive them from other taxonomies, set
+  # params.blog.taxonomies (see [params] below). The theme leaves out
+  # Hugo's tags taxonomy, so a site that wants it adds it here.
+  _merge = "deep"
+  # tag = "tags"
 
 [markup]
+  # The theme's markup highlights code with classes instead of style
+  # attributes, and the theme's stylesheet carries the classes for this
+  # style. It also passes TeX between \( \), \[ \], and $$ $$ to the
+  # theme's math render hook, which renders it to MathML at build time.
+  _merge = "deep"
   [markup.highlight]
-    # Classes instead of inline styles. The theme's stylesheet carries the
-    # classes for this style, and pages need no style attributes.
-    noClasses = false
-    style     = "monokai"
-  # Passes TeX between these delimiters through to the theme's math
-  # render hook, which renders it to MathML at build time.
-  [markup.goldmark.extensions.passthrough]
-    enable = true
-    [markup.goldmark.extensions.passthrough.delimiters]
-      block  = [['\[', '\]'], ['$$', '$$']]
-      inline = [['\(', '\)']]
+    style = "monokai"
 
 [params]
   # Site description for <meta name="description"> and the feeds.

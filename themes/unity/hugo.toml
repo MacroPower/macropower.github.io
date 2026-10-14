@@ -30,6 +30,30 @@
     source = "i18n"
     target = "assets/unity/i18n"
 
+# Hugo merges a theme's markup and taxonomies only into a site that sets
+# _merge = "deep" on its own [markup] and [taxonomies] tables. The site's
+# own keys win over the theme's.
+[markup]
+  [markup.highlight]
+    # Classes instead of style attributes, so highlighted code passes a
+    # Content Security Policy. _partials/unity/head/css.html adds the
+    # classes for the site's markup.highlight.style.
+    noClasses = false
+  # Passes TeX between these delimiters to _markup/render-passthrough.html,
+  # which renders it to MathML.
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block  = [['\[', '\]'], ['$$', '$$']]
+      inline = [['\(', '\)']]
+
+# The categories and series taxonomies back the blog's Places and Series
+# lenses. The theme leaves out Hugo's tags taxonomy, so a site that wants
+# it adds tag = "tags" beside its _merge.
+[taxonomies]
+  category = "categories"
+  series   = "series"
+
 # Defaults a site inherits (Hugo deep-merges theme params under the
 # site's own). exampleSite/hugo.toml documents the full surface.
 [params]
