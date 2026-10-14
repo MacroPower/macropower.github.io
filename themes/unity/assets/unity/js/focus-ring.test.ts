@@ -92,11 +92,13 @@ const glass = [".up-dash-panel", ".up-hud-panel"]
   .map(overWhite);
 
 // The dark surfaces under the rings that paint --up-accent-lighter: each
-// stop of the titlebar gradients, the Studio's surfaces and buttons, and
-// the glass. The code block's copy button repeats the titlebar gradient.
+// stop of the titlebar gradients, the home terminal's banner, the
+// Studio's surfaces and buttons, and the glass. The code block's copy
+// button repeats the titlebar gradient.
 const studio = rules.find((r) => r.selector === ".up-daw-body" && r.decls.has("--up-daw-bg"))?.decls;
 const darkSurfaces = [
-  ...["--up-chrome-1", "--up-chrome-2", "--up-chrome-inactive-1", "--up-chrome-inactive-2"].map((name) => siteTokens.get(name)),
+  ...["--up-chrome-1", "--up-chrome-2", "--up-chrome-inactive-1", "--up-chrome-inactive-2", "--up-terminal-bg"]
+    .map((name) => siteTokens.get(name)),
   ...["--up-daw-bg", "--up-daw-panel", "--up-daw-btn-bg", "--up-daw-btn-bg-hover"].map((name) => studio?.get(name)),
 ].flatMap((value) => value?.match(/#[0-9a-f]{6}\b/gi) ?? []).concat(glass);
 
@@ -191,7 +193,7 @@ describe("focus rings", () => {
     // These rings sit on the dark surfaces, where --up-accent-light
     // contrasts less than 3:1 for some presets.
     const onDark = [
-      ".up-launcher-tile", ".up-tl", ".up-code-copy", ".up-docv-view",
+      ".up-launcher-tile", ".up-tl", ".up-code-copy", ".up-docv-view", ".up-shell .up-sr-only a",
       ".up-dash-search", ".up-dash-more", ".up-dash-tile", ".up-dash-lens", ".up-hud-input",
       ".up-daw-lcd", ".up-daw-section-title", ".up-daw-ms", ".up-daw-patch", ".up-daw-patchmenu-item",
       ".up-daw-wave", ".up-daw-time", ".up-daw-knob-dial",

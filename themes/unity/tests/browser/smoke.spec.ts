@@ -156,6 +156,41 @@ test("the home terminal boots and runs a command", async ({ page }) => {
   await expect(page.locator("[data-shell-mount] .xterm-rows")).toContainText("ytinu");
 });
 
+test("the home page shows its link list while a link in it holds keyboard focus", async ({ page }) => {
+  await open(page, "/");
+  await expect(page.locator("[data-shell]")).toHaveAttribute("data-shell-ready", "");
+  // The list holds the same links as the terminal's banner, for screen
+  // readers, and it stays hidden until a link in it takes focus.
+  const list = page.locator(".up-shell .up-sr-only");
+  const links = await list.locator("a").count();
+  expect(links).toBeGreaterThan(1);
+  await page.locator(".up-tl-max").first().focus();
+  await page.keyboard.press("Tab");
+  const link = list.locator("a:focus");
+  await expect(link).toHaveCount(1);
+  await expect(list).toHaveCSS("clip-path", "none");
+  await expect(link).toHaveCSS("outline-style", "solid");
+  // The shorter side of an element's box. The list's box is 1px square
+  // while the list hides.
+  const side = (el: Element): number => {
+    const r = el.getBoundingClientRect();
+    return Math.min(r.width, r.height);
+  };
+  await expect.poll(() => list.evaluate(side)).toBeGreaterThan(1);
+  await expect.poll(() => link.evaluate(side)).toBeGreaterThan(1);
+  // The list paints over the terminal, so the link is the topmost
+  // element at its center.
+  await expect.poll(() => link.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+  })).toBe(true);
+  // Focus moves on to the terminal after the last link, and the list
+  // hides again.
+  for (let i = 0; i < links; i++) await page.keyboard.press("Tab");
+  await expect(list.locator("a:focus")).toHaveCount(0);
+  await expect(list).toHaveCSS("clip-path", "inset(50%)");
+});
+
 test("a panel menu opens and closes from the keyboard", async ({ page }) => {
   await open(page, "/about/");
   const trigger = page.locator("#up-menu-help");

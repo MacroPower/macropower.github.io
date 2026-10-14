@@ -277,7 +277,7 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
   | `--up-content-line` | `#D8D5D2` | Borders and rules in windows. |
   | `--up-link` | `#2B4E8E` | Links in posts, pages, and dialogs. |
   | `--up-sidebar-bg` | A light gray gradient | The sidebar of the blog and of the CV viewer. It takes any `background` value. |
-  | `--up-terminal-bg` | `#1F0E1A` | The home terminal's translucent backdrop. |
+  | `--up-terminal-bg` | `#1F0E1A` | The home terminal's translucent backdrop, and the home page's list of links while one of them holds keyboard focus. |
   | `--up-font-sans` | Ubuntu, then the system's sans-serif font | The desktop's text. |
   | `--up-font-mono` | Ubuntu Mono, then the system's monospace font | The terminal, code, and other monospaced text, the Studio's piano roll included. |
 

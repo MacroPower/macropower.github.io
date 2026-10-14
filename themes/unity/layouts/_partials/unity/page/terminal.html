@@ -106,7 +106,9 @@
   {{- /* Visually hidden equivalent of the terminal's neofetch banner. The
         xterm canvas never reaches the accessibility tree, so this is the home
         page's only screen-reader content: its missing <h1>, the title, and
-        real links for the social URLs and launcher destinations. */ -}}
+        real links for the social URLs and launcher destinations. main.css
+        shows it over the terminal while one of its links holds keyboard
+        focus. */ -}}
   <div class="up-sr-only">
     <h1>{{ $payload.name }}</h1>
     {{- with $payload.title }}

@@ -1271,6 +1271,8 @@ a.up-sponsor-card[href]:hover{
      content width. */
   display:flex; flex-direction:column; align-items:stretch;
   overflow:hidden;
+  /* The focused banner covers the shell. */
+  position:relative;
 }
 .up-shell-term{
   flex:1; min-height:0; width:100%;
@@ -1280,23 +1282,42 @@ a.up-sponsor-card[href]:hover{
   font-size:12pt; line-height:1.2;
   color:var(--up-aod-red);
 }
-/* Without JavaScript the terminal never mounts, so the visually hidden
-   banner becomes the page. It shows the owner's name, links, and posts
-   above the .up-shell-noscript line. position needs !important to beat
-   the one on .up-sr-only. */
+/* The visually hidden banner shows in place of the terminal without
+   JavaScript, and over the terminal while one of its links holds
+   keyboard focus. These rules style its text in both cases. */
+.up-shell .up-sr-only{
+  a{color:var(--up-aod-blue); text-decoration:none}
+  a:hover{color:var(--up-aod-cyan); text-decoration:underline}
+  a:focus-visible{outline:2px solid var(--up-accent-lighter); outline-offset:1px}
+  h1{margin:0 0 2px; font-size:1.5em}
+  h2{margin:14px 0 4px; font-size:1.1em}
+  p, ul{margin:2px 0}
+  ul{padding-inline-start:1.2em}
+  /* The prose rules paint inline code on a light chip, where the
+     banner's light text does not show. */
+  code{background:none; padding:0}
+}
+/* A sighted keyboard user who tabs into the banner sees it over the
+   terminal until focus leaves it. The padding lines its text up with
+   the terminal's. :where() keeps the selector's specificity equal to the
+   no-JavaScript rule's, so that rule wins when both match. */
+.up-shell .up-sr-only:where(:focus-within){
+  inset:0; width:auto; height:auto; margin:0; padding:inherit;
+  overflow:auto; clip-path:none; white-space:normal; z-index:1;
+  background:var(--up-terminal-bg); color:var(--up-aod-fg);
+  color-scheme:dark;
+}
+/* Without JavaScript the terminal never mounts, so the banner becomes
+   the page. It shows the owner's name, links, and posts above the
+   .up-shell-noscript line. position needs !important to beat the one on
+   .up-sr-only. */
 @media (scripting: none){
   .up-shell{
     overflow:auto;
     .up-sr-only{
       position:static !important; width:auto; height:auto;
-      margin:0; padding:6px 2px; border:0;
+      margin:0; padding:6px 2px; border:0; background:none;
       overflow:visible; clip-path:none; white-space:normal;
-      a{color:var(--up-aod-blue); text-decoration:none}
-      a:hover{color:var(--up-aod-cyan); text-decoration:underline}
-      h1{margin:0 0 2px; font-size:1.5em}
-      h2{margin:14px 0 4px; font-size:1.1em}
-      p, ul{margin:2px 0}
-      ul{padding-inline-start:1.2em}
     }
   }
 }
@@ -4435,7 +4456,8 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-pathbar-search-input:focus-visible,
   .up-docv-btn:focus-visible,
   .up-reader-up:focus-visible,
-  .up-code-copy:focus-visible{outline-color:Highlight}
+  .up-code-copy:focus-visible,
+  .up-shell .up-sr-only a:focus-visible{outline-color:Highlight}
 
   /* Each window and each CV page draws its edge with a shadow. */
   .up-window-chrome{border:1px solid CanvasText}
