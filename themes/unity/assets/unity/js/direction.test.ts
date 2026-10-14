@@ -73,6 +73,45 @@ function physical(decls: ReadonlyMap<string, string>): string[] {
   });
 }
 
+// Each linear gradient in a value, with no space around its commas.
+function gradients(value: string): string[] {
+  const out: string[] = [];
+  for (const m of value.matchAll(/(?:repeating-)?linear-gradient\(/g)) {
+    let depth = 0;
+    for (let i = m.index + m[0].length - 1; i < value.length; i++) {
+      if (value[i] === "(") depth++;
+      else if (value[i] === ")" && --depth === 0) {
+        out.push(value.slice(m.index, i + 1).replace(/\s*,\s*/g, ","));
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+// The gradient that mirrors g from side to side. A gradient that runs
+// straight up or down mirrors onto itself.
+function mirror(g: string): string {
+  return g.replace(/\(([^,]+),/, (all, dir: string) => {
+    const deg = /^(-?[\d.]+)deg$/.exec(dir);
+    if (deg) return `(${(360 - Number(deg[1])) % 360}deg,`;
+    if (dir.startsWith("to ")) return `(${dir.replace(/left|right/, (s) => (s === "left" ? "right" : "left"))},`;
+    return all;
+  });
+}
+
+// The gradients of a rule's own properties. A gradient in a custom
+// property paints whichever rule reads it.
+function ruleGradients(decls: ReadonlyMap<string, string>): string[] {
+  return [...decls].filter(([prop]) => !prop.startsWith("--")).flatMap(([, value]) => gradients(value));
+}
+
+// The rules whose gradient mirrors with an ancestor's scaleX(-1), each
+// with that ancestor.
+const FLIPS_WITH: Record<string, string> = {
+  ".up-reader-progress-bar": ".up-reader-progress",
+};
+
 // The partials whose glyphs keep their direction, each with its reason.
 const LTR: Record<string, string> = {
   "_partials/unity/daw-window.html": "The Studio's body carries dir=\"ltr\".",
@@ -112,6 +151,19 @@ describe("text direction", () => {
     });
     expect(glyphs.length).toBeGreaterThan(0);
     expect(glyphs.filter((g) => !g.host || !mirrored.has(g.host)).map((g) => `${g.where} in .${g.host}`)).toEqual([]);
+  });
+
+  it("mirrors each gradient that runs from side to side on a right-to-left page", () => {
+    const rtl = (selector: string) => rules.filter((r) => r.selector === `[dir="rtl"] ${selector}`);
+    const flips = (selector: string) => rtl(selector).some((r) => /^scaleX\(-1\)$/.test(r.decls.get("transform") ?? ""));
+    const across = rules
+      .filter((r) => !r.selector.startsWith('[dir="rtl"] ') && !PHYSICAL.some(([pattern]) => pattern.test(r.selector)))
+      .flatMap((r) => ruleGradients(r.decls).filter((g) => mirror(g) !== g).map((g) => ({ selector: r.selector, g })));
+    const unmirrored = across.filter(({ selector, g }) =>
+      !flips(FLIPS_WITH[selector] ?? selector) && !rtl(selector).some((r) => ruleGradients(r.decls).includes(mirror(g))));
+    expect(unmirrored.map(({ selector, g }) => `${selector} ${g}`)).toEqual([]);
+    const unused = Object.keys(FLIPS_WITH).filter((s) => !across.some(({ selector }) => selector === s));
+    expect(unused.map((s) => `${s} has no gradient that runs from side to side, so drop its row`)).toEqual([]);
   });
 
   it("marks each partial that keeps its glyphs' direction with dir=\"ltr\"", () => {

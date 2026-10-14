@@ -273,10 +273,11 @@ button{font-family:inherit}
    language, so the surfaces placed against it keep physical properties:
    the launcher, the window stages, the Dash, the HUD, the notification
    bubbles, the desktop label, and the resize zones. A mirror that no
-   logical property expresses, such as a directional glyph or an inset
-   highlight, gets a [dir="rtl"] rule nested in its rule, because the
-   browser floor predates :dir(). direction.test.ts fails on a physical
-   left or right outside those surfaces.
+   logical property expresses, such as a directional glyph, an inset
+   highlight, or a gradient that runs from side to side, gets a
+   [dir="rtl"] rule nested in its rule, because the browser floor
+   predates :dir(). direction.test.ts fails on a physical left or right
+   outside those surfaces, and on such a gradient without a mirror.
    ========================================================================= */
 
 body{
@@ -2601,6 +2602,8 @@ details.up-alert{
   /* The level the headline reads until top-panel.ts sets the real one. */
   width:76%; height:100%;
   background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
+  /* The fill brightens from the start edge toward the level. */
+  [dir="rtl"] &{transform:scaleX(-1)}
 }
 
 /* ---- mini calendar ----------------------------------------------------- */
@@ -3046,11 +3049,13 @@ body.up-reduce-motion *{
   display:flex; align-items:center; gap:10px;
   font-size:13px; font-weight:500; letter-spacing:.02em;
   color:rgba(255,255,255,.78);
-  /* the Unity header rule: a thin line running out to the right edge */
+  /* the Unity header rule: a thin line that runs out to the end edge and
+     fades toward it */
   &::after{
     content:""; flex:1 1 auto; height:1px;
     background:linear-gradient(90deg, rgba(255,255,255,.22), rgba(255,255,255,.04));
   }
+  [dir="rtl"] &::after{transform:scaleX(-1)}
 }
 .up-dash-more{
   appearance:none;background:transparent;border:1px solid transparent;
@@ -3334,6 +3339,8 @@ body.up-reduce-motion *{
 .up-notify-bar-fill{
   display:block; height:100%;
   background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
+  /* The fill brightens from the start edge toward the level. */
+  [dir="rtl"] &{transform:scaleX(-1)}
 }
 
 /* ---- lock screen ------------------------------------------------------- */
