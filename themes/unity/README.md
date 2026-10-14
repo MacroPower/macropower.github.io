@@ -32,6 +32,8 @@ Hugo partials server-render everything, and Hugo's built-in esbuild bundles the 
 
 The theme lives under `themes/unity` in the [macropower.github.io](https://github.com/MacroPower/macropower.github.io) repository and carries its own `go.mod`, so Hugo can import it directly from that path. A Hugo module is the recommended route.
 
+Before each update, read the [changelog](https://github.com/MacroPower/macropower.github.io/blob/main/themes/unity/CHANGELOG.md). It lists what changed in the theme and the steps that your site takes to follow each change.
+
 ### Hugo module
 
 ```bash
