@@ -1039,6 +1039,24 @@ mainSections = ["posts"]
       return [names !== "kept Tool hid" && `the projects page lists "${names}", not "kept Tool hid"`];
     },
   },
+  // Projects from a GitHub account, with the request denied so the build
+  // never touches the network. The build warns and the page renders
+  // without projects. Hugo checks the request's options, such as its
+  // timeout, before the URL, so a bad option warns with another message.
+  github: {
+    files: {
+      "hugo.toml": `${BARE}[params.projects]
+  github = "jane"
+[security.http]
+  urls = ['^https://example\\.invalid/']
+`,
+      "content/projects.md": page("Projects", "layout = 'projects'\n"),
+    },
+    warns: [/cannot fetch the GitHub repositories for params\.projects\.github: .*access denied: "https:\/\/api\.github\.com\//],
+    check: (out) => [
+      /data-up-project-tile\s+data-name=/.test(read(join(out, "projects/index.html"))) && "the projects page lists projects",
+    ],
+  },
   // Config, front matter, and data in the looser shapes Hugo accepts.
   loose: {
     files: {

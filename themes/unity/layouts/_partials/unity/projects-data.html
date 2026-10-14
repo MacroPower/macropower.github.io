@@ -13,6 +13,13 @@
   anonymous requests. A failed request warns and yields no projects
   rather than failing the build.
 
+  Hugo's file cache keeps a fetched resource forever by default, so the
+  request's cache key holds the build's date. The first build of each
+  day fetches the list again, and later builds that day read the cache.
+  An offline build on a new day warns and yields no projects. The
+  request fails after 10 seconds, so a network that drops packets
+  cannot stall the build.
+
   Curation params then narrow the list from either source.
   params.projects.exclude names the projects to leave out, and
   params.projects.languages names the languages to keep. Each takes a
@@ -47,7 +54,8 @@
     {{- $url := printf "https://api.github.com/users/%s/repos?per_page=100&type=owner&sort=pushed" (urlquery .) -}}
     {{- $headers := dict "Accept" "application/vnd.github+json" "X-GitHub-Api-Version" "2022-11-28" -}}
     {{- with os.Getenv "HUGO_GITHUB_TOKEN" }}{{ $headers = merge $headers (dict "Authorization" (printf "Bearer %s" .)) }}{{ end -}}
-    {{- with try (resources.GetRemote $url (dict "headers" $headers)) -}}
+    {{- $opts := dict "headers" $headers "key" (print $url (now.Format "2006-01-02")) "timeout" "10s" -}}
+    {{- with try (resources.GetRemote $url $opts) -}}
       {{- with .Err -}}
         {{- warnf "unity: cannot fetch the GitHub repositories for params.projects.github: %s" . -}}
       {{- else with .Value -}}
