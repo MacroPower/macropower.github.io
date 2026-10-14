@@ -1801,7 +1801,15 @@ a.up-sponsor-card[href]:hover{
     background:#2A2825;border:1px solid #1F1D1A;border-radius:3px;
     padding:12px 14px;overflow:auto;color:#E0DCD9;
   }
-  pre code{background:transparent;padding:0}
+  /* Code reads left to right in every language. The copy button's
+     wrapper follows, so the button sits at the end of the code's lines.
+     Inline code isolates itself from the sentence around it, so its
+     punctuation stays in place. A block's code takes its direction from
+     the pre, because an isolate there shifts the line numbers that Hugo
+     lays out in a table. */
+  :is(pre, .highlight, .up-codeblock){direction:ltr}
+  code{direction:ltr;unicode-bidi:isolate}
+  pre code{background:transparent;padding:0;unicode-bidi:normal}
   /* Hugo's highlighter wraps each block it highlights in .highlight, and
      the site's markup.highlight.style colors the block through the
      unity.chroma layer or style attributes. A style that leaves out its

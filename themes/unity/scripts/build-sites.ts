@@ -1190,7 +1190,9 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
   // name the desktop shows takes the direction of its first letter, so a
   // Latin title keeps its punctuation at its end. A name inside a
   // translated sentence, such as a File menu row, sits in a <bdi>.
-  // The projects page lays out a mirrored grid of tiles.
+  // The projects page lays out a mirrored grid of tiles. The post's code
+  // block and inline code read left to right, which direction.test.ts
+  // checks in the stylesheet.
   rtl: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "ar"
@@ -1208,7 +1210,7 @@ ignoreLogs = ["unity-i18n-missing"]
 [params.desktop]
   networks = ["home-wifi!"]
 `,
-      "content/posts/one.md": page("Hello, world!", "tags = ['a']\n"),
+      "content/posts/one.md": `${page("Hello, world!", "tags = ['a']\n")}\nRun \`ls ~/posts/\`:\n\n\`\`\`go\nfunc main() {}\n\`\`\`\n`,
       "content/projects.md": page("Projects", "layout = 'projects'\n"),
       "data/projects.yaml": "- {name: alpha, language: Go}\n- {name: beta, language: Rust}\n",
       "content/now.md": page("Now"),
@@ -1230,6 +1232,8 @@ ignoreLogs = ["unity-i18n-missing"]
         ["posts/index.html", '<div dir="ltr" class="up-empty-pane-tagline"'],
         ["posts/one/index.html", '<span dir="auto" class="up-reader-chip">#a</span>'],
         ["posts/one/index.html", '— <bdi dir="ltr">user@unity:~/posts$</bdi>'],
+        ["posts/one/index.html", "<p>Run <code>ls ~/posts/</code>:</p>"],
+        ["posts/one/index.html", '<code class="language-go" data-lang="go">'],
         ["projects/index.html", '<span dir="auto" class="up-project-tile-label">alpha</span>'],
         ["projects/index.html", '<li><span dir="auto">alpha</span></li>'],
         ["tags/a/index.html", '— <bdi dir="ltr">user@unity:~$ grep -l "a" posts/*.md</bdi>'],

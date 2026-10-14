@@ -126,6 +126,16 @@ function hostClass(html: string, i: number): string | undefined {
   return [...html.slice(0, i).matchAll(/<[a-z][^>]*\sclass="([\w-]+)/g)].at(-1)?.[1];
 }
 
+// The selectors that a selector stands for, with each :is() list
+// expanded, so "p :is(pre, .highlight)" yields "p pre" and
+// "p .highlight".
+function expand(selector: string): string[] {
+  const m = /:is\(([^()]*)\)/.exec(selector);
+  if (!m) return [selector];
+  const [before, after] = [selector.slice(0, m.index), selector.slice(m.index + m[0].length)];
+  return m[1]!.split(",").flatMap((s) => expand(`${before}${s.trim()}${after}`));
+}
+
 const partials = readdirSync(layouts, { encoding: "utf8", recursive: true }).filter((f) => f.endsWith(".html"));
 
 describe("text direction", () => {
@@ -164,6 +174,26 @@ describe("text direction", () => {
     expect(unmirrored.map(({ selector, g }) => `${selector} ${g}`)).toEqual([]);
     const unused = Object.keys(FLIPS_WITH).filter((s) => !across.some(({ selector }) => selector === s));
     expect(unused.map((s) => `${s} has no gradient that runs from side to side, so drop its row`)).toEqual([]);
+  });
+
+  it("keeps Markdown code left to right on a right-to-left page", () => {
+    // .highlight holds the table that Hugo lays out for lineNos = "table",
+    // outside each pre. .up-codeblock holds the copy button. An isolate keeps inline code from moving its punctuation
+    // into the sentence around it, but in a block it shifts the line
+    // numbers of that table.
+    const want: readonly (readonly [element: string, prop: string, value: string])[] = [
+      ["pre", "direction", "ltr"],
+      [".highlight", "direction", "ltr"],
+      [".up-codeblock", "direction", "ltr"],
+      ["code", "direction", "ltr"],
+      ["code", "unicode-bidi", "isolate"],
+      ["pre code", "unicode-bidi", "normal"],
+    ];
+    const missing = [".up-reader-body", ".up-page-body"].flatMap((body) => want
+      .filter(([element, prop, value]) =>
+        !rules.some((r) => !r.media && r.decls.get(prop) === value && expand(r.selector).includes(`${body} ${element}`)))
+      .map(([element, prop, value]) => `${body} ${element} lacks ${prop}:${value}`));
+    expect(missing).toEqual([]);
   });
 
   it("marks each partial that keeps its glyphs' direction with dir=\"ltr\"", () => {
