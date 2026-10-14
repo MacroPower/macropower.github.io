@@ -15,6 +15,13 @@
   Goldmark does for a link without a hook, and parses the result again.
   A destination that the parser still rejects passes through as written.
 
+  html/template keeps only the http, https, and mailto schemes in an
+  href and replaces any other with #ZgotmplZ. The site's own content
+  names the link, so a link with another scheme, such as tel: or sms:,
+  comes back marked safe. A javascript:, vbscript:, or data: link stays
+  a plain string, because each one runs or embeds content in the page,
+  and html/template still replaces it.
+
   Args (dict): page     - the page whose links to resolve (.PageInner)
                dest     - the link destination
                absolute - true for a URL with scheme and host
@@ -44,5 +51,7 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- else if and $u $u.Scheme (not (in (slice "javascript" "vbscript" "data") $u.Scheme)) -}}
+  {{- $href = safeURL $href -}}
 {{- end -}}
 {{- return $href -}}

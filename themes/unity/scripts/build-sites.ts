@@ -603,7 +603,8 @@ enableRobotsTXT = true
   // post, and the feed's copyright must be plain text. The feed must also
   // link the newer post's Spotify album in place of its player. Each %
   // that starts no escape in a link or an image must reach the page and
-  // the feed as %25.
+  // the feed as %25. Links to tel: and sms: must keep their scheme, and a
+  // javascript: link must still render as #ZgotmplZ.
   feed: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -611,19 +612,25 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
 `,
       "content/posts/old.md": page("Old", "date = 2024-01-01\nlastmod = 2024-06-01\n"),
       "content/posts/new.md": `${page("New", "date = 2024-03-01\n")}\n{{< spotify album 4aawyAB9vmqN3uQ7FjRGTy >}}\n`,
-      "content/posts/links.md": `${page("Links", "date = 2024-02-01\n")}\n[sale](https://example.com/50%off) ![sale](/x/50%zz.png)\n`,
+      "content/posts/links.md": `${page("Links", "date = 2024-02-01\n")}\n[sale](https://example.com/50%off) ![sale](/x/50%zz.png)
+[call](tel:+15550100) [text](sms:+15550100) [script](javascript:alert(1))\n`,
       "static/x/50%zz.png": "PNG",
     },
     check: (out) => {
       const channel = read(join(out, "index.xml")).split("<item>")[0]!;
       const feed = unescapeHTML(read(join(out, "index.xml")));
-      const links = read(join(out, "posts/links/index.html"));
+      // The links post's markup and the feed's markup, with the entities
+      // that Hugo's templates write in an href decoded.
+      const links = unescapeHTML(read(join(out, "posts/links/index.html")));
+      const items = unescapeHTML(feed);
+      const both = ['<a href="https://example.com/50%25off">', '<a href="tel:+15550100">call</a>',
+        '<a href="sms:+15550100">text</a>', '<a href="#ZgotmplZ">script</a>'];
       return [
-        ...['<a href="https://example.com/50%25off">', '<img src="/x/50%25zz.png"']
+        ...[...both, '<img src="/x/50%25zz.png"']
           .filter((want) => !links.includes(want))
           .map((want) => `posts/links/index.html lacks ${want}`),
-        ...['<a href="https://example.com/50%25off">', '<img src="https://example.org/x/50%25zz.png"']
-          .filter((want) => !feed.includes(want))
+        ...[...both, '<img src="https://example.org/x/50%25zz.png"']
+          .filter((want) => !items.includes(want))
           .map((want) => `index.xml lacks ${want}`),
         !channel.includes("<description>Recent posts on example.org</description>")
           && "index.xml's channel description does not name the untitled site by its host",
