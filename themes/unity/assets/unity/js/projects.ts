@@ -80,15 +80,17 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
     return Number.isFinite(num) ? compact.format(num) : n;
   }
 
+  /** A stat's icon and value. label(value) names the stat for screen
+   *  readers. */
   function buildStat(
     iconKey: string,
-    ariaLabel: string,
     value: string,
+    label: (value: string) => string,
     wide = false,
   ): HTMLElement {
     const el = document.createElement("div");
     el.className = `up-project-preview-stat${wide ? " up-project-preview-stat-wide" : ""}`;
-    el.setAttribute("aria-label", t("js_projects_stat_label", { label: ariaLabel, value }));
+    el.setAttribute("aria-label", label(value));
     el.innerHTML = iconHTML(iconKey);
     const valEl = document.createElement("span");
     valEl.textContent = value;
@@ -164,10 +166,10 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
     const stats = document.createElement("div");
     stats.className = "up-project-preview-stats";
-    if (stars) stats.appendChild(buildStat("star", t("js_projects_stars"), fmtNum(stars)));
-    if (forks) stats.appendChild(buildStat("fork", t("js_projects_forks"), fmtNum(forks)));
-    if (license) stats.appendChild(buildStat("license", t("js_projects_license"), license, true));
-    if (updated) stats.appendChild(buildStat("clock", t("js_projects_updated"), updated, true));
+    if (stars) stats.appendChild(buildStat("star", fmtNum(stars), (value) => t("js_projects_stars", { value })));
+    if (forks) stats.appendChild(buildStat("fork", fmtNum(forks), (value) => t("js_projects_forks", { value })));
+    if (license) stats.appendChild(buildStat("license", license, (value) => t("js_projects_license", { value }), true));
+    if (updated) stats.appendChild(buildStat("clock", updated, (value) => t("js_projects_updated", { value }), true));
     if (stats.childElementCount) body.appendChild(stats);
 
     if (topics.length) {

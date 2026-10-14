@@ -173,17 +173,25 @@ function rankName(rank: number): string {
   }
 }
 
-function suitName(suit: Suit): string {
-  switch (suit) {
-    case 0: return t("js_solitaire_suit_hearts");
-    case 1: return t("js_solitaire_suit_diamonds");
-    case 2: return t("js_solitaire_suit_clubs");
-    case 3: return t("js_solitaire_suit_spades");
+// Each suit has its own sentences, so a translation can give the suit's
+// name the form that each sentence needs.
+function cardName(card: Card): string {
+  const rank = rankName(card.rank);
+  switch (card.suit) {
+    case 0: return t("js_solitaire_card_hearts", { rank });
+    case 1: return t("js_solitaire_card_diamonds", { rank });
+    case 2: return t("js_solitaire_card_clubs", { rank });
+    case 3: return t("js_solitaire_card_spades", { rank });
   }
 }
 
-function cardName(card: Card): string {
-  return t("js_solitaire_card", { rank: rankName(card.rank), suit: suitName(card.suit) });
+function foundationName(suit: Suit): string {
+  switch (suit) {
+    case 0: return t("js_solitaire_pile_foundation_hearts");
+    case 1: return t("js_solitaire_pile_foundation_diamonds");
+    case 2: return t("js_solitaire_pile_foundation_clubs");
+    case 3: return t("js_solitaire_pile_foundation_spades");
+  }
 }
 
 /** The cards, joined the way the page's language joins a list, such as
@@ -781,7 +789,7 @@ function cardNames(cards: readonly Card[]): string {
     switch (loc.kind) {
       case "stock": return t("js_solitaire_pile_stock");
       case "waste": return t("js_solitaire_pile_waste");
-      case "foundation": return t("js_solitaire_pile_foundation", { suit: suitName(itemAt(SUITS, loc.pile)) });
+      case "foundation": return foundationName(itemAt(SUITS, loc.pile));
       case "tableau": return t("js_solitaire_pile_column", { column: loc.pile + 1 });
     }
   }
@@ -794,9 +802,11 @@ function cardNames(cards: readonly Card[]): string {
     const name = pileName(loc);
     if (!pile.length) return t("js_solitaire_at_empty", { pile: name });
     if (loc.kind === "stock") return tn("js_solitaire_at_count", pile.length, { pile: name });
-    const cards = t("js_solitaire_at_cards", { pile: name, cards: cardNames(pile.slice(index)) });
+    const cards = cardNames(pile.slice(index));
     const down = pile.filter((c) => !c.faceUp).length;
-    return down ? `${cards} ${tn("js_solitaire_face_down", down)}` : cards;
+    return down
+      ? tn("js_solitaire_at_cards_down", down, { pile: name, cards })
+      : t("js_solitaire_at_cards", { pile: name, cards });
   }
 
   function cursorVisible(): boolean {

@@ -751,16 +751,14 @@ other = "Open on {host}"
 other = "Open"
 [js_projects_copy_link]
 other = "Copy link"
-[js_projects_stat_label]
-other = "{label}: {value}"
 [js_projects_stars]
-other = "Stars"
+other = "Stars: {value}"
 [js_projects_forks]
-other = "Forks"
+other = "Forks: {value}"
 [js_projects_license]
-other = "License"
+other = "License: {value}"
 [js_projects_updated]
-other = "Updated"
+other = "Updated: {value}"
 [js_projects_topics]
 other = "Topics"
 [js_projects_selected]
@@ -1116,16 +1114,15 @@ other = "J"
 other = "Q"
 [js_solitaire_rank_king]
 other = "K"
-[js_solitaire_suit_hearts]
-other = "hearts"
-[js_solitaire_suit_diamonds]
-other = "diamonds"
-[js_solitaire_suit_clubs]
-other = "clubs"
-[js_solitaire_suit_spades]
-other = "spades"
-[js_solitaire_card]
-other = "{rank} of {suit}"
+# A card's name. {rank} is a js_solitaire_rank_ string or a number.
+[js_solitaire_card_hearts]
+other = "{rank} of hearts"
+[js_solitaire_card_diamonds]
+other = "{rank} of diamonds"
+[js_solitaire_card_clubs]
+other = "{rank} of clubs"
+[js_solitaire_card_spades]
+other = "{rank} of spades"
 # The table draws the btn_ and banner_ strings in a pixel font with the
 # letters A-Z, the digits, and :.,!?-+/'(). It shows an accented letter
 # as its base letter and any other character as "?".
@@ -1205,8 +1202,14 @@ other = "NEW GAME"
 other = "Stock"
 [js_solitaire_pile_waste]
 other = "Waste"
-[js_solitaire_pile_foundation]
-other = "Foundation for {suit}"
+[js_solitaire_pile_foundation_hearts]
+other = "Foundation for hearts"
+[js_solitaire_pile_foundation_diamonds]
+other = "Foundation for diamonds"
+[js_solitaire_pile_foundation_clubs]
+other = "Foundation for clubs"
+[js_solitaire_pile_foundation_spades]
+other = "Foundation for spades"
 [js_solitaire_pile_column]
 other = "Column {column}"
 [js_solitaire_at_cards]
@@ -1216,9 +1219,9 @@ other = "{pile}: empty."
 [js_solitaire_at_count]
 one = "{pile}: {n} card."
 other = "{pile}: {n} cards."
-[js_solitaire_face_down]
-one = "{n} card face down."
-other = "{n} cards face down."
+[js_solitaire_at_cards_down]
+one = "{pile}: {cards}. {n} card face down."
+other = "{pile}: {cards}. {n} cards face down."
 [js_solitaire_holding]
 other = "Holding {cards}."
 [js_solitaire_put_back]
