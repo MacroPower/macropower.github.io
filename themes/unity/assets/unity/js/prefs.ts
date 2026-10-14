@@ -2,7 +2,7 @@
 // persisted, so both reset on reload. The apply functions mutate the
 // document directly (a `body` class for reduce-motion, a `data-up-accent`
 // attribute on `<html>` for the accent) so every selector reading
-// `var(--orange)` / `var(--orange-light)` or gated on `body.up-reduce-motion`
+// `var(--up-accent)` / `var(--up-accent-light)` or gated on `body.up-reduce-motion`
 // updates live.
 
 import { t } from "./i18n";

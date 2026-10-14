@@ -135,35 +135,35 @@
 }
 
 :root{
-  --aubergine-deep:#2C001E;
-  --aubergine:#3D0B2C;
-  --aubergine-mid:#5E2750;
-  --aubergine-light:#77216F;
-  --orange:#DD4814;
-  --orange-light:#E95420;
-  --orange-dark:#B23B11;
-  --orange-darker:#922F0C;
-  --panel:#2B2B2B;
-  --panel-grad-1:#3F3D3A;
-  --panel-grad-2:#252423;
-  --chrome-1:#3D3B37;
-  --chrome-2:#2A2825;
-  --chrome-inactive-1:#4A4744;
-  --chrome-inactive-2:#3A3735;
-  --content-bg:#F6F5F4;
-  --content-fg:#2E2E2E;
-  --content-muted:#6B6764;
-  --content-line:#D8D5D2;
-  --hud:#1F0E1A;
+  --up-aubergine-deep:#2C001E;
+  --up-aubergine:#3D0B2C;
+  --up-aubergine-mid:#5E2750;
+  --up-aubergine-light:#77216F;
+  --up-accent:#DD4814;
+  --up-accent-light:#E95420;
+  --up-accent-dark:#B23B11;
+  --up-accent-darker:#922F0C;
+  --up-panel:#2B2B2B;
+  --up-panel-grad-1:#3F3D3A;
+  --up-panel-grad-2:#252423;
+  --up-chrome-1:#3D3B37;
+  --up-chrome-2:#2A2825;
+  --up-chrome-inactive-1:#4A4744;
+  --up-chrome-inactive-2:#3A3735;
+  --up-content-bg:#F6F5F4;
+  --up-content-fg:#2E2E2E;
+  --up-content-muted:#6B6764;
+  --up-content-line:#D8D5D2;
+  --up-hud:#1F0E1A;
   /* Layout: launcher width, shared by the launcher itself and the window
      stage's left edge (so centering spans the desktop, not the viewport).
      The phone media query narrows it. */
-  --launcher-w:64px;
+  --up-launcher-w:64px;
   /* Bottom-dock height. 0 on desktop (the launcher is a left rail); the
-     phone media query zeroes --launcher-w and gives this a real height, and
+     phone media query zeroes --up-launcher-w and gives this a real height, and
      every full-height surface (window stages, Dash, HUD) reserves it via
-     bottom:var(--dock-h) so nothing hides under the dock. */
-  --dock-h:0px;
+     bottom:var(--up-dock-h) so nothing hides under the dock. */
+  --up-dock-h:0px;
 }
 
 /* Accent presets. The Preferences dialog (prefs.ts) sets data-up-accent on
@@ -173,26 +173,26 @@
    palette and the presets still apply over it. Keep the names in sync with
    ACCENTS in prefs.ts and the list in baseof.html. */
 :root[data-up-accent="orange"], .up-accent-swatch[data-up-accent="orange"]{
-  --orange:#DD4814; --orange-light:#E95420; --orange-dark:#B23B11; --orange-darker:#922F0C;
+  --up-accent:#DD4814; --up-accent-light:#E95420; --up-accent-dark:#B23B11; --up-accent-darker:#922F0C;
 }
 :root[data-up-accent="green"], .up-accent-swatch[data-up-accent="green"]{
-  --orange:#3A7D2C; --orange-light:#4E9E3A; --orange-dark:#2E6322; --orange-darker:#244F1B;
+  --up-accent:#3A7D2C; --up-accent-light:#4E9E3A; --up-accent-dark:#2E6322; --up-accent-darker:#244F1B;
 }
 :root[data-up-accent="aubergine"], .up-accent-swatch[data-up-accent="aubergine"]{
-  --orange:#77216F; --orange-light:#8B2A82; --orange-dark:#5E1A57; --orange-darker:#4A1444;
+  --up-accent:#77216F; --up-accent-light:#8B2A82; --up-accent-dark:#5E1A57; --up-accent-darker:#4A1444;
 }
 :root[data-up-accent="blue"], .up-accent-swatch[data-up-accent="blue"]{
-  --orange:#2A5F94; --orange-light:#3F87C9; --orange-dark:#224E79; --orange-darker:#1A3C5E;
+  --up-accent:#2A5F94; --up-accent-light:#3F87C9; --up-accent-dark:#224E79; --up-accent-darker:#1A3C5E;
 }
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;
   font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;color:var(--content-fg);
+  -webkit-font-smoothing:antialiased;color:var(--up-content-fg);
   background:#000;user-select:none;-webkit-user-select:none}
 body{font-size:13.5px;line-height:1.45}
 button{font-family:inherit}
-::selection{background:color-mix(in srgb, var(--orange) 35%, transparent)}
+::selection{background:color-mix(in srgb, var(--up-accent) 35%, transparent)}
 #up-root{height:100%}
 
 /* let normal text be selectable inside windows */
@@ -215,7 +215,7 @@ button{font-family:inherit}
 .up-svg-defs{position:absolute}
 /* The charging bolt's outline matches the panel behind it, so the bolt
    reads as cut out of the battery. */
-.up-bat-bolt{stroke:var(--panel-grad-2,#252423)}
+.up-bat-bolt{stroke:var(--up-panel-grad-2,#252423)}
 
 /* =========================================================================
    chrome: wallpaper, top panel, launcher, window chrome
@@ -316,7 +316,7 @@ svg[hidden]{ display:none; }
 
 .up-launcher{
   position:absolute; top:24px; left:0; bottom:0;
-  width:var(--launcher-w);
+  width:var(--up-launcher-w);
   z-index:40;
   display:flex; flex-direction:column; align-items:center;
   padding:8px 0;
@@ -333,7 +333,7 @@ svg[hidden]{ display:none; }
    dash.ts toggles .is-open instead. */
 .up-launcher-bfb{
   &.is-open .up-launcher-icon{
-    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--orange-light) 75%, transparent));
+    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--up-accent-light) 75%, transparent));
   }
   /* while the Dash is up the tooltip would float over its search bar */
   &.is-open .up-tooltip{display:none}
@@ -428,9 +428,9 @@ svg[hidden]{ display:none; }
      overlay stages (trash, daw) reset this with inset:0 and place their
      chrome absolutely instead. */
   top:24px;
-  left:var(--launcher-w);
+  left:var(--up-launcher-w);
   right:0;
-  bottom:var(--dock-h);
+  bottom:var(--up-dock-h);
   z-index:20;
   pointer-events:none;
   display:flex;
@@ -447,7 +447,7 @@ svg[hidden]{ display:none; }
     /* Redundant for the page stage (the base rule already starts at the
        launcher), but this two-class rule re-asserts left over the overlay
        stages' inset:0 for the maximized Studio. */
-    left:var(--launcher-w);
+    left:var(--up-launcher-w);
     .up-window-chrome{
       /* !important beats resize.ts's inline width/height on any window that
          is both resizable and maximizable (the inline values survive, so
@@ -476,7 +476,7 @@ svg[hidden]{ display:none; }
       0 20px 50px rgba(0,0,0,.55),
       0 4px 14px rgba(0,0,0,.35);
     .up-titlebar{
-      background:linear-gradient(180deg, var(--panel-grad-1) 0%, var(--chrome-2) 100%);
+      background:linear-gradient(180deg, var(--up-panel-grad-1) 0%, var(--up-chrome-2) 100%);
     }
     .up-tl-close{
       /* recipe: bead-face */
@@ -587,8 +587,8 @@ body.up-resizing *{ cursor:inherit !important; }
   flex:1 1 auto;
   min-height:0;
   display:flex; flex-direction:column;
-  background:var(--content-bg);
-  color:var(--content-fg);
+  background:var(--up-content-bg);
+  color:var(--up-content-fg);
 }
 
 /* ---- desktop label ------------------------------------------------------ */
@@ -615,13 +615,13 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-sponsors-page,
 .up-blog{
   display:block;width:100%;height:100%;
-  background:var(--content-bg);color:var(--content-fg);
+  background:var(--up-content-bg);color:var(--up-content-fg);
   overflow:auto;
 }
 
 .up-page{
   display:block;width:100%;
-  background:var(--content-bg);color:var(--content-fg);overflow:auto;
+  background:var(--up-content-bg);color:var(--up-content-fg);overflow:auto;
   padding:32px 40px;max-width:880px;margin:0 auto;
 }
 
@@ -633,15 +633,15 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-page-children a:hover,
 .up-sponsors-main p a:hover,
 .up-page-body a:hover,
-.up-reader-body a:hover{color:var(--orange-light);text-decoration:underline}
+.up-reader-body a:hover{color:var(--up-accent-light);text-decoration:underline}
 .up-page-header h1{font-size:24px;font-weight:500;letter-spacing:-.01em;margin:0 0 16px}
 .up-page-body{font-size:14.5px;line-height:1.65}
 .up-page-children{
   list-style:none;padding:0;margin:16px 0;
-  li{padding:8px 0;border-bottom:1px dashed var(--content-line)}
+  li{padding:8px 0;border-bottom:1px dashed var(--up-content-line)}
 }
 .up-heading-anchor::after{content:"#"}
-.up-page-child-desc{margin:2px 0 0;color:var(--content-muted);font-size:13.5px}
+.up-page-child-desc{margin:2px 0 0;color:var(--up-content-muted);font-size:13.5px}
 
 /* ---------- Nautilus sidebar (shared chrome) ---------- */
 .up-naut-sidebar{
@@ -672,15 +672,15 @@ body.up-resizing *{ cursor:inherit !important; }
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-3px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-3px}
   &.is-active{
-    /* The brand orange-light/orange gradient, deliberately kept over the
-       AA-darker shades a contrast pass once swapped in: the active rows
-       must match the tile-selection orange, and 13px bold white on it is
+    /* The --up-accent-light to --up-accent gradient, deliberately kept
+       over the AA-darker shades a contrast pass once swapped in: the active
+       rows must match the tile-selection accent, and 13px bold white on it is
        borderline-large text the text-shadow further separates. */
-    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 95%, transparent) 0%, var(--orange) 100%);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 95%, transparent) 0%, var(--up-accent) 100%);
     color:#fff;
-    border-left-color:color-mix(in srgb, var(--orange-darker) 85%, black);
+    border-left-color:color-mix(in srgb, var(--up-accent-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
     text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
@@ -748,7 +748,7 @@ body.up-resizing *{ cursor:inherit !important; }
     box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
   }
   svg{flex-shrink:0}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-3px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-3px}
   &:disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -783,8 +783,8 @@ body.up-resizing *{ cursor:inherit !important; }
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
   &:focus{
-    border-color:var(--orange-light);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--orange-light) 22%, transparent);
+    border-color:var(--up-accent-light);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--up-accent-light) 22%, transparent);
   }
   &:disabled{color:#B4ADA7;background:#F1EFEC}
 }
@@ -825,13 +825,13 @@ body.up-resizing *{ cursor:inherit !important; }
   padding:7px 9px 5px;border-radius:3px;
   cursor:pointer;outline:none;
   &:hover .up-docv-thumb-frame{border-color:#8F8A84}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--orange) 70%, transparent);outline-offset:-2px}
+  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-2px}
   &.is-active .up-docv-thumb-frame{
-    border-color:var(--orange);
-    box-shadow:0 0 0 2px color-mix(in srgb, var(--orange-light) 45%, transparent),0 1px 3px rgba(0,0,0,.25);
+    border-color:var(--up-accent);
+    box-shadow:0 0 0 2px color-mix(in srgb, var(--up-accent-light) 45%, transparent),0 1px 3px rgba(0,0,0,.25);
   }
   &.is-active .up-docv-thumb-num{
-    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 95%, transparent) 0%, var(--orange) 100%);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 95%, transparent) 0%, var(--up-accent) 100%);
     color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
 }
@@ -852,7 +852,7 @@ body.up-resizing *{ cursor:inherit !important; }
   box-shadow:inset 0 2px 4px rgba(0,0,0,.25);
   outline:none;
   &:focus-visible{
-    box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--orange-light) 45%, transparent),inset 0 2px 4px rgba(0,0,0,.25);
+    box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--up-accent-light) 45%, transparent),inset 0 2px 4px rgba(0,0,0,.25);
   }
 }
 .up-docv-pages{
@@ -913,12 +913,12 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-sponsor-card{
   display:flex;align-items:center;gap:12px;
   padding:10px 12px;
-  background:#fff;border:1px solid var(--content-line);border-radius:4px;
-  color:var(--content-fg);text-decoration:none;
+  background:#fff;border:1px solid var(--up-content-line);border-radius:4px;
+  color:var(--up-content-fg);text-decoration:none;
   transition:border-color .1s linear, box-shadow .1s linear;
 }
 a.up-sponsor-card[href]:hover{
-  border-color:color-mix(in srgb, var(--orange) 55%, transparent);
+  border-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
   box-shadow:0 1px 4px rgba(0,0,0,.08);
 }
 .up-sponsor-avatar{
@@ -942,7 +942,7 @@ a.up-sponsor-card[href]:hover{
 .up-empty-pane.up-sponsors-empty-pane{
   min-height:240px;margin:18px 0 24px;
   background:#F6F3EC;
-  border:1px solid var(--content-line);border-radius:4px;
+  border:1px solid var(--up-content-line);border-radius:4px;
   .up-empty-pane-icon svg{width:44px;height:44px}
 }
 
@@ -979,7 +979,7 @@ a.up-sponsor-card[href]:hover{
   user-select:none;-webkit-user-select:none;
   -webkit-tap-highlight-color:transparent;
   outline:none;
-  &:focus-visible{outline:2px solid var(--orange);outline-offset:-2px}
+  &:focus-visible{outline:2px solid var(--up-accent);outline-offset:-2px}
 }
 .up-sol-noscript{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -992,18 +992,18 @@ a.up-sponsor-card[href]:hover{
    watermark behind the window would only add noise. */
 .up-icons{
   flex:1 1 auto; min-height:0; overflow:auto;
-  background:var(--content-bg); color:var(--content-fg);
+  background:var(--up-content-bg); color:var(--up-content-fg);
   padding:0 0 64px;
 }
 .up-icons-head{
   padding:28px 32px 18px;
   background:linear-gradient(180deg,#FFFFFF 0%,#F6F5F4 100%);
-  border-bottom:1px solid var(--content-line);
+  border-bottom:1px solid var(--up-content-line);
 }
 .up-icons-kicker{
   font-family:"Ubuntu Mono",monospace; font-size:11px;
   letter-spacing:.16em; text-transform:uppercase;
-  color:var(--content-muted);
+  color:var(--up-content-muted);
 }
 .up-icons-title{
   margin:6px 0 0; font-size:28px; font-weight:300; letter-spacing:-.02em;
@@ -1011,25 +1011,25 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-lede{
   margin:8px 0 0; max-width:620px; font-size:13.5px; line-height:1.6;
-  color:var(--content-muted);
+  color:var(--up-content-muted);
 }
 .up-icons-ctl-label{
-  font-size:11.5px; font-weight:500; color:var(--content-muted);
+  font-size:11.5px; font-weight:500; color:var(--up-content-muted);
   letter-spacing:.02em;
 }
 .up-icons-seg{
-  display:inline-flex; border:1px solid var(--content-line);
+  display:inline-flex; border:1px solid var(--up-content-line);
   border-radius:4px; overflow:hidden; background:#fff;
 }
 .up-icons-seg button{
   all:unset; cursor:pointer; padding:4px 10px;
   font-family:"Ubuntu Mono",monospace; font-size:11.5px; color:#2E2E2E;
-  border-right:1px solid var(--content-line);
+  border-right:1px solid var(--up-content-line);
 }
 .up-icons-seg button:last-child{ border-right:0; }
-.up-icons-seg button.is-active{ background:var(--orange); color:#fff; }
+.up-icons-seg button.is-active{ background:var(--up-accent); color:#fff; }
 
-.up-icons-section{ border-top:1px solid var(--content-line); }
+.up-icons-section{ border-top:1px solid var(--up-content-line); }
 .up-icons-section:first-of-type{ border-top:0; }
 .up-icons-section-head{
   padding:22px 32px 4px; display:flex; align-items:baseline; gap:12px;
@@ -1037,18 +1037,18 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-no{
   font-family:"Ubuntu Mono",monospace; font-size:11px; font-weight:700;
-  letter-spacing:.14em; color:var(--orange);
+  letter-spacing:.14em; color:var(--up-accent);
 }
 .up-icons-section-head h2{
   margin:0; font-size:20px; font-weight:400; letter-spacing:-.01em;
   color:#1F1D1B;
 }
 .up-icons-count{
-  font-family:"Ubuntu Mono",monospace; font-size:12px; color:var(--content-muted);
+  font-family:"Ubuntu Mono",monospace; font-size:12px; color:var(--up-content-muted);
 }
 .up-icons-note{
   margin-left:auto; font-family:"Ubuntu Mono",monospace; font-size:11px;
-  color:var(--content-muted); opacity:.8;
+  color:var(--up-content-muted); opacity:.8;
 }
 .up-icons-controls-row{
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;
@@ -1067,28 +1067,28 @@ a.up-sponsor-card[href]:hover{
   all:unset; cursor:pointer; box-sizing:border-box;
   display:flex; flex-direction:column; align-items:center; gap:10px;
   padding:14px 8px 10px;
-  border:1px solid var(--content-line); border-radius:4px;
+  border:1px solid var(--up-content-line); border-radius:4px;
   background:#FFFFFF; color:#2E2E2E;
   transition:border-color .12s ease, box-shadow .12s ease;
 }
-.up-icons-cell:hover{ border-color:var(--orange); box-shadow:0 4px 12px rgba(0,0,0,.08); }
-.up-icons-cell:focus-visible{ border-color:var(--orange); box-shadow:0 0 0 2px rgba(221,72,20,.35); }
-.up-icons-cell.is-copied{ border-color:var(--orange); }
+.up-icons-cell:hover{ border-color:var(--up-accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+.up-icons-cell:focus-visible{ border-color:var(--up-accent); box-shadow:0 0 0 2px rgba(221,72,20,.35); }
+.up-icons-cell.is-copied{ border-color:var(--up-accent); }
 
 .up-icons-art{
   display:flex; align-items:center; justify-content:center;
   height:76px; line-height:0;
 }
 .up-icons-grid[data-kind="glyph"] .up-icons-art svg{
-  width:var(--icp-size,24px); height:var(--icp-size,24px);
+  width:var(--up-icp-size,24px); height:var(--up-icp-size,24px);
 }
-/* icons.ts sets --icp-size from the size picker. The fallbacks match each
+/* icons.ts sets --up-icp-size from the size picker. The fallbacks match each
    kind's default size in icons.html. */
 .up-icons-grid[data-kind="app"] .up-icons-art{
-  width:var(--icp-size,56px); height:var(--icp-size,56px);
+  width:var(--up-icp-size,56px); height:var(--up-icp-size,56px);
 }
 .up-icons-grid[data-kind="flat"] .up-icons-art{
-  width:var(--icp-size,64px); height:var(--icp-size,64px);
+  width:var(--up-icp-size,64px); height:var(--up-icp-size,64px);
 }
 .up-icons-grid[data-kind="app"] .up-icons-art svg,
 .up-icons-grid[data-kind="flat"] .up-icons-art svg{ width:100%; height:100%; }
@@ -1102,7 +1102,7 @@ a.up-sponsor-card[href]:hover{
 
 .up-icons-label{
   font-family:"Ubuntu Mono",monospace; font-size:10.5px; line-height:1.25;
-  text-align:center; color:var(--content-muted); word-break:break-word;
+  text-align:center; color:var(--up-content-muted); word-break:break-word;
 }
 
 /* Per-section backdrops: each grid's tiles take the chosen solid colour,
@@ -1118,7 +1118,7 @@ a.up-sponsor-card[href]:hover{
 .up-icons-grid[data-bg="dark"] .up-icons-label{ color:rgba(255,247,228,.6); }
 .up-icons-grid[data-bg="launcher"] .up-icons-cell:hover,
 .up-icons-grid[data-bg="dark"] .up-icons-cell:hover{
-  border-color:var(--orange); box-shadow:0 4px 14px rgba(0,0,0,.5);
+  border-color:var(--up-accent); box-shadow:0 4px 14px rgba(0,0,0,.5);
 }
 
 .up-icons-toast{
@@ -1137,24 +1137,24 @@ a.up-sponsor-card[href]:hover{
    other pages keep it. The panel's own alpha lets the wallpaper through. */
 .up-window-body:has(> .up-neofetch){ background:transparent; }
 .up-neofetch{
-  --aod-fg:#ABB2BF;
-  --aod-muted:#5C6370;
-  --aod-red:#E06C75;
-  --aod-orange:#D19A66;
-  --aod-yellow:#E5C07B;
-  --aod-green:#98C379;
-  --aod-blue:#61AFEF;
-  --aod-purple:#C678DD;
-  --aod-cyan:#56B6C2;
+  --up-aod-fg:#ABB2BF;
+  --up-aod-muted:#5C6370;
+  --up-aod-red:#E06C75;
+  --up-aod-orange:#D19A66;
+  --up-aod-yellow:#E5C07B;
+  --up-aod-green:#98C379;
+  --up-aod-blue:#61AFEF;
+  --up-aod-purple:#C678DD;
+  --up-aod-cyan:#56B6C2;
 
   flex:1; min-height:0;
   display:grid; grid-template-columns:auto 1fr;
   gap:48px; align-items:start;
   padding:24px 22px 20px;
-  background:color-mix(in srgb, var(--hud) 82%, transparent);
+  background:color-mix(in srgb, var(--up-hud) 82%, transparent);
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
-  color:var(--aod-fg);
+  color:var(--up-aod-fg);
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12pt; font-weight:400; line-height:1.2;
   overflow:auto;
@@ -1178,7 +1178,7 @@ a.up-sponsor-card[href]:hover{
 .up-shell-noscript{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12pt; line-height:1.2;
-  color:var(--aod-red);
+  color:var(--up-aod-red);
 }
 /* Reconnect overlay shown after `exit` disposes the terminal. */
 .up-shell-reconnect{
@@ -1186,11 +1186,11 @@ a.up-sponsor-card[href]:hover{
   display:flex; flex-direction:column; justify-content:flex-start;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12pt; line-height:1.4;
-  color:var(--aod-fg,#ABB2BF);
+  color:var(--up-aod-fg,#ABB2BF);
   cursor:pointer; outline:none;
   .up-shell-reconnect-btn{
     margin-top:1.4em;
-    color:var(--aod-green,#98C379);
+    color:var(--up-aod-green,#98C379);
   }
   &:focus-visible .up-shell-reconnect-btn{
     text-decoration:underline;
@@ -1462,10 +1462,10 @@ a.up-sponsor-card[href]:hover{
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
   &:focus{
-    border-color:var(--orange-light);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--orange-light) 22%, transparent);
+    border-color:var(--up-accent-light);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--up-accent-light) 22%, transparent);
   }
-  &::placeholder{color:var(--content-muted)}
+  &::placeholder{color:var(--up-content-muted)}
 }
 .up-pathbar-search-count{
   font-size:11px;color:#7A7570;font-variant-numeric:tabular-nums;
@@ -1523,18 +1523,18 @@ a.up-sponsor-card[href]:hover{
   border-left:3px solid transparent;
   outline:none;
   &[hidden]{display:none}
-  &:hover{background:color-mix(in srgb, var(--orange) 10%, transparent)}
+  &:hover{background:color-mix(in srgb, var(--up-accent) 10%, transparent)}
   &.is-focused{
-    background:color-mix(in srgb, var(--orange) 12%, transparent);
-    border-left-color:color-mix(in srgb, var(--orange) 55%, transparent);
-    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--orange) 35%, transparent);
+    background:color-mix(in srgb, var(--up-accent) 12%, transparent);
+    border-left-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--up-accent) 35%, transparent);
   }
   &.is-active{
-    /* Brand orange-light, matching the tile-selection orange (see the
+    /* --up-accent-light, matching the tile-selection accent (see the
        .up-naut-item.is-active note); the meta/date keep the raised .95
        alpha from the contrast pass. */
-    background:var(--orange-light);color:#fff;
-    border-left-color:var(--orange);
+    background:var(--up-accent-light);color:#fff;
+    border-left-color:var(--up-accent);
     .up-post-meta{color:rgba(255,255,255,.95)}
     .up-post-date{color:rgba(255,255,255,.95)}
   }
@@ -1552,13 +1552,13 @@ a.up-sponsor-card[href]:hover{
 }
 .up-post-meta{
   display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;
-  font-size:11.5px;color:var(--content-muted);
+  font-size:11.5px;color:var(--up-content-muted);
 }
 .up-post-date{
-  font-size:11.5px;color:var(--content-muted);font-variant-numeric:tabular-nums;
+  font-size:11.5px;color:var(--up-content-muted);font-variant-numeric:tabular-nums;
   align-self:start;white-space:nowrap;
 }
-.up-post-empty{padding:24px 14px;color:var(--content-muted);font-size:13px}
+.up-post-empty{padding:24px 14px;color:var(--up-content-muted);font-size:13px}
 
 /* ---------- Reader progress strip (under pathbar) ---------- */
 .up-reader-progress{
@@ -1569,15 +1569,15 @@ a.up-sponsor-card[href]:hover{
 }
 .up-reader-progress-bar{
   position:absolute;inset:0;
-  background:linear-gradient(90deg,var(--orange) 0%,var(--orange-light) 50%,color-mix(in srgb, var(--orange-light) 85%, white) 100%);
+  background:linear-gradient(90deg,var(--up-accent) 0%,var(--up-accent-light) 50%,color-mix(in srgb, var(--up-accent-light) 85%, white) 100%);
   transform-origin:0 50%;
   transform:scaleX(0);
   transition:transform .08s linear;
-  box-shadow:0 0 6px color-mix(in srgb, var(--orange-light) 45%, transparent);
+  box-shadow:0 0 6px color-mix(in srgb, var(--up-accent-light) 45%, transparent);
 }
 
 /* ---------- Reader pane ---------- */
-.up-reader{overflow:auto;background:var(--content-bg);position:relative}
+.up-reader{overflow:auto;background:var(--up-content-bg);position:relative}
 .up-reader-up{
   display:inline-flex;align-items:center;gap:5px;
   margin:14px 16px 0;padding-block:3px;padding-inline:6px 8px;width:fit-content;
@@ -1596,11 +1596,11 @@ a.up-sponsor-card[href]:hover{
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
 .up-reader-meta{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:var(--content-muted);letter-spacing:.04em;
+  font-size:11.5px;color:var(--up-content-muted);letter-spacing:.04em;
   display:flex;flex-wrap:wrap;gap:6px;align-items:center;
 }
 .up-reader-meta-sep{color:#C4BFB9}
-.up-reader-chip{color:var(--content-muted)}
+.up-reader-chip{color:var(--up-content-muted)}
 .up-reader-title{
   font-size:30px;font-weight:500;line-height:1.2;letter-spacing:-.01em;
   margin:6px 0 22px;
@@ -1609,7 +1609,7 @@ a.up-sponsor-card[href]:hover{
 .up-reader-signoff{
   margin-top:26px;padding-top:14px;border-top:1px solid #ECE9E6;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:12px;color:var(--content-muted);
+  font-size:12px;color:var(--up-content-muted);
 }
 /* ---------- Markdown prose (post reader and plain pages) ---------- */
 :is(.up-reader-body, .up-page-body){
@@ -1633,9 +1633,9 @@ a.up-sponsor-card[href]:hover{
    glyph rule sits outside the Markdown bodies' block, so a heading in
    any other content still shows its link. */
   .up-heading-anchor{
-    margin-inline-start:.35em;color:var(--content-muted);font-weight:400;
+    margin-inline-start:.35em;color:var(--up-content-muted);font-weight:400;
     text-decoration:none;opacity:0;transition:opacity .12s ease;
-    &:hover{color:var(--orange-light);text-decoration:none}
+    &:hover{color:var(--up-accent-light);text-decoration:none}
     &:focus-visible{opacity:1}
   }
   :is(h1, h2, h3, h4, h5, h6):hover > .up-heading-anchor{opacity:1}
@@ -1652,11 +1652,11 @@ a.up-sponsor-card[href]:hover{
   img{max-width:100%;height:auto;border-radius:3px}
   table{
     border-collapse:collapse;font-size:13.5px;
-    border:1px solid var(--content-line);
+    border:1px solid var(--up-content-line);
   }
   th,
   td{
-    border:1px solid var(--content-line);padding:6px 10px;text-align:start;
+    border:1px solid var(--up-content-line);padding:6px 10px;text-align:start;
   }
   th{background:#F2EFEC;font-weight:500}
   code{
@@ -1671,7 +1671,7 @@ a.up-sponsor-card[href]:hover{
   .highlight{margin:0 0 14px}
   .highlight pre{margin:0}
   hr{
-    border:0;border-top:1px dashed var(--content-line);margin:18px 0;
+    border:0;border-top:1px dashed var(--up-content-line);margin:18px 0;
   }
   /* Math from render-passthrough.html. The Ubuntu faces lack the math
      alphabets, so MathML asks for a math font, and display math scrolls
@@ -1684,30 +1684,30 @@ a.up-sponsor-card[href]:hover{
    TableOfContents nav. */
 .up-toc{
   margin:0 0 20px;padding:8px 14px;font-size:14px;
-  background:#F4F1ED;border:1px solid var(--content-line);border-radius:3px;
+  background:#F4F1ED;border:1px solid var(--up-content-line);border-radius:3px;
   > summary{cursor:pointer;font-weight:500;color:#3A3733}
   ul{list-style:none;margin:6px 0 0;padding-inline-start:0}
   ul ul{margin:2px 0 0;padding-inline-start:1.1em}
   li{margin:3px 0}
   a{color:#2B4E8E;text-decoration:none}
-  a:hover{color:var(--orange-light);text-decoration:underline}
+  a:hover{color:var(--up-accent-light);text-decoration:underline}
 }
 
 /* GitHub-style alerts from render-blockquote.html, drawn as GTK info bars
    in the Tango palette Ambiance used. */
 .up-alert{
-  --alert-ink:#3465A4;--alert-bg:#E4ECF6;--alert-line:#A9C1E0;
-  margin:0 0 14px;border:1px solid var(--alert-line);border-radius:3px;
-  background:linear-gradient(180deg,color-mix(in srgb, var(--alert-bg) 60%, #fff) 0%,var(--alert-bg) 100%);
+  --up-alert-ink:#3465A4;--up-alert-bg:#E4ECF6;--up-alert-line:#A9C1E0;
+  margin:0 0 14px;border:1px solid var(--up-alert-line);border-radius:3px;
+  background:linear-gradient(180deg,color-mix(in srgb, var(--up-alert-bg) 60%, #fff) 0%,var(--up-alert-bg) 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
-  &.is-tip{--alert-ink:#4E9A06;--alert-bg:#E8F3DC;--alert-line:#B4D58E}
-  &.is-important{--alert-ink:#77216F;--alert-bg:#F2E4EF;--alert-line:#D2A9CC}
-  &.is-warning{--alert-ink:#8F5E00;--alert-bg:#FCF2D2;--alert-line:#E8CF7A}
-  &.is-caution{--alert-ink:#CC0000;--alert-bg:#FBE3E1;--alert-line:#EBA9A4}
+  &.is-tip{--up-alert-ink:#4E9A06;--up-alert-bg:#E8F3DC;--up-alert-line:#B4D58E}
+  &.is-important{--up-alert-ink:#77216F;--up-alert-bg:#F2E4EF;--up-alert-line:#D2A9CC}
+  &.is-warning{--up-alert-ink:#8F5E00;--up-alert-bg:#FCF2D2;--up-alert-line:#E8CF7A}
+  &.is-caution{--up-alert-ink:#CC0000;--up-alert-bg:#FBE3E1;--up-alert-line:#EBA9A4}
 }
 .up-alert-title{
   display:flex;align-items:center;gap:7px;
-  padding:7px 12px 0;font-weight:500;color:var(--alert-ink);
+  padding:7px 12px 0;font-weight:500;color:var(--up-alert-ink);
 }
 .up-alert-icon{display:inline-flex;flex:none}
 .up-alert-icon svg{width:16px;height:16px}
@@ -1750,8 +1750,8 @@ details.up-alert{
   }
   &:active{background:#2A2825}
   &.is-copied{
-    color:#fff;background:linear-gradient(180deg,var(--orange-light) 0%,color-mix(in srgb, var(--orange) 50%, var(--orange-dark)) 100%);
-    border-color:var(--orange-darker);opacity:1;
+    color:#fff;background:linear-gradient(180deg,var(--up-accent-light) 0%,color-mix(in srgb, var(--up-accent) 50%, var(--up-accent-dark)) 100%);
+    border-color:var(--up-accent-darker);opacity:1;
   }
 }
 
@@ -1808,17 +1808,17 @@ details.up-alert{
   transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
   &[hidden]{display:none}
   &:hover{
-    background:color-mix(in srgb, var(--orange) 7%, transparent);
-    border-color:color-mix(in srgb, var(--orange) 18%, transparent);
+    background:color-mix(in srgb, var(--up-accent) 7%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent) 18%, transparent);
   }
   &.is-focused{
-    background:color-mix(in srgb, var(--orange) 12%, transparent);
-    border-color:color-mix(in srgb, var(--orange) 55%, transparent);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--orange) 12%, transparent);
+    background:color-mix(in srgb, var(--up-accent) 12%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
   }
   &.is-active{
-    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 92%, transparent) 0%, color-mix(in srgb, var(--orange) 95%, transparent) 100%);
-    color:#fff;border-color:var(--orange-darker);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 92%, transparent) 0%, color-mix(in srgb, var(--up-accent) 95%, transparent) 100%);
+    color:#fff;border-color:var(--up-accent-darker);
     box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
   }
   &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
@@ -1826,7 +1826,7 @@ details.up-alert{
      .is-active.is-focused so its box-shadow wins when a tile is anchor,
      active, and keyboard-focused at once. */
   &.is-anchor.is-active{
-    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
+    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--up-accent-darker), 0 1px 2px rgba(0,0,0,.2);
   }
   &.is-dragging{
     will-change:transform;cursor:grabbing;opacity:.92;
@@ -1845,8 +1845,8 @@ details.up-alert{
 /* Rubber-band marquee, positioned in grid-content space (see projects-desktop). */
 .up-marquee{
   position:absolute;z-index:5;pointer-events:none;
-  border:1px solid color-mix(in srgb, var(--orange) 80%, transparent);
-  background:color-mix(in srgb, var(--orange) 14%, transparent);
+  border:1px solid color-mix(in srgb, var(--up-accent) 80%, transparent);
+  background:color-mix(in srgb, var(--up-accent) 14%, transparent);
   border-radius:1px;
   &[hidden]{display:none}
 }
@@ -1871,9 +1871,9 @@ details.up-alert{
 .up-ctx-item{
   padding:5px 16px;cursor:default;color:rgba(255,255,255,.86);white-space:nowrap;
   outline:none;
-  &:hover{background:var(--orange-light); color:#fff;}
+  &:hover{background:var(--up-accent-light); color:#fff;}
   /* keyboard-opened menus move real focus between items */
-  &:focus-visible{background:var(--orange-light); color:#fff;}
+  &:focus-visible{background:var(--up-accent-light); color:#fff;}
 }
 
 .up-project-folder{
@@ -1925,7 +1925,7 @@ details.up-alert{
 }
 .up-project-grid-empty{
   grid-column:1/-1;padding:28px 14px;
-  color:var(--content-muted);font-size:13px;text-align:center;
+  color:var(--up-content-muted);font-size:13px;text-align:center;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
 }
 
@@ -2062,7 +2062,7 @@ details.up-alert{
 .up-project-preview.up-empty-pane{padding:18px 22px;background:#FBFAF7}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:var(--content-muted);
+  color:var(--up-content-muted);
 }
 .up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
 .up-empty-pane-hint{
@@ -2071,7 +2071,7 @@ details.up-alert{
 }
 .up-empty-pane-tagline{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
-  font-size:11.5px;color:var(--content-muted);letter-spacing:.02em;
+  font-size:11.5px;color:var(--up-content-muted);letter-spacing:.02em;
   padding:2px 8px;border-radius:2px;
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
 }
@@ -2082,10 +2082,10 @@ details.up-alert{
 .up-projects-noscript{
   margin:0;padding:14px 22px;list-style:none;
   flex:1;min-height:0;overflow:auto;
-  background:var(--content-bg);
-  li{padding:5px 0;border-bottom:1px dashed var(--content-line)}
+  background:var(--up-content-bg);
+  li{padding:5px 0;border-bottom:1px dashed var(--up-content-line)}
   a{color:#2B4E8E;text-decoration:none}
-  a:hover{color:var(--orange-light);text-decoration:underline}
+  a:hover{color:var(--up-accent-light);text-decoration:underline}
 }
 
 /* ---------- 404 ---------- */
@@ -2100,7 +2100,7 @@ details.up-alert{
 .up-404-links{
   margin-top:10px;display:flex;gap:18px;
   a{color:#2B4E8E;text-decoration:none}
-  a:hover{color:var(--orange-light);text-decoration:underline}
+  a:hover{color:var(--up-accent-light);text-decoration:underline}
 }
 
 /* ---------- Responsive collapse ---------- */
@@ -2222,7 +2222,7 @@ details.up-alert{
   color:rgba(255,255,255,.86);
   &:hover{
     /* recipe: overlay-row-hover */
-    background:var(--orange-light);
+    background:var(--up-accent-light);
     color:#fff;
   }
   &.is-danger{color:#F0B0A0}
@@ -2235,11 +2235,11 @@ details.up-alert{
 }
 .up-dropdown-btn{
   padding:5px 10px; border:0; border-radius:3px;
-  background:var(--orange);
+  background:var(--up-accent);
   color:#fff; font-size:12px; font-family:"Ubuntu",sans-serif;
   text-decoration:none;
   cursor:default;
-  &:hover{background:var(--orange-light)}
+  &:hover{background:var(--up-accent-light)}
   &.is-ghost{background:transparent}
   &.is-ghost:hover{background:rgba(255,255,255,.1)}
 }
@@ -2279,7 +2279,7 @@ details.up-alert{
   cursor:default;
   &:hover{
     /* recipe: overlay-row-hover */
-    background:var(--orange-light);
+    background:var(--up-accent-light);
     color:#fff;
   }
   &.is-disabled{
@@ -2314,7 +2314,7 @@ details.up-alert{
   color:rgba(255,255,255,.4);
 }
 .up-net-row{
-  &.is-on .up-net-row-dot{color:var(--orange-light)}
+  &.is-on .up-net-row-dot{color:var(--up-accent-light)}
   &.is-muted .up-net-row-name{color:rgba(255,255,255,.4)}
   &.is-mono .up-net-row-name{font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace}
   &.is-strong .up-net-row-name{font-weight:600}
@@ -2333,14 +2333,14 @@ details.up-alert{
 .up-lang-row{
   text-decoration:none;
   &::before{content:"\25CB";display:inline-block;width:14px;color:rgba(255,255,255,.4)}
-  &.is-on::before{content:"\25CF";color:var(--orange-light)}
+  &.is-on::before{content:"\25CF";color:var(--up-accent-light)}
   &:hover::before{color:inherit}
 }
 
 /* Net indicator while a hotspot is broadcasting: accent-tinted with a gentle
    pulse (reduce-motion neutralizes the animation via the global rule). */
 .up-indicator.is-hotspot{
-  color:var(--orange-light);
+  color:var(--up-accent-light);
   animation:upHotspotPulse 1.8s ease-in-out infinite;
 }
 @keyframes upHotspotPulse{
@@ -2348,14 +2348,14 @@ details.up-alert{
   50%{opacity:.55}
 }
 .up-dropdown-row.is-hotspot-status{
-  color:var(--orange-light); font-weight:600;
+  color:var(--up-accent-light); font-weight:600;
   cursor:default;
 }
 
 /* ---- volume slider ----------------------------------------------------- */
 
 .up-vol-slider{
-  flex:1; accent-color:var(--orange);
+  flex:1; accent-color:var(--up-accent);
 }
 .up-vol-toggle{
   width:24px; height:24px; padding:0; border:0;
@@ -2371,7 +2371,7 @@ details.up-alert{
   width:18px; height:18px; padding:0;
   border:0; background:transparent; color:rgba(255,255,255,.7); cursor:default;
   &:hover{color:#fff}
-  &.is-playing{color:var(--orange-light)}
+  &.is-playing{color:var(--up-accent-light)}
 }
 .up-vol-next{
   flex:0 0 auto;
@@ -2400,7 +2400,7 @@ details.up-alert{
 .up-bat-bar-fill{
   /* The level the headline reads until top-panel.ts sets the real one. */
   width:76%; height:100%;
-  background:linear-gradient(90deg,var(--orange),var(--orange-light));
+  background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
 }
 
 /* ---- mini calendar ----------------------------------------------------- */
@@ -2420,7 +2420,7 @@ details.up-alert{
   background:transparent; border-radius:2px;
   &.is-empty{color:transparent}
   &.is-today{
-    background:var(--orange-light);
+    background:var(--up-accent-light);
     font-weight:600;
   }
 }
@@ -2450,8 +2450,8 @@ details.up-alert{
     0 24px 80px rgba(0,0,0,.55),
     0 6px 18px rgba(0,0,0,.4);
   opacity:0;
-  transform:translate(calc(-50% + var(--ox,0px)),
-                      calc(-50% + var(--oy,0px))) scale(.96);
+  transform:translate(calc(-50% + var(--up-ox,0px)),
+                      calc(-50% + var(--up-oy,0px))) scale(.96);
   transition:opacity .15s ease,
     transform .18s cubic-bezier(.2,.8,.3,1);
   font-family:"Ubuntu",sans-serif;
@@ -2459,20 +2459,20 @@ details.up-alert{
   overflow:hidden;
   &.is-appear{
     opacity:1;
-    transform:translate(calc(-50% + var(--ox,0px)),
-                        calc(-50% + var(--oy,0px))) scale(1);
+    transform:translate(calc(-50% + var(--up-ox,0px)),
+                        calc(-50% + var(--up-oy,0px))) scale(1);
   }
   &.is-dragging{transition:none}
   &.is-shaking{animation:up-dlg-shake .38s}
   &.is-dragging .up-dlg-titlebar{cursor:grabbing}
 }
 @keyframes up-dlg-shake{
-  0%,100%{transform:translate(calc(-50% + var(--ox,0px)),
-                              calc(-50% + var(--oy,0px))) scale(1)}
-  15%,55%{transform:translate(calc(-50% + var(--ox,0px) - 6px),
-                              calc(-50% + var(--oy,0px))) scale(1)}
-  35%,75%{transform:translate(calc(-50% + var(--ox,0px) + 6px),
-                              calc(-50% + var(--oy,0px))) scale(1)}
+  0%,100%{transform:translate(calc(-50% + var(--up-ox,0px)),
+                              calc(-50% + var(--up-oy,0px))) scale(1)}
+  15%,55%{transform:translate(calc(-50% + var(--up-ox,0px) - 6px),
+                              calc(-50% + var(--up-oy,0px))) scale(1)}
+  35%,75%{transform:translate(calc(-50% + var(--up-ox,0px) + 6px),
+                              calc(-50% + var(--up-oy,0px))) scale(1)}
 }
 .up-dlg-titlebar{
   height:26px; padding:0 10px 0 8px;
@@ -2553,7 +2553,7 @@ details.up-alert{
 }
 .up-dlg-content-body a{
   color:#2B4E8E; text-decoration:none;
-  &:hover{color:var(--orange-light); text-decoration:underline}
+  &:hover{color:var(--up-accent-light); text-decoration:underline}
 }
 .up-dlg-content-details{
   margin-top:12px; padding:10px 12px;
@@ -2592,7 +2592,7 @@ details.up-alert{
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
   &.is-primary{
-    background:linear-gradient(180deg,var(--orange) 0%,var(--orange-dark) 100%);
+    background:linear-gradient(180deg,var(--up-accent) 0%,var(--up-accent-dark) 100%);
     color:#fff;
     border-color:rgba(0,0,0,.35);
     font-weight:500;
@@ -2601,10 +2601,10 @@ details.up-alert{
       0 1px 1px rgba(0,0,0,.15);
   }
   &.is-primary:hover{
-    background:linear-gradient(180deg,var(--orange-light) 0%,var(--orange-dark) 100%);
+    background:linear-gradient(180deg,var(--up-accent-light) 0%,var(--up-accent-dark) 100%);
   }
   &.is-primary:active{
-    background:linear-gradient(180deg,var(--orange-dark) 0%,var(--orange-darker) 100%);
+    background:linear-gradient(180deg,var(--up-accent-dark) 0%,var(--up-accent-darker) 100%);
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
   /* Red label only on the beige (non-primary) skin. Combined with .is-primary
@@ -2650,7 +2650,7 @@ details.up-alert{
     transition:transform .15s ease;
   }
   &.is-on{
-    background:var(--orange-light);
+    background:var(--up-accent-light);
     &::after{transform:translateX(18px)}
   }
 }
@@ -2659,7 +2659,7 @@ details.up-alert{
 }
 .up-accent-swatch{
   width:26px; height:26px; padding:0; border-radius:13px; cursor:default;
-  background:var(--orange-light);
+  background:var(--up-accent-light);
   border:2px solid transparent;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.25);
   &.is-active{
@@ -2682,12 +2682,12 @@ details.up-alert{
 .up-shortcut-section-title{
   font-size:11.5px; font-weight:500; letter-spacing:.4px;
   text-transform:uppercase;
-  color:var(--content-muted);
+  color:var(--up-content-muted);
   border-bottom:1px solid #DCD7D2;
   padding-bottom:4px;
 }
 .up-shortcut-section-hint{
-  font-size:11.5px; color:var(--content-muted);
+  font-size:11.5px; color:var(--up-content-muted);
 }
 .up-shortcut-row{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
@@ -2716,7 +2716,7 @@ details.up-alert{
   }
 }
 .up-kbd-join{
-  font-size:11px; color:var(--content-muted);
+  font-size:11px; color:var(--up-content-muted);
 }
 
 /* Reduce-motion: toggled live from Preferences / Power saver, and seeded
@@ -2745,9 +2745,9 @@ body.up-reduce-motion *{
 .up-dash{
   position:fixed;
   top:24px;
-  left:var(--launcher-w);
+  left:var(--up-launcher-w);
   right:0;
-  bottom:var(--dock-h);
+  bottom:var(--up-dock-h);
   z-index:38;
   pointer-events:none;
   opacity:0;
@@ -2813,8 +2813,8 @@ body.up-reduce-motion *{
   font:300 17px/1.3 "Ubuntu",sans-serif;
   &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
   &:focus{
-    border-color:color-mix(in srgb, var(--orange-light) 60%, transparent);
-    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent-light) 60%, transparent);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--up-accent) 18%, transparent);
   }
 }
 
@@ -2858,7 +2858,7 @@ body.up-reduce-motion *{
   border-radius:3px;
   &[hidden]{display:none}
   &:hover{color:#fff}
-  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--orange-light) 70%, transparent);color:#fff}
+  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--up-accent-light) 70%, transparent);color:#fff}
 }
 
 .up-dash-grid{
@@ -2884,9 +2884,9 @@ body.up-reduce-motion *{
   /* arrow-key navigation moves real focus; paint it like Unity's orange
      result ring whether or not the browser deems it :focus-visible */
   &:focus{
-    background:color-mix(in srgb, var(--orange) 14%, transparent);
-    border-color:color-mix(in srgb, var(--orange-light) 75%, transparent);
-    box-shadow:0 0 12px color-mix(in srgb, var(--orange) 25%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+    background:color-mix(in srgb, var(--up-accent) 14%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent-light) 75%, transparent);
+    box-shadow:0 0 12px color-mix(in srgb, var(--up-accent) 25%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
   }
   &:active{transform:scale(.97)}
 }
@@ -2938,7 +2938,7 @@ body.up-reduce-motion *{
   cursor:pointer;
   svg{width:16px;height:16px}
   &:hover{color:#fff;background:rgba(255,255,255,.07)}
-  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--orange-light) 70%, transparent)}
+  &:focus-visible{outline:none;border-color:color-mix(in srgb, var(--up-accent-light) 70%, transparent)}
   &.is-active{
     color:#fff;
     background:rgba(255,255,255,.08);
@@ -2947,8 +2947,8 @@ body.up-reduce-motion *{
     &::before{
       content:"";position:absolute;top:-8px;left:6px;right:6px;height:2px;
       border-radius:1px;
-      background:var(--orange-light);
-      box-shadow:0 0 8px color-mix(in srgb, var(--orange-light) 80%, transparent);
+      background:var(--up-accent-light);
+      box-shadow:0 0 8px color-mix(in srgb, var(--up-accent-light) 80%, transparent);
     }
   }
 }
@@ -2970,9 +2970,9 @@ body.up-reduce-motion *{
 .up-hud{
   position:fixed;
   top:24px;
-  left:var(--launcher-w);
+  left:var(--up-launcher-w);
   right:0;
-  bottom:var(--dock-h);
+  bottom:var(--up-dock-h);
   z-index:38;
   pointer-events:none;
   opacity:0;
@@ -3036,8 +3036,8 @@ body.up-reduce-motion *{
   font:300 19px/1.3 "Ubuntu",sans-serif;
   &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
   &:focus{
-    border-color:color-mix(in srgb, var(--orange-light) 60%, transparent);
-    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--orange) 18%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent-light) 60%, transparent);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 0 0 3px color-mix(in srgb, var(--up-accent) 18%, transparent);
   }
 }
 .up-hud-results{
@@ -3055,7 +3055,7 @@ body.up-reduce-motion *{
   cursor:default;
   &:hover{background:rgba(255,255,255,.07)}
   &.is-selected{
-    background:linear-gradient(180deg,var(--orange-light),var(--orange-dark));
+    background:linear-gradient(180deg,var(--up-accent-light),var(--up-accent-dark));
     .up-hud-row-path{color:rgba(255,255,255,.78)}
     .up-hud-row-label{color:#fff}
   }
@@ -3129,7 +3129,7 @@ body.up-reduce-motion *{
 }
 .up-notify-bar-fill{
   display:block; height:100%;
-  background:linear-gradient(90deg,var(--orange),var(--orange-light));
+  background:linear-gradient(90deg,var(--up-accent),var(--up-accent-light));
 }
 
 /* ---- lock screen ------------------------------------------------------- */
@@ -3213,7 +3213,7 @@ body.up-reduce-motion *{
   flex:1;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center; gap:16px;
-  color:var(--content-muted);
+  color:var(--up-content-muted);
   /* A class with an explicit `display` overrides the UA `[hidden]` rule, so
      toggling `hidden` alone would leave it visible; restore the hide. */
   &[hidden]{display:none}
@@ -3264,17 +3264,17 @@ body.up-reduce-motion *{
   transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
   &[hidden]{display:none}
   &:hover{
-    background:color-mix(in srgb, var(--orange) 7%, transparent);
-    border-color:color-mix(in srgb, var(--orange) 18%, transparent);
+    background:color-mix(in srgb, var(--up-accent) 7%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent) 18%, transparent);
   }
   &.is-focused{
-    background:color-mix(in srgb, var(--orange) 12%, transparent);
-    border-color:color-mix(in srgb, var(--orange) 55%, transparent);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--orange) 12%, transparent);
+    background:color-mix(in srgb, var(--up-accent) 12%, transparent);
+    border-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
   }
   &.is-active{
-    background:linear-gradient(180deg, color-mix(in srgb, var(--orange-light) 92%, transparent) 0%, color-mix(in srgb, var(--orange) 95%, transparent) 100%);
-    color:#fff;border-color:var(--orange-darker);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 92%, transparent) 0%, color-mix(in srgb, var(--up-accent) 95%, transparent) 100%);
+    color:#fff;border-color:var(--up-accent-darker);
     box-shadow:0 1px 0 rgba(255,255,255,.22) inset, 0 1px 2px rgba(0,0,0,.18);
   }
   &.is-active.is-focused{box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.2)}
@@ -3282,7 +3282,7 @@ body.up-reduce-motion *{
      .is-active.is-focused so its box-shadow wins when a tile is anchor,
      active, and keyboard-focused at once. */
   &.is-anchor.is-active{
-    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--orange-darker), 0 1px 2px rgba(0,0,0,.2);
+    box-shadow:0 0 0 2px rgba(255,255,255,.7) inset, 0 0 0 1px var(--up-accent-darker), 0 1px 2px rgba(0,0,0,.2);
   }
   &.is-dragging{
     will-change:transform;cursor:grabbing;opacity:.92;
@@ -3324,7 +3324,7 @@ body.up-reduce-motion *{
   flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between;
   gap:12px; padding:8px 12px;
-  border-top:1px solid var(--content-line);
+  border-top:1px solid var(--up-content-line);
   background:linear-gradient(180deg,#F4F2EF 0%,#ECE9E5 100%);
 }
 .up-trash-count{font-size:12px; color:#6B6764}
@@ -3351,13 +3351,13 @@ body.up-reduce-motion *{
   }
   /* Maximized: fill the desktop between launcher and panel. The shared
      .up-window-stage.is-maximized rule already shifts the stage itself to the
-     launcher edge (--launcher-w), so the chrome just anchors to the
+     launcher edge (--up-launcher-w), so the chrome just anchors to the
      stage box below the panel. transform:none overrides drag.ts's inline
      translate and width/height:auto override resize.ts's inline size while
      maximized (drag and resize are gated, and the inline values survive so
      restore puts the window back at its dragged + resized geometry). */
   &.is-maximized .up-window-chrome{
-    inset:24px 0 var(--dock-h) 0;
+    inset:24px 0 var(--up-dock-h) 0;
     width:auto !important; height:auto !important;
     border-radius:0;
     transform:none !important;
@@ -3366,16 +3366,16 @@ body.up-reduce-motion *{
 }
 
 .up-daw-body{
-  --daw-bg:#23262B;
-  --daw-panel:#2B2F35;
-  --daw-edge:#121418;
-  --daw-text:#C9CCD1;
-  --daw-dim:#8E939B;
-  --daw-lcd-bg:#0D1206;
-  --daw-lcd:#A8E22E;
-  --daw-lcd-glow:rgba(168,226,46,.5);
-  background:var(--daw-bg);
-  color:var(--daw-text);
+  --up-daw-bg:#23262B;
+  --up-daw-panel:#2B2F35;
+  --up-daw-edge:#121418;
+  --up-daw-text:#C9CCD1;
+  --up-daw-dim:#8E939B;
+  --up-daw-lcd-bg:#0D1206;
+  --up-daw-lcd:#A8E22E;
+  --up-daw-lcd-glow:rgba(168,226,46,.5);
+  background:var(--up-daw-bg);
+  color:var(--up-daw-text);
   user-select:none;
 }
 
@@ -3386,7 +3386,7 @@ body.up-reduce-motion *{
   display:flex; align-items:center; gap:8px;
   height:40px; padding:0 10px;
   background:linear-gradient(180deg,#32363D 0%,#272B31 100%);
-  border-bottom:1px solid var(--daw-edge);
+  border-bottom:1px solid var(--up-daw-edge);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
 }
 .up-daw-transport{display:flex; gap:4px}
@@ -3396,10 +3396,10 @@ body.up-reduce-motion *{
   width:28px; height:24px; padding:0;
   /* recipe: daw-raised */
   background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   border-radius:3px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
-  color:var(--daw-text);
+  color:var(--up-daw-text);
   cursor:default;
   &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
   &:active{
@@ -3410,7 +3410,7 @@ body.up-reduce-motion *{
   span{display:inline-flex}
   span[hidden]{display:none}
   &.is-on{
-    color:var(--daw-lcd);
+    color:var(--up-daw-lcd);
     background:#1E2126;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.18);
   }
@@ -3419,26 +3419,26 @@ body.up-reduce-motion *{
   display:flex; align-items:center; gap:6px;
   padding:3px 4px 3px 8px;
   background:#1A1D21;
-  border:1px solid var(--daw-edge); border-radius:3px;
+  border:1px solid var(--up-daw-edge); border-radius:3px;
   box-shadow:inset 0 1px 3px rgba(0,0,0,.5);
 }
 .up-daw-lcd-label{
   font-size:9px; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
 }
 .up-daw-lcd{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:14px; line-height:1;
   padding:3px 7px;
   min-width:40px; text-align:right;
-  color:var(--daw-lcd);
-  background:var(--daw-lcd-bg);
+  color:var(--up-daw-lcd);
+  background:var(--up-daw-lcd-bg);
   border:1px solid rgba(0,0,0,.6); border-radius:2px;
   box-shadow:inset 0 0 6px rgba(0,0,0,.7);
-  text-shadow:0 0 4px var(--daw-lcd-glow);
+  text-shadow:0 0 4px var(--up-daw-lcd-glow);
   &.is-spin{cursor:ns-resize; touch-action:none} /* BPM drag-spinbox (daw.ts) */
   &.is-trk{min-width:28px; text-align:center}
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
 }
 .up-daw-trk{
   display:flex; align-items:center; gap:3px;
@@ -3446,7 +3446,7 @@ body.up-reduce-motion *{
 .up-daw-led{
   display:inline-flex; align-items:center; gap:5px;
   font-size:9px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   &::before{
     content:""; width:7px; height:7px; border-radius:50%;
     background:#3A3F45;
@@ -3454,7 +3454,7 @@ body.up-reduce-motion *{
   }
   &.is-on::before{
     background:radial-gradient(circle at 35% 30%, #D6FF7E 0%, #A8E22E 60%, #5C8210 100%);
-    box-shadow:0 0 6px var(--daw-lcd-glow);
+    box-shadow:0 0 6px var(--up-daw-lcd-glow);
   }
 }
 
@@ -3471,13 +3471,13 @@ body.up-reduce-motion *{
      (below), and the rack itself scrolls as the fallback. */
   overflow-y:auto;
   scrollbar-width:thin;
-  scrollbar-color:#4A5058 var(--daw-panel);
-  background:var(--daw-panel);
-  border-right:1px solid var(--daw-edge);
+  scrollbar-color:#4A5058 var(--up-daw-panel);
+  background:var(--up-daw-panel);
+  border-right:1px solid var(--up-daw-edge);
 }
 .up-daw-section{
   flex:none;
-  border-bottom:1px solid var(--daw-edge);
+  border-bottom:1px solid var(--up-daw-edge);
   box-shadow:0 1px 0 rgba(255,255,255,.04); /* etched divider */
   padding-bottom:10px;
   /* A busy MIDI can have a dozen channels: the track list flexes and scrolls
@@ -3500,7 +3500,7 @@ body.up-reduce-motion *{
   flex:1 1 auto; min-height:0;
   overflow-y:auto;
   scrollbar-width:thin;
-  scrollbar-color:#4A5058 var(--daw-panel);
+  scrollbar-color:#4A5058 var(--up-daw-panel);
 }
 .up-daw-section-title{
   display:flex; align-items:center; gap:6px;
@@ -3508,10 +3508,10 @@ body.up-reduce-motion *{
   background:transparent; border:0; text-align:left;
   font-family:"Ubuntu",sans-serif;
   font-size:9px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   text-shadow:0 1px 0 rgba(0,0,0,.5);
   cursor:default;
-  &:hover{color:var(--daw-text)}
+  &:hover{color:var(--up-daw-text)}
   &::before{ /* collapse caret */
     content:"";
     width:0; height:0;
@@ -3521,7 +3521,7 @@ body.up-reduce-motion *{
     transform:rotate(90deg);
     transition:transform .12s ease;
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:-2px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:-2px}
 }
 .up-daw-track{
   display:flex; align-items:center; gap:5px;
@@ -3531,8 +3531,8 @@ body.up-reduce-motion *{
 .up-daw-track-chip{
   flex-shrink:0;
   width:8px; height:20px; border-radius:2px;
-  background:var(--tc);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 5px color-mix(in srgb, var(--tc) 35%, transparent);
+  background:var(--up-tc);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 5px color-mix(in srgb, var(--up-tc) 35%, transparent);
 }
 .up-daw-track-name{
   flex:1; min-width:0;
@@ -3552,26 +3552,26 @@ body.up-reduce-motion *{
   line-height:1;
   /* recipe: daw-raised */
   background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   cursor:default;
   border-radius:2px;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
   &:active{
     background:#23262B;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
   }
-  &:hover{color:var(--daw-text)}
+  &:hover{color:var(--up-daw-text)}
   &.is-mute{
     color:#FF9B6A; background:#3A2218; border-color:#5A2E1A;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px rgba(233,84,32,.35);
   }
   &.is-solo{
     color:#D6FF7E; background:#26330F; border-color:#3F5417;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px var(--daw-lcd-glow);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.5), 0 0 5px var(--up-daw-lcd-glow);
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
 }
 /* per-strip instrument selector + its popover */
 .up-daw-patch{
@@ -3584,23 +3584,23 @@ body.up-reduce-motion *{
   padding:0;
   /* recipe: daw-raised */
   background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   cursor:default;
   border-radius:2px;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
   &:active{
     background:#23262B;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
   }
   svg{display:block}
-  &:hover{color:var(--daw-text)}
+  &:hover{color:var(--up-daw-text)}
   &.is-custom{
-    color:var(--daw-lcd);
-    filter:drop-shadow(0 0 2px var(--daw-lcd-glow));
+    color:var(--up-daw-lcd);
+    filter:drop-shadow(0 0 2px var(--up-daw-lcd-glow));
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
 }
 .up-daw-patch-blank{flex-shrink:0; width:24px}
 .up-daw-patchmenu{
@@ -3609,7 +3609,7 @@ body.up-reduce-motion *{
   padding:4px;
   display:flex; flex-direction:column;
   background:#1E2126;
-  border:1px solid var(--daw-edge); border-radius:3px;
+  border:1px solid var(--up-daw-edge); border-radius:3px;
   box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
 }
 .up-daw-patchmenu-item{
@@ -3619,15 +3619,15 @@ body.up-reduce-motion *{
   background:transparent; border:0; border-radius:2px;
   text-align:left;
   font-family:"Ubuntu",sans-serif; font-size:11.5px;
-  color:var(--daw-text); cursor:default;
+  color:var(--up-daw-text); cursor:default;
   svg{flex-shrink:0; opacity:.75}
   &:hover{background:rgba(255,255,255,.08)}
   &.is-on{
-    color:var(--daw-lcd);
-    text-shadow:0 0 3px var(--daw-lcd-glow);
-    svg{opacity:1; filter:drop-shadow(0 0 2px var(--daw-lcd-glow))}
+    color:var(--up-daw-lcd);
+    text-shadow:0 0 3px var(--up-daw-lcd-glow);
+    svg{opacity:1; filter:drop-shadow(0 0 2px var(--up-daw-lcd-glow))}
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:-2px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:-2px}
 }
 
 .up-daw-waves{
@@ -3643,24 +3643,24 @@ body.up-reduce-motion *{
   padding:0;
   /* recipe: daw-raised */
   background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   border-radius:3px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   cursor:default;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
   &:active{
     background:#23262B;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
   }
   svg{display:block}
-  &:hover{color:var(--daw-text)}
+  &:hover{color:var(--up-daw-text)}
   &.is-on{
-    color:var(--daw-lcd);
+    color:var(--up-daw-lcd);
     background:#1E2126; border-color:#3F5417;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
 }
 .up-daw-knobs{
   display:flex; flex-wrap:wrap; gap:6px 10px;
@@ -3672,7 +3672,7 @@ body.up-reduce-motion *{
 }
 .up-daw-times-label{
   font-size:9px; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   margin-right:2px;
 }
 .up-daw-time{
@@ -3682,26 +3682,26 @@ body.up-reduce-motion *{
   padding:0 7px;
   /* recipe: daw-raised */
   background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   cursor:default;
   border-radius:2px;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:10px;
   line-height:1;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
   &:active{
     background:#23262B;
     box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
   }
-  &:hover{color:var(--daw-text)}
+  &:hover{color:var(--up-daw-text)}
   &.is-on{
-    color:var(--daw-lcd);
+    color:var(--up-daw-lcd);
     background:#1E2126; border-color:#3F5417;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.5), 0 0 6px rgba(168,226,46,.2);
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:1px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:1px}
 }
 
 /* ---- rotary knobs ---- */
@@ -3712,21 +3712,21 @@ body.up-reduce-motion *{
   &.is-sm{width:auto}
 }
 .up-daw-knob-dial{
-  --rot:-135deg;
-  --arc:0deg;
+  --up-rot:-135deg;
+  --up-arc:0deg;
   position:relative;
   width:30px; height:30px; border-radius:50%;
   cursor:ns-resize;
   touch-action:none; /* dial drag (daw.ts makeKnob) — never a scroll gesture */
   background:radial-gradient(circle at 38% 30%, #4A5058 0%, #33383F 55%, #23262B 100%);
-  border:1px solid var(--daw-edge);
+  border:1px solid var(--up-daw-edge);
   box-shadow:0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14);
-  /* value arc: a 270° ring lit up to --arc, hollowed out by a radial mask */
+  /* value arc: a 270° ring lit up to --up-arc, hollowed out by a radial mask */
   &::before{
     content:""; position:absolute; inset:-4px; border-radius:50%;
     background:conic-gradient(from 225deg,
-      var(--daw-lcd) var(--arc),
-      rgba(255,255,255,.08) var(--arc) 270deg,
+      var(--up-daw-lcd) var(--up-arc),
+      rgba(255,255,255,.08) var(--up-arc) 270deg,
       transparent 270deg 360deg);
     -webkit-mask:radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
     mask:radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
@@ -3738,10 +3738,10 @@ body.up-reduce-motion *{
     width:2px; height:9px; border-radius:1px;
     background:#E6E9ED;
     transform-origin:1px 13px;
-    transform:rotate(var(--rot));
+    transform:rotate(var(--up-rot));
     box-shadow:0 0 2px rgba(0,0,0,.6);
   }
-  &:focus-visible{outline:2px solid var(--orange-light); outline-offset:3px}
+  &:focus-visible{outline:2px solid var(--up-accent-light); outline-offset:3px}
 }
 .up-daw-knob.is-sm .up-daw-knob-dial{
   width:20px; height:20px;
@@ -3750,16 +3750,16 @@ body.up-reduce-motion *{
 }
 .up-daw-knob-label{
   font-size:9px; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
 }
 .up-daw-knob-value{
   min-width:32px; padding:1px 4px;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:9.5px; line-height:1.3; text-align:center;
-  color:var(--daw-lcd);
-  background:var(--daw-lcd-bg);
+  color:var(--up-daw-lcd);
+  background:var(--up-daw-lcd-bg);
   border-radius:2px;
-  text-shadow:0 0 3px var(--daw-lcd-glow);
+  text-shadow:0 0 3px var(--up-daw-lcd-glow);
 }
 .up-daw-knob.is-sm .up-daw-knob-label,
 .up-daw-knob.is-sm .up-daw-knob-value{display:none}
@@ -3792,7 +3792,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   padding:0 24px; text-align:center;
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12px;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   background:#1B1E23;
   /* The explicit display:flex would override the UA [hidden] rule (the
      trash-empty trap); restore the hide for track-switch toggling. */
@@ -3802,9 +3802,9 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   flex-shrink:0;
   padding:4px 10px;
   font-size:10.5px;
-  color:var(--daw-dim);
+  color:var(--up-daw-dim);
   background:linear-gradient(180deg,#272B31 0%,#22262B 100%);
-  border-top:1px solid var(--daw-edge);
+  border-top:1px solid var(--up-daw-edge);
   span{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 }
 
@@ -3821,7 +3821,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-daw-stage .up-window-chrome{
     left:8px; top:32px;
     width:calc(100vw - 16px);
-    height:calc(100% - 40px - var(--dock-h));
+    height:calc(100% - 40px - var(--up-dock-h));
   }
 }
 
@@ -3838,7 +3838,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-trash-stage .up-window-chrome{
     left:8px; top:32px;
     width:calc(100vw - 16px);
-    max-height:calc(100% - 40px - var(--dock-h));
+    max-height:calc(100% - 40px - var(--up-dock-h));
   }
 }
 
@@ -3855,7 +3855,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    don't break the Unity chrome aesthetic)
    ========================================================================= */
 .up-launcher-tile:focus-visible{
-  outline:2px solid var(--orange-light);
+  outline:2px solid var(--up-accent-light);
   outline-offset:-2px;
   border-radius:4px;
 }
@@ -3870,18 +3870,18 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline-offset:-1px;
 }
 .up-tl:focus-visible{
-  outline:2px solid var(--orange-light);
+  outline:2px solid var(--up-accent-light);
   outline-offset:1px;
 }
 .up-naut-item:focus-visible,
 .up-post-row:focus-visible,
 .up-project-tile:focus-visible,
 .up-trash-tile:focus-visible{
-  outline:2px solid var(--orange-light);
+  outline:2px solid var(--up-accent-light);
   outline-offset:-2px;
 }
 .up-dlg-btn:focus-visible{
-  outline:2px solid var(--orange-light);
+  outline:2px solid var(--up-accent-light);
   outline-offset:1px;
 }
 /* The skip link baseof.html puts first in the page. It stays off screen
@@ -3889,7 +3889,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-skip-link{
   position:fixed;top:4px;left:4px;z-index:3000;
   padding:6px 12px;border-radius:3px;
-  background:var(--orange);color:#fff;font-weight:500;text-decoration:none;
+  background:var(--up-accent);color:#fff;font-weight:500;text-decoration:none;
   transform:translateY(-200%);
   &:focus{transform:none;outline:2px solid #fff;outline-offset:1px}
 }
@@ -3900,7 +3900,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-pathbar-search-input:focus-visible,
 .up-reader-up:focus-visible,
 .up-code-copy:focus-visible{
-  outline:2px solid var(--orange-light);
+  outline:2px solid var(--up-accent-light);
   outline-offset:1px;
 }
 
@@ -3910,15 +3910,15 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    ========================================================================= */
 /* =========================================================================
    responsive: phone layout. The left launcher rail costs ~15% of a portrait
-   phone's width, so it becomes a bottom dock (--launcher-w goes to 0 and
-   --dock-h reserves the strip; every stage/overlay already offsets by both
+   phone's width, so it becomes a bottom dock (--up-launcher-w goes to 0 and
+   --up-dock-h reserves the strip; every stage/overlay already offsets by both
    vars) and the page window fills the freed desktop edge-to-edge.
    ========================================================================= */
 @media (max-width:560px){
-  :root{ --launcher-w:0px; --dock-h:54px; }
+  :root{ --up-launcher-w:0px; --up-dock-h:54px; }
   .up-launcher{
     top:auto; bottom:0; left:0; right:0;
-    width:auto; height:var(--dock-h);
+    width:auto; height:var(--up-dock-h);
     flex-direction:row; align-items:center;
     padding:0 10px; gap:8px;
     border-right:0;
@@ -3956,7 +3956,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   }
   /* The desktop watermark sits at the wallpaper's bottom-right; keep it
      above the dock. */
-  .up-desktop-label{ right:12px; bottom:calc(var(--dock-h) + 8px); }
+  .up-desktop-label{ right:12px; bottom:calc(var(--up-dock-h) + 8px); }
 }
 
 /* Landscape phones: height is the scarce axis — the left rail stays, but the

@@ -35,7 +35,7 @@ import { eventElement } from "./dom";
     const grid = section.querySelector<HTMLElement>("[data-vault-grid]");
     if (!grid) continue;
     wireGroup(section.querySelector<HTMLElement>("[data-vault-size-group]"), (btn) => {
-      grid.style.setProperty("--icp-size", `${btn.dataset.vaultSize ?? ""}px`);
+      grid.style.setProperty("--up-icp-size", `${btn.dataset.vaultSize ?? ""}px`);
     });
     wireGroup(section.querySelector<HTMLElement>("[data-vault-bg-group]"), (btn) => {
       grid.dataset.bg = btn.dataset.vaultBg ?? "light";

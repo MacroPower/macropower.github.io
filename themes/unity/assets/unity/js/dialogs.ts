@@ -76,7 +76,7 @@ function makeButton(d: DialogEntry, b: UPDialogButton, isLast: boolean): HTMLBut
 }
 
 // Drag is inline (not via drag.ts) because the dialog stores its offset
-// in CSS custom properties --ox/--oy so the up-dlg-shake keyframe can compose
+// in CSS custom properties --up-ox/--up-oy so the up-dlg-shake keyframe can compose
 // with the drag offset. drag.ts writes transform directly, which would
 // clobber the keyframe.
 function installDialogDrag(d: DialogEntry): void {
@@ -104,11 +104,11 @@ function installDialogDrag(d: DialogEntry): void {
       if (ev.pointerId !== id) return;
       ox = startOx + (ev.clientX - sx);
       oy = startOy + (ev.clientY - sy);
-      d.dialog.style.setProperty("--ox", `${ox}px`);
-      d.dialog.style.setProperty("--oy", `${oy}px`);
+      d.dialog.style.setProperty("--up-ox", `${ox}px`);
+      d.dialog.style.setProperty("--up-oy", `${oy}px`);
     };
     // pointerup and pointercancel release alike: the offset applied so far
-    // stays in --ox/--oy, only the gesture state comes off.
+    // stays in --up-ox/--up-oy, only the gesture state comes off.
     const finish = (ev: PointerEvent): void => {
       if (ev.pointerId !== id) return;
       activeId = null;

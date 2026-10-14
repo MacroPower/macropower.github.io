@@ -112,7 +112,7 @@ interface KnobSpec {
 
 // A rotary knob: 270° sweep, drag up/down (or scroll / arrow keys) to turn,
 // double-click to reset. The dial's pointer and value arc render purely from
-// the --rot / --arc custom properties; the readout below is a mini LCD.
+// the --up-rot / --up-arc custom properties; the readout below is a mini LCD.
 function makeKnob(spec: KnobSpec): HTMLElement {
   const root = document.createElement("div");
   root.className = `up-daw-knob${spec.small ? " is-sm" : ""}`;
@@ -147,8 +147,8 @@ function makeKnob(spec: KnobSpec): HTMLElement {
   const paint = (): void => {
     const sv = snap(cur);
     const n = Math.min(Math.max(toNorm(sv), 0), 1);
-    dial.style.setProperty("--rot", `${-135 + n * 270}deg`);
-    dial.style.setProperty("--arc", `${n * 270}deg`);
+    dial.style.setProperty("--up-rot", `${-135 + n * 270}deg`);
+    dial.style.setProperty("--up-arc", `${n * 270}deg`);
     dial.setAttribute("aria-valuenow", String(sv));
     dial.setAttribute("aria-valuetext", spec.fmt(sv));
     value.textContent = spec.fmt(sv);
@@ -709,7 +709,7 @@ export function initDaw(): void {
       });
       menu.appendChild(item);
     }
-    // Mount inside .up-daw-body so the --daw-* custom properties cascade; the
+    // Mount inside .up-daw-body so the --up-daw-* custom properties cascade; the
     // positioned ancestor is still the chrome, so chrome-relative coordinates
     // are unchanged.
     (chrome.querySelector(".up-daw-body") ?? chrome).appendChild(menu);
@@ -728,7 +728,7 @@ export function initDaw(): void {
   function buildTrackStrip(trk: Track): HTMLElement {
     const row = document.createElement("div");
     row.className = "up-daw-track";
-    row.style.setProperty("--tc", trk.color);
+    row.style.setProperty("--up-tc", trk.color);
 
     const chip = document.createElement("span");
     chip.className = "up-daw-track-chip";
