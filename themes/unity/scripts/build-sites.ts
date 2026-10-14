@@ -31,11 +31,15 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // patterns. A files site with prepare runs Hugo with those arguments
 // against its fresh source before the build, and its check reads what
 // that run wrote from the source. A reproducible site builds a second
-// time and must write the same files byte for byte.
+// time and must write the same files byte for byte. A site that gives
+// each language its own baseURL lists them in hosts, by the directory
+// that Hugo writes the language into, and the link check reads each
+// directory as a site of its own.
 type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string>; prepare?: string[] }) & {
   check?: (out: string, source: string) => (string | false)[];
   warns?: RegExp[];
   reproducible?: boolean;
+  hosts?: Record<string, string>;
 };
 
 const SITES: Record<string, SiteSpec> = {
@@ -236,6 +240,37 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
           return links !== hrefs.join(" ") && `${file} links the Help menu to "${links}", not "${hrefs.join(" ")}"`;
         }),
     ],
+  },
+  // Each language on its own host. The language menu links across hosts
+  // by absolute URL, because a root-relative link stays on the host that
+  // serves the page. Now has no German translation, so its German row
+  // leads to the German home page. Hugo writes each language into its
+  // own directory, and the build fails when it writes a file there twice.
+  multihost: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]
+  baseURL = "https://example.com/"
+  weight = 1
+[languages.de]
+  baseURL = "https://example.de/"
+  weight = 2
+`,
+      "content/about.md": page("About"),
+      "content/about.de.md": page("Über"),
+      "content/now.md": page("Now"),
+    },
+    hosts: { en: "https://example.com/", de: "https://example.de/" },
+    check: (out) => {
+      const rows: [file: string, lang: string, want: string][] = [
+        ["en/about/index.html", "de", "https://example.de/about/"],
+        ["de/about/index.html", "en", "https://example.com/about/"],
+        ["en/now/index.html", "de", "https://example.de/"],
+      ];
+      return rows.map(([file, lang, want]) => {
+        const got = new RegExp(`up-lang-row[^"]*" href="([^"]*)" hreflang="${lang}"`).exec(read(join(out, file)))?.[1];
+        return got !== want && `${file}'s ${lang} row links ${got}, not ${want}`;
+      });
+    },
   },
   // A section outside mainSections renders as a plain list of its pages.
   notes: {
@@ -1350,7 +1385,10 @@ try {
       failed = true;
       continue;
     }
-    const problems = [...(site.check?.(out, source) ?? []), ...brokenLinks(out, siteBaseURL(source, flags)), ...blankTitles(out)]
+    const links = site.hosts
+      ? Object.entries(site.hosts).flatMap(([dir, url]) => brokenLinks(join(out, dir), url).map((p) => `${dir}/: ${p}`))
+      : brokenLinks(out, siteBaseURL(source, flags));
+    const problems = [...(site.check?.(out, source) ?? []), ...links, ...blankTitles(out)]
       .filter((p) => p !== false);
     const warns = site.warns;
     if (warns) {

@@ -4,6 +4,9 @@
   params.desktop.languageBadge, or else the first two letters of its
   name, and the dropdown lists every language, each row leading to this page's
   translation or, when the page has none, to that language's home page.
+  On a multihost site, where each language sets its own baseURL, the
+  rows link by absolute URL, because a root-relative link stays on the
+  current language's host.
 
   The rows are links, which the HUD indexes and the panel's arrow-key
   roving reaches. Context: the page.
@@ -19,7 +22,7 @@
     {{- $rows = $rows | append (dict
         "label" (or $lang.Label $lang.Name)
         "locale" $lang.Locale
-        "url" $target.RelPermalink
+        "url" (cond hugo.IsMultihost $target.Permalink $target.RelPermalink)
         "current" (eq $lang.Name $current)) -}}
   {{- end }}
 <div class="up-panel-item">
