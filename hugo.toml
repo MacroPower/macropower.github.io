@@ -20,11 +20,13 @@ mainSections = ["posts"]
 [permalinks]
   posts = "/posts/:year/:month/:title/"
 
+# Take the theme's categories and series taxonomies and its markup:
+# class-based syntax highlighting and math delimiters.
 [taxonomies]
-  category = "categories"
-  series   = "series"
+  _merge = "deep"
 
 [markup]
+  _merge = "deep"
   [markup.highlight]
     style = "monokai"
   [markup.goldmark.parser.attribute]
