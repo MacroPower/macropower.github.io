@@ -24,8 +24,8 @@ function navigate(key: string): void {
   window.location.href = url;
 }
 
-function dlg(opts: UPDialogOptions): Promise<string | null> {
-  return window.uiDialog?.(opts) ?? Promise.resolve<string | null>(null);
+function dlg<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise<Id | null> {
+  return window.uiDialog?.(opts) ?? Promise.resolve(null);
 }
 
 // Stands in for the link in the translated "living at {link}" sentence, so the

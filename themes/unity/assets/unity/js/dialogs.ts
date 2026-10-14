@@ -10,7 +10,8 @@ interface DialogEntry {
   root: HTMLElement;
   backdrop: HTMLElement;
   dialog: HTMLElement;
-  buttons: UPDialogButton[];
+  buttons: readonly UPDialogButton[];
+  // Resolves with one of `buttons`' ids or with null, never another string.
   resolve: (value: string | null) => void;
   // Focus returns here on dismiss (the control that opened the dialog; for
   // stacked dialogs, a control inside the dialog below).
@@ -125,7 +126,7 @@ function installDialogDrag(d: DialogEntry): void {
   });
 }
 
-function uiDialog(opts: UPDialogOptions): Promise<string | null> {
+function uiDialog<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise<Id | null> {
   return new Promise((resolve) => {
     if (!host || !template) {
       resolve(null);
@@ -152,6 +153,7 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
     const body = opts.body ?? "";
     const details = opts.details ?? null;
     const icon = opts.icon ?? "info";
+    // Window.uiDialog in types.ts defaults Id to this button's id.
     const buttons = opts.buttons ?? [{ id: "ok", label: t("js_close"), primary: true }];
 
     titleEl.textContent = title || t("js_dialog_information");
@@ -193,7 +195,10 @@ function uiDialog(opts: UPDialogOptions): Promise<string | null> {
       backdrop,
       dialog,
       buttons,
-      resolve,
+      // The stack holds dialogs with different ids, so DialogEntry types
+      // resolve with string. The cast is sound because the entry resolves
+      // only with its own buttons' ids or null.
+      resolve: resolve as (value: string | null) => void,
       opener:
         document.activeElement instanceof HTMLElement
           ? document.activeElement

@@ -6,19 +6,21 @@
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
 
-export interface UPDialogButton {
-  id: string;
+/** `Id` narrows the button's id to a literal, so uiDialog's result names
+ *  only the ids a call passes. */
+export interface UPDialogButton<Id extends string = string> {
+  id: Id;
   label: string;
   primary?: boolean;
   danger?: boolean;
 }
 
-export interface UPDialogOptions {
+export interface UPDialogOptions<Id extends string = string> {
   title?: string;
   body?: string;
   details?: string | null;
   icon?: UPDialogIcon;
-  buttons?: UPDialogButton[];
+  buttons?: readonly UPDialogButton<Id>[];
   /** Optional rich-content hook: receives a `.up-dlg-custom` container slotted
    *  after the body/details and before the footer. Lets a caller build live
    *  controls (e.g. the Preferences settings) without the dialog layer needing
@@ -59,7 +61,12 @@ declare global {
     UP_SITE?: UPSite;
     UP_I18N?: UPI18n;
     UP_PAGE_WINDOW_STATE?: UPPageWindowState;
-    uiDialog?: (opts: UPDialogOptions) => Promise<string | null>;
+    /** Resolves to the id of the button that closed the dialog, or to
+     *  null when Escape or the close button closed it. tsc infers `Id`
+     *  from the ids in `buttons`, so comparing the result with any other
+     *  id fails to compile. A dialog without `buttons` shows one button
+     *  whose id is "ok". */
+    uiDialog?: <const Id extends string = "ok">(opts: UPDialogOptions<Id>) => Promise<Id | null>;
     /** Safari before 14.1 names AudioContext this way. */
     webkitAudioContext?: typeof AudioContext;
   }
