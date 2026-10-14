@@ -13,6 +13,7 @@
     "test": "npm test -w themes/unity",
     "test:watch": "npm run test:watch -w themes/unity",
     "test:sites": "npm run test:sites -w themes/unity",
-    "test:browser": "npm run test:browser -w themes/unity"
+    "test:browser": "npm run test:browser -w themes/unity",
+    "i18n:types": "npm run i18n:types -w themes/unity"
   }
 }
