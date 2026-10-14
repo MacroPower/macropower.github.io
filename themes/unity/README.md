@@ -292,16 +292,31 @@ The `spotify` shortcode and the theme's `youtube` shortcode each embed a player 
   Focus rings on the light window surfaces paint `color`, so give it a contrast of 4:1 or more with white. White text and the focus ring of a selected row sit on `light`, so give it 3:1 or more. When a visitor's system asks for more contrast, that white text sits on `dark` or `darker` instead, so give both a contrast of 4.5:1 or more with white. Accent text in the top panel's menus paints `lighter`, so give it a contrast of 4.5:1 or more with `#2A2825`, the lightest color of the menus' background. Give it 3:1 or more with `#4D4A47`, the lightest color of a titlebar, because focus rings and icons on the dark surfaces paint it too. The default `lighter` keeps both for every `color`.
 
   Hugo merges your presets into the theme's key by key, so a built-in preset whose `color` your site changes keeps the theme's other shades. Add a preset of your own instead. Do not set `--up-accent` or its shades in `custom.css`, because a value there beats every preset, and Edit > Preferences stops changing it.
-- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
+- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that might run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. `window.uiDialog` takes the dialog options that the **Script API** entry lists. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
 
   ```js
   window.dispatchEvent(new CustomEvent("up:notify", {
     detail: { summary: "Saved", body: "Your draft is safe.", icon: "info" },
   }));
   ```
+
+  The detail takes a `summary`, which is required, and an optional `body`, `icon`, and `timeoutMs`. `icon` names one of the theme's glyphs, `info`, `warning`, `question`, `success`, `volume`, `volume-muted`, `network`, `battery`, `heart`, `lock`, `terminal`, or `music`, or a freedesktop icon name for one of them, such as `dialog-information`. Any other name shows no icon. `timeoutMs` sets how long the bubble shows, between 1000 and 20000 milliseconds, inclusive, and defaults to 5000.
 - **Script API.** Your site's TypeScript can import the theme's script API from `unity/js/api`, and Hugo's `js.Build` resolves the import from the theme's assets. The other modules under `unity/js/` are internal, so import only `unity/js/api`.
 
-  `notify()` raises a notification bubble. `dialog()` opens a dialog with the options of `window.uiDialog`, which the exported `UPDialogOptions` type lists. It resolves to the id of the button that closed the dialog, or to `null` when Escape or the close button closed it. tsc narrows that result to the ids in the call's `buttons`. Both functions wait for the desktop to start, so a script can call them at any time. `whenReady()` returns a promise that resolves when the desktop has started.
+  `notify()` raises a notification bubble and takes the fields of the `up:notify` detail. `dialog()` opens a dialog. Both functions wait for the desktop to start, so a script can call them at any time. `whenReady()` returns a promise that resolves when the desktop has started. The module also exports the event names as `READY_EVENT` and `NOTIFY_EVENT`, and the `UPNotifyDetail`, `UPDialogOptions`, `UPDialogButton`, and `UPDialogIcon` types.
+
+  `dialog()` and `window.uiDialog` take the same options, and every option is optional:
+
+  | Option | Purpose |
+  | --- | --- |
+  | `title` | The heading over the text, which the titlebar shows too. |
+  | `body` | The dialog's text. |
+  | `details` | Monospace text in a box under the body, such as an error's output. |
+  | `icon` | The glyph beside the text: `info`, which is the default, `question`, `warning`, `error`, `success`, or `none`. |
+  | `buttons` | The buttons from left to right, each with an `id`, a `label`, and the optional `primary` and `danger` flags. `primary` paints the button with the accent, and `danger` marks it destructive. Without `buttons`, the dialog shows one Close button whose id is `ok`. |
+  | `render` | A function that receives an empty element after the text, where it can add controls of its own. |
+
+  Focus starts on the last button, or on the first button without `danger` when the last one has it. Each call resolves to the id of the button that closed the dialog, or to `null` when Escape or the close button closed it. tsc narrows that result to the ids in the call's `buttons`.
 
   ```ts
   // assets/js/site.ts
