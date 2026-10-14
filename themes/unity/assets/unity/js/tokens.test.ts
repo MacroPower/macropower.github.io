@@ -61,8 +61,6 @@ describe("tokens", () => {
       "--up-chrome-1 in .up-code-copy",
       "--up-chrome-2 in .up-code-copy",
       "--up-chrome-2 in .up-code-copy &:active",
-      // A pressed dialog button.
-      "--up-content-line in .up-dlg-btn &:active",
     ]);
   });
 

@@ -271,7 +271,7 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
   | `--up-panel-grad-1`, `--up-panel-grad-2` | `#3F3D3A`, `#252423` | The top panel, as a gradient from top to bottom. |
   | `--up-chrome-1`, `--up-chrome-2` | `#3F3D3A`, `#2A2825` | The titlebar of the focused window and of every dialog, as a gradient. |
   | `--up-chrome-inactive-1`, `--up-chrome-inactive-2` | `#4D4A47`, `#3B3835` | The titlebar of an unfocused window, as a gradient. |
-  | `--up-content-bg` | `#F6F5F4` | The body of each window. |
+  | `--up-content-bg` | `#F6F5F4` | The body of each window and dialog, and the cards, fields, and code inside them. |
   | `--up-content-fg` | `#2E2B28` | Text in windows and dialogs. |
   | `--up-content-muted` | `#6B6764` | Secondary text, such as dates, counts, and hints. |
   | `--up-content-line` | `#D8D5D2` | Borders and rules in windows. |
@@ -291,7 +291,7 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
   }
   ```
 
-  The top panel and the home terminal declare `color-scheme: dark`, so the browser draws their scrollbars and form controls dark. If your site paints either one light, set `color-scheme: light` on `.up-top-panel` or `.up-neofetch` in `custom.css`.
+  The top panel and the home terminal declare `color-scheme: dark`, so the browser draws their scrollbars and form controls dark. If your site paints either one light, set `color-scheme: light` on `.up-top-panel` or `.up-neofetch` in `custom.css`. If your site sets a dark `--up-content-bg` and a light `--up-content-fg`, also set `color-scheme: dark` on `.up-window-body` and `.up-dialog`. The browser then draws the scrollbars and form controls in windows and dialogs dark.
 - **Accent colors.** The accent paints highlights, such as selected text, menu rows under the pointer, primary buttons, progress bars, and focus rings. Edit > Preferences offers a swatch for each preset under `params.desktop.accents`, and `params.desktop.accent` names the preset each page starts with. The theme defines `orange`, `green`, `aubergine`, and `blue`. Your site adds a preset with a table of its own and removes one by setting it to `false`:
 
   ```toml

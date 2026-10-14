@@ -108,6 +108,111 @@ function stops(background: string): number[][] {
   });
 }
 
+// The custom properties that the :root blocks outside any at-rule
+// declare, with their values.
+const rootProps: ReadonlyMap<string, string> = new Map(
+  rules
+    .filter((r) => r.selector === ":root" && r.media === "")
+    .flatMap((r) => [...r.decls].filter(([prop]) => prop.startsWith("--"))),
+);
+
+// A dark pair of content colors, such as a site sets in custom.css. Each
+// test of the content tokens checks the theme's default colors and these.
+const DARK_PAIR: ReadonlyMap<string, string> = new Map([
+  ["--up-content-bg", "#1E1E1E"],
+  ["--up-content-fg", "#EEEEEE"],
+  ["--up-content-muted", "#AAAAAA"],
+  ["--up-content-line", "#444444"],
+  ["--up-link", "#8AB4F8"],
+  ["--up-sidebar-bg", "#2A2A2A"],
+]);
+
+// The custom properties under the default colors and under the dark pair.
+const PAIRS: readonly (readonly [string, ReadonlyMap<string, string>])[] = [
+  ["the default colors", rootProps],
+  ["a dark pair", new Map([...rootProps, ...DARK_PAIR])],
+];
+
+// Splits a value at its top-level commas.
+function args(value: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < value.length; i++) {
+    if (value[i] === "(") depth++;
+    else if (value[i] === ")") depth--;
+    else if (value[i] === "," && depth === 0) {
+      out.push(value.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  out.push(value.slice(start).trim());
+  return out;
+}
+
+// A color value in 0-255. It reads a #rgb or #rrggbb color, white, a
+// var() of a property in props, or a color-mix() in srgb of two such
+// values. Any other value, such as a gradient, yields undefined.
+function color(value: string, props: ReadonlyMap<string, string>): number[] | undefined {
+  const v = value.trim();
+  if (/^#[0-9a-f]{6}$/i.test(v)) return rgb(v);
+  if (/^#[0-9a-f]{3}$/i.test(v)) return rgb(`#${[...v.slice(1)].map((c) => c + c).join("")}`);
+  if (v === "white") return WHITE;
+  const ref = /^var\((--[\w-]+)\)$/.exec(v);
+  if (ref) {
+    const next = props.get(ref[1]!);
+    return next === undefined ? undefined : color(next, props);
+  }
+  const mix = /^color-mix\(in srgb,([\s\S]*)\)$/.exec(v);
+  if (!mix) return undefined;
+  const parts = args(mix[1]!).map((part) => {
+    const m = /^([\s\S]*?)(?:\s+([\d.]+)%)?$/.exec(part)!;
+    return { c: color(m[1]!, props), p: m[2] === undefined ? undefined : Number(m[2]) / 100 };
+  });
+  const [a, b] = parts;
+  if (parts.length !== 2 || !a?.c || !b?.c) return undefined;
+  const p = a.p ?? (b.p === undefined ? 0.5 : 1 - b.p);
+  return over(a.c, p, b.c);
+}
+
+// The colors a background paints: each stop of a linear gradient, or the
+// one color of a plain value. A var() resolves through props first.
+function surfaceColors(value: string, props: ReadonlyMap<string, string>): (number[] | undefined)[] {
+  const v = value.trim();
+  const ref = /^var\((--[\w-]+)\)$/.exec(v);
+  const next = ref ? props.get(ref[1]!) : undefined;
+  if (next !== undefined) return surfaceColors(next, props);
+  const gradient = /^linear-gradient\(([\s\S]*)\)$/.exec(v);
+  if (!gradient) return [color(v, props)];
+  return args(gradient[1]!)
+    .filter((stop) => !/^(\d+deg|to\s)/.test(stop))
+    .map((stop) => color(stop.replace(/\s+[\d.]+%$/, ""), props));
+}
+
+// True when a value reads a content token or the sidebar's, directly or
+// through the internal tokens mixed from them.
+function readsContent(value: string, depth = 0): boolean {
+  if (/var\(--up-(content-[\w-]+|sidebar-bg)\)/.test(value)) return true;
+  return depth < 4 && [...value.matchAll(/var\((--up-[\w-]+)\)/g)].some((m) => {
+    const next = rootProps.get(m[1]!);
+    return next !== undefined && readsContent(next, depth + 1);
+  });
+}
+
+// True when a value paints an opaque color that it writes out, or that
+// an internal token it reads writes out. A color mixed with transparent,
+// or an rgba() color that is not opaque, paints an overlay instead.
+function paintsLiteral(value: string): boolean {
+  let v = value;
+  for (let depth = 0; depth < 4; depth++) v = v.replace(/var\((--up-[\w-]+)\)/g, (m: string, name: string) => rootProps.get(name) ?? m);
+  v = v.replace(/color-mix\(in srgb,[^()]*transparent\)/g, "");
+  if (/#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{6}ff)\b|\b(white|black)\b/i.test(v)) return true;
+  return [...v.matchAll(/rgba?\(([^)]*)\)/g)].some((m) => {
+    const alpha = m[1]!.split(/[\s,/]+/).filter(Boolean)[3];
+    return alpha === undefined || Number(alpha) === 1;
+  });
+}
+
 // Each rule that paints accent text or a mark on a dark surface, by
 // selector. Each names the rule that paints the surface and the contrast
 // that the shade keeps there. Text needs 4.5:1, and a mark, such as a
@@ -127,19 +232,62 @@ const ON_DARK = new Map<string, { surface: string; min: number; hover?: string }
 const LIGHT_FILL = /var\(--up-accent(-light)?\)/;
 
 describe("contrast", () => {
-  it("keeps every alert title at 4.5:1 on its bar", () => {
+  it("keeps every alert's title and body at 4.5:1 on its bar", () => {
     const base = screen.find((r) => r.selector === ".up-alert");
+    const title = screen.find((r) => r.selector === ".up-alert-title")?.decls.get("color");
     expect(base).toBeDefined();
-    // The bar's gradient starts at its color mixed with white.
-    const top = Number(/var\(--up-alert-bg\) (\d+)%, #fff\)/.exec(fill(base!) ?? "")?.[1] ?? 100) / 100;
+    expect(title).toBeDefined();
     const kinds = screen.filter((r) => /^\.up-alert(\.is-[\w-]+)?$/.test(r.selector) && r.decls.has("--up-alert-ink"));
     expect(kinds.map((r) => r.selector)).toEqual(expect.arrayContaining([".up-alert", ".up-alert.is-tip"]));
-    const low = kinds.flatMap((r) => {
-      const ink = rgb(r.decls.get("--up-alert-ink")!);
-      const bg = rgb(r.decls.get("--up-alert-bg")!);
-      return [bg, over(bg, top, WHITE)]
-        .filter((under) => contrast(ink, under) < 4.5)
-        .map((under) => `${r.selector} on ${under.map(Math.round).join(",")}`);
+    const low = PAIRS.flatMap(([pair, props]) => kinds.flatMap((kind) => {
+      // The kind's hues override the base rule's, as on the page.
+      const scope = new Map([...props, ...base!.decls, ...kind.decls]);
+      const bar = surfaceColors(fill(base!) ?? "", scope);
+      const texts = [["title", color(title!, scope)], ["body", color("var(--up-content-fg)", scope)]] as const;
+      return texts.flatMap(([text, ink]) => bar.flatMap((under, i) => {
+        if (!ink || !under) return [`${kind.selector} ${text} has a color that this test cannot read`];
+        return contrast(ink, under) < 4.5 ? [`${kind.selector} ${text} on stop ${i} under ${pair}`] : [];
+      }));
+    }));
+    expect(low).toEqual([]);
+  });
+
+  it("pairs a content ink only with a content surface", () => {
+    // A rule that paints its own background and its text takes both from
+    // the content tokens or neither. A site's dark pair then never leaves
+    // light text on a light surface or dark text on a dark one.
+    const mixed = screen.flatMap((r) => {
+      const ink = r.decls.get("color");
+      const surface = fill(r);
+      if (ink === undefined || surface === undefined) return [];
+      if (readsContent(ink) && !readsContent(surface) && paintsLiteral(surface)) return [`${r.selector} paints a content ink on ${surface}`];
+      if (readsContent(surface) && !readsContent(ink) && paintsLiteral(ink)) return [`${r.selector} paints ${ink} on a content surface`];
+      return [];
+    });
+    expect(mixed).toEqual([
+      // The page's default text color, which each window inherits. No text
+      // sits on the black behind the wallpaper.
+      "html paints a content ink on #000",
+      "body paints a content ink on #000",
+    ]);
+  });
+
+  it("keeps each content ink at 4.5:1 on each content surface", () => {
+    const surfaces = ["--up-content-bg", "--up-content-raised", "--up-content-sunken", "--up-content-shade"];
+    const inks = ["--up-content-fg", "--up-content-muted", "--up-content-ink", "--up-content-label"];
+    // The sidebar shows the full text color and the labels.
+    const sidebar = ["--up-content-fg", "--up-content-label"];
+    const low = PAIRS.flatMap(([pair, props]) => {
+      const pairs = [
+        ...surfaces.flatMap((surface) => inks.map((ink) => [ink, surface] as const)),
+        ...sidebar.map((ink) => [ink, "--up-sidebar-bg"] as const),
+      ];
+      return pairs.flatMap(([ink, surface]) => {
+        const fg = color(`var(${ink})`, props);
+        const under = surfaceColors(`var(${surface})`, props);
+        if (!fg || under.length === 0 || under.some((u) => !u)) return [`${ink} on ${surface} has a color that this test cannot read`];
+        return under.some((u) => contrast(fg, u!) < 4.5) ? [`${ink} on ${surface} under ${pair}`] : [];
+      });
     });
     expect(low).toEqual([]);
   });

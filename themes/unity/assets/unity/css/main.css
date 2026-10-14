@@ -192,6 +192,20 @@
    daw-raised recipe's tokens sit with the other --up-daw-* tokens on
    .up-daw-body. */
 :root{
+  /* The content surfaces' shades and inks, mixed from the content tokens
+     that a site sets. A card, field, code chip, or dialog paints one of
+     these surfaces, so a dark --up-content-bg darkens it with the window,
+     and its text reads --up-content-fg, --up-content-muted, or one of
+     these inks. The raised surface paints cards and fields. The sunken
+     surface paints code, table headers, quotes, and the dialog, and the
+     shade paints the lower stop of bars and buttons. */
+  --up-content-raised:color-mix(in srgb, var(--up-content-bg) 92%, #fff);
+  --up-content-sunken:color-mix(in srgb, var(--up-content-bg) 96%, var(--up-content-fg));
+  --up-content-shade:color-mix(in srgb, var(--up-content-bg) 93%, var(--up-content-fg));
+  /* Body text a step softer than --up-content-fg, and the sidebar's
+     section labels and counts. */
+  --up-content-ink:color-mix(in srgb, var(--up-content-fg) 94%, var(--up-content-bg));
+  --up-content-label:color-mix(in srgb, var(--up-content-fg) 80%, var(--up-content-bg));
   /* The raised-button recipe's values, for the GTK push button. The
      raised-button-checked recipe paints a toggle that is on with the
      pressed background. */
@@ -715,7 +729,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-naut-section-label{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#5A554E;padding:4px 14px 4px;
+  color:var(--up-content-label);padding:4px 14px 4px;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
 .up-naut-item{
@@ -742,7 +756,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-naut-item-icon{
   display:inline-flex;align-items:center;justify-content:center;
-  width:20px;height:20px;color:#6B6660;
+  width:20px;height:20px;color:var(--up-content-muted);
 }
 .up-naut-item-icon svg{display:block}
 .up-naut-item.is-active .up-naut-item-icon{color:#fff}
@@ -755,7 +769,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-naut-item-count{
   font-size:11px;font-variant-numeric:tabular-nums;
-  color:#5A554E;
+  color:var(--up-content-label);
   padding:1px 7px;border-radius:9999px;
   background:rgba(0,0,0,.06);
   min-width:20px;text-align:center;
@@ -835,7 +849,7 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-docv-pagenum{
   width:34px;height:22px;padding:0 2px;
   font:inherit;font-size:12px;font-variant-numeric:tabular-nums;text-align:center;
-  color:var(--up-content-fg);background:#fff;
+  color:var(--up-content-fg);background:var(--up-content-raised);
   border:1px solid #B9B5B0;border-radius:2px;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
@@ -868,7 +882,7 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-docv-side-head{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:#5A554E;padding:8px 12px 6px;
+  color:var(--up-content-label);padding:8px 12px 6px;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
 .up-docv-thumbs{
@@ -898,7 +912,7 @@ body.up-resizing *{ cursor:inherit !important; }
   canvas{display:block}
 }
 .up-docv-thumb-num{
-  font-size:11px;color:#5A554E;font-variant-numeric:tabular-nums;
+  font-size:11px;color:var(--up-content-label);font-variant-numeric:tabular-nums;
   padding:0 7px;border-radius:9999px;line-height:1.5;
 }
 /* The page well: Evince's dark canvas behind the sheets. */
@@ -974,7 +988,7 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-sponsor-card{
   display:flex;align-items:center;gap:12px;
   padding:10px 12px;
-  background:#fff;border:1px solid var(--up-content-line);border-radius:4px;
+  background:var(--up-content-raised);border:1px solid var(--up-content-line);border-radius:4px;
   color:var(--up-content-fg);text-decoration:none;
   transition:border-color .1s linear, box-shadow .1s linear;
 }
@@ -1002,7 +1016,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-empty-pane.up-sponsors-empty-pane{
   min-height:240px;margin:18px 0 24px;
-  background:#F6F3EC;
+  background:var(--up-content-raised);
   border:1px solid var(--up-content-line);border-radius:4px;
   .up-empty-pane-icon svg{width:44px;height:44px}
 }
@@ -1058,7 +1072,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-head{
   padding:28px 32px 18px;
-  background:linear-gradient(180deg,#FFFFFF 0%,var(--up-content-bg) 100%);
+  background:linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-bg) 100%);
   border-bottom:1px solid var(--up-content-line);
 }
 .up-icons-kicker{
@@ -1068,7 +1082,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-title{
   margin:6px 0 0; font-size:28px; font-weight:300; letter-spacing:-.02em;
-  color:#1F1D1B;
+  color:var(--up-content-fg);
 }
 .up-icons-lede{
   margin:8px 0 0; max-width:620px; font-size:13.5px; line-height:1.6;
@@ -1080,7 +1094,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-seg{
   display:inline-flex; border:1px solid var(--up-content-line);
-  border-radius:4px; overflow:hidden; background:#fff;
+  border-radius:4px; overflow:hidden; background:var(--up-content-raised);
 }
 .up-icons-seg button{
   all:unset; cursor:pointer; padding:4px 10px;
@@ -1108,7 +1122,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-section-head h2{
   margin:0; font-size:20px; font-weight:400; letter-spacing:-.01em;
-  color:#1F1D1B;
+  color:var(--up-content-fg);
 }
 .up-icons-count{
   font-family:var(--up-font-mono); font-size:12px; color:var(--up-content-muted);
@@ -1130,12 +1144,14 @@ a.up-sponsor-card[href]:hover{
 .up-icons-grid[data-kind="app"],
 .up-icons-grid[data-kind="flat"]{ grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); }
 
+/* The White backdrop keeps its white and its dark inks whatever the
+   content colors, because it previews the icons on white. */
 .up-icons-cell{
   all:unset; cursor:pointer; box-sizing:border-box;
   display:flex; flex-direction:column; align-items:center; gap:10px;
   padding:14px 8px 10px;
   border:1px solid var(--up-content-line); border-radius:4px;
-  background:#FFFFFF; color:var(--up-content-fg);
+  background:#FFFFFF; color:#1F1D1B;
   transition:border-color .12s ease, box-shadow .12s ease;
 }
 .up-icons-cell:hover{ border-color:var(--up-accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
@@ -1175,7 +1191,7 @@ a.up-sponsor-card[href]:hover{
 
 .up-icons-label{
   font-family:var(--up-font-mono); font-size:10.5px; line-height:1.25;
-  text-align:center; color:var(--up-content-muted); word-break:break-word;
+  text-align:center; color:#6B6660; word-break:break-word;
 }
 
 /* Per-section backdrops: each grid's tiles take the chosen solid colour,
@@ -1549,7 +1565,7 @@ a.up-sponsor-card[href]:hover{
   flex:1;min-width:0;
   font:inherit;font-size:12.5px;
   color:var(--up-content-fg);
-  background:#fff;
+  background:var(--up-content-raised);
   border:1px solid #B9B5B0;border-radius:2px;
   padding:3px 8px;height:22px;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
@@ -1567,7 +1583,7 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-search-close{
   width:22px;height:22px;line-height:1;
   background:transparent;border:1px solid transparent;border-radius:2px;
-  color:var(--up-content-muted);font-size:16px;cursor:pointer;
+  color:#7A7570;font-size:16px;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;padding:0;
   &:hover{background:rgba(0,0,0,.08);color:#1F1D1A}
 }
@@ -1583,13 +1599,13 @@ a.up-sponsor-card[href]:hover{
 
 /* ---------- Post list ---------- */
 .up-post-list{
-  border-inline-end:1px solid #E2DFDB;background:#FBFAF9;
+  border-inline-end:1px solid #E2DFDB;background:var(--up-content-raised);
   overflow:auto;display:flex;flex-direction:column;
 }
 .up-post-list-header{
   display:grid;grid-template-columns:1fr 96px;gap:0;
   font-size:11px;font-weight:700;letter-spacing:.04em;
-  color:var(--up-content-muted);background:linear-gradient(180deg,#F4F2EF 0%,#E8E5E1 100%);
+  color:var(--up-content-muted);background:linear-gradient(180deg,var(--up-content-bg) 0%,var(--up-content-shade) 100%);
   border-bottom:1px solid #C9C5C1;
   position:sticky;top:0;z-index:1;text-transform:uppercase;
 }
@@ -1600,19 +1616,19 @@ a.up-sponsor-card[href]:hover{
   color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;
   font-weight:inherit;cursor:pointer;text-align:start;
   &:last-child{border-inline-end:0}
-  &:hover{background:rgba(255,255,255,.55)}
+  &:hover{background:var(--up-content-raised)}
   &:active{background:rgba(0,0,0,.05)}
   &.is-sorted{color:var(--up-content-fg)}
 }
 .up-post-list-caret{
-  font-size:10px;line-height:1;color:#7A7570;
+  font-size:10px;line-height:1;color:var(--up-content-muted);
   width:8px;text-align:center;
 }
 .up-post-list-body{display:flex;flex-direction:column}
 .up-post-row{
   display:grid;grid-template-columns:1fr auto;gap:12px;
   padding:10px 12px;border-bottom:1px solid #EBE8E5;
-  color:#3A3733;text-decoration:none;
+  color:var(--up-content-ink);text-decoration:none;
   border-inline-start:3px solid transparent;
   outline:none;
   &[hidden]{display:none}
@@ -1745,13 +1761,13 @@ a.up-sponsor-card[href]:hover{
   :is(h1, h2, h3, h4, h5, h6):hover > .up-heading-anchor{opacity:1}
   h2{font-size:20px;border-bottom:1px solid #EBE8E5;padding-bottom:6px}
   h3{font-size:17px}
-  h4{font-size:15px;color:#3A3733}
+  h4{font-size:15px;color:var(--up-content-ink)}
   ul,
   ol{padding-inline-start:1.4em}
   li{margin:4px 0}
   blockquote{
-    margin-inline-start:0;padding:8px 14px;color:#5A5550;
-    background:#F4F1ED;border-inline-start:3px solid #C9C5C1;
+    margin-inline-start:0;padding:8px 14px;color:var(--up-content-label);
+    background:var(--up-content-sunken);border-inline-start:3px solid #C9C5C1;
   }
   img{max-width:100%;height:auto;border-radius:3px}
   table{
@@ -1762,10 +1778,10 @@ a.up-sponsor-card[href]:hover{
   td{
     border:1px solid var(--up-content-line);padding:6px 10px;text-align:start;
   }
-  th{background:#F2EFEC;font-weight:500}
+  th{background:var(--up-content-sunken);font-weight:500}
   code{
     font-family:var(--up-font-mono);
-    font-size:.92em;background:#EFEDEB;padding:1px 5px;border-radius:2px;
+    font-size:.92em;background:var(--up-content-sunken);padding:1px 5px;border-radius:2px;
   }
   pre{
     background:#2A2825;border:1px solid #1F1D1A;border-radius:3px;
@@ -1806,8 +1822,8 @@ a.up-sponsor-card[href]:hover{
    TableOfContents nav. */
 .up-toc{
   margin:0 0 20px;padding:8px 14px;font-size:14px;
-  background:#F4F1ED;border:1px solid var(--up-content-line);border-radius:3px;
-  > summary{cursor:pointer;font-weight:500;color:#3A3733}
+  background:var(--up-content-sunken);border:1px solid var(--up-content-line);border-radius:3px;
+  > summary{cursor:pointer;font-weight:500;color:var(--up-content-ink)}
   ul{list-style:none;margin:6px 0 0;padding-inline-start:0}
   ul ul{margin:2px 0 0;padding-inline-start:1.1em}
   li{margin:3px 0}
@@ -1816,21 +1832,27 @@ a.up-sponsor-card[href]:hover{
 }
 
 /* GitHub-style alerts from render-blockquote.html, drawn as GTK info bars
-   in the Tango palette Ambiance used. Each title keeps 4.5:1 with its
-   bar, so the tip's ink is a darker green than Tango's. */
+   in the Tango palette Ambiance used. Each kind sets two hues. The bar
+   and its border mix --up-alert-hue into --up-content-bg, and the title
+   mixes --up-alert-ink into --up-content-fg, so a dark content pair
+   darkens the bar and lightens the title. Each title keeps 4.5:1 with its
+   bar under the default pair and under a dark one. */
 .up-alert{
-  --up-alert-ink:#3465A4;--up-alert-bg:#E4ECF6;--up-alert-line:#A9C1E0;
+  --up-alert-ink:#378CF5;--up-alert-hue:#5F91D0;
+  --up-alert-bg:color-mix(in srgb, var(--up-content-bg) 85%, var(--up-alert-hue));
+  --up-alert-line:color-mix(in srgb, var(--up-content-bg) 50%, var(--up-alert-hue));
   margin:0 0 14px;border:1px solid var(--up-alert-line);border-radius:3px;
-  background:linear-gradient(180deg,color-mix(in srgb, var(--up-alert-bg) 60%, #fff) 0%,var(--up-alert-bg) 100%);
+  background:linear-gradient(180deg,color-mix(in srgb, var(--up-alert-bg) 60%, var(--up-content-raised)) 0%,var(--up-alert-bg) 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
-  &.is-tip{--up-alert-ink:#3B7504;--up-alert-bg:#E8F3DC;--up-alert-line:#B4D58E}
-  &.is-important{--up-alert-ink:#77216F;--up-alert-bg:#F2E4EF;--up-alert-line:#D2A9CC}
-  &.is-warning{--up-alert-ink:#8F5E00;--up-alert-bg:#FCF2D2;--up-alert-line:#E8CF7A}
-  &.is-caution{--up-alert-ink:#CC0000;--up-alert-bg:#FBE3E1;--up-alert-line:#EBA9A4}
+  &.is-tip{--up-alert-ink:#329600;--up-alert-hue:#75B92C}
+  &.is-important{--up-alert-ink:#AF28AA;--up-alert-hue:#B260A8}
+  &.is-warning{--up-alert-ink:#B96900;--up-alert-hue:#E0AE01}
+  &.is-caution{--up-alert-ink:#FF050F;--up-alert-hue:#E56057}
 }
 .up-alert-title{
   display:flex;align-items:center;gap:7px;
-  padding:7px 12px 0;font-weight:500;color:var(--up-alert-ink);
+  padding:7px 12px 0;font-weight:500;
+  color:color-mix(in srgb, var(--up-alert-ink) 60%, var(--up-content-fg));
 }
 .up-alert-icon{display:inline-flex;flex:none}
 .up-alert-icon svg{width:16px;height:16px}
@@ -1914,7 +1936,7 @@ details.up-alert{
   overflow:auto;
   background:
     radial-gradient(circle at 1px 1px, rgba(90,58,13,.07) 1px, transparent 1.5px),
-    linear-gradient(180deg,#FBFAF7 0%,#F4F0E8 100%);
+    linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-sunken) 100%);
   background-size:18px 18px, 100% 100%;
   align-content:start;
 }
@@ -1928,7 +1950,7 @@ details.up-alert{
   touch-action:manipulation;
   /* recipe: tile-states */
   background:transparent;border:1px solid transparent;
-  color:#3A3733;cursor:pointer;font:inherit;outline:none;
+  color:var(--up-content-ink);cursor:pointer;font:inherit;outline:none;
   transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
   &[hidden]{display:none}
   &:hover{
@@ -2057,7 +2079,7 @@ details.up-alert{
   /* Flat fill: a 180deg gradient darkens toward the divider and clashes with
      the folder grid's own top-light gradient directly below it, reading as a
      seam. The flat tone matches the grid's top so the border alone divides them. */
-  background:#FBFAF7;
+  background:var(--up-content-raised);
   border-bottom:1px solid #CFC9BE;
   padding:0;overflow:auto;
   display:flex;flex-direction:column;
@@ -2068,14 +2090,12 @@ details.up-alert{
   display:grid;grid-template-columns:84px 1fr;
   gap:14px;align-items:center;
   padding:20px 18px 18px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.5) 0%, transparent 100%);
   border-bottom:1px solid #DCD5C7;
 }
 .up-project-preview-header-text{min-width:0}
 .up-project-preview-title{
   font-size:17px;font-weight:500;margin:0 0 4px;letter-spacing:-.005em;
-  line-height:1.2;color:#1F1D1A;
+  line-height:1.2;color:var(--up-content-fg);
   word-break:break-word;font-family:var(--up-font-sans);
 }
 .up-project-preview-lang{
@@ -2102,7 +2122,7 @@ details.up-alert{
 }
 .up-project-preview-desc{
   margin:0;padding:0 0 10px;
-  color:#3A3733;font-size:13px;line-height:1.55;
+  color:var(--up-content-ink);font-size:13px;line-height:1.55;
   border-bottom:1px dashed #D4CCBC;
   font-style:italic;
   /* recipe: truncate */
@@ -2151,7 +2171,7 @@ details.up-alert{
 }
 .up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding-block:5px;padding-inline:10px 12px;
-  color:var(--up-content-fg);font-size:12.5px;font-weight:500;text-decoration:none;
+  color:#3A3733;font-size:12.5px;font-weight:500;text-decoration:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
   border:1px solid var(--up-btn-border);
@@ -2178,27 +2198,27 @@ details.up-alert{
   position:relative;
   display:flex;align-items:center;justify-content:center;
   padding:28px 22px;text-align:center;
-  background:linear-gradient(180deg,#FBFAF7 0%,#F2EDE4 100%);
+  background:linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-sunken) 100%);
 }
 /* The projects empty state is a top band, not a tall column, so trim the
    vertical padding and match the flat fill of the populated preview. Scoped to
    the projects wrapper so the blog's right-column empty pane keeps the column
    gradient and its taller padding. */
-.up-project-preview.up-empty-pane{padding:18px 22px;background:#FBFAF7}
+.up-project-preview.up-empty-pane{padding:18px 22px;background:var(--up-content-raised)}
 .up-empty-pane-inner{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   color:var(--up-content-muted);
 }
 .up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
 .up-empty-pane-hint{
-  font-family:var(--up-font-sans);font-size:13.5px;color:#6B6660;
+  font-family:var(--up-font-sans);font-size:13.5px;color:var(--up-content-muted);
   letter-spacing:.005em;
 }
 .up-empty-pane-tagline{
   font-family:var(--up-font-mono);
   font-size:11.5px;color:var(--up-content-muted);letter-spacing:.02em;
   padding:2px 8px;border-radius:2px;
-  background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
+  background:var(--up-content-raised);border:1px solid #E0D9CB;
 }
 
 /* No-JS projects fallback: the only project links in the document when the
@@ -2648,7 +2668,7 @@ details.up-alert{
 .up-dialog{
   position:absolute; left:50%; top:50%;
   width:440px; max-width:calc(100% - 64px);
-  background:#EFEDEB;
+  background:var(--up-content-sunken);
   color:var(--up-content-fg);
   border:1px solid rgba(0,0,0,.6);
   border-radius:6px;
@@ -2755,7 +2775,7 @@ details.up-alert{
   &.has-body{margin-bottom:8px}
 }
 .up-dlg-content-body{
-  color:#3A3733; line-height:1.5; white-space:pre-wrap;
+  color:var(--up-content-ink); line-height:1.5; white-space:pre-wrap;
 }
 .up-dlg-content-body a{
   color:var(--up-link); text-decoration:none;
@@ -2763,23 +2783,23 @@ details.up-alert{
 }
 .up-dlg-content-details{
   margin-top:12px; padding:10px 12px;
-  background:#FBFAF9; border:1px solid #DCD7D2;
+  background:var(--up-content-raised); border:1px solid var(--up-content-line);
   border-radius:3px;
   font-family:var(--up-font-mono);
-  font-size:12px; color:#3A3733;
+  font-size:12px; color:var(--up-content-ink);
   white-space:pre-wrap;
   max-height:220px; overflow:auto;
 }
 .up-dlg-footer{
   padding:10px 14px 14px;
-  background:#E8E5E2;
-  border-top:1px solid #D4D0CD;
+  background:var(--up-content-shade);
+  border-top:1px solid var(--up-content-line);
   display:flex; justify-content:flex-end; gap:8px;
 }
 .up-dlg-btn{
   min-width:84px;
   padding:5px 14px;
-  background:linear-gradient(180deg,#FBFAF9 0%,#E5E2DF 100%);
+  background:linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-shade) 100%);
   color:var(--up-content-fg);
   border:1px solid #B5AFAA;
   border-radius:3px;
@@ -2791,10 +2811,10 @@ details.up-alert{
     0 1px 1px rgba(0,0,0,.08);
   outline:none;
   &:hover{
-    background:linear-gradient(180deg,#FFFFFF 0%,#E5E2DF 100%);
+    background:var(--up-content-raised);
   }
   &:active{
-    background:linear-gradient(180deg,#D8D5D2 0%,#C5C1BD 100%);
+    background:linear-gradient(180deg,color-mix(in srgb, var(--up-content-bg) 85%, var(--up-content-fg)) 0%,color-mix(in srgb, var(--up-content-bg) 76%, var(--up-content-fg)) 100%);
     box-shadow:inset 0 1px 3px rgba(0,0,0,.25);
   }
   &.is-primary{
@@ -2890,7 +2910,7 @@ details.up-alert{
   font-size:11.5px; font-weight:500; letter-spacing:.4px;
   text-transform:uppercase;
   color:var(--up-content-muted);
-  border-bottom:1px solid #DCD7D2;
+  border-bottom:1px solid var(--up-content-line);
   padding-bottom:4px;
 }
 .up-shortcut-section-hint{
@@ -2908,8 +2928,8 @@ details.up-alert{
   font-family:var(--up-font-mono);
   font-size:11px; line-height:1;
   padding:3px 6px 4px;
-  color:#3A3733;
-  background:linear-gradient(180deg,#FFFFFF,#ECE9E6);
+  color:var(--up-content-ink);
+  background:linear-gradient(180deg,var(--up-content-raised),var(--up-content-sunken));
   border:1px solid #C9C5C1;
   border-bottom-color:#ABA7A2;
   border-radius:3px;
@@ -2917,8 +2937,8 @@ details.up-alert{
   /* Mouse gestures are not keys: flat pill, no keycap bevel. */
   &.is-gesture{
     font-family:var(--up-font-sans);
-    background:#E8E5E2;
-    border-color:#D4D0CD;
+    background:var(--up-content-shade);
+    border-color:var(--up-content-line);
     box-shadow:none;
   }
 }
@@ -3438,7 +3458,7 @@ body.up-reduce-motion *{
      toggling `hidden` alone would leave it visible; restore the hide. */
   &[hidden]{display:none}
 }
-.up-trash-empty-headline{font-size:16px; color:#5A5550}
+.up-trash-empty-headline{font-size:16px; color:var(--up-content-label)}
 .up-trash-empty-detail{
   font-size:12.5px; max-width:280px;
   text-align:center; line-height:1.5;
@@ -3480,7 +3500,7 @@ body.up-reduce-motion *{
   touch-action:manipulation;
   /* recipe: tile-states */
   background:transparent;border:1px solid transparent;
-  color:#3A3733;cursor:pointer;font:inherit;outline:none;
+  color:var(--up-content-ink);cursor:pointer;font:inherit;outline:none;
   transition:background-color .08s linear, border-color .08s linear, box-shadow .08s linear;
   &[hidden]{display:none}
   &:hover{
@@ -3545,7 +3565,7 @@ body.up-reduce-motion *{
   display:flex; align-items:center; justify-content:space-between;
   gap:12px; padding:8px 12px;
   border-top:1px solid var(--up-content-line);
-  background:linear-gradient(180deg,#F4F2EF 0%,#ECE9E5 100%);
+  background:linear-gradient(180deg,var(--up-content-bg) 0%,var(--up-content-sunken) 100%);
 }
 .up-trash-count{font-size:12px; color:var(--up-content-muted)}
 

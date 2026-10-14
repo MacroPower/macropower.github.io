@@ -95,6 +95,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Focus rings, selected rows, and pressed toggles stay visible under Windows contrast themes and other forced colors. Each window has an edge there, and the focused window's titlebar fills with the system's highlight color.
 - Focus rings contrast 3:1 or more with the surface under them. Selected rows, the titlebars, the launcher, the CV toolbar, the icon vault, and the copy button over a light code block each get such a ring.
 - Accent text in the top panel's menus, dim menu text, the Dash and HUD placeholders, and the tip alert's title contrast 4.5:1 or more with their backgrounds.
+- A dark `--up-content-bg` with a light `--up-content-fg` keeps the text in windows and dialogs readable. Dialogs, cards, fields, code, table headers, quotes, alerts, and the blog and project lists take their colors from the content properties.
 - Each window's close, minimize, and maximize buttons take a click or tap anywhere in a 24px square, the WCAG 2.2 minimum target size.
 - Screen readers announce the File, Edit, View, and Help menus as menus and the indicators as disclosure buttons. They skip the theme's decorative icons and name each sidebar section by its label.
 - Screen readers announce which accent swatch in Edit > Preferences is selected, and which size and backdrop each section of the icon vault shows.

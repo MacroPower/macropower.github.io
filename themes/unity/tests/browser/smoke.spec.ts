@@ -83,6 +83,61 @@ async function started(page: Page): Promise<void> {
   if (await table.count()) await expect.poll(() => painted(table)).toBeGreaterThan(0);
 }
 
+// The lowest contrast between an element's text and the colors behind
+// it. Each stop of a gradient counts as a color behind the text, and a
+// translucent layer blends with the layers under it.
+function lowestContrast(target: Locator): Promise<number> {
+  return target.evaluate((el) => {
+    const channels = (text: string): number[] | undefined => {
+      const m = /^(rgba?|color)\((?:srgb )?([^)]*)\)$/.exec(text.trim());
+      if (!m) return undefined;
+      const parts = (m[2] ?? "").split(/[\s,/]+/).filter(Boolean).map(Number);
+      const scale = m[1] === "color" ? 255 : 1;
+      return [(parts[0] ?? 0) * scale, (parts[1] ?? 0) * scale, (parts[2] ?? 0) * scale, parts[3] ?? 1];
+    };
+    const blend = (top: number[], under: number[]): number[] =>
+      [0, 1, 2].map((i) => (top[i] ?? 0) * (top[3] ?? 1) + (under[i] ?? 0) * (1 - (top[3] ?? 1))).concat(1);
+    const luminance = (c: number[]): number => {
+      const [r, g, b] = c.slice(0, 3).map((v) => {
+        const s = v / 255;
+        return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0);
+    };
+    // The layers behind the text, from the element out to the first
+    // opaque one. Each layer holds the colors it paints.
+    const layers: number[][][] = [];
+    for (let node: Element | null = el; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      const stops = [...style.backgroundImage.matchAll(/(rgba?|color)\([^)]*\)/g)]
+        .map((m) => channels(m[0]))
+        .filter((c): c is number[] => c !== undefined);
+      const fill = channels(style.backgroundColor);
+      const layer = stops.length > 0 ? stops : fill && (fill[3] ?? 0) > 0 ? [fill] : [];
+      if (layer.length === 0) continue;
+      layers.push(layer);
+      if (layer.every((c) => c[3] === 1)) break;
+    }
+    let behind = [[255, 255, 255, 1]];
+    for (const layer of layers.reverse()) behind = layer.flatMap((c) => behind.map((under) => blend(c, under)));
+    const ink = channels(getComputedStyle(el).color) ?? [0, 0, 0, 1];
+    return Math.min(...behind.map((under) => {
+      const [hi, lo] = [luminance(blend(ink, under)), luminance(under)].sort((a, b) => b - a);
+      return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05);
+    }));
+  });
+}
+
+// A dark pair of content colors, such as a site sets in custom.css.
+const DARK_PAIR: Readonly<Record<string, string>> = {
+  "--up-content-bg": "#1E1E1E",
+  "--up-content-fg": "#EEEEEE",
+  "--up-content-muted": "#AAAAAA",
+  "--up-content-line": "#444444",
+  "--up-link": "#8AB4F8",
+  "--up-sidebar-bg": "#2A2A2A",
+};
+
 test.describe("every page", () => {
   for (const path of pages()) {
     test(path, async ({ page }) => {
@@ -247,6 +302,28 @@ test("the post list ignores its keys after the page window closes", async ({ pag
   await expect(page.locator("[data-up-post-row].is-focused")).toHaveCount(0);
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(url);
+});
+
+test("a dark content pair keeps the text in a page and a dialog readable", async ({ page }) => {
+  await open(page, "/about/");
+  // The CSSOM sets the pair on <html>, which the policy allows.
+  await page.evaluate((pair) => {
+    for (const [name, value] of Object.entries(pair)) document.documentElement.style.setProperty(name, value);
+  }, DARK_PAIR);
+  await page.locator("#up-menu-edit").click();
+  await page.locator('#up-dropdown-edit [data-action="dlg:prefs"]').click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  const texts = {
+    "the Preferences title": dialog.locator(".up-dlg-content-title"),
+    "a Preferences label": dialog.locator(".up-pref-row-label").first(),
+    "inline code": page.locator(".up-page-body p > code").first(),
+    "an alert's title": page.locator(".up-alert-title").first(),
+    "an alert's body": page.locator(".up-alert-body > p").first(),
+  };
+  for (const [name, text] of Object.entries(texts)) {
+    expect(await lowestContrast(text), name).toBeGreaterThanOrEqual(4.5);
+  }
 });
 
 test("the solitaire table draws", async ({ page }) => {
