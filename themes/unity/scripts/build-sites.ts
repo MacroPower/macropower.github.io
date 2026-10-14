@@ -2,12 +2,13 @@
 // Builds the sites the theme promises to support, with every Hugo warning
 // fatal: the example site, which must use every template, and small sites
 // that each exercise one shape a consuming site may take. A site's checks
-// then read its output for regressions a clean build cannot catch. Run it
-// with `npm run test:sites`. It needs only Hugo on PATH.
+// then read its output for regressions a clean build cannot catch, and a
+// link check fails on any link to a file that a site's build lacks. Run
+// it with `npm run test:sites`. It needs only Hugo on PATH.
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const theme = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -76,23 +77,11 @@ const SITES: Record<string, SiteSpec> = {
       ];
     },
   },
-  // The example site served from a subdirectory, as on a GitHub project page.
+  // The example site served from a subdirectory, as on a GitHub project
+  // page. The link check fails on any link outside /sub/.
   subpath: {
     source: join(theme, "exampleSite"),
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
-    // Minified files such as the Dash fragment drop attribute quotes,
-    // and a srcset lists several URLs.
-    check: (out) =>
-      htmlFiles(out).flatMap((file) =>
-        [...read(file).matchAll(/\s(href|src|srcset|action|data-[a-z-]+)=(?:"([^"]*)"|([^\s">]+))/g)]
-          .flatMap((m) => {
-            // One of the two value groups always matches.
-            const value = m[2] ?? m[3]!;
-            return m[1] === "srcset" ? value.split(",").map((c) => c.trim().split(" ")[0]!) : [value];
-          })
-          .filter((url) => url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/sub/"))
-          .map((url) => `${relative(out, file)} links ${url} outside /sub/`),
-      ),
   },
   bare: { files: { "hugo.toml": BARE } },
   // The theme inside a checkout of a larger repository, as in README.md's
@@ -406,6 +395,112 @@ function htmlFiles(dir: string): string[] {
     .map((f) => join(dir, f));
 }
 
+// The site's baseURL, from its --baseURL flag or else its hugo.toml.
+function siteBaseURL(source: string, flags: string[]): string {
+  const flag = flags.indexOf("--baseURL");
+  if (flag >= 0) return flags[flag + 1] ?? "";
+  return /^baseURL\s*=\s*"([^"]*)"/m.exec(read(join(source, "hugo.toml")))?.[1] ?? "";
+}
+
+// The output files that can hold links. Fonts, images, and the .mjs
+// pdf.js worker link nothing on the site.
+const LINKING = /\.(?:html|xml|txt|css|js|json|webmanifest)$/;
+
+// Returns a problem for each URL in the built site that names no file in
+// it or that lies outside the baseURL's path. A URL that ends in a slash
+// names the index.html in that directory. The check reads each absolute
+// URL on the baseURL's origin in any text file. It also reads the links
+// that htmlLinks finds in an HTML file and the url() values in a CSS
+// file. It skips every other origin, such as a sponsor's site or a
+// mailto: link.
+function brokenLinks(out: string, baseURL: string): string[] {
+  const base = new URL(baseURL, "http://localhost/");
+  const files = new Set(
+    readdirSync(out, { recursive: true, withFileTypes: true })
+      .filter((d) => d.isFile())
+      .map((d) => relative(out, join(d.parentPath, d.name))),
+  );
+  const found = (path: string): boolean =>
+    path.startsWith(base.pathname)
+    && [path, posix.join(path, "index.html")].some((p) => files.has(p.slice(base.pathname.length)));
+  const onOrigin = new RegExp(`${base.origin.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:/[^\\s"'\`<>()\\\\&]*)?`, "g");
+  const missing = new Map<string, string[]>();
+  for (const name of files) {
+    if (!LINKING.test(name)) continue;
+    const text = read(join(out, name));
+    const at = new URL(name.split("/").map(encodeURIComponent).join("/"), base).href;
+    const links = new Set(text.match(onOrigin));
+    if (name.endsWith(".html")) for (const link of htmlLinks(text)) links.add(link);
+    if (name.endsWith(".css")) for (const m of text.matchAll(/url\(\s*["']?([^"')]+)/g)) links.add(m[1]!);
+    for (const link of links) {
+      const url = URL.parse(link, at);
+      if (url?.origin !== base.origin || found(decodePath(url.pathname))) continue;
+      const from = missing.get(url.pathname) ?? [];
+      if (!from.includes(name)) missing.set(url.pathname, [...from, name]);
+    }
+  }
+  return [...missing].map(([path, from]) =>
+    `${path} ${path.startsWith(base.pathname) ? "is missing from the build" : `lies outside ${base.pathname}`}`
+    + `, linked from ${from[0]}${from.length > 1 ? ` and ${from.length - 1} more files` : ""}`);
+}
+
+// Hugo percent-encodes the paths it links but writes each file under its
+// decoded name.
+function decodePath(path: string): string {
+  try {
+    return decodeURIComponent(path);
+  } catch {
+    return path;
+  }
+}
+
+// The links in an HTML document's tags: the href, src, srcset, action,
+// and poster attributes, and the root-relative strings in data-*
+// attributes and JSON blocks. Minification drops the quotes from some
+// attribute values.
+function htmlLinks(html: string): string[] {
+  const links: string[] = [];
+  for (const [tag] of html.matchAll(/<[a-z][^>]*>/gi)) {
+    for (const m of tag.matchAll(/\s([a-z][a-z-]*)=(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/g)) {
+      const [, attr = "", ...quoted] = m;
+      const value = unescapeHTML(quoted.find((v) => v !== undefined) ?? "");
+      if (attr === "srcset") links.push(...value.split(",").map((c) => c.trim().split(/\s+/)[0]!));
+      else if (/^(?:href|src|action|poster)$/.test(attr)) links.push(value);
+      else if (attr.startsWith("data-")) links.push(...rooted(value));
+    }
+  }
+  for (const m of html.matchAll(/<script[^>]*\stype="?application\/(?:ld\+)?json"?[^>]*>([\s\S]*?)<\/script>/g)) {
+    links.push(...rooted(m[1]!));
+  }
+  return links;
+}
+
+// The strings in an attribute value or a JSON text that start with a
+// single slash, which the check reads as root-relative URLs.
+function rooted(value: string): string[] {
+  const isRooted = (v: unknown): v is string => typeof v === "string" && /^\/(?!\/)/.test(v);
+  if (isRooted(value)) return [value];
+  if (!/^\s*[[{]/.test(value)) return [];
+  const found: string[] = [];
+  try {
+    JSON.parse(value, (_key, v: unknown) => {
+      if (isRooted(v)) found.push(v);
+      return v;
+    });
+  } catch {
+    return [];
+  }
+  return found;
+}
+
+function unescapeHTML(value: string): string {
+  const named: Record<string, string> = { amp: "&", quot: '"', apos: "'", lt: "<", gt: ">" };
+  return value.replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, (all, dec?: string, hex?: string, name?: string) =>
+    dec ? String.fromCodePoint(Number(dec))
+    : hex ? String.fromCodePoint(Number.parseInt(hex, 16))
+    : named[name?.toLowerCase() ?? ""] ?? all);
+}
+
 let failed = false;
 try {
   for (const [name, site] of Object.entries(SITES)) {
@@ -434,7 +529,8 @@ try {
       failed = true;
       continue;
     }
-    const problems = (site.check?.(out, source) ?? []).filter((p) => p !== false);
+    const problems = [...(site.check?.(out, source) ?? []), ...brokenLinks(out, siteBaseURL(source, flags))]
+      .filter((p) => p !== false);
     const warns = site.warns;
     if (warns) {
       const warnings = run.log.split("\n").filter((line) => line.startsWith("WARN"));

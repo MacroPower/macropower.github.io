@@ -4,7 +4,7 @@ A standalone Hugo theme that renders a personal site as the Ubuntu 14.04 Unity d
 
 ## Constraints
 
-- A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds `exampleSite/` and small sites of other shapes with warnings fatal, then checks their output. The example site must use every template. Add a site to `scripts/build-sites.ts` when a fix covers a site shape the others miss.
+- A bare site with no params, menu, or data files must keep building. Guard every optional read. `npm run test:sites` builds `exampleSite/` and small sites of other shapes with warnings fatal, then checks their output. Its link check fails on any link to a file that a site's build lacks, absolute URLs on the site's own host included, so fixture data that links an outside page must use another host. The example site must use every template. Add a site to `scripts/build-sites.ts` when a fix covers a site shape the others miss.
 - The `misconfigured` site in `scripts/build-sites.ts` triggers each warning that a site's config, data, or front matter can cause. It checks that the build still succeeds and falls back to the default that each mistake replaces. Add a pattern to it for each new `warnf` that does not depend on the network.
 - Every asset the theme owns lives under `assets/unity/`, so a site's own `assets/css/main.css` or `assets/icons/` never replaces one. Keep new assets there. `assets/css/custom.css` is the one path the theme reads outside it, because it is the site's hook, and the `clash` site in `scripts/build-sites.ts` checks both.
 - A site needs only Hugo, in either edition. Do not add anything that needs Node, npm, Dart Sass, or the extended edition at site build time.
