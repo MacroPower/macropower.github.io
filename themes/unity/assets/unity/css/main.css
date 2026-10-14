@@ -1769,6 +1769,14 @@ a.up-sponsor-card[href]:hover{
    sets a width, because a width attribute takes only pixels. */
 .up-spotify:not([width]){width:100%}
 
+/* The player from the theme's youtube shortcode, a 16:9 box that its
+   iframe fills. Hugo's own shortcode sets these sizes in style
+   attributes. */
+.up-embed{
+  position:relative;aspect-ratio:16/9;margin:0 0 14px;
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+}
+
 /* The post reader's table of contents, a GtkExpander over Hugo's
    TableOfContents nav. */
 .up-toc{

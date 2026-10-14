@@ -28,6 +28,11 @@ mainSections = ["posts"]
 # [services.googleAnalytics]
 #   id = "G-XXXXXXXXXX"
 
+# The youtube shortcode loads its players from youtube-nocookie.com when
+# privacyEnhanced is set, and renders none when disable is set.
+# [privacy.youtube]
+#   privacyEnhanced = true
+
 [permalinks]
   # Optional; the theme works with any permalink shape.
   posts = "/posts/:year/:month/:title/"

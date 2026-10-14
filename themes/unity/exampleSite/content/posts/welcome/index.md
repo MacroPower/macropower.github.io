@@ -55,3 +55,9 @@ root-relative link to a static file, like this
 The `spotify` shortcode embeds an album, track, playlist, or artist:
 
 {{< spotify type="album" id="4aawyAB9vmqN3uQ7FjRGTy" >}}
+
+The theme's `youtube` shortcode takes the same arguments as Hugo's, but
+its player gets its 16:9 size from the stylesheet, so the page does not
+need style attributes:
+
+{{< youtube id="0RKpf3rK57I" loading="lazy" >}}

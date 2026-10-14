@@ -438,6 +438,8 @@ other = "Click the grid to audition · drag a note to transpose · right-click a
 # Shortcodes
 [spotify_player]
 other = "Spotify {{ .Type }} player"
+[youtube_video]
+other = "YouTube video"
 
 # Trash window and lock screen
 [trash_is_empty]

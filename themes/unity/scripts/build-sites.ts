@@ -571,6 +571,35 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       ];
     },
   },
+  // YouTube players on a site that sets privacy.youtube.privacyEnhanced.
+  // The theme's youtube shortcode replaces Hugo's, which sizes each player
+  // with style attributes. It must keep Hugo's arguments and host, and a
+  // class argument must replace the theme's up-embed class.
+  youtube: {
+    files: {
+      "hugo.toml": `${BARE}[privacy.youtube]\n  privacyEnhanced = true\n`,
+      "content/video.md": `${page("Video")}
+{{< youtube 0RKpf3rK57I >}}
+
+{{< youtube id="0RKpf3rK57I" class="clip" autoplay=true loop=true allowFullScreen=false title="Clip" >}}
+`,
+    },
+    check: (out) => {
+      const html = read(join(out, "video/index.html"));
+      const src = "https://www.youtube-nocookie.com/embed/0RKpf3rK57I";
+      return [
+        /<[a-z][^>]*\sstyle="/.test(html) && "video/index.html has a style attribute",
+        !/<div class="up-embed">\s*<iframe allow="[^"]*; fullscreen"/.test(html)
+          && "video/index.html's default player lacks the up-embed box or full screen",
+        !html.includes(`src="${src}?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0" title="YouTube video">`)
+          && "video/index.html's default player ignores privacyEnhanced or the default title",
+        !/<div class="clip">\s*<iframe allow="[^"]*web-share" loading="eager"/.test(html)
+          && "video/index.html's player ignores its class or allowFullScreen",
+        !html.includes(`src="${src}?autoplay=1&amp;controls=1&amp;end=0&amp;loop=1&amp;mute=1&amp;playlist=0RKpf3rK57I&amp;start=0" title="Clip">`)
+          && "video/index.html's player ignores its autoplay, loop, or title",
+      ];
+    },
+  },
   // Posts in a nested section.
   nested: {
     files: {
