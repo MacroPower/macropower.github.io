@@ -18,7 +18,7 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Markdown.** Heading anchors, GitHub-style alerts, build-time MathML math, and responsive images.
 - **Accessibility and print.** A skip link, real landmarks, keyboard focus that follows each window, and a print stylesheet that puts a post on plain paper without the desktop. Focus rings, selections, and window edges stay visible in Windows contrast themes and other forced colors, and the focused window's titlebar fills with the system's highlight color. When a visitor's system asks for more contrast, each accent highlight behind white text, such as a selected row or a primary button, darkens so the text contrasts 4.5:1 or more. Each window's close, minimize, and maximize buttons respond to a click or tap anywhere in a 24px square around the button. When a visitor's system asks for reduced motion, or the visitor turns on Reduce motion in Edit > Preferences, the desktop stops its animations, transitions, and smooth scrolling.
 - **Content Security Policy.** The theme renders no inline script, style element, or style attribute, so its pages run under `script-src 'self'` and `style-src 'self'`. See [Customizing](#customizing) for the one exception.
-- **Extras.** A sponsors page, an icon vault, a spotify shortcode, Open Graph, Twitter, and JSON-LD metadata, self-hosted Ubuntu fonts, and a MIDI synth "Studio" that plays your site's MIDI files from the sound indicator.
+- **Extras.** A sponsors page, an icon vault, Spotify and YouTube shortcodes, and Open Graph, Twitter, and JSON-LD metadata. The theme hosts its own Ubuntu fonts, and a MIDI synth "Studio" plays your site's MIDI files from the sound indicator.
 
 Hugo partials server-render everything, and Hugo's built-in esbuild bundles the TypeScript and the stylesheet, so a site needs nothing but Hugo: no Node, npm, or Dart Sass. Each page loads only the bundles it uses. Desktop state is session-only, so a reload gives you a fresh desktop.
 
@@ -233,7 +233,17 @@ The theme's render hooks extend Hugo's Markdown:
 
 - **Math.** On a site that merges the theme's `markup` (see [Site settings](#site-settings)), TeX between `\(` and `\)` renders inline, and TeX between `\[` and `\]` or between `$$` and `$$` renders as a block. The build renders it to MathML, so math does not need a script or stylesheet.
 
-The `spotify` shortcode and the theme's `youtube` shortcode each embed a player in a page. In feeds, each player becomes a link to the same item on Spotify or YouTube, because a feed reader shows a player without the theme's stylesheet.
+### Shortcodes
+
+The `spotify` shortcode embeds a Spotify player. It takes a `type`, which is `album`, `track`, `playlist`, `artist`, `episode`, or `show`, and the item's Spotify `id`, either by name or as the first two positional arguments. The optional `width` and `height` take whole pixels, and any other value, such as a percentage, fails the build. Without a `width`, the player fills its column, and `height` defaults to 380.
+
+```markdown
+{{< spotify type="album" id="4aawyAB9vmqN3uQ7FjRGTy" >}}
+```
+
+The theme's `youtube` shortcode replaces Hugo's. It takes the same arguments as [Hugo's](https://gohugo.io/shortcodes/youtube/) and follows your `privacy.youtube` settings, but it sizes the player to 16:9 from the theme's stylesheet instead of style attributes. A `class` argument replaces the class that sizes the player, so give your class a size in `custom.css`.
+
+In feeds, each player becomes a link to the same item on Spotify or YouTube, because a feed reader shows a player without the theme's stylesheet.
 
 ## Customizing
 
@@ -360,7 +370,9 @@ The `spotify` shortcode and the theme's `youtube` shortcode each embed a player 
   }
   ```
 - **Comments.** Add `layouts/_partials/extend-post.html` to your site. The post reader renders it after each post's body, with the post as its context.
-- **Content Security Policy.** The theme renders no inline script, event handler, style element, or style attribute, so its pages work under `script-src 'self'` and `style-src 'self'`, with or without JavaScript. When JavaScript runs, the home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime. Hugo's Google Analytics tag is an inline script. Hugo's default syntax highlighting writes style attributes. A site that merges the theme's `markup` (see [Site settings](#site-settings)) highlights code with classes instead, and the theme's stylesheet carries the classes for your `markup.highlight.style`. The theme's `youtube` shortcode replaces Hugo's, takes the same arguments and `privacy.youtube` settings, and sizes the player from the stylesheet instead of style attributes. Hugo's `vimeo` shortcode writes style attributes unless you give it a `class`, and its `instagram` shortcode always does.
+- **Content Security Policy.** The theme renders no inline script, event handler, style element, or style attribute, so its pages work under `script-src 'self'` and `style-src 'self'`, with or without JavaScript. When JavaScript runs, the home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime.
+
+  Some of Hugo's own templates break that policy. Hugo's Google Analytics tag is an inline script. Hugo's default syntax highlighting writes style attributes. A site that merges the theme's `markup` (see [Site settings](#site-settings)) highlights code with classes instead, and the theme's stylesheet carries the classes for your `markup.highlight.style`. The theme's [`youtube` shortcode](#shortcodes) replaces Hugo's and writes no style attributes. Hugo's `vimeo` shortcode writes style attributes unless you give it a `class`, and its `instagram` shortcode always does.
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site, translate the values, and put each placeholder such as `{{ .Tag }}` where your language needs it. That covers the desktop's dialogs and notifications too, whose keys start with `js_` and use `{name}` placeholders instead of Go templates. The `kw_` keys hold the words the Dash search matches, so a translation can add words in its own language. The home terminal stays in English, like the bash it imitates.
 

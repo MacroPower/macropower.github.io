@@ -52,7 +52,8 @@ reaches [the first part of the series](/posts/series-part-1.md). A
 root-relative link to a static file, like this
 [sample CV](/files/sample-cv.pdf), resolves under the site's `baseURL`.
 
-The `spotify` shortcode embeds an album, track, playlist, or artist:
+The `spotify` shortcode embeds an album, track, playlist, artist,
+episode, or show:
 
 {{< spotify type="album" id="4aawyAB9vmqN3uQ7FjRGTy" >}}
 
