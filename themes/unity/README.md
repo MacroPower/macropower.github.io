@@ -256,6 +256,8 @@ The theme's render hooks extend Hugo's Markdown:
   | `label` | The translated `accent_<name>` string for the theme's presets, and the name for yours | The swatch's tooltip and its name for screen readers. |
   | `weight` | | The swatch order, lowest first. Presets without a weight follow, by name. The theme's presets weigh 10, 20, 30, and 40. |
 
+  Focus rings on the light window surfaces paint `color`, so give it a contrast of 4:1 or more with white. White text and the focus ring of a selected row sit on `light`, so give it 3:1 or more.
+
   Hugo merges your presets into the theme's key by key, so a built-in preset whose `color` your site changes keeps the theme's other shades. Add a preset of your own instead. Do not set `--up-accent` or its shades in `custom.css`, because a value there beats every preset, and Edit > Preferences stops changing it.
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
 

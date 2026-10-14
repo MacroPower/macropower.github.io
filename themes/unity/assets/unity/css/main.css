@@ -701,7 +701,6 @@ body.up-resizing *{ cursor:inherit !important; }
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-3px}
   &.is-active{
     /* The --up-accent-light to --up-accent gradient, deliberately kept
        over the AA-darker shades a contrast pass once swapped in: the active
@@ -777,7 +776,6 @@ body.up-resizing *{ cursor:inherit !important; }
     box-shadow:var(--up-btn-shadow-active);
   }
   svg{flex-shrink:0}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-3px}
   &:disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -854,7 +852,6 @@ body.up-resizing *{ cursor:inherit !important; }
   padding:7px 9px 5px;border-radius:3px;
   cursor:pointer;outline:none;
   &:hover .up-docv-thumb-frame{border-color:#8F8A84}
-  &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-2px}
   &.is-active .up-docv-thumb-frame{
     border-color:var(--up-accent);
     box-shadow:0 0 0 2px color-mix(in srgb, var(--up-accent-light) 45%, transparent),0 1px 3px rgba(0,0,0,.25);
@@ -3926,8 +3923,11 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 }
 
 /* =========================================================================
-   accessibility: focus rings on interactive surfaces (kept subtle so they
-   don't break the Unity chrome aesthetic)
+   accessibility: focus rings on interactive surfaces. Every ring keeps a
+   contrast of at least 3:1 with the surface under it. A ring on a light
+   surface paints --up-accent, and a ring on a dark surface paints the
+   brighter --up-accent-light. focus-ring.test.ts checks each preset's
+   shades against white and the light surfaces.
    ========================================================================= */
 .up-launcher-tile:focus-visible{
   outline:2px solid var(--up-accent-light);
@@ -3951,12 +3951,24 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-naut-item:focus-visible,
 .up-post-row:focus-visible,
 .up-project-tile:focus-visible,
-.up-trash-tile:focus-visible{
-  outline:2px solid var(--up-accent-light);
+.up-trash-tile:focus-visible,
+.up-docv-thumb:focus-visible{
+  outline:2px solid var(--up-accent);
   outline-offset:-2px;
 }
+/* A selected row or tile fills with the accent, so its ring turns white and
+   moves 2px in, where the fill frames it on both sides. A selected CV
+   thumbnail keeps the accent ring, because its selection paints only the
+   page frame and the number. */
+.up-naut-item.is-active:focus-visible,
+.up-post-row.is-active:focus-visible,
+.up-project-tile.is-active:focus-visible,
+.up-trash-tile.is-active:focus-visible{
+  outline-color:#fff;
+  outline-offset:-4px;
+}
 .up-dlg-btn:focus-visible{
-  outline:2px solid var(--up-accent-light);
+  outline:2px solid var(--up-accent);
   outline-offset:1px;
 }
 /* The skip link baseof.html puts first in the page. It stays off screen
@@ -3973,7 +3985,12 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-pathbar-arrow:focus-visible,
 .up-pathbar-icon-btn:focus-visible,
 .up-pathbar-search-input:focus-visible,
-.up-reader-up:focus-visible,
+.up-docv-btn:focus-visible,
+.up-reader-up:focus-visible{
+  outline:2px solid var(--up-accent);
+  outline-offset:1px;
+}
+/* The copy button sits on the dark code block. */
 .up-code-copy:focus-visible{
   outline:2px solid var(--up-accent-light);
   outline-offset:1px;
