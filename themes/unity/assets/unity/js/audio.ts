@@ -48,8 +48,8 @@ const clamp = (v: number, lo: number, hi: number): number => Math.min(Math.max(v
 // ---- voices --------------------------------------------------------------
 
 interface VoicePreset {
-  harmonics: [mult: number, amp: number][]; // partial multipliers + amplitudes
-  peak: number; // envelope peak, pre-master
+  readonly harmonics: readonly (readonly [mult: number, amp: number])[]; // partial multipliers + amplitudes
+  readonly peak: number; // envelope peak, pre-master
 }
 
 // Additive recipes for the melody voice, selectable from the Studio rack. Kept
@@ -58,7 +58,7 @@ interface VoicePreset {
 // compressor to glue the mix. "square" matches the original fixed preset, so
 // the default mix is unchanged.
 export type WaveKey = "sine" | "square" | "saw" | "organ";
-const WAVES: Record<WaveKey, [number, number][]> = {
+const WAVES: Readonly<Record<WaveKey, VoicePreset["harmonics"]>> = {
   sine: [[1, 1]],
   square: [[1, 1], [3, 1 / 3]], // odd harmonics approximate a square's brightness
   saw: [[1, 1], [2, 1 / 2], [3, 1 / 3], [4, 1 / 4]],
@@ -66,7 +66,7 @@ const WAVES: Record<WaveKey, [number, number][]> = {
 };
 
 const MELODY_PEAK = 0.4;
-const BASS: VoicePreset = { harmonics: [[1, 1]], peak: 0.42 };
+const BASS: Readonly<VoicePreset> = { harmonics: [[1, 1]], peak: 0.42 };
 const KICK_PEAK = 0.32;
 const SNARE_PEAK = 0.18;
 const HAT_PEAK = 0.1;

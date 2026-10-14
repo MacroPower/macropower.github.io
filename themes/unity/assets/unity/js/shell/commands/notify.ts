@@ -17,7 +17,7 @@ function dispatchNotify(detail: UPNotifyDetail): void {
   emitWindow(NOTIFY_EVENT, detail);
 }
 
-const URGENCIES = new Set(["low", "normal", "critical"]);
+const URGENCIES: ReadonlySet<string> = new Set(["low", "normal", "critical"]);
 
 export const notifySend: Command = {
   name: "notify-send",

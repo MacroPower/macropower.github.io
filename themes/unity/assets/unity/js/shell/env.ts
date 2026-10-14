@@ -8,7 +8,7 @@ export interface EnvHooks {
 }
 
 // Parameters the shell computes rather than storing; always "set".
-const SPECIAL_PARAMS = new Set(["?", "$", "RANDOM", "!", "#", "*", "@", "-", "0"]);
+const SPECIAL_PARAMS: ReadonlySet<string> = new Set(["?", "$", "RANDOM", "!", "#", "*", "@", "-", "0"]);
 
 export class Env {
   private readonly vars = new Map<string, string>();

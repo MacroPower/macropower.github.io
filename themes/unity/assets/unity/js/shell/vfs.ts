@@ -65,7 +65,7 @@ const MONTHS = [
   "Oct",
   "Nov",
   "Dec",
-];
+] as const;
 
 /** `name: value` row used by the about/social file bodies. */
 function infoRow(label: string, value: string): string {

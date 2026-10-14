@@ -197,7 +197,7 @@ class FileSink implements Sink {
   flush(): string | undefined { return this.vfs.writeFile(this.path, this.buf, { append: this.append }); }
 }
 
-const NULL_SINK: Sink = { write() {}, writeln() {} };
+const NULL_SINK: Readonly<Sink> = { write() {}, writeln() {} };
 
 // Runtime services parameter expansion needs from the shell: variable access,
 // assignment (for ${VAR:=word}), command substitution, arithmetic, and a

@@ -144,7 +144,7 @@ export function ctx2d(c: HTMLCanvasElement): CanvasRenderingContext2D {
 
 // ---- font ----------------------------------------------------------------
 
-const FONT: { [ch: string]: Rows; "?": Rows } = {
+const FONT: Readonly<{ [ch: string]: Rows; "?": Rows }> = {
   A: [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
   B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
   C: [".###.", "#...#", "#....", "#....", "#....", "#...#", ".###."],
@@ -245,7 +245,7 @@ export function drawText(
 
 // ---- pips ----------------------------------------------------------------
 
-const PIP_SMALL: Record<Suit, Rows> = [
+const PIP_SMALL: Readonly<Record<Suit, Rows>> = [
   // hearts
   [".#.#.", "#####", "#####", ".###.", "..#.."],
   // diamonds
@@ -256,7 +256,7 @@ const PIP_SMALL: Record<Suit, Rows> = [
   ["..#..", ".###.", "#####", "#####", "..#.."],
 ];
 
-const PIP_BIG: Record<Suit, Rows> = [
+const PIP_BIG: Readonly<Record<Suit, Rows>> = [
   [
     ".###...###.",
     "#####.#####",
@@ -322,8 +322,8 @@ export function drawPipBig(ctx: CanvasRenderingContext2D, suit: Suit, x: number,
 // Pip positions per rank on a number card: column (left/center/right) and
 // the row's top y. Pips in the lower half hang upside down like real cards.
 type Col = "L" | "C" | "R";
-const PIP_X: Record<Col, number> = { L: 6, C: 13, R: 20 };
-const PIP_LAYOUT: Record<number, [Col, number][]> = {
+const PIP_X: Readonly<Record<Col, number>> = { L: 6, C: 13, R: 20 };
+const PIP_LAYOUT: Readonly<Record<number, readonly (readonly [Col, number])[]>> = {
   2: [["C", 11], ["C", 27]],
   3: [["C", 11], ["C", 19], ["C", 27]],
   4: [["L", 11], ["R", 11], ["L", 27], ["R", 27]],
@@ -399,7 +399,7 @@ const JACK: Rows = [
   ".CCCCcccccccCCCC.",
 ];
 
-const BUSTS: Record<number, Rows> = { 11: JACK, 12: QUEEN, 13: KING };
+const BUSTS: Readonly<Record<number, Rows>> = { 11: JACK, 12: QUEEN, 13: KING };
 
 function bustColors(suit: Suit): Record<string, string> {
   const red = isRed(suit);

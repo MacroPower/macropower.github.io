@@ -21,10 +21,10 @@ export const colon: Command = {
 
 // --- test / [ -------------------------------------------------------------
 
-const UNARY_STR = new Set(["-z", "-n"]);
-const UNARY_FILE = new Set(["-e", "-f", "-d", "-r", "-w", "-x", "-s"]);
-const BINARY_STR = new Set(["=", "==", "!=", "<", ">"]);
-const BINARY_INT = new Set(["-eq", "-ne", "-lt", "-le", "-gt", "-ge"]);
+const UNARY_STR: ReadonlySet<string> = new Set(["-z", "-n"]);
+const UNARY_FILE: ReadonlySet<string> = new Set(["-e", "-f", "-d", "-r", "-w", "-x", "-s"]);
+const BINARY_STR: ReadonlySet<string> = new Set(["=", "==", "!=", "<", ">"]);
+const BINARY_INT: ReadonlySet<string> = new Set(["-eq", "-ne", "-lt", "-le", "-gt", "-ge"]);
 
 class TestError extends Error {}
 

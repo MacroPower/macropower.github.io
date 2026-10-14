@@ -19,7 +19,7 @@ interface DialogEntry {
   opener: HTMLElement | null;
 }
 
-const ICON_GLYPHS: Record<Exclude<UPDialogIcon, "none">, string> = {
+const ICON_GLYPHS: Readonly<Record<Exclude<UPDialogIcon, "none">, string>> = {
   info: "i",
   question: "?",
   warning: "!",

@@ -41,7 +41,7 @@ export type CursorAction =
   /** No card at the cursor can move. */
   | { readonly type: "none" };
 
-const STOCK: Loc = { kind: "stock", pile: 0 };
+const STOCK: Readonly<Loc> = { kind: "stock", pile: 0 };
 
 /** The top row, left to right, with the tableau column under each pile. */
 const TOP_ROW: readonly { readonly loc: Loc; readonly col: number }[] = [

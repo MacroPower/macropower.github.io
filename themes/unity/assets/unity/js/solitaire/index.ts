@@ -44,8 +44,8 @@ const DRAG_THRESHOLD = 4;
 /** How far a run the keyboard holds rises off the table. */
 const HELD_LIFT = 4;
 
-const STOCK: Loc = { kind: "stock", pile: 0 };
-const WASTE: Loc = { kind: "waste", pile: 0 };
+const STOCK: Readonly<Loc> = { kind: "stock", pile: 0 };
+const WASTE: Readonly<Loc> = { kind: "waste", pile: 0 };
 
 interface View {
   x: number;

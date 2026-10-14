@@ -29,15 +29,15 @@ const ZOOMS = [12, 18, 26, 38, 56] as const; // px per beat
 const ZOOM_DEFAULT = 2;
 const PITCH_MIN = 21; // A0
 const PITCH_MAX = 108; // C8
-const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const BLACK = new Set([1, 3, 6, 8, 10]);
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"] as const;
+const BLACK: ReadonlySet<number> = new Set([1, 3, 6, 8, 10]);
 
 const ACCENT = "#E95420"; // playhead — Unity orange, deliberately not themed
 const DRUM_ROWS = [
   { label: t("js_studio_drum_hat_short"), pitch: 42 },
   { label: t("js_studio_drum_snare_short"), pitch: 38 },
   { label: t("js_studio_drum_kick_short"), pitch: 36 },
-];
+] as const;
 
 function noteName(pitch: number): string {
   return NOTE_NAMES[pitch % 12] + String(Math.floor(pitch / 12) - 1);
@@ -237,7 +237,7 @@ const fmtSigned = (v: number): string => (v > 0 ? `+${v}` : String(v));
 // 16x16 voice glyphs (currentColor, so the lit/custom tints apply): single
 // cycles for the waveform voices, pictograms for the rest — stacked dual
 // waves for Auto's bass/lead split, a keyboard, a bell, a plectrum, a cloud.
-const PATCH_GLYPHS: Record<audio.PatchKey, string> = {
+const PATCH_GLYPHS: Readonly<Record<audio.PatchKey, string>> = {
   auto: '<path d="M2 5 Q4.75 1.5 7.5 5 T13 5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1 11.5 Q4.5 7.5 8 11.5 T15 11.5" fill="none" stroke="currentColor" stroke-width="1.4"/>',
   sine: '<path d="M1 8 Q4.5 1 8 8 T15 8" fill="none" stroke="currentColor" stroke-width="1.6"/>',
   square: '<path d="M1 12 V4 H8 V12 H15 V4" fill="none" stroke="currentColor" stroke-width="1.6"/>',
@@ -252,7 +252,7 @@ const PATCH_GLYPHS: Record<audio.PatchKey, string> = {
 
 const patchSvg = (key: audio.PatchKey, size: number): string =>
   `<svg viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">${PATCH_GLYPHS[key]}</svg>`;
-const VOICE_FLAVOR: Partial<Record<audio.PatchKey, string>> = {
+const VOICE_FLAVOR: Readonly<Partial<Record<audio.PatchKey, string>>> = {
   sine: t("js_studio_flavor_sine"),
   square: t("js_studio_flavor_square"),
   saw: t("js_studio_flavor_saw"),

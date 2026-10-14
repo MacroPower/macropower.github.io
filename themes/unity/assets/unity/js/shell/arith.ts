@@ -13,7 +13,7 @@ const NUM_RE = /0[xX][0-9a-fA-F]+|0[0-7]+|\d+/y;
 const HEX_RE = /^0[xX]/;
 const OCTAL_RE = /^0[0-7]+$/;
 const INT_RE = /^[+-]?\d+$/;
-const MULTI_OPS = new Set(["**", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||"]);
+const MULTI_OPS: ReadonlySet<string> = new Set(["**", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||"]);
 
 type Tok = { t: "num"; v: number } | { t: "name"; v: string } | { t: "op"; v: string } | { t: "end" };
 

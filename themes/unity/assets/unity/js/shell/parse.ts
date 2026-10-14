@@ -86,7 +86,7 @@ const NAME_START = /[A-Za-z_]/;
 const NAME_CHAR = /[A-Za-z0-9_]/;
 const SPECIAL_PARAM = "?$#!*@-";
 
-const EMPTY_WORD: Word = { parts: [], quoted: false, hasUnquotedGlob: false };
+const EMPTY_WORD: Readonly<Word> = { parts: [], quoted: false, hasUnquotedGlob: false };
 
 // Scan a balanced run starting just after an opening delimiter, returning the
 // inner text and the index just past the closing delimiter. `open`/`close`

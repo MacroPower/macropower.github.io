@@ -11,10 +11,10 @@ import type { UPDialogOptions, UPSite } from "./types";
 import { isNavAction, isVolumeControl, parseAction, type NamedAction, type PanelAction, type VolumeControl } from "./actions";
 import { eventElement, indexOfFocused } from "./dom";
 
-const EMPTY_SITE: UPSite = {
+const EMPTY_SITE: Readonly<UPSite> = {
   handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [], terminal: true, blog: false, projects: false, solitaire: false,
 };
-const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
+const getSite = (): Readonly<UPSite> => window.UP_SITE ?? EMPTY_SITE;
 
 // nav:<key> targets are SSR'd into UP_SITE.nav from the unity/site-pages.html
 // registry, so the URL map lives in one place on the Hugo side.
@@ -365,7 +365,7 @@ async function handleHotspot(): Promise<void> {
 // The handler behind each named action. dispatchAction awaits whatever a
 // handler returns. The Record type makes tsc fail when actions.ts names an
 // action that this table lacks, or this table handles a name it does not.
-const ACTIONS: Record<NamedAction, (site: UPSite) => unknown> = {
+const ACTIONS: Readonly<Record<NamedAction, (site: UPSite) => unknown>> = {
   reload: () => { window.location.reload(); },
   fullscreen: () => { void document.documentElement.requestFullscreen?.().catch(() => {}); },
   "daw:open": () => { if (UP_STUDIO) openStudio(); },
