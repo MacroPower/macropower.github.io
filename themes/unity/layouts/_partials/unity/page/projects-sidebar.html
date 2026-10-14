@@ -35,7 +35,7 @@
 {{- $langNames = sort $langNames -}}
 {{- $langs := slice -}}
 {{- range $langNames -}}
-  {{- $sym := partialCached "unity/page/icons/lang-symbol.html" . . -}}
+  {{- $sym := partialCached "unity/emblems/lang-symbol.html" . . -}}
   {{- $icon := printf `<svg viewBox="0 0 24 24" width="14" height="14"><use href="#%s"/></svg>` $sym -}}
   {{- $langs = $langs | append (dict
       "tag" "button"

@@ -17,7 +17,7 @@
 {{- with $projects }}
 {{- /* Not hidden: the sprite's gradients stop painting inside a
       display:none subtree, and the sprite already takes no space. */}}
-<div data-dash-sprite>{{ partial "unity/page/icons/lang-symbols.html" $ }}</div>
+<div data-dash-sprite>{{ partial "unity/emblems/lang-symbols.html" $ }}</div>
 {{- end }}
 {{- with $posts }}
 <section class="up-dash-section" data-dash-section="files" data-dash-cap="6" aria-label="{{ partial "unity/ui/t" "files_and_folders" }}">
@@ -53,7 +53,7 @@
     <a class="up-dash-tile" data-dash-tile tabindex="-1"
        {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }} title="{{ .description }}"
        data-keywords="{{ partial "unity/ui/t" "kw_project" }} {{ .language }} {{ delimit (.topics | default slice) " " }} {{ .description }}">
-      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/page/icons/folder-emblem.html" (dict "language" .language) }}</span>
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/emblems/folder-emblem.html" (dict "language" .language) }}</span>
       <span dir="auto" class="up-dash-tile-label">{{ .name }}</span>
     </a>
     {{- end }}

@@ -19,7 +19,7 @@
         data-up-project-tile
         data-name="{{ $p.name }}"
         data-language="{{ $p.language }}"
-        data-lang-symbol="{{ partialCached "unity/page/icons/lang-symbol.html" $p.language $p.language }}"
+        data-lang-symbol="{{ partialCached "unity/emblems/lang-symbol.html" $p.language $p.language }}"
         {{ with $p.stars }}data-stars="{{ . }}"{{ end }}
         {{ with $p.forks }}data-forks="{{ . }}"{{ end }}
         data-updated="{{ $p.updated }}"
@@ -28,6 +28,6 @@
         data-description="{{ $p.description }}"
         {{ with $p.license }}data-license="{{ . }}"{{ end }}
         data-url="{{ $p.url }}">
-  {{ partial "unity/page/icons/folder-emblem.html" (dict "language" $p.language) }}
+  {{ partial "unity/emblems/folder-emblem.html" (dict "language" $p.language) }}
   <span dir="auto" class="up-project-tile-label">{{ $p.name }}</span>
 </button>
