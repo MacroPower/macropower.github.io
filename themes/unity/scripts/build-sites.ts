@@ -167,6 +167,48 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
+  // A site that uses every documented hook: a custom.css that imports a
+  // sibling file and nests a rule, and the three extend-* partials. Each
+  // partial holds an element marker, because html/template drops HTML
+  // comments.
+  hooks: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/about.md": page("About"),
+      "content/posts/one.md": page("One"),
+      "assets/css/custom.css": '@import "extra.css";\n.hooks-custom{order:1;.hooks-nested{order:2}}\n',
+      "assets/css/extra.css": ".hooks-extra{order:3}\n",
+      "layouts/_partials/extend-head.html": '<meta name="hooks" content="HEAD-HOOK">\n',
+      "layouts/_partials/extend-footer.html": "<span hidden>FOOTER-HOOK</span>\n",
+      "layouts/_partials/extend-post.html": "<p>POST-HOOK {{ .Title }}</p>\n",
+    },
+    check: (out) => {
+      const pages = ["index.html", "about/index.html", "posts/one/index.html"].map((p) => [p, read(join(out, p))] as const);
+      const href = /<link rel="stylesheet" href="([^"]+)"/.exec(pages[0]![1])?.[1];
+      const css = href ? read(join(out, href)) : "";
+      const theme = css.indexOf(".up-top-panel");
+      const post = pages[2]![1];
+      return [
+        theme < 0 && "the stylesheet lacks the theme's rules",
+        !(css.search(/\.hooks-extra\s*\{/) > theme) && "the stylesheet lacks the file custom.css imports, after the theme's rules",
+        // Unlowered nesting never puts the two classes side by side.
+        !(css.search(/\.hooks-custom \.hooks-nested\s*\{/) > theme)
+          && "the stylesheet lacks custom.css's nested rule, lowered, after the theme's rules",
+        ...pages.flatMap(([name, html]) => {
+          const head = html.indexOf('content="HEAD-HOOK"');
+          const foot = html.indexOf("FOOTER-HOOK");
+          return [
+            !(head > html.indexOf('rel="stylesheet"') && head < html.indexOf("</head>"))
+              && `${name} lacks extend-head.html between the stylesheet and </head>`,
+            !(foot > html.lastIndexOf("<script") && foot < html.indexOf("</body>"))
+              && `${name} lacks extend-footer.html between the last script and </body>`,
+          ];
+        }),
+        !(post.indexOf("POST-HOOK One") > post.indexOf("Body of One.")) && "posts/one/index.html lacks extend-post.html after the body",
+        pages[1]![1].includes("POST-HOOK") && "about/index.html renders extend-post.html",
+      ];
+    },
+  },
   // Root pages only. Hugo then sets mainSections to [""], which must not
   // turn every root page into a blog post.
   sectionless: {
