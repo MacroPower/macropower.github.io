@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { css, declarations, siteTokens as tokens } from "./testkit";
+import { accentPresets, css, declarations, siteTokens as tokens } from "./testkit";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -84,5 +84,25 @@ describe("tokens", () => {
       "--up-daw-btn-shadow in .up-dash-tile &:focus",
       "--up-daw-btn-shadow in .up-dash-lens &.is-active",
     ]);
+  });
+
+  it("repeats the orange preset in the internal accent block", () => {
+    // The block paints a page whose site removes every preset.
+    const orange = accentPresets.find((p) => p.name === "orange");
+    expect(orange).toBeDefined();
+    const block = new Map(declarations.filter(({ path }) => path === ":root").map(({ prop, value }) => [prop, value]));
+    const shades = [
+      ["--up-accent", orange?.color],
+      ["--up-accent-light", orange?.light],
+      ["--up-accent-dark", orange?.dark],
+      ["--up-accent-darker", orange?.darker],
+    ] as const;
+    const differ = shades.flatMap(([token, preset]) => {
+      const value = block.get(token);
+      return value?.toLowerCase() === preset?.toLowerCase() && value !== undefined
+        ? []
+        : [`${token} is ${value} in main.css and ${preset} in hugo.toml`];
+    });
+    expect(differ).toEqual([]);
   });
 });

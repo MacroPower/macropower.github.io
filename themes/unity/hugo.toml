@@ -98,7 +98,8 @@
   # The accent presets that Edit > Preferences offers, in weight order.
   # params.desktop.accent names the one each page starts with, and the
   # first is the default. _partials/unity/accents.html resolves them, and
-  # each label comes from the accent_<name> key in i18n/en.toml.
+  # each label comes from the accent_<name> key in i18n/en.toml. The
+  # internal accent block in main.css repeats the orange shades.
   [params.desktop.accents.orange]
     color  = "#DD4814"
     light  = "#E95420"

@@ -220,7 +220,8 @@
    the presets in params.desktop.accents, and head/css.html builds a rule
    in this layer for each preset. Each rule sets these tokens on <html>
    and on the preset's swatch. These orange values paint a page whose
-   site removes every preset. */
+   site removes every preset. tokens.test.ts fails when they differ from
+   the orange preset in hugo.toml. */
 :root{
   --up-accent:#DD4814;
   --up-accent-light:#E95420;
