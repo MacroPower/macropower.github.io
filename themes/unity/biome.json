@@ -16,6 +16,10 @@
       "suspicious": {
         "noTemplateCurlyInString": "off",
         "noControlCharactersInRegex": "off"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "useExhaustiveSwitchCases": "error"
       }
     }
   }
