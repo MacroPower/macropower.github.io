@@ -315,6 +315,19 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
 `,
     },
   },
+  // README.md's Configuration example on top of its Hugo module route.
+  // The example must not name the theme, because the route's import
+  // already loads it.
+  module: {
+    files: {
+      "hugo.toml": `${readmeToml("## Configuration")}\n${readmeToml("### Hugo module")}`,
+      "config/_default/module.toml": moduleReplacement(),
+      "content/posts/one.md": page("One"),
+    },
+    check: () => ["## Configuration", "### Hugo module"]
+      .filter((heading) => !readmeToml(heading))
+      .map((heading) => `README.md has no TOML block under ${heading}`),
+  },
   multilingual: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "en"
@@ -1845,6 +1858,27 @@ void dialog({ title: "SITE-DIALOG" });
 
 function read(file: string): string {
   return readFileSync(file, "utf8");
+}
+
+// The first TOML block between a heading of README.md and the next
+// heading, or "" when the heading has none.
+function readmeToml(heading: string): string {
+  const readme = read(join(theme, "README.md"));
+  const at = readme.indexOf(`\n${heading}\n`);
+  if (at < 0) return "";
+  const section = readme.slice(at + heading.length + 2).split(/^#{2,6} /m)[0] ?? "";
+  return /^```toml\n([\s\S]*?)^```$/m.exec(section)?.[1] ?? "";
+}
+
+// The theme's Hugo module path, from its go.mod.
+function themeModule(): string {
+  return /^module (\S+)/m.exec(read(join(theme, "go.mod")))?.[1] ?? "";
+}
+
+// A module config that points the theme's module path at this checkout,
+// so a site that imports the theme builds without Go or the network.
+function moduleReplacement(): string {
+  return `replacements = ${JSON.stringify(`${themeModule()} -> ${theme}`)}\n`;
 }
 
 // Runs Hugo and returns whether it succeeded and everything it printed.

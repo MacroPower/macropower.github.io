@@ -143,6 +143,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - An `@import url(...)` of an external stylesheet in `custom.css` lands at the top of the built stylesheet, where browsers load it.
 - The no-JavaScript fallbacks of the terminal, projects, and CV pages keep their layout under a `style-src 'self'` policy.
 - `hugo mod npm pack` collects no packages from the theme, and a change to the theme's dev tooling no longer warns your site that its packed dependencies are stale.
+- README.md's configuration example leaves out `theme = "unity"`, which broke the build of a site that installed the theme as a Hugo module or a Git submodule.
 - The theme ships the Ubuntu Font Licence and Canonical's copyright notice beside its fonts, and the CV viewer's script keeps pdf.js's licence notice.
 
 [Unreleased]: https://github.com/MacroPower/macropower.github.io/commits/main/themes/unity

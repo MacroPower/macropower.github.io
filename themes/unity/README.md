@@ -91,12 +91,13 @@ To update a copy, delete `themes/unity` and copy the theme again from a fresh sp
 
 ## Configuration
 
-`exampleSite/hugo.toml` documents every option with comments. The short version:
+`exampleSite/hugo.toml` documents every option with comments. Its `theme = "unity"` line finds the theme only at `themes/unity`, where the [Copy](#copy) route puts it. Leave that line out of a site that installs the theme another way.
+
+Add this short version to the `hugo.toml` from [Installation](#installation), which already loads the theme through the `[[module.imports]]` entry or the `theme` line that your route shows:
 
 ```toml
 baseURL = "https://example.org/"
 title   = "Jane Doe"
-theme   = "unity"
 
 # The blog section. Without it, Hugo picks the section with the most
 # pages, which might not be the blog.
