@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["es2023", "dom", "dom.iterable"],
+    "lib": ["es2023", "dom"],
     "module": "preserve",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
@@ -12,13 +12,18 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noUncheckedSideEffectImports": true,
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
+    // skipLibCheck stays off, so tsc checks pdfjs.d.ts and the vendored
+    // xterm declarations that `paths` maps the imports to.
+    // noPropertyAccessFromIndexSignature stays off, because every read it
+    // flags is a `dataset` property, which bracket access does not make safer.
     "paths": {
       "@xterm/xterm": ["./assets/unity/third_party/xterm/xterm.d.ts"],
       "@xterm/addon-fit": ["./assets/unity/third_party/xterm/addon-fit.d.ts"],

@@ -1,7 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    // tsconfig.json checks the theme's own .d.ts files. This config adds
+    // only the vitest and @types/node typings, which the theme does not own.
+    "skipLibCheck": true
   },
   "exclude": [],
   "include": [
