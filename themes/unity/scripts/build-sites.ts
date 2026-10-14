@@ -432,6 +432,24 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       ];
     },
   },
+  // A blog with a post dated in another zone and an undated post. Each
+  // post's JSON-LD must keep its date's time and zone and omit the dates
+  // a post lacks.
+  jsonld: {
+    files: {
+      "hugo.toml": `${BARE}title = "Jane Doe"\nmainSections = ["posts"]\n`,
+      "content/posts/dated.md": page("Dated", "date = 2024-01-02T03:04:05-05:00\n"),
+      "content/posts/undated.md": page("Undated"),
+    },
+    check: (out) => {
+      const ld = (path: string): LdNode => jsonld(read(join(out, path)));
+      const posts = { dated: ld("posts/dated/index.html"), undated: ld("posts/undated/index.html") };
+      return [
+        posts.dated.datePublished !== "2024-01-02T03:04:05-05:00" && "posts/dated/ drops its date's time or zone",
+        ("datePublished" in posts.undated || "dateModified" in posts.undated) && "posts/undated/ carries a date it lacks",
+      ];
+    },
+  },
   // Posts in a nested section.
   nested: {
     files: {
@@ -1526,6 +1544,15 @@ function unescapeHTML(value: string): string {
     dec ? String.fromCodePoint(Number(dec))
     : hex ? String.fromCodePoint(Number.parseInt(hex, 16))
     : named[name?.toLowerCase() ?? ""] ?? all);
+}
+
+// A JSON-LD node. JSON.parse does not check its fields.
+type LdNode = { [field: string]: unknown };
+
+// A built page's JSON-LD block, or an empty node when it has none.
+function jsonld(html: string): LdNode {
+  const m = /<script type="?application\/ld\+json"?>([^<]*)<\/script>/.exec(html);
+  return m ? JSON.parse(m[1]!) : {};
 }
 
 let failed = false;

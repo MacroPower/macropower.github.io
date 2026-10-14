@@ -20,6 +20,7 @@
 {{- $author := partialCached "unity/author.html" . -}}
 {{- $isPost := and .IsPage (partial "unity/in-blog.html" .) -}}
 {{- $title := partial "unity/page-title.html" . -}}
+{{- $iso := "2006-01-02T15:04:05-07:00" -}}
 {{- /* The locale as a BCP 47 tag for JSON-LD, and as Open Graph's
       language_TERRITORY, which takes a region but no script subtag:
       zh-Hant-TW becomes zh_TW and de becomes de. */ -}}
@@ -60,7 +61,6 @@
 {{- end }}
 {{- if .IsPage }}
 <meta property="og:type" content="article">
-{{- $iso := "2006-01-02T15:04:05-07:00" }}
 {{- with .PublishDate }}
 <meta property="article:published_time" content="{{ .Format $iso }}">
 {{- end }}
@@ -119,11 +119,11 @@
   "url" .Permalink
   "mainEntityOfPage" .Permalink
   "inLanguage" $locale
-  "datePublished" (.PublishDate.Format "2006-01-02")
-  "dateModified" (.Lastmod.Format "2006-01-02")
   "description" $description
   "author" (dict "@type" "Person" "name" $author.name "url" site.Home.Permalink)
 }}
+{{- with .PublishDate }}{{ $ld = merge $ld (dict "datePublished" (.Format $iso)) }}{{ end }}
+{{- with .Lastmod }}{{ $ld = merge $ld (dict "dateModified" (.Format $iso)) }}{{ end }}
 {{- with $images }}{{ $ld = merge $ld (dict "image" .) }}{{ end }}
 <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 {{- end }}
