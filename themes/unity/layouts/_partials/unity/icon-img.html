@@ -1,0 +1,17 @@
+{{- /*
+  Renders assets/unity/icons/<name>.svg as an <img> of a published,
+  fingerprinted copy, for the full-color art that the launcher, the Dash,
+  the HUD, and the notifications repeat on every page. The browser then
+  caches each icon once instead of reading it again in every page's HTML,
+  and each copy keeps its gradient ids to itself. An icon that paints with
+  currentColor renders inline through unity/icon.html instead, because an
+  image cannot inherit the page's color. Context: the icon's name, such as
+  "launcher/home".
+*/ -}}
+{{- $src := partialCached "unity/ui/icon-source.html" . . -}}
+{{- if $src.currentColor -}}
+  {{- partial "unity/icon.html" . -}}
+{{- else -}}
+  {{- $res := resources.FromString (printf "unity/icons/%s.svg" .) $src.file | fingerprint -}}
+  <img src="{{ $res.RelPermalink }}" alt="" width="48" height="48" draggable="false">
+{{- end -}}

@@ -3,8 +3,7 @@
      exactly like the real daemon; aria-live announces additions. The template
      ships every named icon a bubble can request: notify.ts clones entries by
      data-icon key (the #up-project-icons pattern), so the bundle holds no
-     inline SVG strings and each clone keeps unity/icon.html's namespaced
-     ids. */}}
+     inline SVG strings. */}}
 <div class="up-notify-host" data-up-notify aria-live="polite">
   <template data-notify-icons>
     <span data-icon="info">{{ partial "unity/icon.html" "glyphs/info" }}</span>
@@ -18,6 +17,6 @@
     <span data-icon="heart">{{ partial "unity/icon.html" "glyphs/heart" }}</span>
     <span data-icon="lock">{{ partial "unity/icon.html" "glyphs/lock" }}</span>
     <span data-icon="terminal">{{ partial "unity/icon.html" "glyphs/terminal" }}</span>
-    <span data-icon="music">{{ partial "unity/icon.html" "launcher/music" }}</span>
+    <span data-icon="music">{{ partial "unity/icon-img.html" "launcher/music" }}</span>
   </template>
 </div>

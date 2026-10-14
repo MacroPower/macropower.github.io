@@ -85,6 +85,10 @@ const SITES: Record<string, SiteSpec> = {
         }),
         ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => exposedSvgs(relative(out, file), read(file))),
+        // The launcher's full-color art loads as images, so it stays out
+        // of every page's HTML.
+        read(join(out, "about/index.html")).includes("<linearGradient") && "about/index.html inlines gradient art",
+        ...iconImages(out).filter((src) => !isSvgFile(join(out, src))).map((src) => `${src} is not a standalone SVG`),
         // Nothing a Content Security Policy without 'unsafe-inline' blocks.
         ...htmlFiles(out).flatMap((file) => {
           const html = read(file);
@@ -217,7 +221,8 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       return [
         (css.includes("SITE-CSS") || !css.includes(".up-top-panel")) && "the site's css/main.css replaced the theme's stylesheet",
         text("js").includes("SITE-JS") && "the site's js/app.ts replaced the theme's script",
-        pages.includes("SITE-ICON") && "the site's icons/ replaced a theme icon",
+        (pages + iconImages(out).map((src) => read(join(out, src))).join("")).includes("SITE-ICON")
+          && "the site's icons/ replaced a theme icon",
         pages.includes("SITE-ASCII") && "the site's home/ascii.txt replaced the terminal art",
         ...["author", "icon", "head"]
           .filter((name) => pages.includes(`PARTIAL-${name.toUpperCase()}`))
@@ -612,6 +617,40 @@ mainSections = ["posts"]
       ];
     },
   },
+  // Menu icons a site adds under assets/unity/icons/: full-color art
+  // whose file omits the SVG namespace, and a glyph that paints with
+  // currentColor.
+  icons: {
+    files: {
+      "hugo.toml": `${BARE}[[menus.main]]
+  identifier = "art"
+  name = "Art"
+  url = "/art/"
+  [menus.main.params]
+    icon = "launcher/site-art"
+[[menus.main]]
+  identifier = "tint"
+  name = "Tint"
+  url = "/tint/"
+  [menus.main.params]
+    icon = "glyphs/site-tint"
+`,
+      "content/art.md": page("Art"),
+      "content/tint.md": page("Tint"),
+      "assets/unity/icons/launcher/site-art.svg": '<svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#E95420"/></svg>\n',
+      "assets/unity/icons/glyphs/site-tint.svg": '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>\n',
+    },
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      const tile = (key: string): string => new RegExp(`data-launcher="${key}"[^>]*>\\s*<span class="up-launcher-icon">(<[a-z]+[^>]*>)`).exec(home)?.[1] ?? "";
+      const src = /^<img src="([^"]+)"/.exec(tile("art"))?.[1];
+      return [
+        !src && `the Art tile renders ${tile("art") || "no icon"}, not an image`,
+        src !== undefined && !isSvgFile(join(out, src)) && `the Art tile's ${src} is not a standalone SVG`,
+        !tile("tint").startsWith('<svg aria-hidden="true"') && `the Tint tile renders ${tile("tint") || "no icon"}, not its inline glyph`,
+      ];
+    },
+  },
   // Config, front matter, and data in the looser shapes Hugo accepts.
   loose: {
     files: {
@@ -782,13 +821,13 @@ function panelAriaProblems(name: string, html: string): string[] {
   });
 }
 
-// Every SVG on a page is decoration beside a control's own name, so each
-// one must sit under aria-hidden="true", on itself or on an ancestor. A
-// named image (role="img" with an aria-label) passes too. Minified files
-// drop the quotes around a plain attribute value. The walk skips
-// comments, scripts, and styles, never pushes a void or self-closed tag,
-// and pops to the matching start tag, so an end tag that a minifier
-// omitted closes with its parent.
+// Every SVG on a page decorates a control that names itself. Each one
+// must sit under aria-hidden="true", on itself or on an ancestor. A named
+// image (role="img" with an aria-label) passes too. Minified files drop
+// the quotes around a plain attribute value. The walk skips comments,
+// scripts, and styles, and it never pushes a void or self-closed tag. An
+// end tag pops the stack to its start tag, so it also closes the tags
+// inside that a minifier left open.
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
 function exposedSvgs(name: string, html: string): string[] {
   const body = html.replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1>/g, "");
@@ -809,6 +848,20 @@ function exposedSvgs(name: string, html: string): string[] {
     if (!VOID.has(tag) && !attrs!.endsWith("/")) stack.push({ tag, hidden });
   }
   return problems;
+}
+
+// The icon images that a built site's pages load, as paths from the
+// site's root.
+function iconImages(out: string): string[] {
+  const srcs = htmlFiles(out).flatMap((file) =>
+    [...read(file).matchAll(/<img src="?([^"\s>]*\/unity\/icons\/[^"\s>]+\.svg)/g)].map((m) => m[1]!));
+  return [...new Set(srcs)];
+}
+
+// An <img> draws an SVG file only when its root <svg> declares the SVG
+// namespace.
+function isSvgFile(file: string): boolean {
+  return existsSync(file) && /^\s*<svg[^>]*\sxmlns="http:\/\/www\.w3\.org\/2000\/svg"/.test(read(file));
 }
 
 function htmlFiles(dir: string): string[] {

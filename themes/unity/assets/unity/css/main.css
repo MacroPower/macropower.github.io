@@ -413,6 +413,7 @@ svg[hidden]{ display:none; }
   display:block;
   width:100%; height:100%;
   filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));
+  > img{ display:block; width:100%; height:100%; }
 }
 .up-launcher-arrow{
   display:none;
@@ -2988,8 +2989,8 @@ body.up-reduce-motion *{
 .up-dash-tile-icon{
   width:48px;height:48px;
   filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));
-  > svg, > span{display:block}
-  svg{width:100%;height:100%}
+  > svg, > span, > img{display:block}
+  svg, img{width:100%;height:100%}
   /* project tiles reuse the folder-emblem partial at dash size */
   .up-project-folder{width:48px;height:48px}
   .up-project-folder-emblem svg{width:36px;height:15px}
@@ -3116,7 +3117,7 @@ body.up-reduce-motion *{
   border:1px solid rgba(255,255,255,.14);
   border-radius:7px;
   box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
-  svg{width:32px;height:32px}
+  svg, img{width:32px;height:32px}
 }
 .up-hud-input{
   /* recipe: dash-field */
@@ -3202,7 +3203,7 @@ body.up-reduce-motion *{
   flex:0 0 auto;
   display:inline-flex;
   color:rgba(255,255,255,.92);
-  svg{width:34px;height:34px}
+  svg, img{width:34px;height:34px}
 }
 .up-notify-text{
   min-width:0;

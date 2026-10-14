@@ -31,7 +31,7 @@
     <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
        title="{{ .Title }}"
        data-keywords="{{ partial "unity/ui/t" "kw_post" }} {{ delimit (partial "unity/post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
-      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon.html" "launcher/article" }}</span>
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" "launcher/article" }}</span>
       <span class="up-dash-tile-label">{{ .Title }}</span>
     </a>
     {{- end }}
@@ -72,7 +72,7 @@
     <button class="up-dash-tile" data-dash-tile type="button" tabindex="-1"
             data-dash-action="music:{{ $i }}"
             data-keywords="{{ partial "unity/ui/t" "kw_track" }}{{ with $track.title }} {{ . }}{{ end }}">
-      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon.html" "launcher/cassette-tape" }}</span>
+      <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" "launcher/cassette-tape" }}</span>
       <span class="up-dash-tile-label">{{ $track.title | default (partial "unity/ui/t" (slice "track_n" (dict "N" (add $i 1)))) }}</span>
     </button>
     {{- end }}
