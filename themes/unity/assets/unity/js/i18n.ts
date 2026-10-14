@@ -1,13 +1,25 @@
 // Runtime UI strings. _partials/unity/ui/i18n.html renders every js_ key in the
-// theme's i18n/en.toml through Hugo's T for the page's language, and
+// theme's i18n/en.toml through Hugo's T for the page's language.
 // _partials/unity/ui/runtime.html ships the result as window.UP_I18N, so a
 // site's i18n/<lang>.toml translates the text the scripts write. Values
-// use {name} placeholders. A missing key renders as the key itself, which
-// i18n.test.ts keeps from happening.
+// use {name} placeholders. A missing key renders as the key itself.
+// i18n-keys.ts types each key and the placeholders that its string fills,
+// so tsc rejects a key that en.toml lacks and a call that misses or
+// misspells a placeholder. `npm run i18n:types` generates it from en.toml.
 
+import type { Messages, Plurals } from "./i18n-keys";
 import type { UPI18n } from "./types";
 
-export type Vars = Record<string, string | number>;
+type Vars = Record<string, string | number>;
+
+/** The rest parameter of a call that reads key `K` of table `T`. It takes
+ *  one value for each placeholder that the key's string fills, or nothing
+ *  when the string has none. A key that the table lacks makes tsc infer
+ *  `K` as every key, and the first branch then accepts any vars, so the
+ *  error names the key rather than the argument count. */
+type Fill<T, K extends keyof T> =
+  [keyof T] extends [K] ? [vars?: Vars] :
+  [T[K]] extends [never] ? [] : [vars: Record<T[K] & string, string | number>];
 
 // Guarded so a module that calls t() at load time still imports under
 // Node, where tests run without a window.
@@ -36,6 +48,7 @@ export function locale(): string | undefined {
 }
 
 /** The translated string for `key`, with `{name}` placeholders filled from `vars`. */
+export function t<K extends keyof Messages>(key: K, ...vars: Fill<Messages, K>): string;
 export function t(key: string, vars?: Vars): string {
   return fill(catalog()?.strings[key] ?? key, vars);
 }
@@ -47,6 +60,7 @@ export function t(key: string, vars?: Vars): string {
  * CLDR's integer rules repeat every hundred past 100, so a larger count
  * reads the entry for 100 plus its last two digits.
  */
+export function tn<K extends keyof Plurals>(key: K, n: number, ...vars: Fill<Plurals, K>): string;
 export function tn(key: string, n: number, vars?: Vars): string {
   const plural = catalog()?.plurals[key];
   let text: string | undefined;

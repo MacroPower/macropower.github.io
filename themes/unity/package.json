@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:sites": "node scripts/build-sites.ts",
     "test:browser": "playwright test -c tests/browser",
+    "i18n:types": "node scripts/i18n-types.ts",
     "vendor:xterm": "node scripts/vendor-xterm.ts",
     "vendor:pdfjs": "node scripts/vendor-pdfjs.ts"
   },

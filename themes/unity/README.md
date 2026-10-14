@@ -370,6 +370,8 @@ The browser suite serves the example site with the Content Security Policy under
 
 The theme vendors xterm.js and pdf.js under `assets/unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.ts` or `scripts/vendor-pdfjs.ts` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
+The `js_` keys in `i18n/en.toml` hold the strings that the scripts show, and `assets/unity/js/i18n-keys.ts` types them for tsc. After adding, renaming, or removing a `js_` key or a placeholder, run `npm run i18n:types` to regenerate that file.
+
 The bash-conformance suite skips itself where bash is absent. The suite that checks Hugo's output against the scripts' types builds the example site and a bare site. It skips itself where Hugo is absent.
 
 ## License

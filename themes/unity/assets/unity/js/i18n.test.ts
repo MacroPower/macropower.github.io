@@ -2,30 +2,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it } from "vitest";
 
+import { EN_TOML, KEYS_TS, readCatalog, renderKeys } from "../../../scripts/i18n-types";
 import { t, tn } from "./i18n";
 
 const here = dirname(fileURLToPath(import.meta.url));
-
-// The js_ tables in i18n/en.toml as key -> forms. The file is flat
-// `[key]` tables of `one`/`other` strings, so a line parser suffices.
-function readEnglish(): Map<string, Record<string, string>> {
-  const out = new Map<string, Record<string, string>>();
-  let current: Record<string, string> | null = null;
-  const text = readFileSync(join(here, "..", "..", "..", "i18n", "en.toml"), "utf8");
-  for (const line of text.split("\n")) {
-    const table = /^\[([^\]]+)\]\s*$/.exec(line);
-    if (table) {
-      current = table[1]!.startsWith("js_") ? {} : null;
-      if (current) out.set(table[1]!, current);
-      continue;
-    }
-    const form = /^(\w+)\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/.exec(line);
-    if (form && current) current[form[1]!] = JSON.parse(`"${form[2]!}"`) as string;
-  }
-  return out;
-}
+const catalog = readCatalog(readFileSync(EN_TOML, "utf8"));
 
 function sources(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -35,11 +18,10 @@ function sources(dir: string): string[] {
   });
 }
 
-// Every t()/tn() call in the bundles, by kind. The check cannot follow a
-// key that is not a string literal, so it reports such calls as dynamic.
-function calls(): { plain: Set<string>; plural: Set<string>; dynamic: string[] } {
-  const plain = new Set<string>();
-  const plural = new Set<string>();
+// The key of every t()/tn() call in the bundles. The check cannot follow
+// a key that is not a string literal, so it reports such calls as dynamic.
+function calls(): { keys: Set<string>; dynamic: string[] } {
+  const keys = new Set<string>();
   const dynamic: string[] = [];
   for (const file of sources(here)) {
     const text = readFileSync(file, "utf8")
@@ -50,29 +32,28 @@ function calls(): { plain: Set<string>; plural: Set<string>; dynamic: string[] }
         dynamic.push(`${file.slice(here.length + 1)}: ${m[0]}`);
         continue;
       }
-      (m[1] === "tn" ? plural : plain).add(m[3]!);
+      keys.add(m[3]!);
     }
   }
-  return { plain, plural, dynamic };
+  return { keys, dynamic };
 }
 
+// tsc checks each key and its placeholders against i18n-keys.ts, so these
+// checks cover only what the types cannot see.
 describe("runtime strings", () => {
-  const english = readEnglish();
+  const english = new Map([...catalog].filter(([key]) => key.startsWith("js_")));
   const used = calls();
+
+  it("matches the generated key types", () => {
+    expect(readFileSync(KEYS_TS, "utf8"), "run `npm run i18n:types`").toBe(renderKeys(catalog));
+  });
 
   it("passes every key as a string literal", () => {
     expect(used.dynamic).toEqual([]);
   });
 
-  it("defines every key the scripts use, with the right shape", () => {
-    for (const key of used.plain) expect(english.get(key)?.one, key).toBeUndefined();
-    for (const key of used.plain) expect(english.get(key)?.other, key).toBeTypeOf("string");
-    for (const key of used.plural) expect(english.get(key)?.one, key).toBeTypeOf("string");
-    for (const key of used.plural) expect(english.get(key)?.other, key).toBeTypeOf("string");
-  });
-
   it("uses every js_ key it defines", () => {
-    const unused = [...english.keys()].filter((k) => !used.plain.has(k) && !used.plural.has(k));
+    const unused = [...english.keys()].filter((k) => !used.keys.has(k));
     expect(unused).toEqual([]);
   });
 
@@ -83,8 +64,9 @@ describe("runtime strings", () => {
   });
 
   it("puts {n} in every plural form", () => {
-    for (const key of used.plural) {
-      for (const text of Object.values(english.get(key) ?? {})) expect(text, key).toContain("{n}");
+    for (const [key, forms] of english) {
+      if (!("one" in forms)) continue;
+      for (const text of Object.values(forms)) expect(text, key).toContain("{n}");
     }
   });
 });
@@ -99,14 +81,14 @@ describe("t and tn", () => {
   };
 
   it("fills placeholders and leaves unknown ones alone", () => {
-    install({ js_hi: "Hello, {name}. {missing}" }, {});
-    expect(t("js_hi", { name: "Jane" })).toBe("Hello, Jane. {missing}");
+    install({ js_panel_source_body_link: "Hello, {link}. {missing}" }, {});
+    expect(t("js_panel_source_body_link", { link: "Jane" })).toBe("Hello, Jane. {missing}");
   });
 
   it("falls back to the key", () => {
     install({}, {});
-    expect(t("js_nope")).toBe("js_nope");
-    expect(tn("js_nope", 3)).toBe("js_nope");
+    expect(t("js_close")).toBe("js_close");
+    expect(tn("js_trash_items", 3)).toBe("js_trash_items");
   });
 
   it("reads the form for each count from the index", () => {
@@ -120,32 +102,61 @@ describe("t and tn", () => {
       return 2;
     };
     const index = Array.from({ length: 200 }, (_, i) => form(i)).join("");
-    install({}, { js_files: { forms: ["{n} файл", "{n} файла", "{n} файлов"], index } });
-    expect(tn("js_files", 1)).toBe("1 файл");
-    expect(tn("js_files", 34)).toBe("34 файла");
-    expect(tn("js_files", 12)).toBe("12 файлов");
-    expect(tn("js_files", 1021)).toBe("1021 файл");
-    expect(tn("js_files", 1012)).toBe("1012 файлов");
+    install({}, { js_trash_items: { forms: ["{n} файл", "{n} файла", "{n} файлов"], index } });
+    expect(tn("js_trash_items", 1)).toBe("1 файл");
+    expect(tn("js_trash_items", 34)).toBe("34 файла");
+    expect(tn("js_trash_items", 12)).toBe("12 файлов");
+    expect(tn("js_trash_items", 1021)).toBe("1021 файл");
+    expect(tn("js_trash_items", 1012)).toBe("1012 файлов");
   });
 });
 
-// Every table in i18n/en.toml as key -> forms.
-function readAllEnglish(): Map<string, Record<string, string>> {
-  const out = new Map<string, Record<string, string>>();
-  let current: Record<string, string> = {};
-  const text = readFileSync(join(here, "..", "..", "..", "i18n", "en.toml"), "utf8");
-  for (const line of text.split("\n")) {
-    const table = /^\[([^\]]+)\]\s*$/.exec(line);
-    if (table) {
-      current = {};
-      out.set(table[1]!, current);
-      continue;
-    }
-    const form = /^(\w+)\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/.exec(line);
-    if (form) current[form[1]!] = JSON.parse(`"${form[2]!}"`) as string;
-  }
-  return out;
-}
+// tsc checks the keys and placeholders of these calls against
+// i18n-keys.ts, so `npm run typecheck:test` fails when a call that should
+// not compile does. None of the calls runs.
+describe("key and placeholder types", () => {
+  it("rejects a key en.toml lacks or a call of the other kind", () => {
+    const checks = (): string[] => [
+      t("js_close"),
+      tn("js_trash_items", 2),
+      // @ts-expect-error -- en.toml defines no js_nope.
+      t("js_nope"),
+      // @ts-expect-error -- js_trash_items is a plural, which tn() reads.
+      t("js_trash_items"),
+      // @ts-expect-error -- js_close is not a plural.
+      tn("js_close", 2),
+    ];
+    expectTypeOf(checks).returns.toEqualTypeOf<string[]>();
+  });
+
+  it("rejects a missing or misspelled placeholder", () => {
+    const checks = (): string[] => [
+      t("js_panel_source_body_link", { link: "example.org" }),
+      tn("js_solitaire_at_count", 3, { pile: "Stock" }),
+      // @ts-expect-error -- the string fills {link}.
+      t("js_panel_source_body_link"),
+      // @ts-expect-error -- the string fills {link}, not {lnk}.
+      t("js_panel_source_body_link", { lnk: "example.org" }),
+      // @ts-expect-error -- the string fills {pile}.
+      tn("js_solitaire_at_count", 3),
+      // @ts-expect-error -- the string fills {pile}, not {piles}.
+      tn("js_solitaire_at_count", 3, { piles: "Stock" }),
+    ];
+    expectTypeOf(checks).returns.toEqualTypeOf<string[]>();
+  });
+
+  it("rejects a placeholder the string lacks", () => {
+    const checks = (): string[] => [
+      // @ts-expect-error -- js_close has no placeholder.
+      t("js_close", { name: "x" }),
+      // @ts-expect-error -- the string has no {url}.
+      t("js_panel_source_body_link", { link: "example.org", url: "x" }),
+      // @ts-expect-error -- tn() fills {n} from its count.
+      tn("js_solitaire_at_count", 3, { pile: "Stock", n: 4 }),
+    ];
+    expectTypeOf(checks).returns.toEqualTypeOf<string[]>();
+  });
+});
 
 function templates(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -156,7 +167,6 @@ function templates(dir: string): string[] {
 }
 
 describe("template strings", () => {
-  const english = readAllEnglish();
   const layouts = join(here, "..", "..", "..", "layouts");
   const files = templates(layouts).map((path) => ({
     name: path.slice(layouts.length + 1),
@@ -186,7 +196,7 @@ describe("template strings", () => {
       else dynamic.push(`${f.name}: ${m[0]}`);
     }
   }
-  const keys = [...english.keys()];
+  const keys = [...catalog.keys()];
 
   it("pass every key as a string literal or a printf prefix", () => {
     expect(dynamic).toEqual([]);
@@ -194,7 +204,7 @@ describe("template strings", () => {
 
   it("name only keys en.toml defines", () => {
     expect(used.size).toBeGreaterThan(0);
-    expect([...used].filter((k) => !english.has(k))).toEqual([]);
+    expect([...used].filter((k) => !catalog.has(k))).toEqual([]);
     expect([...prefixes].filter((p) => !keys.some((k) => k.startsWith(p)))).toEqual([]);
   });
 
@@ -205,7 +215,7 @@ describe("template strings", () => {
   });
 
   it("use only {{ .Name }} placeholders, which unity/ui/t can fill", () => {
-    for (const [key, forms] of english) {
+    for (const [key, forms] of catalog) {
       if (key.startsWith("js_")) continue;
       for (const text of Object.values(forms)) {
         expect(text.replace(/\{\{ \.\w+ \}\}/g, ""), key).not.toContain("{{");
