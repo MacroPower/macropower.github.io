@@ -191,7 +191,9 @@ mainSections = ["posts"]
 # actions. Home is implicit and always first. pageRef points an entry at a
 # page and follows its permalink and language. url takes any address, and
 # one without a scheme resolves under baseURL, once even when it starts
-# with the baseURL's path.
+# with the baseURL's path. An entry whose pageRef finds no page and that
+# sets no url drops out with a warning. List unity-menu-unresolved in
+# ignoreLogs to silence it.
 # Optional [menu.main.params]:
 #   icon      — launcher artwork under the theme's assets/unity/icons/
 #   match     — "exact" or "prefix" URL matching for active state

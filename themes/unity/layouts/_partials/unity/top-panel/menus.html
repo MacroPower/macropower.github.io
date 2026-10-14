@@ -48,9 +48,9 @@
      entry whose pageRef names no page in this language has no address,
      so it stays out. */ -}}
 {{- $helpLinks := slice -}}
-{{- range site.Menus.help -}}
-  {{- if .URL -}}
-    {{- $helpLinks = $helpLinks | append (dict "label" .Name "url" (partial "unity/menu-url.html" .)) -}}
+{{- range $entry := site.Menus.help -}}
+  {{- with partial "unity/menu-url.html" $entry -}}
+    {{- $helpLinks = $helpLinks | append (dict "label" $entry.Name "url" .) -}}
   {{- end -}}
 {{- end -}}
 {{- $helpItems := slice (dict "label" (partial "unity/ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}

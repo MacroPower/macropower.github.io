@@ -9,17 +9,17 @@
   baseURL's path even when the url already starts with it. A url with a
   scheme or host passes through, and any other resolves under baseURL like
   a Markdown link, with the language prefix. An entry whose pageRef names
-  no page in the current language has an empty .URL, so a caller that must
-  not link it to the home page checks .URL first.
+  no page in the current language, and that sets no url, returns "", and
+  every caller leaves it out.
 */ -}}
 {{- $u := "" -}}
 {{- with .Page -}}
   {{- $u = .RelPermalink -}}
-{{- else -}}
-  {{- $u = .MenuConfig.URL -}}
-  {{- $parsed := urls.Parse $u -}}
+{{- else with .MenuConfig.URL -}}
+  {{- $u = . -}}
+  {{- $parsed := urls.Parse . -}}
   {{- if not (or $parsed.IsAbs $parsed.Host) -}}
-    {{- $u = partial "unity/markup/site-url.html" (dict "path" $u "lang" true) -}}
+    {{- $u = partial "unity/markup/site-url.html" (dict "path" . "lang" true) -}}
   {{- end -}}
 {{- end -}}
 {{- return $u -}}

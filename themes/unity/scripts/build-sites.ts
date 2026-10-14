@@ -477,6 +477,10 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
   layout = "grid"
 [params.studio]
   playlist = ["../x.mid"]
+[[menu.main]]
+  identifier = "ghost"
+  name = "Ghost"
+  pageRef = "/ghost"
 `,
       "data/projects.yaml": "- name: named-project\n- description: nameless-project\n",
       "content/cv.md": page("CV", "layout = 'cv'\n"),
@@ -490,6 +494,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       /params\.social should be a list /,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
       /data\/projects has an entry without a name: .*nameless-project/,
+      /the menu\.main entry "Ghost" points at no page in "en"/,
       /\/cv\/ uses layout cv but sets no pdf /,
     ],
     check: (out) => {
@@ -502,6 +507,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
           && `the Preferences dialog offers ${accentNames(out)}, not the theme's presets alone`,
         !home.includes('data-indicator="clock"') && "index.html drops the clock beside the unknown indicator",
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
+        home.includes('data-launcher="ghost"') && "index.html docks the menu entry whose pageRef finds no page",
         home.includes("jane") && "index.html renders the malformed params.social",
         home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",
         !dash.includes("named-project") && "the Dash drops the named project",
@@ -568,6 +574,51 @@ mainSections = ["posts"]
       !/class="up-launcher-tile is-active"[^>]*data-launcher="blog"/.test(read(join(out, "posts/first.html")))
         && "posts/first.html leaves the Blog launcher tile inactive",
     ],
+  },
+  // Menu entries whose pageRef finds no page: Blog in both languages,
+  // because the site has no posts yet, and About in German. Each one
+  // drops out of that language's desktop with a warning, so no tile
+  // links to the home page and claims every page as current.
+  unresolved: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+[[menu.main]]
+  identifier = "blog"
+  name = "Blog"
+  pageRef = "/posts"
+[[menu.main]]
+  identifier = "about"
+  name = "About"
+  pageRef = "/about"
+`,
+      "content/about.md": page("About"),
+    },
+    warns: [
+      /unity: the menu\.main entry "Blog" points at no page in "en"/,
+      /unity: the menu\.main entry "Blog" points at no page in "de"/,
+      /unity: the menu\.main entry "About" points at no page in "de"/,
+    ],
+    check: (out) => {
+      const active = (file: string): string =>
+        [...read(join(out, file)).matchAll(/class="up-launcher-tile is-active"[^>]*data-launcher="([^"]*)"/g)]
+          .map((m) => m[1]).join(" ");
+      // UP_SITE.nav in the language's runtime script.
+      const nav = (lang: string): string => {
+        const file = readdirSync(join(out, "js")).find((f) => f.startsWith(`runtime.${lang}.`));
+        return (file && read(join(out, "js", file)).match(/nav:\{[^}]*\}/)?.[0]) || "";
+      };
+      return [
+        active("about/index.html") !== "about"
+          && `about/index.html marks "${active("about/index.html")}" current, not "about"`,
+        active("de/index.html") !== "home" && `de/index.html marks "${active("de/index.html")}" current, not "home"`,
+        !nav("en").includes('about:"/about/"') && `the English nav lacks About: ${nav("en")}`,
+        /\bblog:/.test(nav("en")) && `the English nav maps Blog: ${nav("en")}`,
+        /\b(?:blog|about):/.test(nav("de")) && `the German nav maps Blog or About: ${nav("de")}`,
+      ];
+    },
   },
   // A home page in a plain window instead of the terminal.
   homepage: {

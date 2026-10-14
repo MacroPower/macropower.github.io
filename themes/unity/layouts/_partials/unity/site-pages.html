@@ -73,7 +73,14 @@
 {{- range site.Menus.main -}}
   {{- $key := .Identifier | default (anchorize .Name) -}}
   {{- $def := index $defaults $key | default dict -}}
+  {{- /* An entry with neither a page nor a url drops out with a warning.
+        A link to the home page in its place would match every page's
+        URL under the default prefix match. */ -}}
   {{- $u := partial "unity/menu-url.html" . -}}
+  {{- if not $u -}}
+    {{- warnidf "unity-menu-unresolved" "unity: the menu.main entry %q points at no page in %q, so the desktop leaves it out. Check its pageRef %q, or give it a url." .Name site.Language.Name .PageRef -}}
+    {{- continue -}}
+  {{- end -}}
   {{- $p := dict
       "label" .Name
       "icon" (or .Params.icon $def.icon "launcher/browser-window")
