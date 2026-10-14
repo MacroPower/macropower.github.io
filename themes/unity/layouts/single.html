@@ -7,6 +7,6 @@
   {{- if partial "unity/in-blog.html" . -}}
     {{ partial "unity/page/blog-post.html" . }}
   {{- else -}}
-    {{ partial "unity/ui/page.html" (dict "title" .Title "content" .Content) }}
+    {{ partial "unity/ui/page.html" (dict "title" (partial "unity/page-title.html" .) "content" .Content) }}
   {{- end -}}
 {{ end }}

@@ -19,6 +19,7 @@
 {{- $images := partial "unity/page-images.html" . -}}
 {{- $author := partialCached "unity/author.html" . -}}
 {{- $isPost := and .IsPage (partial "unity/in-blog.html" .) -}}
+{{- $title := partial "unity/page-title.html" . -}}
 {{- /* The locale as a BCP 47 tag for JSON-LD, and as Open Graph's
       language_TERRITORY, which takes a region but no script subtag:
       zh-Hant-TW becomes zh_TW and de becomes de. */ -}}
@@ -47,8 +48,10 @@
 {{- end }}
 {{- end }}
 <meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:site_name" content="{{ site.Title }}">
-<meta property="og:title" content="{{ or .Title site.Title }}">
+{{- with site.Title }}
+<meta property="og:site_name" content="{{ . }}">
+{{- end }}
+<meta property="og:title" content="{{ $title }}">
 {{- with $description }}
 <meta property="og:description" content="{{ . }}">
 {{- end }}
@@ -89,7 +92,7 @@
 {{- else }}
 <meta name="twitter:card" content="summary">
 {{- end }}
-<meta name="twitter:title" content="{{ or .Title site.Title }}">
+<meta name="twitter:title" content="{{ $title }}">
 {{- with $description }}
 <meta name="twitter:description" content="{{ . }}">
 {{- end }}
@@ -112,7 +115,7 @@
 {{- $ld := dict
   "@context" "https://schema.org"
   "@type" "BlogPosting"
-  "headline" .Title
+  "headline" $title
   "url" .Permalink
   "mainEntityOfPage" .Permalink
   "inLanguage" $locale

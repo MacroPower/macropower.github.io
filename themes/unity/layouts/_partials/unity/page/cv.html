@@ -12,10 +12,11 @@
   theme's assets/unity/third_party/pdf-js/. The pdf.js worker is a
   separate file, published only when a page renders this partial.
 */ -}}
+{{- $title := partial "unity/page-title.html" . -}}
 <article class="up-cv-page up-selectable">
-  <h1 class="up-sr-only">{{ .Title }}</h1>
+  <h1 class="up-sr-only">{{ $title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" .Title "url" .RelPermalink))) }}
+      (dict "label" $title "url" .RelPermalink))) }}
   {{- with .Params.pdf }}
   {{- $pdf := partial "unity/ui/resolve-url.html" (dict "page" $ "url" .) -}}
   {{- $worker := resources.Get "unity/third_party/pdf-js/pdf.worker.min.mjs" | resources.Fingerprint -}}

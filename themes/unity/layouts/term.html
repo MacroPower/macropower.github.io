@@ -1,10 +1,12 @@
 {{ define "main" }}
   {{- $plural := .Data.Plural -}}
+  {{- $title := partial "unity/page-title.html" . -}}
+  {{- $parent := partial "unity/page-title.html" .Parent -}}
   {{- $segments := slice -}}
-  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
+  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" (partial "unity/page-title.html" .) "url" .RelPermalink) }}{{ end -}}
   {{- $segments = $segments | append
-        (dict "label" .Parent.Title "url" .Parent.RelPermalink)
-        (dict "label" .Title "url" .RelPermalink) -}}
+        (dict "label" $parent "url" .Parent.RelPermalink)
+        (dict "label" $title "url" .RelPermalink) -}}
   {{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
   <article class="up-blog up-selectable" data-blog-kind="term">
     {{ partial "unity/page/nav-pathbar.html" (dict "segments" $segments) }}
@@ -16,17 +18,17 @@
       <div class="up-reader up-reader-term">
         <div class="up-reader-inner up-selectable">
           <div class="up-reader-meta">
-            <span>{{ .Parent.Title }}</span>
+            <span>{{ $parent }}</span>
             <span class="up-reader-meta-sep">·</span>
             <span>{{ partial "unity/ui/t" (slice "posts_count" (len .Pages)) }}</span>
           </div>
-          <h1 class="up-reader-title">{{ .Title }}</h1>
+          <h1 class="up-reader-title">{{ $title }}</h1>
           <div class="up-reader-body">
             {{ .Content }}
             <p>{{ partial "unity/ui/t" (slice "posts_tagged" (len .Pages)) }}
-              <span class="up-reader-chip">#{{ .Title | lower }}</span>.</p>
+              <span class="up-reader-chip">#{{ lower $title }}</span>.</p>
           </div>
-          <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ .Title | lower }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
+          <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ lower $title }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
         </div>
       </div>
     </div>

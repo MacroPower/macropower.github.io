@@ -151,7 +151,7 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
 | `desktop.hotspot` | `personal-site` | The network name the network indicator's hotspot broadcasts. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table. |
-| `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. Hugo's `:date_medium` follows the page's language. |
+| `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. `blog.dateFormat` also titles a post without a title. Hugo's `:date_medium` follows the page's language. |
 | `blog.readingTime` | `true` | Shows "N min read" in the post reader. |
 | `blog.toc` | `false` | Opens each post with a table of contents when it has two headings or more. A post's `toc` front matter overrides it. |
 | `blog.feedFullContent` | `false` | Puts each post's whole body in the RSS feed instead of its summary. |
@@ -179,6 +179,7 @@ The launcher, the Dash, and the HUD show each `icon` as an image file that the b
 ## Content
 
 - `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and on a site that has tags and no categories, `tags` takes the place of `categories`. `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too. Posts may sit in nested sections such as `content/posts/2024/`, and each section's list shows the posts at any depth below it. A list shows every post and filters and sorts them in the browser, so Hugo's `pagination` settings do not apply. A site without sections has no blog, and its pages render as plain windows.
+- Pages without `title` front matter get a title from the theme. Posts take their date, and other pages take their file name in title case. The home page takes the site's `title`, then the host of `baseURL`.
 - Any page accepts `noindex = true`, which asks search engines to skip it and keeps it out of the sitemap, and `slug`, which also names the page's file in the home terminal. `description` and `images` set the page's search and share metadata, and `canonicalURL` points its canonical link at the original of a syndicated post.
 - `content/cv.md` with `layout = "cv"` is the PDF viewer. Front matter: `pdf` (required), `pdfPrintable`, `sourceUrl`. The viewer runs on Chrome 125, Safari 18, Firefox ESR, and later. Older browsers get a link to the PDF.
 - `content/sponsors.md` with `layout = "sponsors"` renders cards from `data/sponsors.yaml`. Each entry has `name`, `url`, and an optional `avatar`. The "Become a sponsor" button points at `sponsorUrl` from the page's front matter, or else at GitHub Sponsors for your `github` social entry.

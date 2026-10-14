@@ -17,7 +17,7 @@
         <span class="up-reader-chip">#{{ . }}</span>
       {{- end }}
     </div>
-    <h1 class="up-reader-title">{{ .Title }}</h1>
+    <h1 class="up-reader-title">{{ partial "unity/page-title.html" . }}</h1>
     {{- /* The table of contents, shown when params.blog.toc or the post's
           toc front matter asks for it and the post has two headings or
           more within Hugo's tableOfContents levels. */}}

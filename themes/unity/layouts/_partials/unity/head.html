@@ -1,4 +1,10 @@
-{{- $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) -}}
+{{- /* The page's name, then the site's after a bar. The home page shows
+      the site's title alone, and a site without one shows only the
+      page's name. rss.xml titles each feed the same way, so change the
+      two together. */ -}}
+{{- $title := partial "unity/page-title.html" . -}}
+{{- if .IsHome }}{{ $title = or site.Title $title }}
+{{- else if site.Title }}{{ $title = printf "%s | %s" $title site.Title }}{{ end -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {{- /* The desktop paints its own dark and light surfaces, so a browser's
@@ -16,10 +22,10 @@
 {{- /* Every page advertises the site feed, and a section or taxonomy
       page also advertises its own. */}}
 {{- with site.Home.OutputFormats.Get "rss" }}
-<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ site.Title }}">
+<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ or site.Title (partial "unity/page-title.html" site.Home) }}">
 {{- end }}
 {{- if not .IsHome }}{{ with .OutputFormats.Get "rss" }}
-<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Title }} | {{ site.Title }}">
+<link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $title }}">
 {{- end }}{{ end }}
 {{- /* Hugo's built-in Google Analytics tag renders only when the site
       sets services.googleAnalytics.id. */ -}}

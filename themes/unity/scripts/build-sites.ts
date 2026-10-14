@@ -115,11 +115,14 @@ const SITES: Record<string, SiteSpec> = {
     source: join(theme, "exampleSite"),
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
   },
+  // No title, params, or content. Every page still names itself, and the
+  // home page takes the host of baseURL.
   bare: {
     files: { "hugo.toml": BARE },
     check: (out) => {
       const names = accentNames(out);
       return [
+        !read(join(out, "index.html")).includes("<title>example.org</title>") && "index.html is not titled by its host",
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
         names !== "orange green aubergine blue" && `the Preferences dialog offers ${names}, not the theme's presets`,
         ...studioProblems(out, "index.html", false),
@@ -392,13 +395,13 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
         && "posts/one/index.html lacks the #intro chip",
     ],
   },
-  // A non-English default language whose translation covers one key. The
-  // build must say so, and the other strings, in templates and scripts
-  // alike, must fall back to English.
+  // A non-English default language whose translation covers two keys.
+  // The build must say so, and the other strings, in templates and
+  // scripts alike, must fall back to English.
   translated: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "de"\n`,
-      "i18n/de.toml": '[home]\nother = "Startseite"\n',
+      "i18n/de.toml": '[home]\nother = "Startseite"\n[page_not_found]\nother = "Seite nicht gefunden"\n',
     },
     warns: [/the "de" translation lacks \d+ of the theme's i18n keys/],
     check: (out) => {
@@ -406,6 +409,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       const home = read(join(out, "index.html"));
       return [
         !home.includes("Startseite") && "index.html drops the translated home label",
+        !read(join(out, "404.html")).includes("<title>Seite nicht gefunden</title>") && "404.html keeps Hugo's English title",
         !home.includes(">Skip to content</a>") && "index.html lacks the English skip link",
         !home.includes("data-trash-count>6 items<") && "the Trash count lacks its English plural",
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
@@ -481,6 +485,27 @@ ignoreLogs = ["unity-i18n-missing"]
       ["index.html", "posts/index.html", "posts/one/index.html"]
         .filter((p) => !/<html [^>]*\bdir="rtl"/.test(read(join(out, p))))
         .map((p) => `${p} lacks dir="rtl" on <html>`),
+  },
+  // Pages and a section without a title. A post takes its date, and any
+  // other page or section its file name.
+  untitled: {
+    files: {
+      "hugo.toml": `${BARE}title = "Notebook"\nmainSections = ["posts"]\n`,
+      "content/posts/_index.md": "+++\n+++\n",
+      "content/posts/note.md": "+++\ndate = 2024-03-05\n+++\nA note.\n",
+      "content/loose-leaf.md": "+++\ndate = 2024-01-01\n+++\nA page.\n",
+    },
+    check: (out) => [
+      !read(join(out, "posts/note/index.html")).includes('<h1 class="up-reader-title">Mar 5, 2024</h1>')
+        && "posts/note/index.html is not titled by its date",
+      !read(join(out, "posts/index.html")).includes('<div class="up-post-title">Mar 5, 2024</div>')
+        && "posts/index.html lists the post without its date",
+      !read(join(out, "index.xml")).includes("<title>Mar 5, 2024</title>") && "index.xml lists the post without its date",
+      !read(join(out, "loose-leaf/index.html")).includes("<title>Loose Leaf | Notebook</title>")
+        && "loose-leaf/index.html is not titled by its file name",
+      !read(join(out, "posts/index.html")).includes("<title>Posts | Notebook</title>")
+        && "posts/index.html is not titled by its directory name",
+    ],
   },
   // Pages published as .html files, where a section's URL ends in
   // index.html.
@@ -1023,6 +1048,27 @@ function isSvgFile(file: string): boolean {
   return existsSync(file) && /^\s*<svg[^>]*\sxmlns="http:\/\/www\.w3\.org\/2000\/svg"/.test(read(file));
 }
 
+// Each pattern matches a place that names a page but holds no text.
+// Every page and feed of every site must match none of them. The Dash
+// fragment is minified, so the attribute quotes are optional.
+const BLANK_TITLES: [string, RegExp][] = [
+  ["an empty <title>", /<title>\s*(?:\|[^<]*)?<\/title>|\s\|\s*<\/title>/],
+  ["an empty <h1>", /<h1[^>]*>\s*<\/h1>/],
+  ["an empty share title", /(?:og|twitter):title" content=""/],
+  ["an empty panel title", /data-panel-slot="title">\s*<\/div>/],
+  ["an empty titlebar, crumb, list row, or Dash tile",
+    /class="?(?:up-titlebar-text|up-pathbar-label|up-post-title|up-dash-tile-label)"?>\s*</],
+];
+
+function blankTitles(out: string): string[] {
+  return readdirSync(out, { encoding: "utf8", recursive: true })
+    .filter((f) => /\.(html|xml)$/.test(f))
+    .flatMap((f) => {
+      const text = read(join(out, f));
+      return BLANK_TITLES.filter(([, re]) => re.test(text)).map(([what]) => `${f} has ${what}`);
+    });
+}
+
 function htmlFiles(dir: string): string[] {
   return readdirSync(dir, { encoding: "utf8", recursive: true })
     .filter((f) => f.endsWith(".html"))
@@ -1163,7 +1209,7 @@ try {
       failed = true;
       continue;
     }
-    const problems = [...(site.check?.(out, source) ?? []), ...brokenLinks(out, siteBaseURL(source, flags))]
+    const problems = [...(site.check?.(out, source) ?? []), ...brokenLinks(out, siteBaseURL(source, flags)), ...blankTitles(out)]
       .filter((p) => p !== false);
     const warns = site.warns;
     if (warns) {

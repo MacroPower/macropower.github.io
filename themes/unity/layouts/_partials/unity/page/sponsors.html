@@ -12,17 +12,18 @@
 {{- if not $sponsorURL -}}
   {{- with partialCached "unity/ui/social-url.html" "github" "github" }}{{ $sponsorURL = printf "https://github.com/sponsors/%s" (path.Base .) }}{{ end -}}
 {{- end -}}
+{{- $title := partial "unity/page-title.html" . -}}
 <article class="up-sponsors-page up-selectable">
-  <h1 class="up-sr-only">{{ .Title }}</h1>
+  <h1 class="up-sr-only">{{ $title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" .Title "url" .RelPermalink))) }}
+      (dict "label" $title "url" .RelPermalink))) }}
   {{- $sponsors := hugo.Data.sponsors -}}
   <div class="up-sponsors-grid">
     {{- $iconHeart := partial "unity/icon.html" "glyphs/heart" -}}
     {{ partial "unity/page/naut-sidebar.html" (dict
         "sections" (slice
           (dict "label" (partial "unity/ui/t" "places") "items" (slice
-            (dict "label" .Title "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
+            (dict "label" $title "url" .RelPermalink "icon" $iconHeart "count" (len $sponsors) "active" true))))) }}
     <section class="up-sponsors-main">
       {{ .Content }}
       {{- with $sponsors }}

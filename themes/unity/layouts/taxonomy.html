@@ -3,28 +3,30 @@
 {{ define "main" }}
   {{- $plural := .Data.Plural -}}
   {{- $terms := .Data.Terms.Alphabetical -}}
+  {{- $title := partial "unity/page-title.html" . -}}
   {{- $segments := slice -}}
-  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" .Title "url" .RelPermalink) }}{{ end -}}
-  {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
+  {{- with partialCached "unity/blog-section.html" . }}{{ $segments = $segments | append (dict "label" (partial "unity/page-title.html" .) "url" .RelPermalink) }}{{ end -}}
+  {{- $segments = $segments | append (dict "label" $title "url" .RelPermalink) -}}
   {{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
   <article class="up-blog up-selectable" data-blog-kind="taxonomy">
-    <h1 class="up-sr-only">{{ .Title }}</h1>
+    <h1 class="up-sr-only">{{ $title }}</h1>
     {{ partial "unity/page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">
       {{ partial "unity/page/post-sidebar.html" . }}
-      <section class="up-post-list" aria-label="{{ .Title }}">
+      <section class="up-post-list" aria-label="{{ $title }}">
         <header class="up-post-list-header">
           <span>{{ partial "unity/ui/t" "col_name" }}</span>
           <span>{{ partial "unity/ui/t" "posts" }}</span>
         </header>
         {{- range $terms }}
+          {{- $term := partial "unity/page-title.html" .Page }}
           {{ partial "unity/page/post-row.html" (dict
               "url" .Page.RelPermalink
-              "title" .Page.Title
-              "chips" (slice (.Page.Title | lower))
+              "title" $term
+              "chips" (slice (lower $term))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">{{ partial "unity/ui/t" (slice "no_terms_yet" (dict "Plural" (lower .Title))) }}</div>
+          <div class="up-post-empty">{{ partial "unity/ui/t" (slice "no_terms_yet" (dict "Plural" (lower $title))) }}</div>
         {{- end }}
       </section>
       {{ partial "unity/page/empty-pane.html" (dict

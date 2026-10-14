@@ -1,0 +1,30 @@
+{{- /*
+  The page's name wherever the theme shows one: the document title, the
+  titlebar and panel, headings, crumbs, list rows, the Dash, the feeds,
+  and the share metadata. It is never empty. The 404 page takes the
+  translated page_not_found string, because Hugo titles it in English. A
+  page without a title takes one in this order:
+
+    the home page   the site title, the host of baseURL, then the
+                    translated home label
+    a dated post    its date in params.blog.dateFormat
+    any other page  its file name in title case, from unity/ui/file-name.html
+
+  Every page gets its own answer, so call it through partial, never
+  partialCached.
+
+  Context: the page.
+*/ -}}
+{{- $title := .Title -}}
+{{- if eq .Kind "404" -}}
+  {{- $title = partial "unity/ui/t" "page_not_found" -}}
+{{- else if not $title -}}
+  {{- if .IsHome -}}
+    {{- $title = or site.Title (urls.Parse site.BaseURL).Host (partial "unity/ui/t" "home") -}}
+  {{- else if and .IsPage (partial "unity/in-blog.html" .) (not .Date.IsZero) -}}
+    {{- $title = time.Format (site.Params.blog.dateFormat | default ":date_medium") .Date -}}
+  {{- else -}}
+    {{- $title = partial "unity/ui/file-name.html" . | replaceRE `[-_]+` " " | title -}}
+  {{- end -}}
+{{- end -}}
+{{- return $title -}}

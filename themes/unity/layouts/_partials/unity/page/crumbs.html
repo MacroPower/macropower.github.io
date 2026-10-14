@@ -8,8 +8,8 @@
 {{- $segments := slice -}}
 {{- range .Ancestors.Reverse -}}
   {{- if not .IsHome -}}
-    {{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
+    {{- $segments = $segments | append (dict "label" (partial "unity/page-title.html" .) "url" .RelPermalink) -}}
   {{- end -}}
 {{- end -}}
-{{- $segments = $segments | append (dict "label" .Title "url" .RelPermalink) -}}
+{{- $segments = $segments | append (dict "label" (partial "unity/page-title.html" .) "url" .RelPermalink) -}}
 {{- return $segments -}}

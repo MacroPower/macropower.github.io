@@ -28,11 +28,12 @@
   </header>
   <div class="up-dash-grid" data-dash-grid>
     {{- range . }}
+    {{- $title := partial "unity/page-title.html" . }}
     <a class="up-dash-tile" data-dash-tile href="{{ .RelPermalink }}" tabindex="-1"
-       title="{{ .Title }}"
+       title="{{ $title }}"
        data-keywords="{{ partial "unity/ui/t" "kw_post" }} {{ delimit (partial "unity/post-categories.html" .) " " }} {{ time.Format "2006 January" .Date }}">
       <span class="up-dash-tile-icon" aria-hidden="true">{{ partial "unity/icon-img.html" "launcher/article" }}</span>
-      <span class="up-dash-tile-label">{{ .Title }}</span>
+      <span class="up-dash-tile-label">{{ $title }}</span>
     </a>
     {{- end }}
   </div>

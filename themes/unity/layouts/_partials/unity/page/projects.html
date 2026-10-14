@@ -7,9 +7,10 @@
   sprite get a generic emblem.
 */ -}}
 {{- $projects := partialCached "unity/projects-data.html" . -}}
+{{- $title := partial "unity/page-title.html" . -}}
 {{- .Store.SetInMap "unity-bundles" "projects" "unity/js/projects.ts" }}
 <article class="up-projects up-selectable" data-projects-kind="section">
-  <h1 class="up-sr-only">{{ .Title }}</h1>
+  <h1 class="up-sr-only">{{ $title }}</h1>
   {{ partial "unity/page/icons/lang-symbols.html" . }}
   <template id="up-project-icons">
     <div data-icon="star">{{ partial "unity/icon.html" "glyphs/star" }}</div>
@@ -21,7 +22,7 @@
   </template>
   {{ partial "unity/page/nav-pathbar.html" (dict
       "segments" (slice
-        (dict "label" .Title "url" .RelPermalink))
+        (dict "label" $title "url" .RelPermalink))
       "search" true
       "searchNoun" (partial "unity/ui/t" "projects_noun")
       "searchPlaceholder" (partial "unity/ui/t" "filter_projects_placeholder")) }}

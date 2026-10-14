@@ -22,7 +22,7 @@
 {{- end -}}
 {{- range (index site.Taxonomies $tax.category).Alphabetical -}}
   {{- $places = $places | append (dict
-      "label" .Page.Title
+      "label" (partial "unity/page-title.html" .Page)
       "url" .Page.RelPermalink
       "icon" $iconCategory
       "count" .Count
@@ -35,7 +35,7 @@
   {{- $items := slice -}}
   {{- range . -}}
     {{- $items = $items | append (dict
-        "label" .Page.Title
+        "label" (partial "unity/page-title.html" .Page)
         "url" .Page.RelPermalink
         "icon" $iconSeries
         "count" .Count

@@ -6,6 +6,6 @@
   {{- if partial "unity/is-terminal.html" . -}}
     {{ partial "unity/page/terminal.html" . }}
   {{- else -}}
-    {{ partial "unity/ui/page.html" (dict "title" (or .Title site.Title) "content" .Content) }}
+    {{ partial "unity/ui/page.html" (dict "title" (partial "unity/page-title.html" .) "content" .Content) }}
   {{- end -}}
 {{ end }}

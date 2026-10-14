@@ -9,9 +9,9 @@
     {{- range .Pages -}}
       {{- $children = $children | append (dict
           "url" .RelPermalink
-          "title" .Title
+          "title" (partial "unity/page-title.html" .)
           "description" (or .Description .Summary | plainify | htmlUnescape | strings.TrimSpace | truncate 160 | htmlUnescape)) -}}
     {{- end -}}
-    {{ partial "unity/ui/page.html" (dict "title" .Title "content" .Content "children" $children) }}
+    {{ partial "unity/ui/page.html" (dict "title" (partial "unity/page-title.html" .) "content" .Content "children" $children) }}
   {{- end -}}
 {{ end }}

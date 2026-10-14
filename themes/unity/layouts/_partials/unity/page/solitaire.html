@@ -16,10 +16,11 @@
                                 table rings the drawn twin of the focused
                                 button.
 */ -}}
+{{- $title := partial "unity/page-title.html" . -}}
 <article class="up-sol-page">
-  <h1 class="up-sr-only">{{ .Title }}</h1>
+  <h1 class="up-sr-only">{{ $title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict "segments" (slice
-      (dict "label" .Title "url" .RelPermalink))) }}
+      (dict "label" $title "url" .RelPermalink))) }}
   {{- .Store.SetInMap "unity-bundles" "solitaire" "unity/js/solitaire/index.ts" }}
   <div class="up-sol" data-solitaire>
     <div class="up-sol-stage" data-sol-stage>

@@ -22,14 +22,15 @@
       {{- $chips := partial "unity/post-categories.html" . }}
       {{- range $chips }}{{ $tagList = $tagList | append (lower .) }}{{ end }}
       {{- $iso := .Date.Format "2006-01-02" }}
+      {{- $title := partial "unity/page-title.html" . }}
       {{ partial "unity/page/post-row.html" (dict
           "url" .RelPermalink
-          "title" .Title
+          "title" $title
           "active" $isActive
           "chips" $chips
           "date" (time.Format $dateFmt .Date)
           "datetime" $iso
-          "filter" (dict "title" (lower .Title) "tags" (delimit $tagList " ") "date" $iso)) }}
+          "filter" (dict "title" (lower $title) "tags" (delimit $tagList " ") "date" $iso)) }}
     {{- end }}
     <div class="up-post-empty" data-up-post-empty hidden>{{ partial "unity/ui/t" "no_posts_match" }}</div>
   </div>
