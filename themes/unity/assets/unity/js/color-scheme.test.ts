@@ -79,4 +79,17 @@ describe("color-scheme", () => {
       .map(([rule]) => rule);
     expect(wrong).toEqual([]);
   });
+
+  it("leaves the colors of highlighted code to the highlight style", () => {
+    // A highlight style that does not set a text or background color
+    // expects the page's, so the theme's code colors must not reach a
+    // block that Hugo highlights.
+    const prose = ":is(.up-reader-body, .up-page-body)";
+    const block = rules.get(`${prose} .highlight pre`);
+    expect([block?.get("color"), block?.get("background")]).toEqual(["inherit", "transparent"]);
+    const painted = [...rules]
+      .filter(([rule, decls]) => rule.startsWith(`${prose} `) && /\bcode\b/.test(rule) && (decls.get("color") ?? "inherit") !== "inherit")
+      .map(([rule]) => rule);
+    expect(painted).toEqual([]);
+  });
 });

@@ -126,7 +126,7 @@ The theme also reads two of Hugo's own settings. `copyright` takes Markdown, suc
 Hugo merges a theme's `taxonomies` and `markup` into a site only when the site sets `_merge = "deep"` on its own table, as the configuration example does. The theme's own configuration cannot set `_merge` for you. Keys your site sets win over the theme's.
 
 - `[taxonomies]` with `_merge` declares the theme's `categories` and `series` taxonomies, which back the blog's Places and Series lenses, in place of Hugo's default `categories` and `tags`. Add `tag = "tags"` beside `_merge` to keep tags. A site that merges the theme's taxonomies cannot remove any of them.
-- `[markup]` with `_merge` turns on [math](#markdown) and highlights code with classes instead of style attributes, so highlighted code passes a [Content Security Policy](#customizing).
+- `[markup]` with `_merge` turns on [math](#markdown) and highlights code with classes instead of style attributes, so highlighted code passes a [Content Security Policy](#customizing). With or without `_merge`, highlighted code takes its colors from your `markup.highlight.style`, light or dark. Colors the style does not set fall back to the window's. Code that Hugo does not highlight, such as a fence without a language or an indented block, shows light text on a dark block.
 
 With `_merge` set, Hugo merges `markup` from every theme and module a site imports. A site that imports a module it does not trust copies the `[markup]` keys from the theme's `hugo.toml` instead of setting `_merge`.
 

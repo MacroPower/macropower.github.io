@@ -1768,11 +1768,17 @@ a.up-sponsor-card[href]:hover{
   }
   pre{
     background:#2A2825;border:1px solid #1F1D1A;border-radius:3px;
-    padding:12px 14px;overflow:auto;
+    padding:12px 14px;overflow:auto;color:#E0DCD9;
   }
-  pre code{background:transparent;padding:0;color:#E0DCD9}
+  pre code{background:transparent;padding:0}
+  /* Hugo's highlighter wraps each block it highlights in .highlight, and
+     the site's markup.highlight.style colors the block through the
+     unity.chroma layer or style attributes. A style that leaves out its
+     text or background color expects the page's, so the block drops the
+     theme's dark colors. They paint only code that Hugo does not
+     highlight. */
   .highlight{margin:0 0 14px}
-  .highlight pre{margin:0}
+  .highlight pre{margin:0;color:inherit;background:transparent}
   hr{
     border:0;border-top:1px dashed var(--up-content-line);margin:18px 0;
   }

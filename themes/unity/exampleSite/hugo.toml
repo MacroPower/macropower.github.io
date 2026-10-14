@@ -55,6 +55,7 @@ mainSections = ["posts"]
   # theme's math render hook, which renders it to MathML at build time.
   _merge = "deep"
   [markup.highlight]
+    # Any Chroma style, light or dark, such as "github".
     style = "monokai"
 
 # JPEG and PNG post images load as WebP copies when WebP makes them
