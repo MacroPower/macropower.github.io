@@ -585,17 +585,19 @@ enableRobotsTXT = true
   // edited last, and a Markdown copyright. RSS requires a channel
   // description, which names the site by its host, the lastBuildDate must
   // follow the latest edit rather than the latest post, and the feed's
-  // copyright must be plain text.
+  // copyright must be plain text. The feed must also link the newer
+  // post's Spotify album in place of its player.
   feed: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
 copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
 `,
       "content/posts/old.md": page("Old", "date = 2024-01-01\nlastmod = 2024-06-01\n"),
-      "content/posts/new.md": page("New", "date = 2024-03-01\n"),
+      "content/posts/new.md": `${page("New", "date = 2024-03-01\n")}\n{{< spotify album 4aawyAB9vmqN3uQ7FjRGTy >}}\n`,
     },
     check: (out) => {
       const channel = read(join(out, "index.xml")).split("<item>")[0]!;
+      const feed = unescapeHTML(read(join(out, "index.xml")));
       return [
         !channel.includes("<description>Recent posts on example.org</description>")
           && "index.xml's channel description does not name the untitled site by its host",
@@ -604,6 +606,9 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
         !read(join(out, "posts/new/index.html")).includes(
           '<div class="up-reader-license"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &amp; Jane</div>',
         ) && "posts/new/index.html does not render the copyright's Markdown",
+        !feed.includes('<p><a href="https://open.spotify.com/album/4aawyAB9vmqN3uQ7FjRGTy">Listen on Spotify</a></p>')
+          && "index.xml does not link the Spotify album",
+        feed.includes("<iframe") && "index.xml carries a Spotify player",
       ];
     },
   },
@@ -755,29 +760,37 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
   // YouTube players on a site that sets privacy.youtube.privacyEnhanced.
   // The theme's youtube shortcode replaces Hugo's, which sizes each player
   // with style attributes. It must keep Hugo's arguments and host, and a
-  // class argument must replace the theme's up-embed class.
+  // class argument must replace the theme's up-embed class. The feed must
+  // link each video, from its start, in place of its player.
   youtube: {
     files: {
       "hugo.toml": `${BARE}[privacy.youtube]\n  privacyEnhanced = true\n`,
-      "content/video.md": `${page("Video")}
+      "content/posts/video.md": `${page("Video")}
 {{< youtube 0RKpf3rK57I >}}
 
-{{< youtube id="0RKpf3rK57I" class="clip" autoplay=true loop=true allowFullScreen=false title="Clip" >}}
+{{< youtube id="0RKpf3rK57I" class="clip" autoplay=true loop=true allowFullScreen=false title="Clip" start=30 >}}
 `,
     },
     check: (out) => {
-      const html = read(join(out, "video/index.html"));
+      const html = read(join(out, "posts/video/index.html"));
+      const feed = unescapeHTML(read(join(out, "index.xml")));
+      const watch = "https://www.youtube.com/watch?v=0RKpf3rK57I";
       const src = "https://www.youtube-nocookie.com/embed/0RKpf3rK57I";
       return [
-        /<[a-z][^>]*\sstyle="/.test(html) && "video/index.html has a style attribute",
+        /<[a-z][^>]*\sstyle="/.test(html) && "posts/video/index.html has a style attribute",
         !/<div class="up-embed">\s*<iframe allow="[^"]*; fullscreen"/.test(html)
-          && "video/index.html's default player lacks the up-embed box or full screen",
+          && "posts/video/index.html's default player lacks the up-embed box or full screen",
         !html.includes(`src="${src}?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0" title="YouTube video">`)
-          && "video/index.html's default player ignores privacyEnhanced or the default title",
+          && "posts/video/index.html's default player ignores privacyEnhanced or the default title",
         !/<div class="clip">\s*<iframe allow="[^"]*web-share" loading="eager"/.test(html)
-          && "video/index.html's player ignores its class or allowFullScreen",
-        !html.includes(`src="${src}?autoplay=1&amp;controls=1&amp;end=0&amp;loop=1&amp;mute=1&amp;playlist=0RKpf3rK57I&amp;start=0" title="Clip">`)
-          && "video/index.html's player ignores its autoplay, loop, or title",
+          && "posts/video/index.html's player ignores its class or allowFullScreen",
+        !html.includes(`src="${src}?autoplay=1&amp;controls=1&amp;end=0&amp;loop=1&amp;mute=1&amp;playlist=0RKpf3rK57I&amp;start=30" title="Clip">`)
+          && "posts/video/index.html's player ignores its autoplay, loop, start, or title",
+        !feed.includes(`<p><a href="${watch}">Watch the video on YouTube</a></p>`)
+          && "index.xml does not link the default player's video",
+        !feed.includes(`<p><a href="${watch}&amp;t=30">Watch &#34;Clip&#34; on YouTube</a></p>`)
+          && "index.xml does not link the titled video from its start",
+        feed.includes("<iframe") && "index.xml carries a YouTube player",
       ];
     },
   },

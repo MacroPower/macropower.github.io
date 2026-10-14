@@ -459,8 +459,14 @@ other = "Spotify artist player"
 other = "Spotify episode player"
 [spotify_player_show]
 other = "Spotify show player"
+[spotify_link]
+other = "Listen on Spotify"
 [youtube_video]
 other = "YouTube video"
+[youtube_link]
+other = "Watch the video on YouTube"
+[youtube_link_titled]
+other = "Watch \"{{ .Title }}\" on YouTube"
 
 # Trash window and lock screen
 [trash_is_empty]

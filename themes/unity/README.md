@@ -223,6 +223,8 @@ The theme's render hooks extend Hugo's Markdown:
 
 - **Math.** On a site that merges the theme's `markup` (see [Site settings](#site-settings)), TeX between `\(` and `\)` renders inline, and TeX between `\[` and `\]` or between `$$` and `$$` renders as a block. The build renders it to MathML, so math does not need a script or stylesheet.
 
+The `spotify` shortcode and the theme's `youtube` shortcode each embed a player in a page. In feeds, each player becomes a link to the same item on Spotify or YouTube, because a feed reader shows a player without the theme's stylesheet.
+
 ## Customizing
 
 - **Extra CSS.** Add `assets/css/custom.css` to your site. The theme keeps its own rules in cascade layers and builds yours in after them with no layer, so your rules beat the theme's whatever their specificity. Theme declarations marked `!important` still win. Your file goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files. A bare path such as `@import "fonts.css"` resolves beside `custom.css` in your site's `assets/css/` first, then from `assets/`. An `@import url(...)` of an external stylesheet, such as a web font's, lands at the top of the built stylesheet, where browsers load it. Every theme selector is prefixed `up-`, and every custom property is prefixed `--up-`.

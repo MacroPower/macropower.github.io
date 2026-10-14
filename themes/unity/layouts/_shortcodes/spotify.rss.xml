@@ -1,0 +1,6 @@
+{{- /* Feed Spotify players: a paragraph that links to the album, track,
+      or other item on Spotify, because a feed reader shows the player
+      without the theme's stylesheet. */ -}}
+{{- $s := partial "unity/markup/spotify.html" . -}}
+<p><a href="https://open.spotify.com/{{ $s.type }}/{{ $s.id | urlquery }}">{{ partial "unity/ui/t" "spotify_link" }}</a></p>
+{{- /**/ -}}

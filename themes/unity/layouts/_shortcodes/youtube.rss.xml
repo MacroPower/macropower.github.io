@@ -1,0 +1,18 @@
+{{- /* Feed YouTube players: a paragraph that links to the video's page
+      on YouTube, because a feed reader shows the player without the
+      theme's stylesheet. It reads the id, title, start, and
+      privacy.youtube the way youtube.html does. The link names
+      www.youtube.com even under privacyEnhanced, because that setting
+      covers the embedded player, and a link loads nothing until the
+      reader follows it. */ -}}
+{{- if not site.Config.Privacy.YouTube.Disable }}
+  {{- with $id := or (.Get "id") (.Get 0) }}
+    {{- $href := printf "https://www.youtube.com/watch?v=%s" (urlquery $id) }}
+    {{- with $.Get "start" }}{{ $href = printf "%s&t=%v" $href . }}{{ end }}
+    {{- $label := partial "unity/ui/t" "youtube_link" }}
+    {{- with $.Get "title" }}{{ $label = partial "unity/ui/t" (slice "youtube_link_titled" (dict "Title" .)) }}{{ end -}}
+    <p><a href="{{ $href }}">{{ $label }}</a></p>
+  {{- else }}
+    {{- errorf "The %q shortcode requires an id argument. See %s" .Name .Position }}
+  {{- end }}
+{{- end -}}

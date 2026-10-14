@@ -2,35 +2,12 @@
   Embeds a Spotify album, track, playlist, artist, episode, or show player. Adapted from
   https://gist.github.com/j-un/e7d0b3118556479392bd2269f7059242.
 
-  Params, named or positional in this order:
-    type   (required) album, track, playlist, artist, episode, or show
-    id     (required) the Spotify ID
-    width  (optional) iframe width in pixels. Without it, main.css
-           stretches the player across its column.
-    height (optional) iframe height in pixels, default 380
-
-  HTML takes a whole number of pixels in an iframe's width and height
-  attributes, so the shortcode fails the build on any other value,
-  such as a percentage.
+  _partials/unity/markup/spotify.html reads and checks the arguments,
+  and its header lists them. Feeds render spotify.rss.xml instead.
 */ -}}
-{{- $type := .Get "type" | default (.Get 0) -}}
-{{- $id := .Get "id" | default (.Get 1) -}}
-{{- $width := .Get "width" | default (.Get 2) -}}
-{{- $height := .Get "height" | default (.Get 3) | default 380 -}}
-{{- if not (and $type $id) -}}
-  {{- errorf "The spotify shortcode needs a type and an id: %s" .Position -}}
-{{- end -}}
-{{- $types := slice "album" "track" "playlist" "artist" "episode" "show" -}}
-{{- if not (in $types $type) -}}
-  {{- errorf "The spotify shortcode's type must be one of %s, not %q: %s" (delimit $types ", ") $type .Position -}}
-{{- end -}}
-{{- range $name, $value := dict "width" $width "height" $height -}}
-  {{- if and $value (not (findRE `^[0-9]+$` (printf "%v" $value))) -}}
-    {{- errorf "The spotify shortcode's %s must be a whole number of pixels, not %q: %s" $name (printf "%v" $value) $.Position -}}
-  {{- end -}}
-{{- end -}}
-<iframe class="up-spotify" src="https://open.spotify.com/embed/{{ $type }}/{{ $id | urlquery }}"
-    title="{{ partial "unity/ui/t" (printf "spotify_player_%s" $type) }}"
-    {{ with $width }}width="{{ . }}" {{ end }}height="{{ $height }}"
+{{- $s := partial "unity/markup/spotify.html" . -}}
+<iframe class="up-spotify" src="https://open.spotify.com/embed/{{ $s.type }}/{{ $s.id | urlquery }}"
+    title="{{ partial "unity/ui/t" (printf "spotify_player_%s" $s.type) }}"
+    {{ with $s.width }}width="{{ . }}" {{ end }}height="{{ $s.height }}"
     loading="lazy"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
