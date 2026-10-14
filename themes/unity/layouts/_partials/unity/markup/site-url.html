@@ -1,12 +1,16 @@
 {{- /*
-  The URL of a root-relative path under the site's baseURL, for the
-  render hooks and unity/ui/resolve-url.html. A path that already starts with
-  the baseURL's own path, such as /sub/files/x.pdf on a site at
+  The URL of a path under the site's baseURL, for the render hooks,
+  unity/ui/resolve-url.html, and the menu url entries that
+  unity/menu-url.html resolves. A path that already starts with the baseURL's
+  own path, such as /sub/files/x.pdf on a site at
   https://example.org/sub/, passes through, so content written for the
   subpath keeps working.
 
-  Args (dict): path     - an escaped path starting with "/"
+  Args (dict): path     - an escaped path from the site root, such as
+                          /files/x.pdf
                absolute - true for a URL with scheme and host
+               lang     - true to add the language prefix, as
+                          relLangURL does
 */ -}}
 {{- $base := urls.Parse site.BaseURL -}}
 {{- $out := "" -}}
@@ -15,6 +19,10 @@
   {{- if .absolute }}{{ $out = printf "%s://%s%s" $base.Scheme $base.Host .path }}{{ end -}}
 {{- else -}}
   {{- $p := strings.TrimPrefix "/" .path -}}
-  {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
+  {{- if .lang -}}
+    {{- $out = cond .absolute (absLangURL $p) (relLangURL $p) -}}
+  {{- else -}}
+    {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
+  {{- end -}}
 {{- end -}}
 {{- return $out -}}

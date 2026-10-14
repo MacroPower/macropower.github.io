@@ -115,6 +115,47 @@ const SITES: Record<string, SiteSpec> = {
     source: join(theme, "exampleSite"),
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
   },
+  // Addresses a site writes in its menu and data, on a site served from
+  // a subdirectory. Each resolves under baseURL once, whether or not it
+  // already starts with /sub/, and a menu url keeps its case and query.
+  urls: {
+    files: {
+      "hugo.toml": `${config("https://example.org/sub/")}[[menu.main]]
+  identifier = "files"
+  name = "Files"
+  url = "/files/"
+[[menu.main]]
+  identifier = "notes"
+  name = "Notes"
+  url = "/sub/notes/"
+[[menu.main]]
+  identifier = "search"
+  name = "Search"
+  url = "/Search/?q=Go"
+`,
+      "content/sponsors.md": page("Sponsors", "layout = 'sponsors'\n"),
+      "data/sponsors.yaml": "- name: Ada\n  avatar: /ada.png\n- name: Grace\n  avatar: grace.png\n- name: Hopper\n  avatar: /sub/hopper.png\n",
+      "assets/grace.png": "PNG",
+      // The files that the menu entries and the avatars link, for the
+      // link check.
+      "static/files/index.html": "Files\n",
+      "static/notes/index.html": "Notes\n",
+      "static/Search/index.html": "Search\n",
+      "static/ada.png": "PNG",
+      "static/hopper.png": "PNG",
+    },
+    check: (out) => {
+      const html = read(join(out, "sponsors/index.html"));
+      return [
+        'href="/sub/files/" data-launcher="files"',
+        'href="/sub/notes/" data-launcher="notes"',
+        'href="/sub/Search/?q=Go" data-launcher="search"',
+        'src="/sub/ada.png"',
+        'src="/sub/grace.png"',
+        'src="/sub/hopper.png"',
+      ].map((want) => !html.includes(want) && `sponsors/index.html lacks ${want}`);
+    },
+  },
   // No title, params, or content. Every page still names itself, and the
   // home page takes the host of baseURL. The terminal's window takes the
   // default guest login.

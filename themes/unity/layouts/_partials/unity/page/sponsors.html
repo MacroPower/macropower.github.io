@@ -1,16 +1,20 @@
 {{- /*
   The sponsors page body: cards for each entry in hugo.Data.sponsors (the
   site's data/sponsors.yaml) and a "Become a sponsor" button. Rendered by
-  layouts/sponsors.html for pages with `layout = "sponsors"`.
+  layouts/sponsors.html for pages with `layout = "sponsors"`. Every
+  sponsor's url and avatar, and the button's sponsorUrl, resolve through
+  unity/ui/resolve-url.html.
 
   Front matter:
     sponsorUrl (optional) where the button points. Defaults to the GitHub
                Sponsors page of the github entry in params.social, and the
                button drops out when neither is set.
 */ -}}
-{{- $sponsorURL := .Params.sponsorUrl -}}
-{{- if not $sponsorURL -}}
-  {{- with partialCached "unity/ui/social-url.html" "github" "github" }}{{ $sponsorURL = printf "https://github.com/sponsors/%s" (path.Base .) }}{{ end -}}
+{{- $sponsorURL := "" -}}
+{{- with .Params.sponsorUrl -}}
+  {{- $sponsorURL = partial "unity/ui/resolve-url.html" (dict "page" $ "url" .) -}}
+{{- else with partialCached "unity/ui/social-url.html" "github" "github" -}}
+  {{- $sponsorURL = printf "https://github.com/sponsors/%s" (path.Base .) -}}
 {{- end -}}
 {{- $title := partial "unity/page-title.html" . -}}
 <article class="up-sponsors-page up-selectable">
@@ -31,10 +35,10 @@
           {{- range . }}
             <li>
               <a class="up-sponsor-card"
-                {{- with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }}>
+                {{- with .url }} href="{{ partial "unity/ui/resolve-url.html" (dict "page" $ "url" .) }}" target="_blank" rel="noopener"{{ end }}>
                 <span class="up-sponsor-avatar" aria-hidden="true">
                   {{- with .avatar -}}
-                    <img src="{{ . }}" alt="" loading="lazy" width="48" height="48">
+                    <img src="{{ partial "unity/ui/resolve-url.html" (dict "page" $ "url" .) }}" alt="" loading="lazy" width="48" height="48">
                   {{- else -}}
                     <span class="up-sponsor-monogram">{{ substr (.name | default "?") 0 1 | upper }}</span>
                   {{- end -}}

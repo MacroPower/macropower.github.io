@@ -3,13 +3,23 @@
   resolves its entries the same way. Context: the menu entry.
 
   A pageRef entry resolves to its page, which already carries the language
-  prefix. A url entry gets the prefix from relLangURL unless it points
-  off-site. An entry whose pageRef names no page in the current language
-  has an empty .URL, so a caller that must not link it to the home page
-  checks .URL first.
+  prefix. Without a page, the entry falls back to its url. The theme reads
+  the url as the site wrote it, because Hugo's .URL lowercases a
+  root-relative url, strips characters such as ? from it, and prepends the
+  baseURL's path even when the url already starts with it. A url with a
+  scheme or host passes through, and any other resolves under baseURL like
+  a Markdown link, with the language prefix. An entry whose pageRef names
+  no page in the current language has an empty .URL, so a caller that must
+  not link it to the home page checks .URL first.
 */ -}}
-{{- $u := .URL -}}
-{{- if not (or .Page (hasPrefix $u "http://") (hasPrefix $u "https://")) -}}
-  {{- $u = relLangURL $u -}}
+{{- $u := "" -}}
+{{- with .Page -}}
+  {{- $u = .RelPermalink -}}
+{{- else -}}
+  {{- $u = .MenuConfig.URL -}}
+  {{- $parsed := urls.Parse $u -}}
+  {{- if not (or $parsed.IsAbs $parsed.Host) -}}
+    {{- $u = partial "unity/markup/site-url.html" (dict "path" $u "lang" true) -}}
+  {{- end -}}
 {{- end -}}
 {{- return $u -}}

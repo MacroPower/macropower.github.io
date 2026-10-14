@@ -1,5 +1,7 @@
 # Sponsors shown on /sponsors/. Add one entry per sponsor.
-# name is required; url and avatar are optional.
+# name is required. url and avatar are optional, and each takes a full
+# address, a file under assets/, or a path from the site root, such as
+# /images/ada.png.
 - name: Ada Lovelace
   url: https://example.com/ada
 - name: Grace Hopper
