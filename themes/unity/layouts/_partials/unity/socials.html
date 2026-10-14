@@ -18,7 +18,7 @@
       {{- end -}}
     {{- end -}}
   {{- else -}}
-    {{- warnf "unity: params.social should be a list of {name, url} tables" -}}
+    {{- warnf `unity: params.social should be a list of {name, url} tables or a table of name = "url" pairs` -}}
   {{- end -}}
 {{- end -}}
 {{- return $out -}}

@@ -1014,7 +1014,7 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
       /params\.desktop\.indicators names "nope", but /,
       /params\.desktop\.trash should be a list/,
       /params\.home\.layout "grid" is not /,
-      /params\.social should be a list /,
+      /params\.social should be a list of \{name, url\} tables or a table of name = "url" pairs/,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
       /data\/projects has an entry without a name: .*nameless-project/,
       /params\.author\.born "Jan 1990" is not a date/,
