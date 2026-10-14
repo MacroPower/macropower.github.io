@@ -4,12 +4,15 @@
   goes through T, so a site's i18n/<lang>.toml translates them like any
   template string. unity/ui/i18n-en.html reads that en.toml to list the keys.
 
-  Hugo falls back to the default language's table for a key a
-  translation lacks, so on a site whose default language is not English
-  a missing key renders empty. This partial gives such a js_ key its
-  English text, as unity/ui/t.html does for template strings. It warns once per
-  language with every key that falls back, under an id a site can list
-  in ignoreLogs.
+  Hugo falls back only to the default language's table for a key that a
+  translation lacks, and the theme's en.toml fills only the en table. So
+  on a site whose default language is not en, a regional English such as
+  en-gb included, a missing key renders empty. This partial gives such a
+  js_ key its English text, as unity/ui/t.html does for template strings.
+  It warns once per language with every key that falls back, under an id
+  that a site can list in ignoreLogs. It skips the warning for a
+  language whose key is en or a regional English such as en-gb, because
+  the theme's English is the right text there.
 
   A plural key renders at every count from 0 to 199 under the plural rules
   of whichever translation file matched, which only Hugo knows. The
@@ -23,6 +26,7 @@
 {{- $strings := dict -}}
 {{- $plurals := dict -}}
 {{- $missing := slice -}}
+{{- $english := eq (index (split (replace (lower site.Language.Name) "_" "-") "-") 0) "en" -}}
 {{- range $key, $v := partialCached "unity/ui/i18n-en.html" . -}}
   {{- if not (T $key) }}{{ $missing = $missing | append $key }}{{ end -}}
   {{- if hasPrefix $key "js_" -}}
@@ -44,9 +48,11 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- with $missing -}}
-  {{- $list := delimit (first 8 .) ", " -}}
-  {{- if gt (len .) 8 }}{{ $list = printf "%s, and %d more" $list (sub (len .) 8) }}{{ end -}}
-  {{- warnidf "unity-i18n-missing" "unity: the %q translation lacks %d of the theme's i18n keys, so pages show those strings in English: %s. Copy the missing keys from the theme's i18n/en.toml." site.Language.Name (len .) $list -}}
+{{- if not $english -}}
+  {{- with $missing -}}
+    {{- $list := delimit (first 8 .) ", " -}}
+    {{- if gt (len .) 8 }}{{ $list = printf "%s, and %d more" $list (sub (len .) 8) }}{{ end -}}
+    {{- warnidf "unity-i18n-missing" "unity: the %q translation lacks %d of the theme's i18n keys, so pages show those strings in English: %s. Copy the missing keys from the theme's i18n/en.toml." site.Language.Name (len .) $list -}}
+  {{- end -}}
 {{- end -}}
 {{- return dict "strings" $strings "plurals" $plurals -}}

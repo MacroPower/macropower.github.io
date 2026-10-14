@@ -1,9 +1,11 @@
 {{- /*
   Hugo's T with the theme's English as the fallback. Hugo falls back only
-  to the default language's table, so on a site whose default language is
-  not English, a key the site's translation lacks renders empty. This
-  partial fills such a key from the theme's i18n/en.toml instead, and
-  unity/ui/i18n.html warns once per language about every key it fills.
+  to the default language's table, and the theme's i18n/en.toml fills
+  only the en table. So on a site whose default language is not en, a
+  regional English such as en-gb included, a key that the site's
+  translation lacks renders empty. This partial fills such a key from the
+  theme's i18n/en.toml instead. unity/ui/i18n.html warns once per
+  language that is not English about every key it fills.
 
   Context: a key, or a slice of a key and the argument T takes, such as a
   count or a dict.

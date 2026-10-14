@@ -391,9 +391,9 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.
 - **Translations.** Copy `i18n/en.toml` to `i18n/<lang>.toml` in your site, translate the values, and put each placeholder such as `{{ .Tag }}` where your language needs it. That covers the desktop's dialogs and notifications too, whose keys start with `js_` and use `{name}` placeholders instead of Go templates. The `kw_` keys hold the words the Dash search matches, so a translation can add words in its own language. The home terminal stays in English, like the bash it imitates.
 
-  A key that your file leaves out shows the string from your default language's file, or the theme's English when that file lacks the key too. The build warns once per language with the keys that fall back to English, so only a site whose default language is not English sees the warning. List `unity-i18n-missing` in `ignoreLogs` to silence it.
+  A key that your file leaves out shows the string from your default language's file, or the theme's English when that file lacks the key too. The build warns once per language with the keys that fall back to English. The warning names a language only when its key is not English, so `en` and a regional key such as `en-gb` never get it. List `unity-i18n-missing` in `ignoreLogs` to silence it.
 
-  To change one of the theme's English strings, put only its key in your site's `i18n/en.toml`. Every key that your `en.toml` leaves out keeps the theme's English, without a warning. This file changes the theme's Home label to Start:
+  To change one of the theme's English strings, put only its key in your site's `i18n/en.toml`. Every key that your `en.toml` leaves out keeps the theme's English, without a warning. A default language with a regional English key works the same way through its own file, such as `i18n/en-gb.toml`. This file changes the theme's Home label to Start:
 
   ```toml
   # i18n/en.toml

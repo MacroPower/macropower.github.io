@@ -1069,6 +1069,25 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
       ];
     },
   },
+  // A regional English as the default language, whose translation sets
+  // one key. Hugo then reads only that language's table, so the theme
+  // fills every other key from its English, in templates and scripts
+  // alike. English is the right text there, so the build must not warn.
+  enregion: {
+    files: {
+      "hugo.toml": `${BARE}defaultContentLanguage = "en-gb"\n[languages.en-gb]\n`,
+      "i18n/en-gb.toml": '[home]\nother = "Start"\n',
+    },
+    check: (out) => {
+      const js = readdirSync(join(out, "js")).find((f) => f.startsWith("runtime."));
+      const home = read(join(out, "index.html"));
+      return [
+        !home.includes('data-launcher="home" aria-label="Start"') && "index.html drops the Home label from i18n/en-gb.toml",
+        !home.includes('<span class="up-menu-item-label">Close window</span>') && "index.html lacks the English Close window",
+        (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
+      ];
+    },
+  },
   // Config, data, and front matter that the theme rejects. Each mistake
   // warns, and the build falls back to the default it replaces. The urls
   // site checks a params.social url that runs script, because

@@ -113,6 +113,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - A `menu.main` entry with the identifier `home` keeps the Home tile's icon, search words, and exact match for each param that it leaves out. The Home tile then shows as current only on the home page.
 - With `params.home.layout = "page"`, the Dash lists the home page as Home, and the keyboard shortcuts dialog leaves out the terminal's keys.
 - On a site that gives each language its own `baseURL`, the language menu leads to each language's host.
+- A language with a regional English key, such as `en-gb`, no longer makes the build warn that its translation lacks the theme's keys. Its pages show the theme's English for those keys.
 - A multilingual or multihost site builds its stylesheet once and publishes each font once, without Hugo's warnings about duplicate target paths.
 - Two builds of the same site write identical files, so a deploy rewrites only the pages that changed.
 - A value of `params.author.born` or of a project's `updated` that is not a date makes the build warn instead of failing it.
