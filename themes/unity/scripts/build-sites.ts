@@ -509,6 +509,33 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       ];
     },
   },
+  // A post image whose Exif orientation turns it a quarter, as a phone
+  // photo's does. Browsers show it turned, so its width, height, and
+  // srcset copies must follow the turned image.
+  images: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/posts/shots/index.md": "+++\ntitle = 'Shots'\n+++\n![](turned.png)\n",
+      "content/posts/shots/turned.png": png(2000, 1000, { orientation: 6 }),
+    },
+    check: (out) => {
+      const html = read(join(out, "posts/shots/index.html"));
+      const srcset = /<img src="\/posts\/shots\/turned\.png"[^>]*\ssrcset="([^"]*)"/.exec(html)?.[1] ?? "";
+      const copy = srcset.split(" ")[0] ?? "";
+      const size = (file: string): number[] => {
+        const head = readFileSync(file);
+        return [head.readUInt32BE(16), head.readUInt32BE(20)];
+      };
+      return [
+        !html.includes('src="/posts/shots/turned.png" alt="" width="1000" height="2000"')
+          && "turned.png's width and height do not follow its orientation",
+        !/^\/posts\/shots\/turned_hu_\w+\.png 800w, \/posts\/shots\/turned\.png 1000w$/.test(srcset)
+          && "turned.png's srcset does not list an 800w copy and the 1000w original",
+        (!copy || !existsSync(join(out, copy)) || !isDeepStrictEqual(size(join(out, copy)), [800, 1600]))
+          && "turned.png's 800w copy is not a published 800x1600 image",
+      ];
+    },
+  },
   // Posts in a nested section.
   nested: {
     files: {
@@ -1613,8 +1640,9 @@ function unescapeHTML(value: string): string {
 }
 
 // A blank grayscale PNG of the given size, for sites whose checks need
-// Hugo to read and resize an image.
-function png(width: number, height: number): Uint8Array {
+// Hugo to read and resize an image. A nonzero orientation adds an Exif
+// Orientation tag with that value, as a phone photo carries.
+function png(width: number, height: number, { orientation = 0 } = {}): Uint8Array {
   const chunk = (type: string, data: Buffer): Buffer => {
     const body = Buffer.concat([Buffer.from(type, "latin1"), data]);
     const head = Buffer.alloc(4);
@@ -1630,9 +1658,13 @@ function png(width: number, height: number): Uint8Array {
   header[8] = 8;
   // Each row is a filter byte and then one byte per pixel, all zero.
   const pixels = deflateSync(Buffer.alloc((width + 1) * height));
+  // A big-endian TIFF header and one IFD entry, Orientation (0x0112), a
+  // SHORT that holds the value.
+  const exif = Buffer.from([0x4d, 0x4d, 0, 0x2a, 0, 0, 0, 8, 0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, orientation, 0, 0, 0, 0, 0, 0]);
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk("IHDR", header),
+    ...(orientation ? [chunk("eXIf", exif)] : []),
     chunk("IDAT", pixels),
     chunk("IEND", Buffer.alloc(0)),
   ]);

@@ -7,8 +7,10 @@
   site-url.html). In absolute mode, any other relative one resolves
   against the page's permalink. Raster images
   Hugo can read get width and height, and a JPEG, PNG, or WebP wider
-  than the text column also gets a srcset of narrower copies. The other
-  keys are empty when they do not apply.
+  than the text column also gets a srcset of narrower copies. Browsers
+  turn the original by its Exif orientation, but Hugo's copies drop the
+  tag, so the width, height, and copies all come from an oriented image.
+  The other keys are empty when they do not apply.
 
   Args (dict): page     - the page whose images to resolve (.PageInner)
                dest     - the image destination
@@ -23,9 +25,12 @@
     {{- $src = cond $.absolute .Permalink .RelPermalink -}}
     {{- if reflect.IsImageResourceProcessable . -}}
       {{- $img := . -}}
-      {{- $out = merge $out (dict "width" .Width "height" .Height) -}}
+      {{- if and (reflect.IsImageResourceWithMeta .) (gt .Meta.Orientation 1) -}}
+        {{- $img = .Filter images.AutoOrient -}}
+      {{- end -}}
+      {{- $out = merge $out (dict "width" $img.Width "height" $img.Height) -}}
       {{- /* 800px is the widest text column, the plain page's. */ -}}
-      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt .Width 800) -}}
+      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt $img.Width 800) -}}
         {{- $set := slice -}}
         {{- range slice 800 1600 -}}
           {{- if lt . $img.Width -}}
