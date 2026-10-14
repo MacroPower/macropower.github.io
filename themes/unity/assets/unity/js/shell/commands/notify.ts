@@ -8,13 +8,13 @@
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";
-import { NOTIFY_EVENT, type UPNotifyDetail } from "../../events";
+import { emitWindow, NOTIFY_EVENT, type UPNotifyDetail } from "../../events";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
 function dispatchNotify(detail: UPNotifyDetail): void {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent(NOTIFY_EVENT, { detail }));
+  emitWindow(NOTIFY_EVENT, detail);
 }
 
 const URGENCIES = new Set(["low", "normal", "critical"]);

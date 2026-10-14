@@ -1,6 +1,6 @@
 import { clearOverlayFocus, subscribe, getOverlayFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
-import { WINDOW_STATE_EVENT } from "./events";
+import { emitWindow, WINDOW_STATE_EVENT } from "./events";
 import type { UPPageWindowState } from "./types";
 import { eventElement } from "./dom";
 
@@ -15,7 +15,7 @@ function getPageTile(): HTMLElement | null {
 
 function emitState(state: UPPageWindowState): void {
   window.UP_PAGE_WINDOW_STATE = state;
-  window.dispatchEvent(new CustomEvent(WINDOW_STATE_EVENT, { detail: state }));
+  emitWindow(WINDOW_STATE_EVENT, state);
 }
 
 export function installPageWindow(): void {

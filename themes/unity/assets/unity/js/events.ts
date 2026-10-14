@@ -25,12 +25,32 @@ export interface UPNotifyDetail {
   timeoutMs?: number | undefined;
 }
 
+/** The detail of each event that fires on document, by event name. */
+export interface UPDocumentEvents {
+  [READY_EVENT]: null;
+}
+
+/** The detail of each event that fires on window, by event name. */
+export interface UPWindowEvents {
+  [WINDOW_STATE_EVENT]: UPPageWindowState;
+  [NOTIFY_EVENT]: UPNotifyDetail;
+}
+
+type CustomEventMap<Details> = { [K in keyof Details]: CustomEvent<Details[K]> };
+
 declare global {
-  interface DocumentEventMap {
-    [READY_EVENT]: CustomEvent<null>;
-  }
-  interface WindowEventMap {
-    [WINDOW_STATE_EVENT]: CustomEvent<UPPageWindowState>;
-    [NOTIFY_EVENT]: CustomEvent<UPNotifyDetail>;
-  }
+  interface DocumentEventMap extends CustomEventMap<UPDocumentEvents> {}
+  interface WindowEventMap extends CustomEventMap<UPWindowEvents> {}
+}
+
+/** Dispatches an event on document. tsc rejects a detail of the wrong
+ *  type and the name of an event that fires on window. */
+export function emitDocument<K extends keyof UPDocumentEvents>(type: K, detail: UPDocumentEvents[K]): void {
+  document.dispatchEvent(new CustomEvent(type, { detail }));
+}
+
+/** Dispatches an event on window. tsc rejects a detail of the wrong type
+ *  and the name of an event that fires on document. */
+export function emitWindow<K extends keyof UPWindowEvents>(type: K, detail: UPWindowEvents[K]): void {
+  window.dispatchEvent(new CustomEvent(type, { detail }));
 }

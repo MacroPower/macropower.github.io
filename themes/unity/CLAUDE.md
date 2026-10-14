@@ -44,7 +44,7 @@ TypeScript types the JavaScript surface but not the DOM. Each module selects its
 
 The app, projects, and shell bundles are separate IIFEs and cannot import each other at runtime.
 
-- The bundles talk through window and document events. `events.ts` names each event and declares its detail type in the DOM event maps. It has no side effects, so every bundle imports it, and a listener reads a typed `e.detail` without a cast. Add a new cross-bundle event there, never as a string literal. The `up:ready` and `up:notify` events are part of the README's public surface, so renaming either breaks sites.
+- The bundles talk through window and document events. `events.ts` names each event and declares its detail type in `UPWindowEvents` or `UPDocumentEvents`, and it derives the DOM event maps from those interfaces. It has no side effects, so every bundle imports it, and a listener reads a typed `e.detail` without a cast. Add a new cross-bundle event there, never as a string literal. Dispatch through `emitWindow()` or `emitDocument()`, never `new CustomEvent`, so tsc checks the detail and the target against the event's name. The `up:ready` and `up:notify` events are part of the README's public surface, so renaming either breaks sites.
 - esbuild copies `desktop-select.ts` and `projects-desktop.ts` into both the app and projects bundles, so two instances coexist on the projects page. Keep all of their state inside the `createSelection` and `installDesktop` closures, and never add module-level mutable state to either file.
 
 ## Editing notes
