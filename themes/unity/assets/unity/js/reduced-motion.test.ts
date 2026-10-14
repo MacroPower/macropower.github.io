@@ -6,15 +6,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { installTitlebarDrag } from "./drag";
 import { followSystemMotion, isReduceMotion, scrollBehavior, setReduceMotion } from "./prefs";
+import { installDesktop } from "./projects-desktop";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const scripts = readdirSync(here, { recursive: true, encoding: "utf8" })
   .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"));
 
 // The CSS animation-kill stops animations and transitions, but it cannot
-// reach a scroll or an animation frame that a script starts. These tests
-// cover the script motion that reduce-motion must stop, and the body class
-// that tells each script to stop it.
+// reach a scroll, an animation frame, or a Web Animations call that a
+// script starts. These tests cover the script motion that reduce-motion
+// must stop, and the body class that tells each script to stop it.
 
 const classes = new Set<string>();
 
@@ -49,6 +50,84 @@ describe("scroll behavior", () => {
     const strays = scripts
       .filter((file) => file !== "prefs.ts")
       .filter((file) => /(["'`])smooth\1/.test(readFileSync(join(here, file), "utf8")));
+    expect(strays).toEqual([]);
+  });
+});
+
+// A stand-in for a tile in a grid of one row. Its left edge follows its
+// place in the grid's tiles, so a new order moves it.
+class Tile {
+  hidden = false;
+  isConnected = true;
+  style = { transition: "", transform: "" };
+  animate = vi.fn();
+  readonly row: readonly Tile[];
+  constructor(row: readonly Tile[]) {
+    this.row = row;
+  }
+  getAnimations(): Animation[] {
+    return [];
+  }
+  getBoundingClientRect(): { left: number; top: number } {
+    return { left: this.row.indexOf(this) * 100, top: 0 };
+  }
+}
+
+describe("web animations", () => {
+  let tiles: Tile[];
+
+  beforeEach(() => {
+    tiles = [];
+    tiles.push(new Tile(tiles), new Tile(tiles));
+    Object.assign(document, {
+      addEventListener: (): void => { /* no gesture reaches the document */ },
+      createDocumentFragment: () => ({ appendChild: (): void => { /* tiles holds the order */ } }),
+    });
+    vi.stubGlobal("window", Object.assign(new EventTarget(), {
+      setTimeout: (): number => 0,
+    }));
+  });
+
+  // Swaps the two tiles, as a drag does, and then restores their order
+  // through Clean Up Icons.
+  function cleanUpAfterSwap(): void {
+    const none = (): void => { /* no selection to change */ };
+    const grid = { addEventListener: none, insertBefore: none, offsetWidth: 0 };
+    const desktop = installDesktop({
+      grid: grid as unknown as HTMLElement,
+      tiles: tiles as unknown as HTMLElement[],
+      get: () => [],
+      anchor: () => null,
+      setSingle: none,
+      toggle: none,
+      selectRange: none,
+      setMany: none,
+      clear: none,
+      selectAllVisible: none,
+      emptyAnchor: null,
+    });
+    tiles.reverse();
+    desktop.cleanUpIcons();
+  }
+
+  it("glides each tile to its new place while motion is on", () => {
+    cleanUpAfterSwap();
+    for (const tile of tiles) expect(tile.animate).toHaveBeenCalledOnce();
+  });
+
+  it("moves each tile without a glide under reduce motion", () => {
+    setReduceMotion(true);
+    cleanUpAfterSwap();
+    for (const tile of tiles) expect(tile.animate).not.toHaveBeenCalled();
+  });
+
+  it("checks reduce motion in each script that calls animate()", () => {
+    const strays = scripts
+      .filter((file) => file !== "prefs.ts")
+      .filter((file) => {
+        const source = readFileSync(join(here, file), "utf8");
+        return source.includes(".animate(") && !source.includes("isReduceMotion()");
+      });
     expect(strays).toEqual([]);
   });
 });

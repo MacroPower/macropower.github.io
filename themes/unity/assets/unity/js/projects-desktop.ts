@@ -21,6 +21,7 @@
 
 import { t } from "./i18n";
 import { eventElement, indexOfFocused } from "./dom";
+import { isReduceMotion } from "./prefs";
 
 // Brand names for the common forges, so a project's open action reads
 // "Open on GitHub" rather than "Open on github.com". The projects sidebar's
@@ -78,8 +79,6 @@ export interface DesktopDeps {
   /** Right-click on empty space -> menu items. Default: Select All / Clean Up
    *  Icons (the passed callback). */
   emptyMenu?(cleanUpIcons: () => void): DesktopMenuItem[];
-  /** Skip removeTiles animation when true. Default: never skip. */
-  reduceMotion?(): boolean;
 }
 
 export interface DesktopController {
@@ -97,14 +96,13 @@ const SETTLE_MS = 160;
 const REMOVE_MS = 300; // matches the upTileOut keyframe
 const DEFAULT_TILE_SEL = "[data-up-project-tile]";
 
-// FLIP glides run on the Web Animations API, not CSS transitions: the
-// reduce-motion blanket (`body.up-reduce-motion *` and the
-// prefers-reduced-motion media rule, both `transition:none !important`)
-// beats inline transition styles and would reduce every drag-reorder to a
-// teleport. These glides are user-initiated, position-communicating motion,
-// so they stay; the engine's reduceMotion() hook remains the policy point
-// for the animations it does skip (tile removal).
+// Each FLIP glide runs on the Web Animations API. The reduce-motion rules
+// in main.css stop CSS animations and transitions, but they cannot stop a
+// script's animate() call, so glide() checks isReduceMotion() itself. The
+// FLIP has already moved the tile to its new cell, so under reduce motion
+// the tile appears there at once.
 function glide(el: HTMLElement, dx: number, dy: number, ms: number): void {
+  if (isReduceMotion()) return;
   el.animate(
     [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
     { duration: ms, easing: "ease" },
@@ -126,7 +124,6 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     : grid.querySelector<HTMLElement>("[data-up-project-empty]");
   const originalOrder = [...deps.tiles];
 
-  const reduceMotion = deps.reduceMotion ?? ((): boolean => false);
   const onOpen = deps.onOpen ?? ((tile: HTMLElement): void => {
     const url = tile.dataset.url;
     if (url) window.open(url, "_blank", "noopener");
@@ -538,7 +535,7 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       for (const el of set) el.remove();
     };
 
-    if (!opts?.animate || reduceMotion()) {
+    if (!opts?.animate || isReduceMotion()) {
       detach();
       opts?.onDone?.();
       return;

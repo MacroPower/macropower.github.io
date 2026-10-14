@@ -147,7 +147,6 @@ export function initTrash(): void {
         selectAllVisible: selection.selectAllVisible,
         tileSelector: "[data-trash-tile]",
         emptyAnchor: null, // the empty state is a sibling, not an in-grid placeholder
-        reduceMotion: isReduceMotion,
         onOpen: (tile) => { void cannotOpen(tile); },
         tileMenu: (tile, sel) => {
           const targets = sel.includes(tile) ? sel : [tile];
