@@ -543,9 +543,9 @@ svg[hidden]{ display:none; }
 .up-resize-ne{ top:0; right:0; width:10px; height:10px; cursor:nesw-resize; }
 .up-resize-sw{ bottom:0; left:0; width:10px; height:10px; cursor:nesw-resize; }
 .up-resize-se{ bottom:0; right:0; width:10px; height:10px; cursor:nwse-resize; }
-/* Coarse pointers get fatter resize zones — generous on the bottom/right
-   where nothing competes, modest on the top so the titlebar beads (which the
-   zones overlay) stay tappable. */
+/* Coarse pointers get fatter resize zones, generous on the bottom and right
+   where nothing competes and modest on the top, which overlays the
+   titlebar's drag area. The titlebar beads stack above the zones. */
 @media (pointer:coarse){
   .up-resize-n{ height:8px; left:18px; right:18px; }
   .up-resize-s{ height:14px; left:18px; right:18px; }
@@ -571,8 +571,10 @@ body.up-resizing *{ cursor:inherit !important; }
   cursor:default;
   touch-action:none; /* drag surface (drag.ts) — never a scroll gesture */
 }
+/* Each bead's hit area is 24px square, so the beads sit 24px apart
+   center to center and the hit areas never overlap (WCAG 2.5.8). */
 .up-tl-group{
-  display:flex; align-items:center; gap:4px;
+  display:flex; align-items:center; gap:10px;
   margin-right:10px;
 }
 .up-tl{
@@ -588,7 +590,10 @@ body.up-resizing *{ cursor:inherit !important; }
     inset 0 -1px 0 rgba(0,0,0,.3),
     0 1px 0 rgba(0,0,0,.4);
   color:#fff;
+  /* Above the resize zones, so a bead's hit area wins where they meet. */
+  position:relative; z-index:7;
   svg{ transition:opacity .12s ease; opacity:.55; }
+  &::after{ content:""; position:absolute; inset:-5px; }
 }
 .up-tl-close{
   /* recipe: bead-face */
@@ -610,7 +615,9 @@ body.up-resizing *{ cursor:inherit !important; }
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  margin-right:60px;
+  /* The width of a three-bead group and its margin, so the title centers
+     on the window. */
+  margin-right:72px;
 }
 .up-window-body{
   flex:1 1 auto;
