@@ -1,3 +1,4 @@
+import { requireAll } from "./dom";
 import { t } from "./i18n";
 import type {
   UPDialogButton,
@@ -126,6 +127,24 @@ function installDialogDrag(d: DialogEntry): void {
   });
 }
 
+// The nodes that uiDialog fills in a copy of #up-dialog-template, or null
+// when a site's copy of dialog-host.html drops one.
+function dialogParts(root: ParentNode) {
+  const q = (sel: string): HTMLElement | null => root.querySelector<HTMLElement>(sel);
+  return requireAll({
+    backdrop: q(".up-dlg-backdrop"),
+    dialog: q(".up-dialog"),
+    titleEl: q("[data-dlg-title]"),
+    iconEl: q("[data-dlg-icon]"),
+    iconGlyph: q("[data-dlg-icon-glyph]"),
+    ctitleEl: q("[data-dlg-content-title]"),
+    cbodyEl: q("[data-dlg-content-body]"),
+    cdetailsEl: q("[data-dlg-content-details]"),
+    footerEl: q("[data-dlg-footer]"),
+    closeBtn: q(".up-dlg-close"),
+  });
+}
+
 function uiDialog<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise<Id | null> {
   return new Promise((resolve) => {
     if (!host || !template) {
@@ -138,16 +157,25 @@ function uiDialog<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Pr
     root.style.zIndex = String(1000 + stack.length * 2);
     root.appendChild(frag);
 
-    const backdrop = root.querySelector<HTMLElement>(".up-dlg-backdrop")!;
-    const dialog = root.querySelector<HTMLElement>(".up-dialog")!;
-    const titleEl = root.querySelector<HTMLElement>("[data-dlg-title]")!;
-    const iconEl = root.querySelector<HTMLElement>("[data-dlg-icon]")!;
-    const iconGlyph = root.querySelector<HTMLElement>("[data-dlg-icon-glyph]")!;
-    const ctitleEl = root.querySelector<HTMLElement>("[data-dlg-content-title]")!;
-    const cbodyEl = root.querySelector<HTMLElement>("[data-dlg-content-body]")!;
-    const cdetailsEl = root.querySelector<HTMLElement>("[data-dlg-content-details]")!;
-    const footerEl = root.querySelector<HTMLElement>("[data-dlg-footer]")!;
-    const closeBtn = root.querySelector<HTMLElement>(".up-dlg-close")!;
+    // initDialogs installs uiDialog only for a template with every part,
+    // so a copy of the template has them too.
+    const parts = dialogParts(root);
+    if (!parts) {
+      resolve(null);
+      return;
+    }
+    const {
+      backdrop,
+      dialog,
+      titleEl,
+      iconEl,
+      iconGlyph,
+      ctitleEl,
+      cbodyEl,
+      cdetailsEl,
+      footerEl,
+      closeBtn,
+    } = parts;
 
     const title = opts.title ?? "";
     const body = opts.body ?? "";
@@ -238,6 +266,10 @@ export function initDialogs(): void {
   template = tpl instanceof HTMLTemplateElement ? tpl : null;
   if (!host || !template) {
     console.warn("unity: #up-dialog-host or #up-dialog-template not found; dialogs disabled");
+    return;
+  }
+  if (!dialogParts(template.content)) {
+    console.warn("unity: #up-dialog-template in unity/dialog-host.html lacks a node that dialogs fill; dialogs disabled");
     return;
   }
   window.uiDialog = uiDialog;
