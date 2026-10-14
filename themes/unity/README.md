@@ -51,7 +51,7 @@ hugo mod init github.com/you/yoursite
 hugo mod get -u
 ```
 
-Run `hugo mod get -u` again to update. The theme has no release tags yet, so Hugo pins the latest commit on `main`.
+Run `hugo mod get -u` again to update. The command moves your site to the newest `themes/unity/vX.Y.Z` tag, or to the latest commit on `main` while the theme has no tag. To follow unreleased changes, update with `hugo mod get github.com/MacroPower/macropower.github.io/themes/unity@main` instead. To return to the newest tag, run the same command with `@latest` in place of `@main`.
 
 The theme does not add Node packages to `hugo mod npm pack`, so a site that runs it to install another module's packages, such as Tailwind CSS, installs nothing for the theme.
 

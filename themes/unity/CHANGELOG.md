@@ -1,10 +1,10 @@
 # Changelog
 
-This file lists the notable changes to the unity theme for the sites that use it. It follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), and the theme's versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This file lists the notable changes to the unity theme for the sites that use it. It follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), and the theme's versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Each entry under Changed that your site must act on ends with the step to take. Template paths such as `_partials/unity/dash.html` name files under `layouts/`, in the theme and in your site.
 
 ## [Unreleased]
 
-The theme has no release yet. This section lists the changes after commit `5e05c78`. Each entry under Changed that your site must act on ends with the step to take. Template paths such as `_partials/unity/dash.html` name files under `layouts/`, in the theme and in your site.
+The theme has no release yet. This section lists the changes after commit `5e05c78`.
 
 ### Added
 
