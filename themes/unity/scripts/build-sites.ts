@@ -280,6 +280,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
   // serves the page. Now has no German translation, so its German row
   // leads to the German home page. Hugo writes each language into its
   // own directory, and the build fails when it writes a file there twice.
+  // German sets a wallpaper, so each language links its own stylesheet.
   multihost: {
     files: {
       "hugo.toml": `${BARE}[languages.en]
@@ -288,7 +289,10 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
 [languages.de]
   baseURL = "https://example.de/"
   weight = 2
+  [languages.de.params.desktop]
+    wallpaper = "images/wall.png"
 `,
+      "assets/images/wall.png": "PNG",
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
       "content/now.md": page("Now"),
@@ -304,6 +308,60 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         const got = new RegExp(`up-lang-row[^"]*" href="([^"]*)" hreflang="${lang}"`).exec(read(join(out, file)))?.[1];
         return got !== want && `${file}'s ${lang} row links ${got}, not ${want}`;
       });
+    },
+  },
+  // A second language with its own highlight style, accent preset, and
+  // wallpaper. Its pages link a stylesheet of their own, and the first
+  // language's stylesheet keeps the defaults. Both stylesheets name the
+  // same fonts, which the build fails to publish twice.
+  langstyle: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+  [languages.de.markup.highlight]
+    style = "github"
+  [languages.de.params.desktop]
+    accent = "teal"
+    wallpaper = "images/wall.png"
+  [languages.de.params.desktop.accents.teal]
+    color = "#00897B"
+`,
+      "assets/images/wall.png": "PNG",
+      "content/about.md": page("About"),
+      "content/about.de.md": page("Über"),
+    },
+    check: (out) => {
+      const sheet = (file: string): string => {
+        const href = /<link rel="stylesheet" href="\/([^"]+)"/.exec(read(join(out, file)))?.[1];
+        return href ? read(join(out, href)) : "";
+      };
+      const [en, de] = [sheet("about/index.html"), sheet("de/about/index.html")];
+      // The highlight style's background, in the unity.chroma layer.
+      const background = (css: string): string | undefined => {
+        const m = /(?<=[{}])\.bg\s*\{([^}]*)\}/.exec(css);
+        return m && layerAt(css, m.index) === "unity.chroma" ? flat(m[1]!) : undefined;
+      };
+      const teal = (css: string): boolean => /:root\[data-up-accent="?teal"?\]/.test(css);
+      // The --up-wallpaper values in the unity.theme layer, main.css's
+      // default first.
+      const walls = (css: string): string[] => [...css.matchAll(/--up-wallpaper:\s*([^;}]+)/g)]
+        .filter((m) => layerAt(css, m.index) === "unity.theme").map((m) => m[1]!.trim());
+      const image = /^url\("?\/([^")]+)"?\) center\/cover no-repeat$/.exec(walls(de)[1] ?? "")?.[1];
+      return [
+        en === de && "de/about/index.html links the English stylesheet",
+        sheet("index.html") !== en && "index.html and about/index.html link different stylesheets",
+        !background(en)?.includes("background-color:#272822") && "the English stylesheet lacks monokai's background",
+        !background(de)?.includes("background-color:#f7f7f7") && "the German stylesheet lacks github's background",
+        !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
+        !read(join(out, "de/index.html")).includes('data-up-accent="teal"') && "de/index.html does not start with the teal accent",
+        teal(en) && "the English stylesheet has the German teal preset",
+        !teal(de) && "the German stylesheet lacks the teal preset",
+        walls(en).length !== 1 && "the English stylesheet sets a wallpaper beside main.css's default",
+        !(walls(de).length === 2 && image && existsSync(join(out, image)))
+          && "the German stylesheet lacks the wallpaper rule after main.css's default, with its image published",
+      ];
     },
   },
   // A section outside mainSections renders as a plain list of its pages.

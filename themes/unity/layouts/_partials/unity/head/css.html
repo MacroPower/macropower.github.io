@@ -1,8 +1,8 @@
 {{- /*
-  Builds the site's one stylesheet with css.Build and emits its link plus
-  font preloads. css.Build lowers the native nesting for the target
-  browsers and publishes the fonts main.css references with hashed names,
-  so the preloads read their URLs from the build's artifacts.
+  Builds the site's one stylesheet and emits its link plus font preloads.
+  css.Build lowers the native nesting for the target browsers and
+  publishes the fonts main.css references with hashed names, so the
+  preloads read their URLs from the build's artifacts.
 
   The target list names the oldest version of each browser that the
   theme supports, and the Requirements in README.md repeat it. css.Build
@@ -14,15 +14,26 @@
   fallback styles there. browser-targets.test.ts under assets/unity/js
   checks the list against the features the stylesheet uses.
 
-  The entry puts assets/unity/css/main.css in the unity.theme cascade
-  layer, and the syntax highlighter's classes for the site's
-  markup.highlight.style in the later unity.chroma layer. A site that sets
-  markup.highlight.noClasses to false therefore gets colored code without
-  inline styles, and the highlight style's colors win over the theme's.
-  A site's assets/css/custom.css comes last with no layer, so its rules
-  beat every theme rule whatever their specificity, except the theme's
-  !important declarations. css.Build moves an external @import in it to
-  the top of the output, where browsers honor it.
+  css.Build reads only the files that every language shares, so it runs
+  once per site and publishes each font once. Its entry puts
+  assets/unity/css/main.css in the unity.theme cascade layer. A site's
+  assets/css/custom.css follows with no layer, so its rules beat every
+  theme rule whatever their specificity, except the theme's !important
+  declarations. css.Build moves an external @import in it to the top of
+  the output, where browsers honor it.
+
+  A language can set its own highlight style, accent presets, and
+  wallpaper, so the partial appends their rules to the build's output as
+  plain CSS. Each language whose rules differ links a stylesheet of its
+  own. Never add those rules to the css.Build entry, because a second
+  build for a language publishes each font again and Hugo warns of
+  duplicate target paths.
+
+  The syntax highlighter's classes for the language's
+  markup.highlight.style go in the later unity.chroma layer. A site that
+  sets markup.highlight.noClasses to false therefore gets colored code
+  without inline styles, and the highlight style's colors win over the
+  theme's.
 
   Each accent preset from unity/accents.html gets a rule in the
   unity.theme layer that sets the --up-accent tokens on <html> when
@@ -32,57 +43,50 @@
 
   params.desktop.wallpaper sets --up-wallpaper to an image in a rule that
   follows main.css in the unity.theme layer, so the rule beats main.css's
-  default and custom.css beats the rule. css.Build publishes an image under
-  assets/ with a hashed name and leaves a URL as written. A path under
-  static/ resolves against the site's baseURL and goes in externals, so
-  css.Build leaves it as written too. The partial never searches the page's
-  bundle, because partialCached shares one result across pages.
+  default and custom.css beats the rule. The partial publishes an image
+  under assets/ with a fingerprinted name and leaves a URL as written. A
+  path under static/ resolves against the site's baseURL. The partial
+  never searches the page's bundle, because partialCached shares one
+  result across pages.
 
-  Context: the page. Call it through partialCached keyed on whether the
-  page is the home terminal (unity/is-terminal.html), the only input that
-  changes the output.
+  Context: the page. Hugo keeps a partialCached cache for each language,
+  so call it through partialCached keyed on whether the page is the home
+  terminal (unity/is-terminal.html), the only input from the page.
 */ -}}
 {{- $entry := `@layer unity.theme, unity.chroma;
 @import "/unity/css/main.css" layer(unity.theme);
-@import "/unity/css/chroma.css" layer(unity.chroma);
 ` -}}
 {{- if resources.Get "css/custom.css" }}{{ $entry = print $entry `@import "/css/custom.css";` }}{{ end -}}
-{{- with (partialCached "unity/accents.html" . site.Language.Name).presets -}}
-  {{- $rules := slice -}}
-  {{- range . -}}
-    {{- $rules = $rules | append (printf `:root[data-up-accent=%q],.up-accent-swatch[data-up-accent=%q]{--up-accent:%s;--up-accent-light:%s;--up-accent-dark:%s;--up-accent-darker:%s;--up-accent-lighter:%s}` .name .name .color .light .dark .darker .lighter) -}}
-  {{- end -}}
-  {{- $entry = printf "%s\n@layer unity.theme{%s}" $entry (delimit $rules "\n") -}}
-{{- end -}}
-{{- $externals := slice -}}
-{{- with site.Params.desktop.wallpaper -}}
-  {{- $u := urls.Parse . -}}
-  {{- $url := . -}}
-  {{- if not (or $u.IsAbs $u.Host) -}}
-    {{- $path := strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.Path) -}}
-    {{- if resources.Get $path -}}
-      {{- $url = printf "/%s" $path -}}
-    {{- else -}}
-      {{- $url = partial "unity/markup/site-url.html" (dict "path" (printf "/%s" (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.EscapedPath)))) -}}
-      {{- $externals = $externals | append $url -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $entry = printf "%s\n@layer unity.theme{:root{--up-wallpaper:url(%q) center/cover no-repeat}}" $entry $url -}}
-{{- end -}}
-{{- /* importContext takes a copy of the highlighter's classes. Given the
-      css.ChromaStyles resource itself, css.Build builds the stylesheet
-      again in each language. On a site that gives each language its own
-      baseURL, each of those builds writes into every language's
-      directory, and Hugo warns of duplicate target paths. */ -}}
-{{- $chroma := resources.FromString "unity/css/chroma.css" (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")).Content -}}
 {{- $main := resources.FromString "unity/css/entry.css" $entry | css.Build (dict
-  "externals" $externals
-  "importContext" (slice $chroma)
   "minify" hugo.IsProduction
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")
   "target" (slice "chrome115" "edge115" "firefox121" "ios16.4" "opera101" "safari16.4")
   "targetPath" "css/main.css"
 ) -}}
+{{- /* Hugo caches a transformation of the css.ChromaStyles resource by its
+      target path, which every language shares, so minify would give
+      every language the first one's classes. A copy from FromString
+      adds its content to the key. */ -}}
+{{- $chroma := resources.FromString "unity/css/chroma.css" (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")).Content -}}
+{{- if hugo.IsProduction }}{{ $chroma = $chroma | minify }}{{ end -}}
+{{- $rules := slice -}}
+{{- range (partialCached "unity/accents.html" . site.Language.Name).presets -}}
+  {{- $rules = $rules | append (printf `:root[data-up-accent=%q],.up-accent-swatch[data-up-accent=%q]{--up-accent:%s;--up-accent-light:%s;--up-accent-dark:%s;--up-accent-darker:%s;--up-accent-lighter:%s}` .name .name .color .light .dark .darker .lighter) -}}
+{{- end -}}
+{{- with site.Params.desktop.wallpaper -}}
+  {{- $u := urls.Parse . -}}
+  {{- $url := . -}}
+  {{- if not (or $u.IsAbs $u.Host) -}}
+    {{- with resources.Get (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.Path)) -}}
+      {{- $url = (. | resources.Fingerprint).RelPermalink -}}
+    {{- else -}}
+      {{- $url = partial "unity/markup/site-url.html" (dict "path" (printf "/%s" (strings.TrimPrefix "/" (strings.TrimPrefix "./" $u.EscapedPath)))) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $rules = $rules | append (printf `:root{--up-wallpaper:url(%q) center/cover no-repeat}` $url) -}}
+{{- end -}}
+{{- $text := print $main.Content "@layer unity.chroma{" $chroma.Content "}" -}}
+{{- with $rules }}{{ $text = printf "%s\n@layer unity.theme{%s}" $text (delimit . "\n") }}{{ end -}}
 {{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
       terminal. */ -}}
 {{- $preload := slice "ubuntu-400-latin" -}}
@@ -95,5 +99,5 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- $css := $main | resources.Fingerprint }}
+{{- $css := resources.FromString "css/main.css" $text | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
