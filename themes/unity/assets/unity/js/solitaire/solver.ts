@@ -36,7 +36,10 @@ interface Step {
 
 const ABORT = new Error("solver budget exhausted");
 
-export function solve(game: Klondike, maxNodes = 150000): SolverMove[] | null {
+/** The node budget of a search that names none, which the demo uses. */
+export const SOLVE_BUDGET = 150_000;
+
+export function solve(game: Klondike, maxNodes = SOLVE_BUDGET): SolverMove[] | null {
   const cols: Card[][] = game.tableau.map((c) => c.slice());
   const down: number[] = game.tableau.map((c) => c.filter((x) => !x.faceUp).length);
   const found: [number, number, number, number] = [0, 0, 0, 0];
