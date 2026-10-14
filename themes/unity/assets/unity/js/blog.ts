@@ -142,10 +142,17 @@ interface SortState {
     const pres = readerBody.querySelectorAll<HTMLPreElement>("pre");
     pres.forEach((pre) => {
       if (pre.closest(".up-codeblock")) return;
+      // With lineNos = "table", Hugo lays out a highlighted block as a
+      // table in a div. The first cell holds the line numbers in a pre
+      // of their own. The button wraps that div and copies the code from
+      // the last cell.
+      const cell = pre.closest(".highlight td");
+      if (cell?.nextElementSibling) return;
+      const block = cell?.closest(".highlight > div") ?? pre;
       const wrap = document.createElement("div");
       wrap.className = "up-codeblock";
-      pre.parentNode?.insertBefore(wrap, pre);
-      wrap.appendChild(pre);
+      block.parentNode?.insertBefore(wrap, block);
+      wrap.appendChild(block);
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "up-code-copy";

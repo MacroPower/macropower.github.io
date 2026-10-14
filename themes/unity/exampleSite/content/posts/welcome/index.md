@@ -20,6 +20,13 @@ func main() {
 }
 ```
 
+Add `{lineNos=table}` after the language to number the lines:
+
+```sh {lineNos=table}
+hugo new content posts/hello.md
+hugo server -D
+```
+
 > Blockquotes, lists, and images all render inside the page window.
 
 GitHub-style alerts render as info bars:

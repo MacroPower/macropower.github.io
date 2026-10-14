@@ -326,6 +326,23 @@ test("a dark content pair keeps the text in a page and a dialog readable", async
   }
 });
 
+test("a code block with a line number table draws one box with one copy button", async ({ page }) => {
+  await open(page, "/posts/2024/02/welcome-to-the-desktop/");
+  // Hugo puts the line numbers and the code in a pre of their own each.
+  const block = page.locator(".up-reader-body .highlight").filter({ has: page.locator("table") });
+  await expect(block).toHaveCount(1);
+  await expect(block.locator(".up-code-copy")).toHaveCount(1);
+  await expect(block.locator("div:has(> table)")).toHaveCSS("border-top-width", "1px");
+  const pres = block.locator("pre");
+  await expect(pres).toHaveCount(2);
+  for (const pre of await pres.all()) await expect(pre).toHaveCSS("border-top-width", "0px");
+  // Each number lines up with its line of code, so the two columns end
+  // at the same height.
+  const heights = await block.locator("td code").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
+  expect(heights).toHaveLength(2);
+  expect(Math.abs((heights[0] ?? 0) - (heights[1] ?? 0))).toBeLessThan(1);
+});
+
 test("forced colors keep a menu opaque and fill the Studio's pressed buttons", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });
   await open(page, "/about/");

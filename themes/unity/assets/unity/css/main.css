@@ -1818,6 +1818,20 @@ a.up-sponsor-card[href]:hover{
      highlight. */
   .highlight{margin:0 0 14px}
   .highlight pre{margin:0;color:inherit;background:transparent}
+  /* With lineNos = "table", Hugo lays out a block as a table in a div
+     that the highlight style paints. Each cell holds a pre, one for the
+     line numbers and one for the code. The div draws the block's one
+     border and its padding, and it scrolls a line that is wider than the
+     column. */
+  .highlight div:has(> table){
+    border:1px solid #1F1D1A;border-radius:3px;padding:12px 14px;overflow:auto;
+  }
+  .highlight table{font-size:inherit}
+  .highlight td pre{margin:0;padding:0;border:0;border-radius:0;overflow:visible}
+  /* Hugo draws each line of code as a flex row but the line numbers as
+     text. Block code keeps the pre's larger font out of the numbers'
+     lines, so each number lines up with its row. */
+  .highlight td code{display:block}
   hr{
     border:0;border-top:1px dashed var(--up-content-line);margin:18px 0;
   }
@@ -4308,6 +4322,11 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   pre{
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
     white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible !important;
+  }
+  /* The div around a line number table paints the block's padding, and
+     its pres wrap. */
+  .highlight div:has(> table){
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;overflow:visible;
   }
   pre, img, figure, .up-alert{break-inside:avoid}
   h1, h2, h3, h4{break-after:avoid}

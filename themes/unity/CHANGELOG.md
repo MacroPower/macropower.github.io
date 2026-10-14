@@ -112,6 +112,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Names from your site keep their own direction inside the sentences of dialogs, notifications, and status lines. Such names include network and hotspot names, your handle, Trash items, and track titles. A right-to-left name in a left-to-right sentence, or the reverse, leaves the punctuation around it in place.
 - Dark surfaces draw their scrollbars and form controls dark, and the volume slider draws its track and fill in the theme's colors.
 - Code blocks and inline code read left to right on a right-to-left page.
+- Code blocks with line numbers in a table draw one box and one copy button, at the text size of other code blocks. Each number lines up with its line. Hugo lays out the numbers in a table for `lineNos = true` unless your site sets `lineNumbersInTable = false`.
 - A page without `title` front matter takes its title from its date or file name. A site without a title names its home page after the host of `baseURL`, and its owner after the home page. The 404 page's title follows the page's language.
 - Each post's JSON-LD dates carry a time and a time zone, and an undated post leaves them out.
 - Feeds have a description on a site without `params.description`, and each feed's `lastBuildDate` follows the newest `lastmod`.
