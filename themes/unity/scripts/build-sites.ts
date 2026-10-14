@@ -847,7 +847,8 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
   // properties and [dir="rtl"] rules follow. Shell lines and the home
   // terminal stay left to right, and the terminal stays English. Each
   // name the desktop shows takes the direction of its first letter, so a
-  // Latin title keeps its punctuation at its end.
+  // Latin title keeps its punctuation at its end. The projects page lays
+  // out a mirrored grid of tiles.
   rtl: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "ar"
@@ -857,6 +858,8 @@ ignoreLogs = ["unity-i18n-missing"]
   direction = "rtl"
 `,
       "content/posts/one.md": page("Hello, world!", "tags = ['a']\n"),
+      "content/projects.md": page("Projects", "layout = 'projects'\n"),
+      "data/projects.yaml": "- {name: alpha, language: Go}\n- {name: beta, language: Rust}\n",
     },
     check: (out) => {
       const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
@@ -871,6 +874,7 @@ ignoreLogs = ["unity-i18n-missing"]
         ["posts/index.html", '<div dir="ltr" class="up-empty-pane-tagline"'],
         ["posts/one/index.html", '<span dir="auto" class="up-reader-chip">#a</span>'],
         ["posts/one/index.html", '— <bdi dir="ltr">user@unity:~/posts$</bdi>'],
+        ["projects/index.html", '<span dir="auto" class="up-project-tile-label">alpha</span>'],
         ["tags/a/index.html", '— <bdi dir="ltr">user@unity:~$ grep -l "a" posts/*.md</bdi>'],
         ["404.html", '<div lang="en" dir="ltr" class="up-empty-pane-tagline"'],
       ];

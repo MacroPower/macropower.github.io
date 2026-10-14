@@ -1,6 +1,7 @@
 import { t } from "./i18n";
 import { eventHTMLElement } from "./dom";
 import { scrollBehavior } from "./prefs";
+import { inlineDirection, inlineStep } from "./inline-keys";
 
 export interface FilterNavOptions {
   root: HTMLElement;
@@ -24,8 +25,10 @@ export interface FilterNavOptions {
   // Fires on Enter from the focused item. Defaults to item.click().
   onActivate?: (item: HTMLElement) => void;
 
-  // Which arrow/vim keys participate in nav. "vertical" (default) restricts
-  // movement to ↑/↓/j/k; "both" also accepts ←/→/h/l for grid layouts.
+  // Which keys move the cursor. "vertical" (default) accepts ↑, ↓, j,
+  // and k. "both" also accepts ←, →, h, and l for a grid. Left and Right
+  // follow the grid's inline direction, so in a right-to-left grid Left
+  // moves to the next item.
   axis?: "vertical" | "both";
 
   // Fires at the end of every applyFilters() pass. Used by callers that need
@@ -36,6 +39,9 @@ export interface FilterNavOptions {
 export interface FilterNav {
   applyFilters: () => void;
 }
+
+// The vi keys stand for the arrow keys.
+const VI_ARROWS: Readonly<Record<string, string>> = { h: "ArrowLeft", j: "ArrowDown", k: "ArrowUp", l: "ArrowRight" };
 
 export function installFilterNav(opts: FilterNavOptions): FilterNav {
   const {
@@ -177,20 +183,23 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
       return;
     }
 
+    // The items run in reading order, so Down steps to the next item and
+    // Left or Right steps the way the grid lays its rows out.
+    const key = VI_ARROWS[e.key] ?? e.key;
     let nextIdx: number;
-    switch (e.key) {
+    switch (key) {
       case "ArrowDown":
-      case "ArrowRight":
-      case "j":
-      case "l":
         nextIdx = Math.min(list.length - 1, idx + 1);
         break;
       case "ArrowUp":
-      case "ArrowLeft":
-      case "k":
-      case "h":
         nextIdx = Math.max(0, idx - 1);
         break;
+      case "ArrowLeft":
+      case "ArrowRight": {
+        const grid = list[0]?.parentElement ?? root;
+        nextIdx = Math.min(list.length - 1, Math.max(0, idx + inlineStep(key, inlineDirection(grid))));
+        break;
+      }
       case "Home":
         nextIdx = 0;
         break;

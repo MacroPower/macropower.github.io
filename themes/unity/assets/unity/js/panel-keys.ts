@@ -9,7 +9,10 @@
 // differ on Tab. A menu's rows sit outside the tab order, so Tab closes
 // the menu and moves on from its trigger. An indicator's dropdown keeps
 // Tab for its controls, and top-panel.ts closes the dropdown when focus
-// leaves it.
+// leaves it. Left and Right follow the panel's inline direction, so on
+// a right-to-left page Left opens the next trigger.
+
+import { inlineStep, type InlineDirection } from "./inline-keys";
 
 /** The panel's state when a key goes down. */
 export interface PanelKeyState {
@@ -23,6 +26,8 @@ export interface PanelKeyState {
   /** Whether focus sits on an input, such as the volume slider. An
    *  input keeps its own Left, Right, Home, and End keys. */
   input: boolean;
+  /** The inline direction of the row of triggers. */
+  direction: InlineDirection;
 }
 
 /** A row of a dropdown, relative to the focused one. The rows are the
@@ -52,8 +57,8 @@ export function panelKey(key: string, modified: boolean, state: PanelKeyState): 
     switch (key) {
       case "ArrowDown": return { kind: "open", row: "first" };
       case "ArrowUp": return { kind: "open", row: "last" };
-      case "ArrowRight": return state.open ? { kind: "switch", step: 1 } : null;
-      case "ArrowLeft": return state.open ? { kind: "switch", step: -1 } : null;
+      case "ArrowRight":
+      case "ArrowLeft": return state.open ? { kind: "switch", step: inlineStep(key, state.direction) } : null;
       default: return null;
     }
   }
@@ -68,8 +73,8 @@ export function panelKey(key: string, modified: boolean, state: PanelKeyState): 
   switch (key) {
     case "Home": return { kind: "move", row: "first" };
     case "End": return { kind: "move", row: "last" };
-    case "ArrowRight": return { kind: "switch", step: 1 };
-    case "ArrowLeft": return { kind: "switch", step: -1 };
+    case "ArrowRight":
+    case "ArrowLeft": return { kind: "switch", step: inlineStep(key, state.direction) };
     default: return null;
   }
 }

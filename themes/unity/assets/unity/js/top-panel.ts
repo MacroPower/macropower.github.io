@@ -10,6 +10,7 @@ import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
 import { isNavAction, isVolumeControl, parseAction, type NamedAction, type PanelAction, type VolumeControl } from "./actions";
 import { eventElement, eventHTMLElement, indexOfFocused } from "./dom";
+import { inlineDirection } from "./inline-keys";
 import { panelKey, rowIndex, type Row } from "./panel-keys";
 
 const EMPTY_SITE: Readonly<UPSite> = {
@@ -670,6 +671,7 @@ export function initTopPanel(): void {
       open: openDropdown !== null,
       menu: openDropdown?.querySelector("[role=menu]") != null,
       input: target instanceof HTMLInputElement,
+      direction: inlineDirection(panel),
     });
     if (!intent) return;
     switch (intent.kind) {

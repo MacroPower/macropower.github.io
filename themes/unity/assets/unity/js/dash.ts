@@ -22,6 +22,7 @@ import { isMusicAction, parseDashAction } from "./actions";
 import { isReduceMotion } from "./prefs";
 import * as audio from "./audio";
 import { eventElement, focusedElement, indexOfFocused } from "./dom";
+import { inlineDirection, inlineStep } from "./inline-keys";
 
 interface DashTile {
   el: HTMLElement;
@@ -381,11 +382,12 @@ export function initDash(): void {
       moveVertical(cur, -1);
       return;
     }
+    // Left and Right step through the tiles in their visual order.
     if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && onTile && cur) {
       e.preventDefault();
       const tiles = visibleTiles();
       const idx = tiles.indexOf(cur);
-      focusTile(tiles[idx + (e.key === "ArrowRight" ? 1 : -1)] ?? null);
+      focusTile(tiles[idx + inlineStep(e.key, inlineDirection(cur.parentElement ?? cur))] ?? null);
       return;
     }
     // Type-ahead: printable keys (and Backspace) land in the search field no

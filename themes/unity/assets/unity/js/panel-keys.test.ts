@@ -6,12 +6,12 @@ import { describe, expect, it } from "vitest";
 
 import { panelKey, rowIndex, type PanelKeyState } from "./panel-keys";
 
-const closed: PanelKeyState = { focus: "trigger", open: false, menu: false, input: false };
-const onTrigger: PanelKeyState = { focus: "trigger", open: true, menu: true, input: false };
-const inMenu: PanelKeyState = { focus: "dropdown", open: true, menu: true, input: false };
-const inDisclosure: PanelKeyState = { focus: "dropdown", open: true, menu: false, input: false };
+const closed: PanelKeyState = { focus: "trigger", open: false, menu: false, input: false, direction: "ltr" };
+const onTrigger: PanelKeyState = { focus: "trigger", open: true, menu: true, input: false, direction: "ltr" };
+const inMenu: PanelKeyState = { focus: "dropdown", open: true, menu: true, input: false, direction: "ltr" };
+const inDisclosure: PanelKeyState = { focus: "dropdown", open: true, menu: false, input: false, direction: "ltr" };
 const onSlider: PanelKeyState = { ...inDisclosure, input: true };
-const elsewhere: PanelKeyState = { focus: "elsewhere", open: true, menu: true, input: false };
+const elsewhere: PanelKeyState = { focus: "elsewhere", open: true, menu: true, input: false, direction: "ltr" };
 
 describe("panelKey", () => {
   it("opens a dropdown from its trigger on the first or last row", () => {
@@ -37,6 +37,16 @@ describe("panelKey", () => {
     }
     expect(panelKey("ArrowRight", false, closed)).toBeNull();
     expect(panelKey("ArrowLeft", false, closed)).toBeNull();
+  });
+
+  it("switches to the next trigger on Left in a right-to-left panel", () => {
+    for (const state of [onTrigger, inMenu, inDisclosure]) {
+      const rtl: PanelKeyState = { ...state, direction: "rtl" };
+      expect(panelKey("ArrowLeft", false, rtl)).toEqual({ kind: "switch", step: 1 });
+      expect(panelKey("ArrowRight", false, rtl)).toEqual({ kind: "switch", step: -1 });
+    }
+    expect(panelKey("ArrowLeft", false, { ...closed, direction: "rtl" })).toBeNull();
+    expect(panelKey("ArrowLeft", false, { ...onSlider, direction: "rtl" })).toBeNull();
   });
 
   it("closes a menu on Tab and lets the browser move focus on", () => {
