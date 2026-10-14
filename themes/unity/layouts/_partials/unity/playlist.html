@@ -10,7 +10,8 @@
   tracks the player loads), unity/indicators/sound.html (the Sound menu's
   player), unity/dash.html (the Music category and the Studio tile),
   unity/launcher/dock.html (the running-app tile), and baseof.html (the
-  Studio window). An empty playlist leaves the Studio out of the desktop.
+  Studio window and the app bundle's UP_STUDIO define). An empty playlist
+  leaves the Studio out of the desktop and its code out of the bundle.
 */ -}}
 {{- $tracks := slice -}}
 {{- with site.Params.studio.playlist -}}

@@ -185,7 +185,7 @@ The launcher, the Dash, and the HUD show each `icon` as an image file that the b
 - `content/projects.md` with `layout = "projects"` renders the grid from `data/projects.yaml`. See `exampleSite/data/projects.yaml` for the schema, in which only `name` is required. Without that file, set `params.projects.github` to your GitHub account, and the build fetches up to 100 of its public repositories with a language, skipping forks and archived ones. Set the `HUGO_GITHUB_TOKEN` environment variable to lift the GitHub API's rate limit for anonymous requests. Any language name works. The theme draws its own emblem for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and Lua, and a generic one for the rest.
 - `content/solitaire.md` with `layout = "solitaire"` is the solitaire table. The terminal's `solitaire` command opens the first page with that layout.
 - `content/icons.md` with `layout = "icons"` is the icon vault, a copy-to-clipboard catalogue of every SVG the theme ships.
-- `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio.
+- `assets/midi/*.mid` files are the Studio's playlist. The theme ships none, and a site without any gets no Studio, so its pages load a smaller script without the Studio's code.
 - Any other top-level page renders in a plain window and appears in the terminal's filesystem, where `cat` prints its markdown.
 - `content/_index.md` titles the home page, and its body becomes `~/README.md` in the terminal. Without a body, the terminal writes its own welcome there.
 

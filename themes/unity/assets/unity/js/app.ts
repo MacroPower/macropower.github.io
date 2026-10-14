@@ -39,7 +39,9 @@ run("notify", initNotify);
 run("lock", initLock);
 run("top panel", initTopPanel);
 run("trash", initTrash);
-run("studio", initDaw);
+// UP_STUDIO is false on a site without MIDI files, and esbuild then drops
+// the Studio's code from this bundle.
+if (UP_STUDIO) run("studio", initDaw);
 run("dash", initDash);
 run("hud", initHud);
 run("page window", installPageWindow);

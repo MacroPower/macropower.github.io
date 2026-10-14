@@ -378,7 +378,7 @@ export async function dispatchAction(action: string): Promise<void> {
   const preset = DLG_PRESETS[action];
   if (preset) { await dlg(preset(site)); return; }
   if (action === "daw:open") {
-    openStudio();
+    if (UP_STUDIO) openStudio();
     return;
   }
   if (action === "dlg:lock") {
@@ -484,7 +484,10 @@ function parsePlaylist(raw: unknown): audio.PlaylistEntry[] {
 export function initTopPanel(): void {
   const panel = document.querySelector<HTMLElement>(".up-top-panel[data-ssr]");
   if (!panel) return;
-  if (panel.dataset.volPlaylist) {
+  // Every call into the Studio's audio module sits inside an UP_STUDIO
+  // check. A site without MIDI files keeps a volume control that drives no
+  // synth.
+  if (UP_STUDIO && panel.dataset.volPlaylist) {
     try {
       audio.configure(parsePlaylist(JSON.parse(panel.dataset.volPlaylist)));
     } catch {
@@ -725,21 +728,31 @@ export function initTopPanel(): void {
   // Paused still names the selection so the next-track button gives
   // visible feedback before anything plays.
   const syncNowPlaying = (): void => {
-    if (!nowPlaying) return;
-    const name = audio.trackName();
-    if (!audio.isPlaying()) {
-      nowPlaying.textContent = name
-        ? t("js_panel_paused_named", { name })
-        : t("js_panel_paused");
-      return;
+    if (UP_STUDIO && nowPlaying) {
+      const name = audio.trackName();
+      if (!audio.isPlaying()) {
+        nowPlaying.textContent = name
+          ? t("js_panel_paused_named", { name })
+          : t("js_panel_paused");
+      } else {
+        nowPlaying.textContent = vol.muted ? t("js_panel_muted_named", { name }) : name;
+      }
     }
-    nowPlaying.textContent = vol.muted ? t("js_panel_muted_named", { name }) : name;
   };
 
   const syncPlayUI = (isPlaying: boolean): void => {
     toggleGlyphPair(playGlyphs, "data-vol-play-glyph-playing", isPlaying);
     playBtn?.classList.toggle("is-playing", isPlaying);
     syncNowPlaying();
+  };
+
+  // Hands the level and the mute flag to the synth. The engine's mute flag
+  // gates its gain apart from the level, so both always travel together.
+  const syncVolAudio = (): void => {
+    if (UP_STUDIO) {
+      audio.setVolume(vol.level);
+      audio.setMuted(vol.muted);
+    }
   };
 
   // Keeps the now-playing label in sync too, so callers never have to remember
@@ -754,10 +767,7 @@ export function initTopPanel(): void {
   slider?.addEventListener("input", () => {
     vol.level = Number(slider.value);
     vol.muted = false;
-    audio.setVolume(vol.level);
-    // The engine's mute flag gates its gain independently of the level;
-    // without this a drag while muted unmutes the UI but not the audio.
-    audio.setMuted(false);
+    syncVolAudio();
     syncVolUI();
   });
 
@@ -774,8 +784,7 @@ export function initTopPanel(): void {
     const step = e.deltaY < 0 ? 5 : -5;
     vol.level = Math.min(100, Math.max(0, vol.level + step));
     vol.muted = false;
-    audio.setVolume(vol.level);
-    audio.setMuted(false);
+    syncVolAudio();
     syncVolUI();
     if (openTrigger?.dataset.indicator !== "vol") {
       notifyValue({ value: vol.level, icon: "volume", label: t("js_panel_volume", { level: vol.level }) });
@@ -798,18 +807,18 @@ export function initTopPanel(): void {
     if (!action) return;
     if (action === "vol-toggle") {
       vol.muted = !vol.muted;
-      audio.setMuted(vol.muted);
+      syncVolAudio();
       syncVolUI();
       return;
     }
     if (action === "vol-play") {
-      void audio.toggle();
+      if (UP_STUDIO) void audio.toggle();
       return;
     }
     if (action === "vol-next") {
       // Like vol-play, handled without closing the dropdown so you can flip
       // through the playlist; the label updates via audio.onChange.
-      void audio.selectTrack(audio.trackIndex() + 1);
+      if (UP_STUDIO) void audio.selectTrack(audio.trackIndex() + 1);
       return;
     }
     closeOpen();
@@ -825,19 +834,21 @@ export function initTopPanel(): void {
   // label already says so (and the bubble would paint over the menu). A track
   // switch mid-playback emits stop+start back to back; notify()'s replace
   // semantics fold those into one bubble.
-  let lastTrack = audio.trackIndex();
-  let lastPlaying = audio.isPlaying();
-  audio.onChange(() => {
-    const playing = audio.isPlaying();
-    const track = audio.trackIndex();
-    syncPlayUI(playing);
-    const volMenuOpen = openTrigger?.dataset.indicator === "vol";
-    if (playing && (!lastPlaying || track !== lastTrack) && !volMenuOpen) {
-      notify({ icon: "music", title: t("js_panel_now_playing"), body: audio.trackName() });
-    }
-    lastTrack = track;
-    lastPlaying = playing;
-  });
+  if (UP_STUDIO) {
+    let lastTrack = audio.trackIndex();
+    let lastPlaying = audio.isPlaying();
+    audio.onChange(() => {
+      const playing = audio.isPlaying();
+      const track = audio.trackIndex();
+      syncPlayUI(playing);
+      const volMenuOpen = openTrigger?.dataset.indicator === "vol";
+      if (playing && (!lastPlaying || track !== lastTrack) && !volMenuOpen) {
+        notify({ icon: "music", title: t("js_panel_now_playing"), body: audio.trackName() });
+      }
+      lastTrack = track;
+      lastPlaying = playing;
+    });
+  }
 
   syncVolUI();
   syncTitle();

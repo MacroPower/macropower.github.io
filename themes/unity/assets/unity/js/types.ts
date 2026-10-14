@@ -1,8 +1,9 @@
-// Shared types for unity's TypeScript modules, plus ambient
-// augmentation of `window` for the runtime surface those modules share.
-// Keep in lockstep with the JS objects assigned in
-// _partials/unity/ui/runtime.html (UP_SITE and UP_I18N), page-window.ts
-// (UP_PAGE_WINDOW_STATE), and dialogs.ts (uiDialog). events.ts types the custom DOM events.
+// Shared types for unity's TypeScript modules, plus the ambient globals
+// those modules share. Keep the window augmentation in lockstep with the
+// JS objects assigned in _partials/unity/ui/runtime.html (UP_SITE and
+// UP_I18N), page-window.ts (UP_PAGE_WINDOW_STATE), and dialogs.ts
+// (uiDialog). Keep UP_STUDIO in lockstep with the define that baseof.html
+// passes to esbuild. events.ts types the custom DOM events.
 // contracts.test.ts checks UP_SITE and UP_I18N against a Hugo build.
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
@@ -76,6 +77,13 @@ export interface UPPageWindowState {
 }
 
 declare global {
+  /** Whether the site has a Studio playlist. baseof.html passes it to
+   *  esbuild as a define, so it is a literal in the built bundle. Every
+   *  call into daw.ts or audio.ts from another module sits inside an
+   *  UP_STUDIO check, so esbuild drops the Studio from the bundle of a
+   *  site without MIDI files. */
+  const UP_STUDIO: boolean;
+
   interface Window {
     UP_SITE?: UPSite;
     UP_I18N?: UPI18n;

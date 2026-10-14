@@ -31,7 +31,14 @@
   </div>
 
   {{ partialCached "unity/ui/runtime.html" . site.Language.Name }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/app.ts" "target" "js/app.js") "unity/js/app.ts" }}
+  {{- /* UP_STUDIO gates the Studio's code in the app bundle, so a site
+        without MIDI files gets a bundle without it. */}}
+  {{- $studio := cond (gt (len (partialCached "unity/playlist.html" .)) 0) "true" "false" }}
+  {{ partialCached "unity/ui/script.html" (dict
+    "entry" "unity/js/app.ts"
+    "target" (cond (eq $studio "true") "js/app-studio.js" "js/app.js")
+    "defines" (dict "UP_STUDIO" $studio)
+  ) "unity/js/app.ts" $studio }}
   {{- /* Every other bundle no-ops without its root element. The template
         that renders a root names its bundle in the page's unity-bundles
         store, and block "main" has rendered by here, so a page loads the

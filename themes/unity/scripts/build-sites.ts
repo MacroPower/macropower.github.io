@@ -121,6 +121,7 @@ const SITES: Record<string, SiteSpec> = {
       return [
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
         names !== "orange green aubergine blue" && `the Preferences dialog offers ${names}, not the theme's presets`,
+        ...studioProblems(out, "index.html", false),
       ];
     },
   },
@@ -523,8 +524,24 @@ mainSections = ["posts"]
       return [
         !dash.includes(">Opening Theme</span>") && "the Dash does not name the titled track",
         !dash.includes(">Track 2</span>") && "the Dash does not number the anonymous track",
+        ...studioProblems(out, "index.html", true),
       ];
     },
+  },
+  // A Studio playlist that only one language sets.
+  studiolang: {
+    files: {
+      "hugo.toml": `${BARE}defaultContentLanguage = "en"
+[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+  [languages.de.params.studio]
+    playlist = ["music/a.mid"]
+`,
+      "assets/music/a.mid": "MThd",
+    },
+    check: (out) => [...studioProblems(out, "index.html", false), ...studioProblems(out, "de/index.html", true)],
   },
   // A desktop with its optional parts switched off.
   minimal: {
@@ -892,6 +909,18 @@ function duplicateIds(name: string, html: string): string[] {
 // The bundles a page loads, by the name of their published file.
 function bundles(html: string): string[] {
   return [...html.matchAll(/<script[^>]*\ssrc="?[^"\s>]*\/js\/([a-z]+)\./g)].map((m) => m[1]!);
+}
+
+// A page loads the app bundle with the Studio's code exactly when its
+// language has a playlist. The Studio window's data-daw hooks and the
+// synth's AudioContext mark that code.
+function studioProblems(out: string, file: string, studio: boolean): string[] {
+  const src = /<script[^>]*\ssrc="?([^"\s>]*\/js\/app[-.][^"\s>]*)/.exec(read(join(out, file)))?.[1];
+  if (!src) return [`${file} loads no app bundle`];
+  const js = read(join(out, src));
+  return ["data-daw", "AudioContext"]
+    .filter((marker) => js.includes(marker) !== studio)
+    .map((marker) => `${file} loads ${src}, which ${studio ? "lacks" : "carries"} the Studio's ${marker}`);
 }
 
 // Each page bundle no-ops without its root element, so a page loads the

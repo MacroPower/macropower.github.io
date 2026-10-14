@@ -6,12 +6,16 @@
   baseof.html routes every bundle through here so the build options and the
   script-tag shape are defined once.
 
-  Args (dict): entry  — source path under assets/ (e.g. "unity/js/blog.ts")
-               target — emitted path (e.g. "js/blog.js")
+  Args (dict): entry   — source path under assets/ (e.g. "unity/js/blog.ts")
+               target  — emitted path (e.g. "js/blog.js")
+               defines — optional dict of esbuild defines, each a global
+                         name mapped to the JavaScript literal that
+                         replaces it (e.g. "UP_STUDIO" "false")
 
   The shims point the xterm and pdf.js package imports at the copies
   vendored under assets/unity/third_party/, so a site builds without npm.
-  Call it through partialCached keyed on the entry.
+  Call it through partialCached keyed on the entry and on the value of
+  every define.
 */ -}}
 {{- $shims := dict
   "@xterm/xterm" "unity/third_party/xterm/xterm.mjs"
@@ -21,5 +25,6 @@
 -}}
 {{- $opts := dict "targetPath" .target "minify" hugo.IsProduction "format" "iife" "target" "es2023" "shims" $shims -}}
 {{- if hugo.IsDevelopment }}{{ $opts = merge $opts (dict "sourceMap" "inline") }}{{ end -}}
+{{- with .defines }}{{ $opts = merge $opts (dict "defines" .) }}{{ end -}}
 {{- $built := resources.Get .entry | js.Build $opts | resources.Fingerprint -}}
 <script defer src="{{ $built.RelPermalink }}" integrity="{{ $built.Data.Integrity }}"></script>

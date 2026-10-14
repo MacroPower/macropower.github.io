@@ -231,16 +231,17 @@ export function initDash(): void {
   // ---- activation --------------------------------------------------------
 
   const runAction = (action: string): void => {
-    if (action === "studio") { openStudio(); return; }
+    if (action === "studio") { if (UP_STUDIO) openStudio(); return; }
     if (action === "trash") { openTrash(); return; }
     if (action.startsWith("music:")) {
-      const i = Number(action.slice(6));
-      // Switch first (synchronous selection, async load), then start the
-      // transport inside the same user gesture; a playing player restarts on
-      // the new song by itself.
-      void audio.selectTrack(i);
-      if (!audio.isPlaying()) void audio.toggle();
-      openStudio();
+      if (UP_STUDIO) {
+        // Switch first (synchronous selection, async load), then start the
+        // transport inside the same user gesture. A playing player restarts
+        // on the new song by itself.
+        void audio.selectTrack(Number(action.slice(6)));
+        if (!audio.isPlaying()) void audio.toggle();
+        openStudio();
+      }
       return;
     }
     // The rest reuse the top panel's action vocabulary (identical flows).
