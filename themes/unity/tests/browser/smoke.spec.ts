@@ -190,6 +190,29 @@ test("the solitaire table draws", async ({ page }) => {
   await expect.poll(() => painted(page.locator("[data-sol-canvas]"))).toBeGreaterThan(0);
 });
 
+// Undo disables itself when it empties the history, and the browser drops
+// focus from a disabled button to the page body. The table must take focus
+// instead, so the game's keys keep working.
+test("the solitaire toolbar keeps focus in the game", async ({ page }) => {
+  await open(page, "/solitaire/");
+  await expect(page.locator("[data-solitaire]")).toHaveAttribute("data-sol-ready", "");
+  const undo = page.locator('[data-sol-action="undo"]');
+  await page.locator('[data-sol-action="draw-stock"]').focus();
+  await page.keyboard.press("Enter");
+  await expect(undo).toBeEnabled();
+  await page.keyboard.press("Tab");
+  await expect(undo).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(undo).toBeDisabled();
+  const inGame = (): Promise<boolean> => page.evaluate(() => {
+    const el = document.activeElement;
+    return el instanceof HTMLElement && el.closest("[data-solitaire]") != null && !el.matches(":disabled, [hidden]");
+  });
+  await expect.poll(inGame).toBe(true);
+  await page.keyboard.press("s");
+  await expect(undo).toBeEnabled();
+});
+
 test("the CV renders its PDF", async ({ page }) => {
   await open(page, "/cv/");
   await expect.poll(() => painted(page.locator("[data-docv-pages] canvas").first())).toBeGreaterThan(0);

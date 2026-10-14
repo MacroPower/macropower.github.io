@@ -1073,6 +1073,7 @@ function cardNames(cards: readonly Card[]): string {
 
   /** Mirror enabled state onto the screen-reader toolbar. */
   function syncControls(): void {
+    const had = focusedElement();
     layoutButtons();
     root.querySelectorAll<HTMLButtonElement>("[data-sol-action]").forEach((el) => {
       const id = el.dataset.solAction ?? "";
@@ -1093,6 +1094,24 @@ function cardNames(cards: readonly Card[]): string {
       if (id === "draw") el.textContent = drawMode === 1 ? t("js_solitaire_draw_one_switch") : t("js_solitaire_draw_three_switch");
       if (id === "sound") el.setAttribute("aria-pressed", String(!sfx.muted));
     });
+    keepFocus(had);
+  }
+
+  /** Move focus off a toolbar button that syncControls just hid or
+   *  disabled. The browser drops focus from such a button to the page
+   *  body, where the game's keys do not reach. AUTO and HINT share a
+   *  slot, so focus moves to the other one when it shows and is enabled.
+   *  Every other button hands focus to the canvas, which hears each key
+   *  the game takes. */
+  function keepFocus(had: HTMLElement | null): void {
+    if (!(had instanceof HTMLButtonElement) || !root.contains(had)) return;
+    const id = had.dataset.solAction;
+    if (id === undefined || (!had.hidden && !had.disabled)) return;
+    let twin: HTMLButtonElement | null = null;
+    if (id === "auto") twin = root.querySelector<HTMLButtonElement>('[data-sol-action="hint"]');
+    else if (id === "hint") twin = root.querySelector<HTMLButtonElement>('[data-sol-action="auto"]');
+    if (twin && !twin.hidden && !twin.disabled) twin.focus();
+    else canvas.focus({ preventScroll: true });
   }
 
   // ---- drawing ----------------------------------------------------------------
