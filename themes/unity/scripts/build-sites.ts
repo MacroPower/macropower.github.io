@@ -939,6 +939,38 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
     },
     check: (out) => [robotsSitemap(out, "robots.txt", "")],
   },
+  // A blog without taxonomy pages but with term pages. The crumb that
+  // names the missing taxonomy page above a term must show as text.
+  orphanterms: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\ndisableKinds = ["taxonomy"]\n`,
+      "content/posts/one.md": page("One", "categories = ['meta']\n"),
+    },
+    check: (out) => [
+      !/<span class="up-pathbar-btn"><span dir="auto" class="up-pathbar-label">Categories<\/span>\s*<\/span>/
+        .test(read(join(out, "categories/meta/index.html")))
+        && "categories/meta/index.html lacks the Categories crumb as text",
+    ],
+  },
+  // A blog without its list page. The crumb that names the list must
+  // show as text. The post reader and the blog sidebar must leave out
+  // their links to the list.
+  orphanposts: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\ndisableKinds = ["section"]\n`,
+      "content/posts/one.md": page("One", "categories = ['meta']\n"),
+    },
+    check: (out) => {
+      const post = read(join(out, "posts/one/index.html"));
+      return [
+        !/<span class="up-pathbar-btn"><span dir="auto" class="up-pathbar-label">Posts<\/span>\s*<\/span>/.test(post)
+          && "posts/one/index.html lacks the Posts crumb as text",
+        !post.includes('class="up-reader-title"') && "posts/one/index.html lacks the post reader",
+        !read(join(out, "categories/index.html")).includes('<a class="up-naut-item" href="/categories/meta/"')
+          && "categories/index.html lacks the sidebar's meta place",
+      ];
+    },
+  },
   // Posts that carry only tags, under Hugo's default taxonomies and no
   // params. The blog's Places lenses and chips must show the tags.
   tagged: {
@@ -1163,6 +1195,7 @@ ignoreLogs = ["unity-i18n-missing"]
         ["posts/one/index.html", '<span dir="auto" class="up-reader-chip">#a</span>'],
         ["posts/one/index.html", '— <bdi dir="ltr">user@unity:~/posts$</bdi>'],
         ["projects/index.html", '<span dir="auto" class="up-project-tile-label">alpha</span>'],
+        ["projects/index.html", '<li><span dir="auto">alpha</span></li>'],
         ["tags/a/index.html", '— <bdi dir="ltr">user@unity:~$ grep -l "a" posts/*.md</bdi>'],
         ["404.html", '<div lang="en" dir="ltr" class="up-empty-pane-tagline"'],
       ];
@@ -2059,6 +2092,19 @@ function nestedArticles(out: string): string[] {
     .map((e) => `${relative(out, file)} nests <article${e.attrs.slice(0, 60)}> inside another <article>`));
 }
 
+// Links with an empty href lead back to the page they sit on. Hugo
+// leaves the URL of a page empty when the site does not render it, so a
+// template can write such a link. The check fails on each one in any
+// page of any site.
+function emptyHrefs(out: string): string[] {
+  const empty = (attrs: string): boolean =>
+    [...attrs.matchAll(/\s([a-zA-Z][\w-]*)(?:=(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/g)]
+      .some(([, attr, ...value]) => attr!.toLowerCase() === "href" && !value.some((v) => v?.trim()));
+  return htmlFiles(out).flatMap((file) => [...elements(read(file))]
+    .filter((e) => e.tag === "a" && empty(e.attrs))
+    .map((e) => `${relative(out, file)} renders <a${e.attrs.slice(0, 60)}> with an empty href`));
+}
+
 function htmlFiles(dir: string): string[] {
   return readdirSync(dir, { encoding: "utf8", recursive: true })
     .filter((f) => f.endsWith(".html"))
@@ -2285,6 +2331,7 @@ try {
       : brokenLinks(out, siteBaseURL(source, flags));
     const problems = [...(site.check?.(out, source) ?? []), ...links, ...blankTitles(out), ...nestedArticles(out)]
       .filter((p) => p !== false);
+    problems.push(...emptyHrefs(out));
     const warns = site.warns;
     if (warns) {
       const warnings = run.log.split("\n").filter((line) => line.startsWith("WARN"));

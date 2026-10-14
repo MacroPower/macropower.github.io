@@ -1,10 +1,13 @@
 {{- $dateFmt := site.Params.blog.dateFormat | default ":date_medium" -}}
 
 <article class="up-reader" data-up-reader>
-  <a class="up-reader-up" href="{{ .FirstSection.RelPermalink }}" aria-label="{{ partial "unity/ui/t" "back_to_all_posts" }}">
+  {{- /* A site that does not render the section has no list to go back to. */}}
+  {{- with .FirstSection.RelPermalink }}
+  <a class="up-reader-up" href="{{ . }}" aria-label="{{ partial "unity/ui/t" "back_to_all_posts" }}">
     {{ partial "unity/icon.html" "glyphs/pathbar-back" }}
     <span>{{ partial "unity/ui/t" "all_posts" }}</span>
   </a>
+  {{- end }}
   <div class="up-reader-inner up-selectable">
     <div class="up-reader-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format $dateFmt .Date }}</time>

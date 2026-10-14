@@ -117,6 +117,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Two builds of the same site write identical files, so a deploy rewrites only the pages that changed.
 - A value of `params.author.born` or of a project's `updated` that is not a date makes the build warn instead of failing it.
 - A single string in place of the list in `params.desktop.indicators`, `params.desktop.networks`, `params.desktop.trash`, `params.desktop.label`, or `params.studio.playlist` counts as a list of one. Another value that is not a list, such as `trash = true`, makes the build warn instead of failing it.
+- The pathbar, the post reader, the blog sidebar, and the projects page's no-JavaScript list no longer render a link with an empty `href`. Such a link leads back to the current page. A crumb for a page that your site does not render, such as the categories page under `disableKinds = ["taxonomy"]`, shows as text. Under `disableKinds = ["section"]`, the post reader leaves out its All posts link, and the sidebar leaves out its All place. A project without a `url` shows its name as text.
 - One undated page no longer makes the banner's uptime count from year 1.
 - Text pasted into the home terminal cannot clear the screen through a C1 control character.
 - The home terminal starts when a copy of `_partials/unity/page/terminal.html` leaves out a field of its data island.

@@ -43,10 +43,13 @@
     {{- /* The grid tiles are JS-gestured <button>s, so without JS this
           list holds the page's only project links. main.css hides the
           grid under @media (scripting: none) and lets this list fill
-          the window. */}}
+          the window. A project without a url shows its name as text. */}}
     <ul class="up-projects-noscript">
-      {{- range $projects }}
-      <li><a href="{{ .url }}">{{ .name }}</a>{{ with .description }} — {{ . }}{{ end }}</li>
+      {{- range $p := $projects }}
+      <li>
+        {{- with $p.url }}<a href="{{ . }}" dir="auto">{{ $p.name }}</a>{{ else }}<span dir="auto">{{ $p.name }}</span>{{ end -}}
+        {{- with $p.description }} — {{ . }}{{ end -}}
+      </li>
       {{- end }}
     </ul>
   </noscript>

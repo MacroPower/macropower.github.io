@@ -1,8 +1,11 @@
 {{- /* Every breadcrumb roots at Home, so prepend it here (its URL and, via the
       render loop's i==0 case, its house icon) and let callers pass only the
-      trail below it. A search dict adds the search toggle and bar. Its
-      title is the toggle's tooltip, its label names the toggle, its
-      filter names the bar, and its placeholder fills the bar. */ -}}
+      trail below it. A segment with an empty url renders as a crumb that
+      links nowhere, because an empty href links back to the current page.
+      Its url is empty when the site does not render its page, such as the
+      taxonomy page above a term. A search dict adds the search toggle and
+      bar. Its title is the toggle's tooltip, its label names the toggle,
+      its filter names the bar, and its placeholder fills the bar. */ -}}
 {{- $segments := slice (dict "label" (partial "unity/ui/t" "home") "url" site.Home.RelPermalink) -}}
 {{- range .segments }}{{ $segments = $segments | append . }}{{ end -}}
 {{- $prevURL := .prevURL -}}
@@ -37,11 +40,16 @@
             {{- $icon -}}
             <span dir="auto" class="up-pathbar-label">{{ $seg.label }}</span>
           </span>
-        {{- else -}}
+        {{- else if $seg.url -}}
           <a class="up-pathbar-btn" href="{{ $seg.url }}">
             {{- $icon -}}
             <span dir="auto" class="up-pathbar-label">{{ $seg.label }}</span>
           </a>
+        {{- else -}}
+          <span class="up-pathbar-btn">
+            {{- $icon -}}
+            <span dir="auto" class="up-pathbar-label">{{ $seg.label }}</span>
+          </span>
         {{- end -}}
       {{ end }}
     </div>

@@ -11,14 +11,16 @@
 {{- $iconSeries := partial "unity/icon.html" "glyphs/sidebar-series" -}}
 {{- $iconRss := partial "unity/icon.html" "glyphs/sidebar-rss" -}}
 
+{{- /* The All place links the blog's list, which a site that does not
+      render the section lacks. */ -}}
 {{- $places := slice -}}
-{{- with $postsPage -}}
+{{- if and $postsPage $postsPage.RelPermalink -}}
   {{- $places = $places | append (dict
       "label" (partial "unity/ui/t" "all")
-      "url" .RelPermalink
+      "url" $postsPage.RelPermalink
       "icon" $iconAll
-      "count" (len .RegularPagesRecursive)
-      "active" (eq $here .RelPermalink)) -}}
+      "count" (len $postsPage.RegularPagesRecursive)
+      "active" (eq $here $postsPage.RelPermalink)) -}}
 {{- end -}}
 {{- range (index site.Taxonomies $tax.category).Alphabetical -}}
   {{- $places = $places | append (dict
