@@ -13,6 +13,13 @@
   anonymous requests. A failed request warns and yields no projects
   rather than failing the build.
 
+  Curation params then narrow the list from either source.
+  params.projects.exclude names the projects to leave out, and
+  params.projects.languages names the languages to keep. Each takes a
+  list or one string and ignores case. Setting
+  params.projects.requireDescription to true leaves out every project
+  without a description.
+
   The result is the same on every page, so call it through partialCached.
 */ -}}
 {{- $projects := slice -}}
@@ -65,5 +72,24 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- end -}}
+{{- $cfg := site.Params.projects -}}
+{{- $exclude := $cfg.exclude | default slice -}}
+{{- if not (reflect.IsSlice $exclude) }}{{ $exclude = slice $exclude }}{{ end -}}
+{{- $languages := $cfg.languages | default slice -}}
+{{- if not (reflect.IsSlice $languages) }}{{ $languages = slice $languages }}{{ end -}}
+{{- if or $exclude $languages $cfg.requireDescription -}}
+  {{- $skip := slice -}}
+  {{- range $exclude }}{{ $skip = $skip | append (lower (printf "%v" .)) }}{{ end -}}
+  {{- $keep := slice -}}
+  {{- range $languages }}{{ $keep = $keep | append (lower (printf "%v" .)) }}{{ end -}}
+  {{- $curated := slice -}}
+  {{- range $projects -}}
+    {{- if in $skip (lower (printf "%v" .name)) }}{{ continue }}{{ end -}}
+    {{- if and $keep (not (in $keep (lower (printf "%v" .language)))) }}{{ continue }}{{ end -}}
+    {{- if and $cfg.requireDescription (not .description) }}{{ continue }}{{ end -}}
+    {{- $curated = $curated | append . -}}
+  {{- end -}}
+  {{- $projects = $curated -}}
 {{- end -}}
 {{- return $projects -}}

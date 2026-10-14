@@ -137,12 +137,16 @@ mainSections = ["posts"]
   # The projects page reads data/projects.yaml. Without that file, github
   # names an account whose public repositories the build fetches from the
   # GitHub API instead. The thresholds behind the sidebar's Starred,
-  # Forks, and Recent filters show their defaults.
+  # Forks, and Recent filters show their defaults. exclude, languages,
+  # and requireDescription narrow the projects from either source.
   # [params.projects]
-  #   github       = "jane"
-  #   minStars     = 100
-  #   minForks     = 6
-  #   recentMonths = 6
+  #   github             = "jane"
+  #   minStars           = 100
+  #   minForks           = 6
+  #   recentMonths       = 6
+  #   exclude            = ["dotfiles"]
+  #   languages          = ["Go", "Rust"]
+  #   requireDescription = true
 
   # The home page is the terminal. layout = "page" renders the home's
   # content in a plain window instead.

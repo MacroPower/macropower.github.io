@@ -1015,6 +1015,30 @@ mainSections = ["posts"]
       ];
     },
   },
+  // The curation params narrow the projects without regard to case, and
+  // a single string stands for a list of one. A string exclude matches
+  // whole names only, so "hid" stays.
+  curated: {
+    files: {
+      "hugo.toml": `${BARE}[params.projects]
+  exclude = "HIDDEN"
+  languages = ["go", "RUST"]
+  requireDescription = true
+`,
+      "content/projects.md": page("Projects", "layout = 'projects'\n"),
+      "data/projects.yaml": "- {name: kept, language: Go, description: Kept.}\n"
+        + "- {name: Tool, language: Rust, description: Kept.}\n"
+        + "- {name: hid, language: Go, description: Kept.}\n"
+        + "- {name: hidden, language: Go, description: Excluded.}\n"
+        + "- {name: snake, language: Python, description: Not an allowed language.}\n"
+        + "- {name: blank, language: Go}\n",
+    },
+    check: (out) => {
+      const html = read(join(out, "projects/index.html"));
+      const names = [...html.matchAll(/data-up-project-tile\s+data-name="([^"]*)"/g)].map((m) => m[1]).join(" ");
+      return [names !== "kept Tool hid" && `the projects page lists "${names}", not "kept Tool hid"`];
+    },
+  },
   // Config, front matter, and data in the looser shapes Hugo accepts.
   loose: {
     files: {
