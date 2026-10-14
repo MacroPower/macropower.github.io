@@ -1389,9 +1389,10 @@ mainSections = ["posts"]
   },
   // A birth date and a project date that Hugo cannot parse. Each warns
   // with the param or entry that holds it and drops out. The banner's
-  // uptime then counts from the oldest page, and the vague project shows
-  // no date. A date in another form that Hugo parses becomes YYYY-MM-DD,
-  // and the Recent filter compares it with the cutoff.
+  // uptime then counts from the oldest page with a date, so the undated
+  // page, which Hugo dates year 1, does not count. The vague project
+  // shows no date. A date in another form that Hugo parses becomes
+  // YYYY-MM-DD, and the Recent filter compares it with the cutoff.
   dates: {
     files: {
       "hugo.toml": `${BARE}[params.author]
@@ -1400,6 +1401,7 @@ mainSections = ["posts"]
   recentMonths = 1200
 `,
       "content/projects.md": page("Projects", "date = 2001-02-03\nlayout = 'projects'\n"),
+      "content/about.md": page("About"),
       "data/projects.yaml": "- name: stamped\n  updated: 2024-05-20T10:00:00Z\n- name: ancient\n  updated: 1901-01-01\n"
         + "- name: vague\n  updated: last week\n",
     },
@@ -1415,9 +1417,21 @@ mainSections = ["posts"]
         !tile("vague").includes('data-updated=""') && "the vague project keeps a date",
         recent("vague") && "the vague project is recent",
         !read(join(out, "index.html")).includes('"since":"2001-02-03"')
-          && "the banner's uptime does not count from the oldest page",
+          && "the banner's uptime does not count from the oldest dated page",
       ];
     },
+  },
+  // Pages without a date on a site without a birth date, which leave the
+  // banner's uptime no date to count from. The island's since stays
+  // empty, so the banner shows 0 days.
+  undated: {
+    files: {
+      "hugo.toml": BARE,
+      "content/about.md": page("About"),
+    },
+    check: (out) => [
+      !read(join(out, "index.html")).includes('"since":""') && "the banner's uptime counts from an undated page",
+    ],
   },
   // The curation params narrow the projects without regard to case, and
   // a single string stands for a list of one. A string exclude matches

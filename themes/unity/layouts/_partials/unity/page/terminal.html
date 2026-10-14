@@ -12,16 +12,21 @@
 {{- $login := partialCached "unity/terminal-login.html" . -}}
 {{- /* since: the date the banner's uptime counts from. It is the owner's
       birth date when params.author.born is set, otherwise the date of the
-      oldest content page, otherwise empty. The shell bundle turns it into
-      the uptime on page load, so a page built days ago still shows the
-      current value. */ -}}
+      oldest content page that has one, otherwise empty. Hugo gives an
+      undated page the zero date, year 1, so the loop skips it. The shell
+      bundle turns since into the uptime on page load, so a page built
+      days ago still shows the current value, and an empty since shows
+      0 days. */ -}}
 {{- $author := partialCached "unity/author.html" . -}}
 {{- $since := "" -}}
 {{- with $author.born -}}
   {{- $since = . -}}
 {{- else -}}
-  {{- with site.RegularPages.ByDate -}}
-    {{- $since = (index . 0).Date.UTC.Format "2006-01-02" -}}
+  {{- range site.RegularPages.ByDate -}}
+    {{- if not .Date.IsZero -}}
+      {{- $since = .Date.UTC.Format "2006-01-02" -}}
+      {{- break -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- /* Mask codes (O Y G B P C R M, space = no color) are mapped to truecolor
