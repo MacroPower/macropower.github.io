@@ -15,11 +15,12 @@
   #ZgotmplZ sentinel, which would break top-panel.ts dispatch.
 
   Every row is a menuitem, or a menuitemcheckbox when it carries check,
-  inside panel-menu.html's role="menu" body. Rows carrying a url render as
-  links, and rows carrying an action render as real <button>s, so Enter
-  activates both natively. Disabled rows and rows with neither stay <div>s
-  with tabindex="-1", so the arrow keys reach them but Tab and Enter do
-  not. The HUD indexes the link and button rows.
+  inside panel-menu.html's role="menu" body. Every row also carries
+  tabindex="-1", so the arrow keys reach it but Tab does not, and Tab
+  closes the menu instead. Rows carrying a url render as links, and rows
+  carrying an action render as real <button>s, so Enter activates both
+  natively. Disabled rows and rows with neither stay <div>s, so Enter does
+  nothing on them. The HUD indexes the link and button rows.
 
   The shortcut text is part of the row's name and gets no
   aria-keyshortcuts, because most shortcuts here label disabled
@@ -36,9 +37,9 @@
 {{- if .disabled -}}
 <div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} aria-disabled="true" tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
 {{- else if .url -}}
-<a class="{{ $cls }}" href="{{ .url }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
+<a class="{{ $cls }}" href="{{ .url }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
 {{- else if .action -}}
-<button type="button" class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
+<button type="button" class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
 {{- else -}}
 <div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
 {{- end -}}

@@ -9,7 +9,8 @@ import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
 import { isNavAction, isVolumeControl, parseAction, type NamedAction, type PanelAction, type VolumeControl } from "./actions";
-import { eventElement, indexOfFocused } from "./dom";
+import { eventElement, eventHTMLElement, indexOfFocused } from "./dom";
+import { panelKey, rowIndex, type Row } from "./panel-keys";
 
 const EMPTY_SITE: Readonly<UPSite> = {
   handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [], terminal: true, blog: false, projects: false, solitaire: false,
@@ -642,14 +643,9 @@ export function initTopPanel(): void {
       "button:not([disabled]), a[href], input:not([disabled]), [role=menuitem], [role=menuitemcheckbox]",
     ));
 
-  const moveDropdownFocus = (drop: HTMLElement, dir: 1 | -1): void => {
+  const focusRow = (drop: HTMLElement, row: Row): void => {
     const items = dropdownItems(drop);
-    if (!items.length) return;
-    const idx = indexOfFocused(items);
-    const next = idx === -1
-      ? (dir === 1 ? items[0] : items[items.length - 1])
-      : items[(idx + dir + items.length) % items.length];
-    next?.focus();
+    items[rowIndex(row, indexOfFocused(items), items.length)]?.focus();
   };
 
   for (const trigger of triggers) {
@@ -659,39 +655,72 @@ export function initTopPanel(): void {
       openTriggerEl(trigger);
       // A keyboard "click" (Enter/Space on the button) reports detail 0;
       // opening that way moves focus straight to the first dropdown item.
-      if (!wasOpen && e.detail === 0 && openDropdown) moveDropdownFocus(openDropdown, 1);
+      if (!wasOpen && e.detail === 0 && openDropdown) focusRow(openDropdown, "first");
     });
   }
 
-  panel.addEventListener("keydown", (e) => {
-    const target = e.target instanceof HTMLElement ? e.target : null;
-    if (!target) return;
-    if (e.key === "ArrowDown" && dropdownByTrigger.has(target)) {
-      e.preventDefault();
-      if (openTrigger !== target) openTriggerEl(target);
-      if (openDropdown) moveDropdownFocus(openDropdown, 1);
-      return;
-    }
-    if ((e.key === "ArrowDown" || e.key === "ArrowUp") && openDropdown?.contains(target)) {
-      e.preventDefault();
-      moveDropdownFocus(openDropdown, e.key === "ArrowDown" ? 1 : -1);
-      return;
-    }
-    // Left/Right walk the adjacent top-level triggers while a menu is open,
-    // GTK-style — except on the volume slider, where they adjust the value.
-    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && openTrigger
-        && !(target instanceof HTMLInputElement)) {
-      const visible = triggers.filter((trigger) => trigger.offsetParent !== null);
-      const idx = visible.indexOf(openTrigger);
-      if (idx === -1) return;
-      e.preventDefault();
-      const dir = e.key === "ArrowRight" ? 1 : -1;
-      const next = visible[(idx + dir + visible.length) % visible.length];
-      if (next && next !== openTrigger) {
-        openTriggerEl(next);
-        next.focus();
+  // panel-keys.ts maps each key to an intent. The panel's listener runs
+  // before filter-nav.ts's listener on the document, which skips a key
+  // whose default the panel prevents.
+  const onKey = (e: KeyboardEvent): void => {
+    const target = eventHTMLElement(e);
+    const trigger = target && dropdownByTrigger.has(target) ? target : null;
+    const intent = panelKey(e.key, e.ctrlKey || e.altKey || e.metaKey, {
+      focus: trigger ? "trigger" : target && openDropdown?.contains(target) ? "dropdown" : "elsewhere",
+      open: openDropdown !== null,
+      menu: openDropdown?.querySelector("[role=menu]") != null,
+      input: target instanceof HTMLInputElement,
+    });
+    if (!intent) return;
+    switch (intent.kind) {
+      case "close": {
+        // The key's default still runs, so Tab moves on from the trigger.
+        const trig = openTrigger;
+        closeOpen();
+        trig?.focus();
+        return;
+      }
+      case "open":
+        e.preventDefault();
+        if (trigger && openTrigger !== trigger) openTriggerEl(trigger);
+        if (openDropdown) focusRow(openDropdown, intent.row);
+        return;
+      case "move":
+        e.preventDefault();
+        if (openDropdown) focusRow(openDropdown, intent.row);
+        return;
+      case "switch": {
+        // Left and Right walk the visible triggers, GTK-style.
+        if (!openTrigger) return;
+        const visible = triggers.filter((t) => t.offsetParent !== null);
+        const idx = visible.indexOf(openTrigger);
+        if (idx === -1) return;
+        e.preventDefault();
+        const next = visible[(idx + intent.step + visible.length) % visible.length];
+        if (next && next !== openTrigger) {
+          openTriggerEl(next);
+          next.focus();
+        }
+        return;
       }
     }
+  };
+  panel.addEventListener("keydown", onKey);
+  // Escape closes the open dropdown wherever focus sits.
+  window.addEventListener("keydown", (e) => {
+    const target = eventElement(e);
+    if (!target || !panel.contains(target)) onKey(e);
+  });
+
+  // An indicator's dropdown keeps Tab for its controls, so the panel
+  // closes a dropdown when focus moves to an element outside it and its
+  // trigger. A click on a dropdown's text moves focus to no element, so
+  // the dropdown stays open.
+  panel.addEventListener("focusout", (e) => {
+    if (!openTrigger || !openDropdown) return;
+    const next = e.relatedTarget;
+    if (!(next instanceof Node) || openTrigger.contains(next) || openDropdown.contains(next)) return;
+    closeOpen();
   });
 
   document.addEventListener("click", (e) => {
@@ -701,13 +730,6 @@ export function initTopPanel(): void {
     if (target.closest("[data-panel-trigger]")) return;
     if (target.closest("[data-flyout-keepopen]")) return;
     closeOpen();
-  });
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape" || !openTrigger) return;
-    const trig = openTrigger;
-    closeOpen();
-    trig.focus();
   });
 
   const vol = { level: 62, muted: false };

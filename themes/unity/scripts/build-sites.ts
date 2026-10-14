@@ -1464,7 +1464,8 @@ function accentRule(out: string, name: string): string | undefined {
 // pattern, and its indicators follow the disclosure pattern. Each trigger
 // names its dropdown through aria-controls. Only a menu trigger announces
 // a popup, and its dropdown has role="menu". Every menu row carries a menu
-// item role that states its checked and disabled flags.
+// item role that states its checked and disabled flags, and it stays out
+// of the tab order, so Tab leaves the menu.
 function panelAriaProblems(name: string, html: string): string[] {
   const tags = [...html.matchAll(/<[a-z][^>]*>/g)].map((m) => m[0]);
   const attr = (tag: string, key: string): string | undefined =>
@@ -1497,6 +1498,7 @@ function panelAriaProblems(name: string, html: string): string[] {
       attr(tag, "role") !== (cls.includes("has-check") ? "menuitemcheckbox" : "menuitem") && `${label} has the wrong role`,
       cls.includes("has-check") && attr(tag, "aria-checked") !== "true" && `${label} is not aria-checked`,
       cls.includes("is-disabled") && attr(tag, "aria-disabled") !== "true" && `${label} is not aria-disabled`,
+      attr(tag, "tabindex") !== "-1" && `${label} is in the tab order`,
     ].filter((p) => p !== false);
   });
 }
