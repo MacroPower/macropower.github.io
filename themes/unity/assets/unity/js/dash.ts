@@ -1,18 +1,18 @@
 // The Unity Dash: the translucent search overlay behind the launcher's BFB
-// (the Dash button) and a Super tap. Everything searchable is server-rendered
-// as tiles grouped in category sections; this module only filters, ranks, and
-// dispatches — it never invents content. _partials/unity/dash.html renders
-// the apps section into the page. The root's data-dash-src names a
+// (the Dash button) and a Super tap. The server renders everything searchable
+// as tiles grouped in category sections, and this module only filters, ranks,
+// and dispatches them. It never invents content. _partials/unity/dash.html
+// renders the apps section into the page. The root's data-dash-src names a
 // fragment with the remaining sections. This module fetches it once, on the
 // first open or when the pointer enters the BFB.
 //
-// Interaction model (GNOME-style real focus, no aria-activedescendant): the
-// search input holds focus; arrows walk the visible tile grid with real DOM
-// focus (tiles are tabindex="-1" so Tab stays structural: input → "See more"
-// expanders → lenses); typing anywhere refocuses the input; Enter in the
-// input opens the best match. Esc clears the query first, then closes —
-// exactly like Unity. Session-only: query, lens, and expansion state reset
-// every open.
+// Interaction model, in GNOME style with real focus and no
+// aria-activedescendant. The search input holds focus, and the arrows walk
+// the visible tile grid with real DOM focus. Tiles carry tabindex="-1", so
+// Tab keeps to the structure: the input, then the "See more" expanders, then
+// the lenses. Typing anywhere refocuses the input, and Enter in the input
+// opens the best match. Esc first clears the query and then closes, exactly
+// like Unity. The query, lens, and expansion state reset on every open.
 
 import { openStudio } from "./daw";
 import { t, tn } from "./i18n";
@@ -26,7 +26,7 @@ import { inlineDirection, inlineStep } from "./inline-keys";
 
 interface DashTile {
   el: HTMLElement;
-  /** Lowercased label + keywords — the substring-match haystack. */
+  /** Lowercased label and keywords, the haystack for the substring match. */
   text: string;
   /** Lowercased label only, for ranking the Enter-on-input "best match". */
   title: string;
@@ -36,7 +36,8 @@ interface DashSection {
   key: string;
   root: HTMLElement;
   more: HTMLButtonElement | null;
-  /** Collapsed-row size; Infinity for sections that always show everything. */
+  /** Collapsed-row size, or Infinity for a section that always shows
+   *  everything. */
   cap: number;
   expanded: boolean;
   tiles: DashTile[];
@@ -108,7 +109,7 @@ export function initDash(): void {
           if (tokens.every((tok) => tile.text.includes(tok))) s.matches.add(tile);
         }
       }
-      // A lens-focused section is the whole view; never cap it.
+      // A lens-focused section is the whole view, so never cap it.
       const cap = s.expanded || lens === s.key ? Infinity : s.cap;
       let i = 0;
       for (const tile of s.tiles) {
@@ -193,7 +194,8 @@ export function initDash(): void {
     visible = true;
     opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     root.hidden = false;
-    // After un-hiding: scroll/focus writes are ignored while display:none.
+    // Reset after un-hiding, because the browser ignores scroll and focus
+    // writes while the root is display:none.
     reset();
     // Force a reflow so removing `hidden` and adding `is-visible` animate.
     void root.offsetWidth;
@@ -208,7 +210,7 @@ export function initDash(): void {
     visible = false;
     syncBfb();
     // Idempotent and self-detaching, so transitionend and the safety timeout
-    // can race to call it without leaking a listener (same shape as lock.ts).
+    // can race to call it without leaking a listener, as in lock.ts.
     const finish = (): void => {
       root.removeEventListener("transitionend", finish);
       if (!visible) root.hidden = true;
@@ -255,8 +257,8 @@ export function initDash(): void {
     const tile = eventElement(e)?.closest<HTMLElement>("[data-dash-tile]");
     if (tile) {
       const action = tile.dataset.dashAction;
-      // Close before dispatching so dialogs/windows take focus cleanly;
-      // anchor tiles keep their native navigation.
+      // Close before dispatching so dialogs and windows take focus cleanly.
+      // Anchor tiles keep their native navigation.
       close();
       if (action) runAction(action);
       return;
@@ -282,9 +284,10 @@ export function initDash(): void {
   bfb?.addEventListener("pointerenter", () => void loadSections(), { once: true });
 
   // Click-away: launcher / panel clicks land outside the dash root entirely.
-  // Capture phase, because the top panel's menu triggers stopPropagation()
-  // on their clicks — in the bubble phase a trigger click would open its
-  // dropdown on top of a still-open Dash instead of dismissing it.
+  // Listen in the capture phase, because the top panel's menu triggers call
+  // stopPropagation() on their clicks. In the bubble phase, a trigger click
+  // would open its dropdown on top of a still-open Dash instead of dismissing
+  // it.
   document.addEventListener("click", (e) => {
     if (!visible) return;
     const target = eventElement(e);
@@ -306,8 +309,8 @@ export function initDash(): void {
   };
 
   // Geometric vertical move: find the nearest row in the requested direction,
-  // then the closest tile by horizontal center — works across sections and
-  // any column count without knowing the grid template.
+  // then the closest tile by horizontal center. The move works across sections
+  // and any column count without knowing the grid template.
   const moveVertical = (cur: HTMLElement, dir: 1 | -1): void => {
     const tiles = visibleTiles();
     const r = cur.getBoundingClientRect();
@@ -406,10 +409,10 @@ export function initDash(): void {
 
   // ---- Super tap ---------------------------------------------------------
   // A *plain* Meta tap (no other key while held) toggles the Dash, like
-  // Unity's overlay key. Chords (Cmd+C, Super+L, ...) cancel the tap, so
-  // browser/OS shortcuts are untouched. Best-effort by platform: macOS
-  // delivers a clean tap, some window managers swallow Super before the
-  // browser sees it — the BFB is the universal path.
+  // Unity's overlay key. Chords, such as Cmd+C and Super+L, cancel the tap, so
+  // the browser and OS shortcuts stay untouched. Support varies by platform.
+  // macOS delivers a clean tap, but some window managers swallow Super before
+  // the browser sees it, so the BFB is the path that works everywhere.
   let superTap = false;
 
   const overlayBlocked = (): boolean => {
@@ -436,10 +439,10 @@ export function initDash(): void {
   window.addEventListener("keyup", (e) => {
     if (e.key !== "Meta" || !superTap) return;
     superTap = false;
-    // Consume the tap before it descends to the focused element: xterm's
-    // textarea re-asserts focus on a Meta keyup, which would yank focus
-    // out of the Dash search input the instant open() set it — leaving
-    // keystrokes feeding the hidden shell and Escape unable to close.
+    // Consume the tap before it descends to the focused element. xterm's
+    // textarea takes focus back on a Meta keyup, which would pull focus out of
+    // the Dash search input the instant open() set it. Keystrokes would then
+    // feed the hidden shell, and Escape could not close the Dash.
     e.preventDefault();
     e.stopPropagation();
     toggle();

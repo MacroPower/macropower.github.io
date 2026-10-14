@@ -1,7 +1,8 @@
 // The full command set, in one place so the production entrypoint (index.ts)
-// and the headless testkit register the same commands -- new commands are
-// tested automatically. Kept apart from index.ts because that module runs a
-// DOM bootstrap IIFE at import time, which has no place under Node.
+// and the headless testkit register the same commands, and the tests cover
+// each new command without extra work. It lives apart from index.ts, because
+// that module runs a DOM bootstrap IIFE at import time, which has no place
+// under Node.
 
 import type { Command, Shell } from "../shell";
 import { cat, cd, ls, open, pwd } from "./fs";

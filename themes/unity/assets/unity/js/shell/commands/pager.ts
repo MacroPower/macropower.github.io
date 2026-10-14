@@ -1,6 +1,6 @@
-// Pagers, for muscle memory. With no alternate screen or raw-mode scrolling
-// available here, less/more behave like cat: dump the file (keeping its color)
-// or copy standard input.
+// Pagers, for muscle memory. The terminal has no alternate screen or raw-mode
+// scrolling, so less and more behave like cat. They dump the file, color
+// included, or copy standard input.
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";

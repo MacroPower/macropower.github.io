@@ -1,5 +1,5 @@
-// Filesystem-introspection commands: find/tree walk the VFS tree; du/stat/df/
-// file report sizes and metadata. All read-only over the VFS.
+// Filesystem-introspection commands. find and tree walk the VFS tree, and du,
+// stat, df, and file report sizes and metadata. None of them writes the VFS.
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";
@@ -8,8 +8,8 @@ import { pathComplete, splitFlags } from "./text";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
-// Children sorted by name for deterministic traversal (real find/tree follow
-// readdir order; we sort so golden output is stable).
+// Children sorted by name for deterministic traversal. Real find and tree
+// follow readdir order, but sorting keeps the golden output stable.
 function sortedChildren(node: FsNode): FsNode[] {
   if (node.kind !== "dir") return [];
   return [...node.children.values()].sort((a, b) => a.name.localeCompare(b.name));
@@ -126,8 +126,8 @@ export const du: Command = {
       const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), name));
       if (!node) { ctx.errln(red(`du: cannot access '${name}': No such file or directory`)); code = 1; continue; }
       if (!summary && node.kind === "dir") {
-        // Print each directory's total bottom-up, returning the sum so a parent
-        // reuses it instead of re-walking the subtree.
+        // Print each directory's total bottom-up, and return the sum so a
+        // parent reuses it instead of walking the subtree again.
         const walk = (n: FsNode, path: string): number => {
           let sum = 4096;
           for (const c of sortedChildren(n)) sum += c.kind === "dir" ? walk(c, `${path}/${c.name}`) : c.size;

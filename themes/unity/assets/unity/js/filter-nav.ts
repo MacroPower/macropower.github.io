@@ -19,7 +19,8 @@ export interface FilterNavOptions {
   // data-* attributes directly.
   searchMatch: (item: HTMLElement, query: string) => boolean;
 
-  // Per-item filter predicate (taxonomy, lang, etc.). Defaults to () => true.
+  // Per-item filter predicate, such as one by taxonomy or language. Defaults
+  // to () => true.
   // The page mutates its own state and then calls controller.applyFilters().
   prefilter?: (item: HTMLElement) => boolean;
 
@@ -32,8 +33,8 @@ export interface FilterNavOptions {
   // moves to the next item.
   axis?: FilterNavAxis;
 
-  // Fires at the end of every applyFilters() pass. Used by callers that need
-  // to reconcile selection state with the post-filter visibility set.
+  // Fires at the end of every applyFilters() pass. A caller that must
+  // reconcile its selection with the visibility after filtering listens here.
   onAfterFilter?: () => void;
 }
 

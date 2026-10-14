@@ -6,13 +6,15 @@
 // actions); the trash window overrides the selector and hooks for its
 // Restore/Delete actions.
 //
-// Pointer Events throughout (capture + unified mouse/touch). The drag model is
-// live reorder: the selected tiles lift and follow the cursor as one rigid block
-// (every member moves by the same delta, keeping their relative positions) while
-// the unselected tiles reorder in the CSS grid and slide to their new cells via
-// FLIP. DOM order is the display order, so reordering mutates `deps.tiles` in
-// place (the array the consumer and filter-nav share) alongside the DOM. "Clean
-// Up Icons" restores the original order. No persistence.
+// Pointer Events throughout, with pointer capture and one path for mouse and
+// touch. "Clean Up Icons" restores the original order, and nothing persists.
+//
+// The drag model is live reorder. The selected tiles lift and follow the
+// cursor as one rigid block. Every member moves by the same delta, so the
+// members keep their relative positions. Meanwhile the unselected tiles
+// reorder in the CSS grid and slide to their new cells through FLIP. DOM
+// order is the display order, so a reorder changes `deps.tiles` in place,
+// along with the DOM. The consumer and filter-nav share that array.
 //
 // Both the app.ts and projects.ts bundles import this module. esbuild
 // copies it into each, so two instances coexist on the projects page. All
@@ -82,9 +84,9 @@ export interface DesktopDeps {
 }
 
 export interface DesktopController {
-  /** Session-only tile removal (trash Restore / Delete): detaches the targets
-   *  and splices them out of the shared tiles array. onDone fires once the
-   *  grid has settled, on both the animated and instant paths. */
+  /** Session-only tile removal for the trash's Restore and Delete. Detaches
+   *  the targets and splices them out of the shared tiles array. onDone fires
+   *  after the grid settles, on both the animated and the instant path. */
   removeTiles(tiles: HTMLElement[], opts?: { animate?: boolean; onDone?(): void }): void;
   cleanUpIcons(): void;
 }
@@ -162,11 +164,12 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   let lastClick: { tile: HTMLElement; time: number } | null = null;
 
   // ---- drag-reorder state --------------------------------------------------
-  // The selection moves as one rigid block: every member rides the cursor by the
-  // same delta, preserving the members' relative positions, while the unselected
-  // tiles reorder underneath. startPos is each member's drag-start cell; layoutPos
-  // is its current cell (its DOM slot shifts as the block is reinserted), refreshed
-  // after each reorder. The follow transform bridges the two.
+  // The selection moves as one rigid block. Every member follows the cursor by
+  // the same delta, so the members keep their relative positions, and the
+  // unselected tiles reorder underneath. startPos is each member's cell at the
+  // drag start. layoutPos is its current cell, which each reorder refreshes,
+  // because the member's DOM slot shifts each time the block moves in the DOM.
+  // The follow transform bridges the two.
   let block: HTMLElement[] = [];
   const startPos = new Map<HTMLElement, { left: number; top: number }>();
   const layoutPos = new Map<HTMLElement, { left: number; top: number }>();
@@ -184,13 +187,14 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   let marqueeGridLeft = 0;
   let marqueeGridTop = 0;
 
-  // Native text selection fights the icon drag: the press lands on a label
-  // kept user-select:text by the window's .up-selectable rule, and the tile
-  // branch cannot preventDefault its pointerdown (that would kill the plain
-  // click path), so the browser starts extending a selection across tile
-  // labels as the block rides the cursor. startDrag clears what accumulated
-  // before the threshold crossed and this blocks re-starts for the rest of
-  // the gesture; every end path runs removeMoveListeners, which detaches it.
+  // Native text selection fights the icon drag. The press lands on a label
+  // that the window's .up-selectable rule keeps at user-select:text, and
+  // canceling the tile branch's pointerdown would kill the plain click path.
+  // The browser therefore extends a selection across tile labels as the block
+  // follows the cursor. startDrag clears what the press selected before the
+  // drag crossed the threshold, and this listener cancels each selectstart for
+  // the rest of the gesture. removeMoveListeners, which every end path runs,
+  // detaches it.
   const suppressSelect = (e: Event): void => { e.preventDefault(); };
 
   function addMoveListeners(): void {
@@ -208,15 +212,16 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   grid.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || removing) return;
     // A drag that produced no synthetic click would otherwise carry a stale
-    // justDragged into this gesture's click; reset it up front.
+    // justDragged into this gesture's click, so reset it up front.
     justDragged = false;
 
     const target = eventElement(e);
     const tile = target?.closest<HTMLElement>(TILE_SEL) ?? null;
 
     if (tile && grid.contains(tile)) {
-      // Don't change selection or preventDefault yet: that preserves the plain
-      // click path and lets the manual double-click detector run on pointerup.
+      // Do not change the selection or cancel the event yet. Waiting keeps the
+      // plain click path and lets the manual double-click detector run on
+      // pointerup.
       mode = "tile";
       pointerId = e.pointerId;
       startX = e.clientX;
@@ -294,10 +299,10 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
         else if (pressCtrl) deps.toggle(pressTile);
         else deps.setSingle(pressTile);
 
-        // Manual double-click detection rather than native dblclick: the tile
+        // Manual double-click detection rather than native dblclick. The tile
         // branch captures the pointer and routes selection through pointerup,
-        // and native dblclick while the pointer is captured is unreliable across
-        // browsers.
+        // and browsers do not fire native dblclick reliably while the grid
+        // holds pointer capture.
         const now = performance.now();
         if (lastClick && lastClick.tile === pressTile && now - lastClick.time < DBLCLICK_MS) {
           onOpen(pressTile);
@@ -371,10 +376,11 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     }
   }
 
-  // Insertion target: the visible non-block tile the block should sit before, by
-  // reading-order comparison of each candidate's cell center against the pointer
-  // (a tile in an earlier row, or the same row and left of the pointer, counts as
-  // before). The count of "before" tiles is the insertion index; null appends.
+  // Insertion target: the visible non-block tile that the block should sit
+  // before. computeRef compares each candidate's cell center with the pointer
+  // in reading order. A tile in an earlier row, or in the same row and left of
+  // the pointer, counts as before. The count of such tiles is the insertion
+  // index, and null appends.
   function computeRef(): HTMLElement | null {
     const blockSet = new Set(block);
     const vis = deps.tiles.filter((t) => !t.hidden && !blockSet.has(t));
@@ -419,9 +425,10 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
 
     commitOrder(blockInsertOrder(ref));
 
-    // Settle movers and the block to their new cells (glides cancelled) and measure
-    // clean: movers feed the FLIP and the insertion-rect cache; block members feed
-    // their refreshed layout slot so the rigid follow stays anchored.
+    // Settle the movers and the block in their new cells, with each glide
+    // cancelled, and measure clean. The movers feed the FLIP and the
+    // insertion-rect cache, and the block members feed their refreshed layout
+    // slot so the rigid follow stays anchored.
     for (const t of movers) { stopGlide(t); t.style.transition = "none"; t.style.transform = "none"; }
     for (const el of block) { el.style.transition = "none"; el.style.transform = "none"; }
     void grid.offsetWidth;
@@ -520,9 +527,10 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     animateToOrder(originalOrder.filter((t) => t.isConnected));
   }
 
-  // Session-only removal: splice the targets out of the shared tiles array AND
-  // originalOrder (belt and braces with the isConnected filter above), detach
-  // them, and FLIP the survivors into the closed-up grid.
+  // Session-only removal. Splice the targets out of the shared tiles array AND
+  // out of originalOrder, a second guard beside the isConnected filter in
+  // cleanUpIcons. Then detach them and FLIP the survivors into the closed-up
+  // grid.
   function removeTiles(targets: HTMLElement[], opts?: { animate?: boolean; onDone?(): void }): void {
     if (mode !== "none" || removing) return; // never mutate the grid mid-gesture
     const known = new Set(deps.tiles);
@@ -565,13 +573,14 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     }, REMOVE_MS);
   }
 
-  // Tiles are <button>s, so a click follows pointerup. Swallow it after a drag;
-  // otherwise only act on keyboard activation (detail === 0): filter-nav's
-  // onActivate -> item.click() and a native Space/Enter on a focused button.
-  // Keyboard activation selects AND opens in one go (Nautilus: Enter opens the
-  // item immediately), which is what the shortcuts dialog documents and what
-  // gives the trash a keyboard path to Restore via its can't-open dialog.
-  // Mouse single-clicks (detail >= 1) already selected on pointerup.
+  // Tiles are <button>s, so a click follows pointerup. Swallow the click after
+  // a drag, and otherwise act only on keyboard activation (detail === 0): the
+  // item.click() from filter-nav's onActivate, or a native Space or Enter on a
+  // focused button. Keyboard activation selects AND opens in one step, as
+  // Enter does in Nautilus. The shortcuts dialog documents the behavior, and
+  // the behavior gives the trash a keyboard path to Restore through the trash's
+  // cannot-open dialog. Mouse single-clicks (detail >= 1) already selected on
+  // pointerup.
   grid.addEventListener("click", (e) => {
     const target = eventElement(e);
     const tile = target?.closest<HTMLElement>(TILE_SEL) ?? null;
@@ -619,8 +628,9 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
   }
 
   function updateMarquee(e: PointerEvent): void {
-    // Grid-content coordinates so the marquee tracks under scroll. The grid box
-    // is fixed for the gesture; only the live scroll offset is read per move.
+    // Grid-content coordinates so the marquee tracks under scroll. The grid
+    // box stays fixed for the gesture, so each move reads only the live scroll
+    // offset.
     const sx = grid.scrollLeft;
     const sy = grid.scrollTop;
     const toX = (clientX: number): number => clientX - marqueeGridLeft + sx;
@@ -649,18 +659,19 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       }
     }
 
-    // Ctrl/Cmd adds to the selection present when the marquee began, so the
-    // live set is the union of base and matched; recomputed each move rather
-    // than accumulated, so shrinking the marquee releases tiles again.
+    // Ctrl or Cmd adds to the selection that existed when the marquee began,
+    // so the live set is the union of the base and the matched tiles. Each move
+    // computes the union again rather than adding to it, so shrinking the
+    // marquee releases tiles again.
     const next = pressCtrl ? union(marqueeBase, matched) : matched;
     deps.setMany(next, false);
   }
 
   // ---- context menu --------------------------------------------------------
   let ctxMenu: HTMLDivElement | null = null;
-  // Focus to restore when the menu closes. Set only on the keyboard-opened
-  // path (the only one that moves focus into the menu), so pointer users never
-  // get a focus ring painted onto the tile after a right-click action.
+  // Focus to restore when the menu closes. Only the keyboard path sets it,
+  // because only that path moves focus into the menu. Pointer users therefore
+  // never see a focus ring on the tile after a right-click action.
   let ctxRestoreFocus: HTMLElement | null = null;
 
   function ctxItems(): HTMLElement[] {
@@ -675,12 +686,12 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
       ctxMenu.className = "up-ctx-menu";
       ctxMenu.setAttribute("role", "menu");
       ctxMenu.hidden = true;
-      // Menu-pattern keys, live only while focus is inside the menu (the
-      // keyboard-opened path): arrows move focus between items with wrap,
-      // Enter/Space activate, Tab closes (the close restores focus to the
-      // originating tile, so Tab continues from there). Escape is handled by
-      // the document-level capture keydown below. stopPropagation keeps the
-      // arrows away from filter-nav's document-level cursor.
+      // Menu-pattern keys, live only while focus is inside the menu, which
+      // happens only on the keyboard path. The arrows move focus between items
+      // and wrap, Enter and Space activate, and Tab closes the menu. The close
+      // restores focus to the originating tile, so Tab continues from there.
+      // The document-level capture keydown handles Escape. stopPropagation
+      // keeps the arrows away from filter-nav's document-level cursor.
       ctxMenu.addEventListener("keydown", (e) => {
         const items = ctxItems();
         if (!items.length) return;
@@ -740,19 +751,19 @@ export function installDesktop(deps: DesktopDeps): DesktopController {
     menu.replaceChildren();
     ctxRestoreFocus = null;
 
-    // Shift+F10 / the Menu key raise contextmenu without a pointer: Chromium
-    // fires a PointerEvent with button -1 (and pointerType "mouse", so the
-    // type field cannot distinguish it); Firefox a MouseEvent with no
-    // pointerType. That path anchors the menu to the focused tile and moves
-    // focus into it; pointer-opened menus (right-click button 2, touch
-    // long-press with pointerType "touch") are positioned and focused
-    // exactly as before.
+    // Shift+F10 and the Menu key raise contextmenu without a pointer. Chromium
+    // fires a PointerEvent with button -1 and pointerType "mouse", so the type
+    // field cannot tell it apart, and Firefox fires a MouseEvent with no
+    // pointerType. On that path the menu anchors to the focused tile and takes
+    // focus. A menu that a pointer opens, by right-click (button 2) or by a
+    // touch long-press (pointerType "touch"), opens at the pointer and leaves
+    // focus where it was.
     const keyboardOpen = e.button === -1
       || (e.button !== 2 && !("pointerType" in e && e.pointerType));
 
     if (tile && grid.contains(tile)) {
-      // Right-click outside the selection retargets to the clicked tile;
-      // inside it, the menu actions apply to the whole selection.
+      // Right-click outside the selection retargets to the clicked tile.
+      // Inside it, the menu actions apply to the whole selection.
       let sel = deps.get();
       if (!sel.includes(tile)) {
         deps.setSingle(tile);

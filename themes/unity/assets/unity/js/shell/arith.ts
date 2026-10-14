@@ -1,10 +1,10 @@
-// Integer arithmetic evaluator for $(( ... )), mirroring bash's operator set and
-// precedence. Bare identifiers resolve through `lookup` and are themselves
-// evaluated as arithmetic (recursively, unset -> 0), as in bash. Values are JS
-// numbers truncated toward zero, so arithmetic and comparisons cover bash's
-// full integer range; the bitwise/shift operators (& | ^ ~ << >>) use JS's
-// 32-bit operators, a divergence from bash's 64-bit width for large operands.
-// Pure and DOM-free.
+// Integer arithmetic evaluator for $(( ... )), with bash's operator set and
+// precedence. Each bare identifier resolves through `lookup`, and the
+// evaluator reads its value as arithmetic too (recursively, unset -> 0), as
+// in bash. Values are JS numbers truncated toward zero, so arithmetic and
+// comparisons cover bash's full integer range. The bitwise and shift
+// operators (& | ^ ~ << >>) use JS's 32-bit operators, which diverge from
+// bash's 64-bit width for large operands. Pure and DOM-free.
 
 export type ArithLookup = (name: string) => string;
 

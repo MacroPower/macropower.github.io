@@ -1,27 +1,27 @@
-// A Klondike solver for the `?rig=auto` demo: given a deal, find a
+// A Klondike solver for the `?rig=auto` demo. Given a deal, it finds a
 // sequence of plays that wins it, so the table can play a whole game
-// unattended. DOM-free and covered by solver.test.ts.
+// unattended. It is DOM-free, and solver.test.ts covers it.
 //
-// The search is "thoughtful" Klondike: every card is known, the rules are
-// draw-one with unlimited passes through the stock, and foundation cards
-// are never taken back down. Under those rules any card in the stock or
-// waste can be surfaced by drawing, so the stock and waste collapse into
-// one pool of playable cards and a stock play is simply "this card, from
-// the pool". The replay (index.ts, or `replay` below for tests) turns that
-// back into real draws until the card sits on top of the waste.
+// The search plays "thoughtful" Klondike. It knows every card, the rules
+// are draw-one with unlimited passes through the stock, and it never takes
+// a foundation card back down. Under those rules, drawing can bring any card
+// in the stock or waste to the top. The stock and waste therefore collapse
+// into one pool of playable cards, and a stock play means "this card, from
+// the pool". `replay` turns such a play back into real draws until the card
+// sits on top of the waste, and index.ts does the same for the demo.
 //
-// Depth-first search with a visited set and a node budget. Move ordering
-// does most of the work: a foundation play that can never be needed as a
-// tableau base is forced (it is the only branch explored), then the rest
-// of the foundation plays, then tableau moves that uncover a face-down
-// card or clear a column, then plays from the pool, and finally the
-// speculative run splits. Deals that blow the budget return null; the
-// caller deals again.
+// The search is depth-first, with a visited set and a node budget. Move
+// ordering does most of the work. When a foundation play is safe, because no
+// tableau card can still need its card as a base, the search explores only
+// that branch. Otherwise the other foundation plays come first, then tableau
+// moves that uncover a face-down card or clear a column, then plays from the
+// pool, and finally the speculative run splits. A deal that exhausts the
+// budget returns null, and the caller deals again.
 
 import { isRed, itemAt, type Card, type Klondike, type Loc, type Suit } from "./klondike";
 
 export interface SolverMove {
-  /** The lead card of the run being played. */
+  /** The lead card of the run that the move plays. */
   card: Card;
   /** "stock" means the card is anywhere in the stock or waste. */
   from: "stock" | "tableau";
@@ -187,8 +187,8 @@ export function solve(game: Klondike, maxNodes = SOLVE_BUDGET): SolverMove[] | n
   }
 }
 
-/** Where a solver move's card currently sits on the real table, or null
- *  when it is still buried in the stock or waste. */
+/** Where a solver move's card sits on the real table, or null while the
+ *  stock or the waste still holds it under other cards. */
 export function locate(game: Klondike, move: SolverMove): { from: Loc; index: number } | null {
   if (move.from === "stock") {
     const top = game.waste[game.waste.length - 1];
@@ -201,8 +201,8 @@ export function locate(game: Klondike, move: SolverMove): { from: Loc; index: nu
   return null;
 }
 
-/** Play a solution through the real rules, drawing until each stock card
- *  surfaces. Returns false if any move is refused. */
+/** Play a solution through the real rules, and draw until each stock card
+ *  surfaces. Returns false when the rules refuse any move. */
 export function replay(game: Klondike, moves: SolverMove[]): boolean {
   for (const move of moves) {
     let at = locate(game, move);

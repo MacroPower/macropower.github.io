@@ -7,10 +7,11 @@ export interface InstallTitlebarDragOptions {
   gate?: () => boolean;
 }
 
-// The window's position is expressed purely as the translate3d offset owned
-// here (inline left/top never change post-SSR). The handle exposes that
-// offset so collaborators — resize.ts moving the origin for north/west
-// resizes — go through the same state instead of fighting the transform.
+// The window's position lives only in the translate3d offset that this module
+// owns, and the inline left and top never change after the server renders
+// them. The handle exposes that offset, so collaborators go through the same
+// state instead of fighting the transform. resize.ts, for one, moves the
+// origin through it for a north or west resize.
 export interface DragHandle {
   dispose(): void;
   getOffset(): { x: number; y: number };
@@ -22,7 +23,7 @@ export interface DragHandle {
 // mousedown to raise their window. Gesture starts that preventDefault their
 // pointerdown re-dispatch a synthetic mousedown so focus-on-press survives
 // the Pointer Events port. Untrusted events trigger no default actions, so
-// the selection/focus suppression the preventDefault buys is preserved.
+// the canceled pointerdown still suppresses selection and focus.
 export function dispatchCompatMousedown(e: PointerEvent): void {
   if (!(e.target instanceof Element)) return;
   e.target.dispatchEvent(new MouseEvent("mousedown", {
@@ -168,11 +169,11 @@ export function installTitlebarDrag(
       springRaf = requestAnimationFrame(step);
     };
 
-    // Capture on the titlebar, not the chrome: capture retargets the
-    // pointerup, and the browser synthesizes click/dblclick at that target.
-    // Capturing on the chrome would starve the titlebar's dblclick-to-
-    // maximize handlers (page-window.ts, daw.ts). Movement tracking is
-    // unaffected — move/finish listen on window.
+    // Capture on the titlebar, not the chrome. Capture retargets the
+    // pointerup, and the browser synthesizes click and dblclick at that
+    // target. Capturing on the chrome would starve the titlebar's
+    // dblclick-to-maximize handlers (page-window.ts, daw.ts). Movement
+    // tracking stays the same, because move and finish listen on window.
     try { tb.setPointerCapture(id); } catch { /* unsupported */ }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", finish);

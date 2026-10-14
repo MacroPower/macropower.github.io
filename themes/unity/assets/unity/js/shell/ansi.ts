@@ -65,8 +65,9 @@ export function stripAnsi(s: string): string {
   return s.replace(ANSI_RE, "");
 }
 
-// One Dark palette. The 8 normal + 8 bright slots map to xterm's 16 ANSI
-// colors in terminal.ts; the named entries below drive banner/command output.
+// One Dark palette. The 8 normal and 8 bright slots map to xterm's 16 ANSI
+// colors in terminal.ts, and the named entries drive the banner and command
+// output.
 export const PALETTE = {
   fg: "#ABB2BF",
   bg: "#282C34",

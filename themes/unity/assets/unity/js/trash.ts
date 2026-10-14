@@ -16,8 +16,8 @@ function syncLauncherTile(open: boolean, focused: boolean): void {
 
 let openImpl: (() => void) | null = null;
 
-// Open (or re-focus) the trash window. Mirrors daw.ts's openStudio: safe to
-// call before initTrash on pages without the partial — it just no-ops.
+// Open or refocus the trash window. Like openStudio in daw.ts, it does nothing
+// before initTrash or on a page without the partial.
 export function openTrash(): void {
   openImpl?.();
 }
@@ -41,8 +41,8 @@ export function initTrash(): void {
   // Session-only: the trash refills on reload.
   let emptied = false;
 
-  // Footer + empty-state painter; doubles as the selection's onRender so the
-  // count tracks both removals and selection changes.
+  // Paints the footer and the empty state. The selection also calls it as its
+  // onRender, so the count tracks both removals and selection changes.
   const renderTrash = (): void => {
     const empty = emptied || tiles.length === 0;
     if (filesView) filesView.hidden = empty;
@@ -73,8 +73,8 @@ export function initTrash(): void {
 
   const doEmpty = (): void => {
     if (!filesView || isReduceMotion()) { finishEmpty(); return; }
-    // Animate the tiles out, then swap to the empty state once the animation
-    // lands. `onEnd` is idempotent and self-detaching; the timeout backstops a
+    // Animate the tiles out, then swap to the empty state when the animation
+    // ends. `onEnd` is idempotent and detaches itself, and the timeout covers a
     // missed animationend event.
     const view = filesView;
     const onEnd = (): void => {
@@ -86,8 +86,9 @@ export function initTrash(): void {
     setTimeout(onEnd, 500);
   };
 
-  // Restore and Delete share the same session-only mechanics — the tiles just
-  // animate out (there is nowhere real to restore to); only the dialogs differ.
+  // Restore and Delete share the same session-only mechanics. The tiles only
+  // animate out, because there is nowhere real to restore to, and only the
+  // dialogs differ.
   const removeFlow = (targets: HTMLElement[]): void => {
     controller?.removeTiles(targets, {
       animate: true,
@@ -130,8 +131,8 @@ export function initTrash(): void {
     if (r === "delete") removeFlow(targets);
   };
 
-  // The shared desktop gesture engine (also driving the projects grid) with
-  // Nautilus trash semantics: double-click can't open, only restore;
+  // The shared desktop gesture engine, which also drives the projects grid,
+  // with Nautilus trash semantics. Double-click cannot open, only restore, and
   // right-click inside a multi-selection acts on the whole selection.
   const controller = filesView
     ? installDesktop({
@@ -241,9 +242,9 @@ export function initTrash(): void {
   // 280x200 keeps two grid columns plus the pathbar and footer usable.
   installResize(chrome, { minW: 280, minH: 200, yMin: 24, handle: drag });
 
-  // Module-level opener (the Dash's Trash tile): open if hidden or
-  // minimized, otherwise just take focus — never minimize like the
-  // launcher-tile toggle does.
+  // Module-level opener for the Dash's Trash tile. It opens a hidden or
+  // minimized window and otherwise only focuses it. Unlike the launcher tile's
+  // toggle, it never minimizes.
   openImpl = () => {
     if (!open || minimized) { show(); return; }
     setTrashFocused(true);

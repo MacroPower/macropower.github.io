@@ -1,9 +1,9 @@
-// notify-send — the terminal's bridge to the desktop's notify-osd bubbles.
+// notify-send, the terminal's bridge to the desktop's notify-osd bubbles.
 // The shell is a separate bundle from app.ts and cannot import notify.ts, so
-// the bubble crosses over as a NOTIFY_EVENT window event. The dispatch is
-// fenced behind a typeof-window guard (the nav.ts isolation rule) so the
-// command stays runnable — and testable — under headless Node, where firing
-// at a daemon that isn't there is simply a no-op, much like a real notify-send
+// the bubble crosses over as a NOTIFY_EVENT window event. A typeof-window
+// guard fences the dispatch, as the nav.ts isolation rule asks, so the
+// command still runs under headless Node and tests can run it. There, firing
+// at a daemon that is not there does nothing, much like a real notify-send
 // pointed at a missing DBus session.
 
 import type { Command } from "../shell";

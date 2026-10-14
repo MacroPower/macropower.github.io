@@ -1,13 +1,14 @@
 // Rubber-band marquee on the bare desktop (the wallpaper behind every
-// window). The desktop has no icons, so the band selects nothing — it
-// exists so the wallpaper answers a click-drag the way a real Unity
-// desktop does. Reuses the .up-marquee box from the icon grids; at
-// z-index 5 it paints above the wallpaper layers and under all chrome.
+// window). The desktop has no icons, so the band selects nothing. It exists
+// so the wallpaper answers a click-drag the way a real Unity desktop does.
+// It reuses the .up-marquee box from the icon grids, and at z-index 5 it
+// paints above the wallpaper layers and under all chrome.
 //
-// The page-window stage is pointer-events:none with children re-enabled,
-// so a press on empty desktop falls through to #up-root (or <body>). Every
-// other surface — panel, launcher, windows, overlays, dialog backdrops —
-// is its own element, so the target check alone gates the gesture.
+// The page-window stage is pointer-events:none with its children enabled
+// again, so a press on empty desktop falls through to #up-root (or <body>).
+// Every other surface (the panel, launcher, windows, overlays, and dialog
+// backdrops) is its own element, so the target check alone gates the
+// gesture.
 
 import { eventElement } from "./dom";
 
@@ -40,9 +41,9 @@ export function initDesktopMarquee(): void {
       moved = true;
       ensureMarquee().hidden = false;
     }
-    // The desktop never scrolls (html/body are height:100%), so client
-    // coordinates are body coordinates; clamp to the viewport so a captured
-    // pointer leaving the window can't grow the band past the wallpaper.
+    // The desktop never scrolls (html and body are height:100%), so client
+    // coordinates are body coordinates. Clamp to the viewport so a captured
+    // pointer that leaves the window cannot grow the band past the wallpaper.
     const x = Math.max(0, Math.min(e.clientX, window.innerWidth));
     const y = Math.max(0, Math.min(e.clientY, window.innerHeight));
     const m = ensureMarquee();

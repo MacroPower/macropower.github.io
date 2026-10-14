@@ -1,8 +1,8 @@
 // Web Audio MIDI player for the volume dropdown and the Studio window.
-// Self-contained: all audio state lives in module scope, nothing is persisted,
-// and no globals are touched — same session-only style as prefs.ts. The
-// AudioContext is created lazily on the first play/audition click, so the user
-// gesture satisfies the browser's autoplay policy and nothing autoplays.
+// All audio state lives in module scope. The module does not persist it or
+// touch any global, so the state lasts for the session only, like the state
+// in prefs.ts. The first play or audition click creates the AudioContext, so
+// the click satisfies the browser's autoplay policy and nothing autoplays.
 //
 // `configure(entries)` points the player at the site's MIDI playlist. On the
 // first play, the player fetches the active track's file, parses it with
@@ -22,11 +22,11 @@
 import { t } from "./i18n";
 import { parseMidi, type MidiNote, type MidiSong } from "./midi";
 
-// Quantize note onsets/durations to this beat grid (a sixteenth note) so a
-// loosely-played MIDI lands on a tidy grid. Adaptive per song: a file whose
-// onsets don't live on the sixteenth grid (triplet writing, fine sequencing,
-// tempo-warped sections) is left untouched — snapping that material is what
-// "badly quantized" sounds like. See computeQuantize.
+// Quantize each note's onset and duration to this beat grid (a sixteenth
+// note), so a loosely played MIDI file lands on a tidy grid. computeQuantize
+// decides for each song. It leaves a file alone when its onsets do not sit on
+// the sixteenth grid, such as triplets, fine sequencing, or tempo-warped
+// sections, because snapping that material sounds badly quantized.
 const QUANT = 0.25;
 const quant = (beats: number): number => Math.round(beats / QUANT) * QUANT;
 
@@ -52,11 +52,10 @@ interface VoicePreset {
   readonly peak: number; // envelope peak, pre-master
 }
 
-// Additive recipes for the melody voice, selectable from the Studio rack. Kept
-// deliberately lean: a full multi-channel arrangement plays many notes at once,
-// so each voice uses few oscillators and a modest peak, leaning on the master
-// compressor to glue the mix. "square" matches the original fixed preset, so
-// the default mix is unchanged.
+// Additive recipes for the melody voice, which the Studio rack selects. A full
+// multi-channel arrangement plays many notes at once, so each voice uses few
+// oscillators and a modest peak and relies on the master compressor to level
+// the mix. PARAM_DEFAULTS picks "square".
 export type WaveKey = "sine" | "square" | "saw" | "organ";
 const WAVES: Readonly<Record<WaveKey, VoicePreset["harmonics"]>> = {
   sine: [[1, 1]],
@@ -70,22 +69,22 @@ const BASS: Readonly<VoicePreset> = { harmonics: [[1, 1]], peak: 0.42 };
 const KICK_PEAK = 0.32;
 const SNARE_PEAK = 0.18;
 const HAT_PEAK = 0.1;
-// Notes at or below this MIDI number (C3) use the bass voice, the rest the
-// melody voice — a crude but effective split for a typical pop arrangement.
+// Notes below this MIDI number (C3) use the bass voice, and the rest use the
+// melody voice. The split is crude but works for a typical pop arrangement.
 export const BASS_MAX_PITCH = 48;
 
 // ---- tweakable state ------------------------------------------------------
 
-// The Studio's synth rack. Read at schedule time, so edits land within the
-// lookahead window. Defaults reproduce the pre-Studio sound (velSens is the
-// one deliberate exception: MIDI velocity now shapes loudness by default,
-// which every bundled song benefits from).
+// The Studio's synth rack. The scheduler reads it as it schedules each note,
+// so an edit lands within the lookahead window. PARAM_DEFAULTS turns every
+// effect off and sets velSens to 0.5, so the file's velocities change the
+// loudness from the first play.
 export interface SynthParams {
-  wave: VoiceKey; // the "auto" melody voice — any concrete patch, not just tables
+  wave: VoiceKey; // melody voice of "auto" strips, which takes any VoiceKey
   attack: number; // seconds (both pitched voices)
   release: number; // 0..1, scales the note-length decay target
   oct: number; // pitched-voice octave shift, -2..+2 (integer)
-  detune: number; // unison detune in cents; >0 doubles every partial into a ± pair
+  detune: number; // unison detune in cents. A positive value doubles each partial into a ± pair
   vib: number; // vibrato depth in cents (one shared 5.5Hz LFO)
   cutoff: number; // Hz, master lowpass (12kHz ≈ neutral)
   drive: number; // 0..1 waveshaper saturation
@@ -176,20 +175,21 @@ function crushCurve(amount: number): Float32Array<ArrayBuffer> | null {
   return curve;
 }
 
-// Per-strip instrument patches. "auto" is the legacy behavior: bass voice
-// below C3, the global wave-table voice above. Everything else pins the whole
-// strip to one synth — additive tables, a band-limited pulse, two 2-op FM
-// voices, a pluck, and a pad. Read at schedule time like every other param.
+// Per-strip instrument patches. "auto" splits the strip at C3, with the bass
+// voice below it and the Synth section's voice from C3 up. Every other patch
+// pins the whole strip to one synth: an additive table, a band-limited pulse,
+// one of two 2-op FM voices, a pluck, or a pad. The scheduler reads the patch
+// as it schedules each note, like every other param.
 export type PatchKey =
   | "auto" | "sine" | "square" | "saw" | "organ"
   | "pulse" | "epiano" | "bell" | "pluck" | "pad";
 
-// Any concrete voice — what a strip pins itself to, and what the global
-// Synth-section selector picks for "auto" strips' melody register.
+// Any concrete voice. A strip pins itself to one, and the global selector in
+// the Synth section picks one for the melody register of "auto" strips.
 export type VoiceKey = Exclude<PatchKey, "auto">;
 
-// Per-strip mixer state. The returned object is live — the Studio mutates it
-// directly and the scheduler reads it at note time.
+// Per-strip mixer state. The Studio changes the returned object directly, and
+// the scheduler reads it as it schedules each note.
 export interface ChannelStrip {
   gain: number; // 0..1.5
   muted: boolean;
@@ -199,10 +199,11 @@ export interface ChannelStrip {
 
 const strips = new Map<number, ChannelStrip>();
 
-// When a song's pitched material all lives on one MIDI channel (solo-piano
-// style arrangements), the engine's bass/melody voice split is the only
-// "multitrack" structure there is — expose it as two strips so the mixer
-// matches what you hear. Recomputed whenever the active song changes.
+// When all of a song's pitched notes sit on one MIDI channel, as in a solo
+// piano arrangement, the engine's split into bass and melody voices is the
+// song's only "multitrack" structure. The mixer then shows the two voices as
+// two strips, so it matches what you hear. loadSong sets the flag again
+// whenever the active song changes.
 let splitVoices = false;
 
 function computeSplitVoices(s: MidiSong): boolean {
@@ -211,18 +212,17 @@ function computeSplitVoices(s: MidiSong): boolean {
   return pitched.size === 1;
 }
 
-// Mixer-strip key for a note: normally its MIDI channel; under the voice
-// split, the lone channel's bass register gets a strip of its own.
+// Mixer-strip key for a note, normally its MIDI channel. Under the voice
+// split, the bass register of the lone channel gets a strip of its own.
 function stripKey(channel: number, pitch: number): number {
   if (channel !== 9 && splitVoices && pitch < BASS_MAX_PITCH) return 256 | channel;
   return channel;
 }
 
-// A note's strip assignment, frozen the first time the note is seen (the
-// Studio groups its track strips from the same memo). Live transposition
-// mutates pitch in place — without the freeze, dragging a split-voice note
-// across the bass boundary would re-route it to a different strip than the
-// one it displays and dims under.
+// Each note's strip, which the first lookup freezes. The Studio groups its
+// track strips from the same memo. Live transposition changes a note's pitch
+// in place. Without the freeze, dragging a split-voice note across the bass
+// boundary sends it to a different strip than the one that shows and dims it.
 const noteStrips = new WeakMap<MidiNote, number>();
 
 export function noteStripKey(n: MidiNote): number {
@@ -243,8 +243,8 @@ export function strip(key: number): ChannelStrip {
   return s;
 }
 
-// Effective strip gain under the mute/solo matrix: any solo silences every
-// non-soloed strip, mute always wins.
+// Effective strip gain after mute and solo. Any solo silences every strip
+// without solo, and mute always wins.
 function stripGain(key: number, anySolo: boolean): number {
   const s = strips.get(key);
   if (!s) return anySolo ? 0 : 1;
@@ -253,8 +253,8 @@ function stripGain(key: number, anySolo: boolean): number {
   return s.gain;
 }
 
-// Play/stop + param changes notify subscribers (the top panel keeps its
-// play glyph in sync with the Studio transport and vice versa).
+// Play, stop, and param changes notify subscribers, so the top panel's play
+// glyph and the Studio transport stay in step.
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
@@ -286,13 +286,13 @@ interface AudioGraph {
 
 let graph: AudioGraph | null = null;
 let playing = false;
-let starting = false; // guards the async gap in toggle() so two fast clicks can't double-start
+let starting = false; // guards the async gap in toggle(), so two fast clicks cannot start twice
 let level = 62; // 0..100, mirrors the slider's initial value
 let muted = false;
 let noiseBuf: AudioBuffer | null = null;
 
-// Every scheduled source (oscillators and noise buffer sources) so stop can halt
-// them all; each is dropped on its own "ended" event.
+// Every scheduled source, oscillators and noise buffer sources alike, so stop
+// can halt them all. Each source leaves the set on its own "ended" event.
 const voices = new Set<AudioScheduledSourceNode>();
 
 // MIDI source + streaming-playback state. The playlist comes from the
@@ -319,10 +319,10 @@ let loopDurSec = 0; // length of one full pass through the song, in seconds
 let noteIdx = 0; // index into song.notes already scheduled this iteration
 let secPerBeat = 0.5;
 let bpmOverride: number | null = null; // Studio override; null = the file's tempo
-let pausedAt = 0; // beats; where pause left off / where a stopped-state seek points
+let pausedAt = 0; // in beats: where a pause left off, or where a seek points while stopped
 
-// Point the player at the bundled MIDI playlist; each entry is fetched lazily
-// on its first play/selection.
+// Point the player at the bundled MIDI playlist. loadSong fetches each entry
+// the first time the player or the Studio asks for it.
 export function configure(entries: readonly PlaylistEntry[]): void {
   playlist = entries.filter((e) => e.url);
   trackIdx = 0;
@@ -338,8 +338,8 @@ function loadSong(): Promise<MidiSong | null> {
       .then((buf) => parseMidi(buf))
       .catch(() => null);
     songCache.set(url, p);
-    // Don't cache a failure: evict so the next play/selection retries the
-    // fetch instead of pinning the track dead for the whole session.
+    // Do not cache a failure. Evicting it lets the next play or track switch
+    // retry the fetch, instead of leaving the track dead for the session.
     void p.then((s) => {
       if (s === null) songCache.delete(url);
     });
@@ -356,10 +356,10 @@ function loadSong(): Promise<MidiSong | null> {
   });
 }
 
-// The active track's parsed song, fetching it on first call. The returned
-// object is the live playback source — the Studio's piano roll renders it and
-// note edits (transposition) mutate it in place, audible on the next pass of
-// the scheduler. Resolves null if the MIDI fails to load.
+// The active track's parsed song, which the first call fetches. The returned
+// object is the live playback source. The Studio's piano roll renders it, and
+// note edits such as transposition change it in place, so the scheduler plays
+// them on its next pass. Resolves null when the MIDI fails to load.
 export function getSong(): Promise<MidiSong | null> {
   return loadSong();
 }
@@ -372,10 +372,10 @@ export function trackCount(): number {
   return playlist.length;
 }
 
-// Switch the active playlist entry (wraps around). Playback state carries
-// over — a playing player starts the new song from the top. The mixer strips
-// and tempo override reset (they're per-song), while the synth/FX params
-// persist as the user's sound design.
+// Switch the active playlist entry, wrapping around at each end. A playing
+// player keeps playing and starts the new song from the top. The mixer strips
+// and the tempo override belong to one song, so they reset. The synth and FX
+// params stay, because they are the user's sound design.
 export async function selectTrack(i: number): Promise<void> {
   if (!playlist.length) return;
   const next = ((i % playlist.length) + playlist.length) % playlist.length;
@@ -391,9 +391,9 @@ export async function selectTrack(i: number): Promise<void> {
   if (wasPlaying) await toggle();
 }
 
-// Perceptual but kept comfortably below full scale so the loop is never
-// startling. Squaring the normalized level tracks loudness better than a linear
-// map; the master compressor catches any stray peaks. Muted is silent.
+// Perceptual, but comfortably less than full scale, so the loop never
+// startles. Squaring the normalized level tracks loudness better than a linear
+// map, and the master compressor catches any stray peaks. Muted is silent.
 function masterGain(): number {
   if (muted) return 0;
   const norm = level / 100;
@@ -424,8 +424,8 @@ function addOsc(audio: AudioContext, hz: number, gainVal: number, dest: AudioNod
   osc.type = "sine";
   osc.frequency.value = hz;
   if (cents !== 0) osc.detune.value = cents;
-  // The shared vibrato LFO sums into every oscillator's detune; its depth
-  // gain is live, so the VIB knob shapes already-ringing notes too.
+  // The shared vibrato LFO sums into each oscillator's detune. Its depth
+  // gain is live, so the VIB knob also changes notes that are already ringing.
   graph?.vibDepth.connect(osc.detune);
   const g = audio.createGain();
   g.gain.value = gainVal;
@@ -436,10 +436,10 @@ function addOsc(audio: AudioContext, hz: number, gainVal: number, dest: AudioNod
   trackSource(osc);
 }
 
-// A pitched note: one shared envelope gain feeds the master, every harmonic
+// A pitched note. One shared envelope gain feeds the master, and each harmonic
 // oscillator feeds that gain. Normalizing by the amplitude sum bounds the
 // in-phase peak before the envelope and master gain. `gf` is the channel
-// strip's gain; attack/release come from the live params.
+// strip's gain, and the attack and release come from the live params.
 function scheduleTone(audio: AudioContext, out: AudioNode, t: number, freq: number, dur: number, p: VoicePreset, gf: number): void {
   const attack = clamp(params.attack, 0.001, 0.2);
   const decayEnd = t + Math.max(attack + 0.03, dur * 0.9 * clamp(params.release, 0.1, 1));
@@ -453,8 +453,8 @@ function scheduleTone(audio: AudioContext, out: AudioNode, t: number, freq: numb
   for (const [mult, amp] of p.harmonics) {
     const g = (amp / norm) * (det > 0 ? 0.5 : 1);
     addOsc(audio, freq * mult, g, env, t, dur, det > 0 ? -det : 0);
-    // Unison: a second oscillator per partial, detuned the other way — the
-    // beat between the pair is the classic analog chorus thickener.
+    // Unison: a second oscillator per partial, detuned the other way. The
+    // beating between the pair thickens the sound like a classic analog chorus.
     if (det > 0) addOsc(audio, freq * mult, g, env, t, dur, det);
   }
 }
@@ -517,8 +517,8 @@ function pulseWave(audio: AudioContext): PeriodicWave {
   return pulsePW;
 }
 
-// One pulse oscillator (a ± unison pair under DET) through the standard
-// envelope — the chip lead.
+// The chip lead: one pulse oscillator, or a ± unison pair under DET, through
+// the standard envelope.
 function schedulePulse(audio: AudioContext, out: AudioNode, t: number, freq: number, dur: number, gf: number): void {
   if (freq >= audio.sampleRate / 2) return;
   const attack = clamp(params.attack, 0.001, 0.2);
@@ -547,8 +547,8 @@ function schedulePulse(audio: AudioContext, out: AudioNode, t: number, freq: num
 }
 
 // 2-op FM: modulator → index gain (deviation in Hz, decaying) → carrier
-// frequency. ratio/index/decay distinguish the e-piano from the bell; the
-// bell rings past the written note length.
+// frequency. The ratio, index, and decay set the e-piano apart from the bell,
+// and the bell rings past the written note length.
 function scheduleFM(
   audio: AudioContext, out: AudioNode, t: number, freq: number, dur: number, gf: number,
   ratio: number, index: number, idxDecay: number, ring: number, peak: number,
@@ -584,7 +584,7 @@ function scheduleFM(
 }
 
 // Instant-attack bright stack with an exponential decay and a filtered noise
-// tick on the front — plucky regardless of the written duration.
+// tick on the front. It sounds plucked whatever the written duration.
 function schedulePluck(audio: AudioContext, out: AudioNode, t: number, freq: number, dur: number, gf: number): void {
   const decay = Math.max(0.08, Math.min(dur, 0.5) * clamp(params.release, 0.1, 1));
   const env = audio.createGain();
@@ -603,9 +603,9 @@ function schedulePluck(audio: AudioContext, out: AudioNode, t: number, freq: num
   scheduleNoise(audio, out, t, 3000, 0.05 * gf, 0.03);
 }
 
-// Slow-attack detuned saw-ish wash; the global DET adds on top of its own.
-// The oscillators always outlive the attack ramp (staccato notes would
-// otherwise hard-stop mid-swell with an audible click).
+// Slow-attack detuned wash, close to a saw. The global DET adds to its own
+// detune. The oscillators always outlive the attack ramp, because a staccato
+// note would otherwise stop hard mid-swell with an audible click.
 function schedulePad(audio: AudioContext, out: AudioNode, t: number, freq: number, dur: number, gf: number): void {
   const attack = Math.max(params.attack, 0.18);
   const decayEnd = Math.max(attack + 0.1, dur * clamp(params.release, 0.1, 1));
@@ -665,9 +665,10 @@ function renderVoice(audio: AudioContext, dest: AudioNode, t: number, freq: numb
 }
 
 // Render one MIDI note at absolute context time `t`. Channel 9 is the GM drum
-// kit (mapped to kick/snare/hat by note number); everything else dispatches on
-// the strip's instrument patch — "auto" being the classic split: bass preset
-// below C3, the globally-selected voice above.
+// kit, and renderNote maps its note numbers to the kick, snare, and hat. Every
+// other channel plays its strip's instrument patch. The "auto" patch keeps the
+// classic split, with the bass preset below C3 and the selected voice from C3
+// up.
 function renderNote(audio: AudioContext, out: AudioNode, n: MidiNote, t: number, dur: number, gf: number): void {
   if (n.channel === 9) {
     // Drum pan positions are fixed kit placements, not GM note numbers.
@@ -701,9 +702,9 @@ function swungStart(startBeats: number): number {
   return q;
 }
 
-// Lookahead: schedule every note whose (quantized) onset falls within the next
-// ~0.2s, then loop once the iteration's notes are exhausted and the clock has
-// passed the song's end.
+// Lookahead: schedule every note whose onset, quantized when the song sits on
+// the grid, falls within the next 0.2s or so. Then loop when the iteration has
+// no notes left and the clock has passed the song's end.
 function pump(audio: AudioContext, out: AudioNode): void {
   if (!song) return;
   const horizon = audio.currentTime + 0.2;
@@ -716,8 +717,8 @@ function pump(audio: AudioContext, out: AudioNode): void {
     if (n.dead) { noteIdx++; continue; } // muted from the piano roll
     let gf = stripGain(noteStripKey(n), anySolo);
     if (gf > 0) {
-      // Velocity sensitivity blends flat loudness toward the file's dynamics;
-      // humanize adds per-note timing slop and level wobble on top.
+      // Velocity sensitivity blends flat loudness toward the file's dynamics,
+      // and humanize adds per-note timing slop and level wobble on top.
       gf *= (1 - params.velSens) + params.velSens * n.vel;
       let t = base;
       if (params.humanize > 0) {
@@ -735,8 +736,8 @@ function pump(audio: AudioContext, out: AudioNode): void {
   }
 }
 
-// First note index at or past `beat` (notes are start-sorted), so a resume or
-// seek doesn't replay everything before the entry point.
+// First note index at or past `beat`. The notes run in start order, so a
+// resume or a seek skips every note before the entry point.
 function noteIndexAt(beat: number): number {
   if (!song) return 0;
   const i = song.notes.findIndex((n) => n.start >= beat);
@@ -746,7 +747,8 @@ function noteIndexAt(beat: number): number {
 function startPlayer(g: AudioGraph): void {
   secPerBeat = 60 / bpm();
   loopDurSec = song!.durationBeats * secPerBeat;
-  // Resume from wherever pause/seek left the transport (0 after a hard stop).
+  // Resume from wherever a pause or a seek left the transport, or from 0
+  // after a hard stop.
   const startBeat = clamp(pausedAt, 0, song!.durationBeats);
   loopBase = g.ctx.currentTime + 0.1 - startBeat * secPerBeat;
   noteIdx = noteIndexAt(startBeat);
@@ -764,7 +766,7 @@ function stopVoices(): void {
     try {
       v.stop();
     } catch {
-      // Already stopped/ended; ignore.
+      // The source has already stopped or ended.
     }
   }
   voices.clear();
@@ -776,8 +778,8 @@ function stopPlayback(): void {
   emit();
 }
 
-// Decaying stereo noise burst — a perfectly serviceable small-room impulse
-// for the convolver, generated instead of shipped.
+// Decaying stereo noise burst, a serviceable small-room impulse for the
+// convolver. The module generates it instead of shipping a file.
 function impulseBuffer(audio: AudioContext): AudioBuffer {
   const len = Math.floor(audio.sampleRate * 1.6);
   const buf = audio.createBuffer(2, len, audio.sampleRate);
@@ -788,13 +790,13 @@ function impulseBuffer(audio: AudioContext): AudioBuffer {
   return buf;
 }
 
-// Lazily build the context + mix chain on the first user gesture:
-// master gain → lowpass → drive → crush, then dry into the compressor plus
-// two post-everything sends (tempo-synced feedback delay, convolver reverb)
-// so echoes and tails inherit the cutoff and the dirt. A null WaveShaper
-// curve is a pass-through, so the off positions cost nothing. Returns null
-// when the browser has no Web Audio, such as Firefox with
-// media.webaudio.enabled off.
+// Build the context and the mix chain on the first user gesture. Master gain
+// feeds the lowpass, drive, and crush, which feed the compressor dry and
+// through two sends at the end of the chain: a tempo-synced feedback delay
+// and a convolver reverb. The echoes and tails therefore keep the cutoff and
+// the dirt. A null WaveShaper curve passes the signal through, so the off
+// positions cost nothing. Returns null when the browser has no Web Audio,
+// such as Firefox with media.webaudio.enabled off.
 function ensureChain(): AudioGraph | null {
   if (graph) return graph;
   if (typeof AudioContext === "undefined") return null;
@@ -847,23 +849,25 @@ function ensureChain(): AudioGraph | null {
   return graph;
 }
 
-// Tempo-synced echo tap (1/8, dotted 1/8, or 1/4 by the TIME selector).
-// Re-synced on BPM and division changes.
+// Tempo-synced echo tap of 1/8, dotted 1/8, or 1/4, which the TIME selector
+// picks. startPlayer, setBpm, and setParam call it, so the tap follows each
+// tempo and division change.
 function syncDelayTime(g: AudioGraph): void {
   g.delayNode.delayTime.setTargetAtTime(params.echoDiv * secPerBeat, g.ctx.currentTime, 0.05);
 }
 
-// Start/stop playback. Resolves to the new playing state. The context is created
-// on first call (user gesture) and resumed in case it starts suspended; if it
-// stays suspended (some mobile/embedded browsers) or the MIDI fails to load,
-// report not-playing so the UI doesn't claim sound that isn't there.
+// Start or pause playback. The promise resolves to the new playing state. The
+// first call creates the context during the user gesture, and each call
+// resumes it in case it starts suspended. When it stays suspended, as in some
+// mobile and embedded browsers, or the MIDI fails to load, toggle reports not
+// playing, so the UI never claims a sound that is not there.
 export async function toggle(): Promise<boolean> {
   if (playing) {
-    pausedAt = positionBeats(); // pause, not stop: resume picks up here
+    pausedAt = positionBeats(); // pause, not stop, so the next start resumes here
     stopPlayback();
     return false;
   }
-  if (starting) return false; // an earlier click is already mid-start; ignore this one
+  if (starting) return false; // an earlier click is still starting, so ignore this one
   starting = true;
   try {
     const g = ensureChain();
@@ -873,10 +877,11 @@ export async function toggle(): Promise<boolean> {
     if (g.ctx.state !== "running") return false;
     const loaded = await loadSong();
     if (!loaded) return false; // MIDI failed to load
-    // selectTrack() may have switched the playlist entry while the fetch was
-    // in flight (its stale-guard leaves `song` null in that case). Starting
-    // the player on the orphaned result would deref a null song — stay
-    // paused instead; the switch already emitted the consistent state.
+    // selectTrack() might have switched the playlist entry while the fetch was
+    // in flight. `song` then stays null, because the stale guard in loadSong
+    // skips the assignment. Starting the player on the orphaned result reads a
+    // null song, so stay paused. The switch has already emitted the
+    // consistent state.
     if (loaded !== song) return false;
     playing = true;
     startPlayer(g);
@@ -887,8 +892,9 @@ export async function toggle(): Promise<boolean> {
   }
 }
 
-// Hard stop for the Studio transport: rewinds to the top, unlike toggle()'s
-// pause/resume. Emits even when already paused so the playhead UI rewinds too.
+// Hard stop for the Studio transport. Unlike the pause in toggle(), it rewinds
+// to the top. It emits even when already paused, so the playhead UI rewinds
+// too.
 export function stop(): void {
   pausedAt = 0;
   if (playing) stopPlayback();
@@ -915,9 +921,9 @@ export function songBpm(): number {
   return song?.bpm ?? 120;
 }
 
-// Override the tempo, reanchoring the loop so the playhead doesn't jump:
-// the current beat stays the current beat, only the beat length changes.
-// Notes already scheduled (≤0.2s ahead) ride out at the old timing.
+// Override the tempo and re-anchor the loop, so the playhead does not jump.
+// The current beat stays the current beat, and only the beat length changes.
+// Notes already scheduled, up to 0.2s ahead, keep the old timing.
 export function setBpm(value: number): void {
   bpmOverride = clamp(Math.round(value), 40, 240);
   if (graph && playing && song) {
@@ -931,17 +937,19 @@ export function setBpm(value: number): void {
   emit();
 }
 
-// Playhead position in beats into the current loop. While paused/stopped this
-// is the resume point (pause position, seek target, or 0 after a hard stop).
+// Playhead position in beats into the current loop. While nothing plays, the
+// position is the resume point: the pause position, the seek target, or 0
+// after a hard stop.
 export function positionBeats(): number {
   if (!graph || !playing || !song) return pausedAt;
   return clamp((graph.ctx.currentTime - loopBase) / secPerBeat, 0, song.durationBeats);
 }
 
-// Jump the transport to an absolute beat. Mid-playback this cuts every voice
-// (scheduled lookahead included — they'd be echoes of the old position) and
-// re-anchors the loop; the pump refills from the new spot on its next tick.
-// While paused it just moves the resume point.
+// Jump the transport to an absolute beat. During playback, seek cuts every
+// voice, including the scheduled lookahead, because those voices would echo
+// the old position. It then re-anchors the loop, and the pump refills from
+// the new spot on its next tick. While paused, seek moves only the resume
+// point.
 export function seek(beats: number): void {
   if (!song) return;
   const b = clamp(beats, 0, song.durationBeats);
@@ -951,7 +959,7 @@ export function seek(beats: number): void {
       try {
         v.stop();
       } catch {
-        // Already stopped/ended; ignore.
+        // The source has already stopped or ended.
       }
     }
     voices.clear();
@@ -961,8 +969,9 @@ export function seek(beats: number): void {
   emit();
 }
 
-// One-shot note preview through the live chain (piano-roll clicks and
-// transpose drags). Creates/resumes the context — callers are user gestures.
+// One-shot note preview through the live chain, for piano-roll clicks and
+// transpose drags. It creates or resumes the context, because every caller
+// runs in a user gesture.
 export function auditionNote(pitch: number, channel = 0): void {
   const g = ensureChain();
   if (!g) return;
@@ -971,7 +980,7 @@ export function auditionNote(pitch: number, channel = 0): void {
     if (g.ctx.state !== "running") return;
     const t = g.ctx.currentTime + 0.02;
     const n: MidiNote = { channel, pitch, start: 0, dur: 0, vel: 0.9 };
-    // Full gain regardless of the mixer: a preview should always be audible.
+    // Play at full gain whatever the mixer holds, so a preview is always audible.
     renderNote(g.ctx, g.master, n, t, 0.35, 1);
   });
 }

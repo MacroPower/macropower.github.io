@@ -148,7 +148,7 @@ describe("session write API", () => {
     const fs = buildFs(TEST_DATA);
     fs.mkdir("/home/me/d");
     fs.writeFile("/home/me/d/f", "keep\n");
-    // dst is the dir itself (target d/d) or an explicit path under it
+    // dst is the dir itself (target `d/d`) or an explicit path under it
     expect(fs.move("/home/me/d", "/home/me/d")).toBe("into itself");
     expect(fs.move("/home/me/d", "/home/me/d/x")).toBe("into itself");
     // the subtree never detached into a self-cycle
@@ -158,7 +158,7 @@ describe("session write API", () => {
     const fs = buildFs(TEST_DATA);
     fs.mkdir("/home/me/d");
     expect(fs.copy("/home/me/d", "/home/me/d", { recursive: true })).toBe("into itself");
-    expect(fs.lookup("/home/me/d/d")).toBeUndefined(); // nothing was created
+    expect(fs.lookup("/home/me/d/d")).toBeUndefined(); // the refused move created nothing
   });
   it("the subtree guard applies only to directory sources", () => {
     const fs = buildFs(TEST_DATA);

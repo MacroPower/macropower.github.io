@@ -1,5 +1,5 @@
 // Klondike solitaire, the rules only. This module knows nothing about the
-// DOM, the canvas, or timing: it holds the piles, validates and applies
+// DOM, the canvas, or timing. It holds the piles, validates and applies
 // moves, records an undo trail, and answers the questions the renderer asks
 // (hints, auto-complete, win). Everything visual lives in index.ts, so the
 // rules run headless under Vitest (klondike.test.ts).
@@ -58,8 +58,8 @@ export interface RecycleRecord {
 
 export type HistoryRecord = MoveRecord | DrawRecord | RecycleRecord;
 
-/** One suggested play: a run to drag (`from`/`index`) and where it goes, or
- *  a plain stock draw when nothing else is available. */
+/** One suggested play. It names a run to drag (`from` and `index`) and its
+ *  destination, or a plain stock draw when nothing else is available. */
 export type Hint =
   | { type: "move"; from: Loc; index: number; to: Loc }
   | { type: "draw" };
@@ -141,8 +141,9 @@ export class Klondike {
     return [...this.stock, ...this.waste, ...this.foundations.flat(), ...this.tableau.flat()];
   }
 
-  /** The run a player may pick up starting at `index` of `from`, or null
-   *  when that card cannot be moved (face down, buried in the waste, ...). */
+  /** The run that a player can lift, starting at `index` of `from`, or
+   *  null when that card cannot move, such as a face-down card or a card
+   *  under the top of the waste. */
   runAt(from: Loc, index: number): [Card, ...Card[]] | null {
     const pile = this.pile(from);
     const card = pile[index];
@@ -155,8 +156,8 @@ export class Klondike {
         return index === pile.length - 1 ? [card] : null;
       case "tableau":
         // Face-up tableau cards always form a valid run down to the top of
-        // the column (nothing else can be placed there), so any face-up card
-        // starts a movable run.
+        // the column, because no other card can land there, so any face-up
+        // card starts a movable run.
         return card.faceUp ? [card, ...pile.slice(index + 1)] : null;
     }
   }
@@ -276,8 +277,8 @@ export class Klondike {
 
   /** Where a click on `index` of `from` should send the run: its foundation
    *  when the single card fits, otherwise the first tableau column that
-   *  takes it. Whole-column moves of a king onto another empty column are
-   *  skipped as pointless. */
+   *  takes it. It skips moving a king's whole column onto another empty
+   *  column, because the move gains nothing. */
   autoTarget(from: Loc, index: number): Loc | null {
     const run = this.runAt(from, index);
     if (!run) return null;
@@ -355,7 +356,7 @@ export class Klondike {
     return hints;
   }
 
-  /** True once every remaining card is face up on the tableau: from here
+  /** True when every remaining card lies face up on the tableau. From there
    *  the game plays itself out to the foundations. */
   autoCompleteAvailable(): boolean {
     if (this.won()) return false;

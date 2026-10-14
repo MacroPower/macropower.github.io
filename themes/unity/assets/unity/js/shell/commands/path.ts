@@ -1,5 +1,5 @@
-// Path-string commands. basename/dirname are pure string operations (no VFS);
-// realpath resolves against the live cwd through the VFS.
+// Path-string commands. basename and dirname are pure string operations that
+// skip the VFS, and realpath resolves against the live cwd through the VFS.
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";

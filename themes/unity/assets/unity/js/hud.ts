@@ -1,17 +1,18 @@
-// The Unity HUD — "menus you type to". A plain Alt tap (chords cancel, so
-// Alt+Tab / Alt+B / emacs bindings in the terminal are untouched) opens a
-// search box that fuzzy-matches every actionable entry in the top panel's
-// menus and indicator dropdowns, and Enter runs the selected one through the
-// exact same dispatch path a mouse click would take. The index is rebuilt on
-// every open, so runtime menu mutations (the hotspot row flipping between
-// Enable and Disable, a Wi-Fi network becoming the connected one) are always
-// current. Open/close mechanics, reduce-motion, and the tap detector all
-// mirror dash.ts — the Dash and the HUD are siblings and should feel it.
+// The Unity HUD, "menus you type to". A plain Alt tap opens a search box that
+// fuzzy-matches every actionable entry in the top panel's menus and indicator
+// dropdowns. Chords cancel the tap, so Alt+Tab, Alt+B, and the emacs bindings
+// in the terminal stay untouched. Enter runs the selected entry through the
+// same dispatch path that a mouse click takes. The HUD rebuilds its index on
+// every open, so it always reflects the menus' changes at runtime. Such
+// changes include the hotspot row flipping between Enable and Disable and a
+// Wi-Fi network becoming the connected one.
 //
-// Unlike the Dash's real-focus tile grid, the HUD keeps focus in the input
-// and drives a virtual selection (aria-activedescendant over role=option
-// rows), which is how Unity's HUD behaved: arrows move the highlight, typing
-// keeps flowing into the query.
+// The open and close mechanics, reduce motion, and the tap detector all
+// follow dash.ts, because the Dash and the HUD are siblings and should feel
+// alike. Unlike the Dash's real-focus tile grid, the HUD keeps focus in the
+// input and drives a virtual selection (aria-activedescendant over
+// role=option rows), as Unity's HUD did. The arrows move the highlight, and
+// typing keeps flowing into the query.
 
 import { t, tn } from "./i18n";
 import { dispatchAction } from "./top-panel";
@@ -34,9 +35,9 @@ interface HudItem {
   exec: () => void;
 }
 
-// Subsequence test: every char of `q` appears in `hay` in order. This is the
-// loose end of the ranking — "ohl" still finds "Open hotspot link" — while
-// prefix/substring hits rank far above it.
+// Subsequence test: every char of `q` appears in `hay` in order. The test is
+// the loose end of the ranking, so "ohl" still finds "Open hotspot link", but
+// prefix and substring hits rank far above it.
 function subseq(q: string, hay: string): boolean {
   let i = 0;
   for (const ch of hay) {
@@ -74,7 +75,8 @@ function sentenceLabel(sentence: string, name: string): (span: HTMLElement) => v
   };
 }
 
-// Lower is better; null = no match. Tokens all have to land somewhere.
+// Lower is better, and null means no match. Every token has to land
+// somewhere.
 function score(item: HudItem, tokens: string[]): number | null {
   let total = 0;
   for (const t of tokens) {
@@ -132,7 +134,8 @@ export function initHud(): void {
       if (!key) continue;
       const dropdown = panel.querySelector<HTMLElement>(`[data-dropdown-for="${key}"]`);
       if (!dropdown) continue;
-      // Menubar triggers are labeled by their text, indicators by aria-label.
+      // Each menubar trigger takes its label from its text, and each indicator
+      // from its aria-label.
       const menu = trigger.dataset.menu
         ? (trigger.textContent ?? "").trim()
         : trigger.getAttribute("aria-label") ?? key;
@@ -150,8 +153,9 @@ export function initHud(): void {
         push(menu, label, src ? copyLabel(src) : (span) => { span.textContent = label; },
           action ? () => { void dispatchAction(action); } : () => el.click());
       }
-      // Wi-Fi rows have no data-action — connecting is a click on the row
-      // (top-panel.ts owns the semantics); skip the one already connected.
+      // Wi-Fi rows have no data-action, because a click on the row connects
+      // and top-panel.ts owns that behavior. Skip the network already
+      // connected.
       for (const net of Array.from(
         dropdown.querySelectorAll<HTMLButtonElement>("button[data-net-name]:not([data-net-on])"),
       )) {
@@ -189,9 +193,9 @@ export function initHud(): void {
     }
     selected = 0;
     // The arrow after the menu's name points along the reading direction.
-    // The name sits in a <bdi>, so the arrow takes the row's direction even
-    // when the name and the label both read the other way, as English
-    // labels do on a right-to-left page.
+    // The name sits in a <bdi>, so the arrow takes the row's direction. It
+    // does so even when the name and the label both read the other way, as
+    // English labels do on a right-to-left page.
     const arrow = inlineDirection(list) === "rtl" ? "◂" : "▸";
     list.replaceChildren(
       ...shown.map((item, i) => {
@@ -294,18 +298,19 @@ export function initHud(): void {
       if (item) run(item);
       return;
     }
-    // The input is the HUD's only stop; keep focus parked on it.
+    // The input is the HUD's only stop, so keep focus parked on it.
     if (e.key === "Tab") e.preventDefault();
   });
 
   input.addEventListener("input", render);
   backdrop?.addEventListener("pointerdown", close);
 
-  // Click-away: launcher / panel clicks land above the backdrop entirely
-  // (z 40/50 over the HUD's 38). Capture phase, because the top panel's menu
-  // triggers stopPropagation() on their clicks — in the bubble phase a
-  // trigger click would open its dropdown on top of a still-open HUD instead
-  // of dismissing it; closing first also lets a BFB click swap to the Dash.
+  // Click-away: launcher and panel clicks land above the backdrop entirely,
+  // because their z-indexes of 40 and 50 sit over the HUD's 38. Listen in the
+  // capture phase, because the top panel's menu triggers call
+  // stopPropagation() on their clicks. In the bubble phase, a trigger click
+  // would open its dropdown on top of a still-open HUD instead of dismissing
+  // it. Closing first also lets a BFB click swap to the Dash.
   document.addEventListener("click", (e) => {
     if (!visible) return;
     const target = eventElement(e);

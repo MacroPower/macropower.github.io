@@ -15,9 +15,9 @@ import { stripAnsi } from "./ansi";
 // parses them.
 const TITLE_RE = /\x1b\][02];([^\x07\x1b]*)(?:\x07|\x1b\\)/g;
 
-// A TerminalIO that buffers everything written to it. writeln appends a bare
-// "\n" (never "\r\n"), matching bash's line endings so stdout compares cleanly.
-// type() stands in for the keyboard.
+// A TerminalIO that buffers all its output. writeln appends a bare "\n",
+// never "\r\n", as bash ends its lines, so stdout compares cleanly. type()
+// stands in for the keyboard.
 export class CaptureTerminal implements TerminalIO {
   private buf = "";
   private readonly listeners: ((data: string) => void)[] = [];
@@ -92,8 +92,8 @@ export interface TestShell {
   /** The shell's terminal. Its text() holds what the shell wrote since the
    *  last clear(). */
   term: CaptureTerminal;
-  /** Execute one line; stdout/stderr are returned ANSI-stripped, status is the
-   *  exit code. Buffers are cleared before each call. */
+  /** Execute one line. Returns stdout and stderr with ANSI stripped, and the
+   *  exit code as status. Each call clears the buffers first. */
   run(line: string): RunResult;
   /** Send keys to the shell's line editor through term.type(). A line that
    *  Enter accepts runs through the read loop and enters history. */
@@ -145,16 +145,16 @@ export interface BashResult {
 
 // Conformance rows run through the *real* host bash with the real PATH and
 // vitest's cwd, so a filesystem-mutating program would touch the developer's
-// machine. The table is read-only by policy (FS-mutating behavior is covered by
-// in-memory makeShell golden tests, never here); this guard refuses to spawn a
-// program that names a mutating command so a stray row fails loudly instead of
-// running. `>`/`>>` are intentionally not blocked -- existing rows use fd dups
-// and `2>/dev/null`, and any real `>` target here would still be caught by the
-// command-name list if it mattered.
+// machine. The table stays read-only by policy, and the in-memory makeShell
+// golden tests cover behavior that changes files. This guard refuses to spawn
+// a program that names a mutating command, so a stray row fails loudly
+// instead of running. The guard lets `>` and `>>` through on purpose, because
+// existing rows use fd dups and `2>/dev/null`. The command-name list would
+// still catch a real `>` target here if it mattered.
 const MUTATING_COMMAND = /\b(rm|rmdir|mkdir|mv|cp|touch|tee|dd|ln|shred|truncate|chmod|chown|install|mkfifo|mknod)\b/;
 
-// Run a program through a clean, locale-pinned bash. --norc/--noprofile keep
-// it free of dotfile influence; LC_ALL=C fixes collation to byte order.
+// Run a program through a clean, locale-pinned bash. --norc and --noprofile
+// keep dotfiles out, and LC_ALL=C fixes collation to byte order.
 export function runBash(program: string): BashResult {
   if (MUTATING_COMMAND.test(program)) {
     throw new Error(
@@ -170,9 +170,10 @@ export function runBash(program: string): BashResult {
 }
 
 // Run `program` through our shell (line by line on one persistent shell) and
-// through real bash, asserting stdout and exit status agree. Only stdout and
-// status are compared; the capturing stderr sink is not diffed (bash stderr
-// formatting differs and is not in scope for the table).
+// through real bash, and assert that stdout and the exit status agree. The
+// check compares only stdout and the status and leaves the capturing stderr
+// sink out, because bash's stderr format differs and the table does not
+// cover it.
 export function expectMatchesBash(program: string): void {
   const sh = makeShell();
   let stdout = "";

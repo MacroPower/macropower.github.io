@@ -20,7 +20,7 @@ import { eventElement } from "./dom";
     toastTimer = window.setTimeout(() => toast.classList.remove("is-shown"), 2000);
   }
 
-  // A segmented control: the clicked button becomes the pressed one and
+  // A segmented control. The clicked button becomes the pressed one, and
   // `onPick` applies its value to the section's grid. The class marks the
   // pressed button for the stylesheet, and aria-pressed marks it for a
   // screen reader.

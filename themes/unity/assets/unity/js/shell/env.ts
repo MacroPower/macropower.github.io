@@ -7,7 +7,8 @@ export interface EnvHooks {
   status(): number;
 }
 
-// Parameters the shell computes rather than storing; always "set".
+// Parameters that the shell computes rather than stores. Each one is always
+// "set".
 const SPECIAL_PARAMS: ReadonlySet<string> = new Set(["?", "$", "RANDOM", "!", "#", "*", "@", "-", "0"]);
 
 export class Env {
@@ -45,24 +46,25 @@ export class Env {
     return this.exported.has(name);
   }
 
-  // Whether a parameter is set, distinguishing unset from null (empty). Backs
-  // ${VAR-word} vs ${VAR:-word}: the special params are always considered set.
+  // Whether a parameter is set, which tells unset apart from null (empty).
+  // ${VAR-word} and ${VAR:-word} differ on it, and the special params always
+  // count as set.
   isSet(name: string): boolean {
     if (SPECIAL_PARAMS.has(name)) return true;
     return this.vars.has(name);
   }
 
-  /** Variable names, sorted -- backs $-completion. */
+  /** Variable names, sorted, for $-completion. */
   names(): string[] {
     return [...this.vars.keys()].sort();
   }
 
-  /** Every variable as [name, value], sorted -- backs `set`. */
+  /** Every variable as [name, value], sorted, for `set`. */
   all(): [string, string][] {
     return this.names().map((n) => [n, this.vars.get(n) ?? ""]);
   }
 
-  /** Exported variables only, sorted -- backs `env` and bare `export`. */
+  /** Exported variables only, sorted, for `env` and bare `export`. */
   exports(): [string, string][] {
     return [...this.exported].sort().map((n) => [n, this.vars.get(n) ?? ""]);
   }
@@ -80,9 +82,9 @@ export class Env {
     for (const k of snap.exported) this.exported.add(k);
   }
 
-  // Resolve a parameter name to its value during expansion. The special
-  // parameters are computed; every other name reads the variable map, with an
-  // unset name expanding to the empty string (bash default).
+  // Resolve a parameter name to its value during expansion. The shell computes
+  // the special parameters, and every other name reads the variable map. As
+  // in bash, an unset name expands to the empty string.
   lookup(name: string): string {
     switch (name) {
       case "?": return String(this.hooks.status());

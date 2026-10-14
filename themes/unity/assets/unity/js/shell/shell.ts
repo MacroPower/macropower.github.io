@@ -16,10 +16,10 @@ export interface SocialLink {
   display: string;
 }
 
-// A blog post, emitted by Hugo from the site's blog section so the VFS need
-// not hardcode the list. `url` is the real permalink.
-// Posts carry only metadata (rendered as a card) -- their bodies would bloat
-// the inline data island.
+// A blog post, which Hugo emits from the site's blog section so the VFS need
+// not hardcode the list. `url` is the real permalink. Posts carry only
+// metadata, which renders as a card, because their bodies would bloat the
+// data island.
 export interface PostMeta {
   slug: string;
   title: string;
@@ -80,9 +80,9 @@ export interface ShellData {
   colors: string;
 }
 
-// A write target for a command's output. The terminal sink renders to xterm;
-// a capture sink buffers output to feed the next stage of a pipeline; the null
-// sink backs `> /dev/null`.
+// A write target for a command's output. The terminal sink renders to xterm,
+// a capture sink buffers output to feed the next stage of a pipeline, and the
+// null sink backs `> /dev/null`.
 export interface Sink {
   write(s: string): void;
   writeln(s: string): void;
@@ -114,18 +114,18 @@ export interface CommandContext {
   /** Exit status of the previous command. */
   status(): number;
   /** Ask the shell to end the session after the current line. The host's
-   *  ShellOptions.onExit (if any) runs instead of the next prompt; without a
-   *  handler the request is a no-op and the read loop continues. */
+   *  ShellOptions.onExit, when it has one, runs instead of the next prompt.
+   *  Without a handler, the request does nothing and the read loop continues. */
   requestExit(): void;
   term: TerminalIO;
   data: ShellData;
   vfs: Vfs;
 }
 
-// Completion context handed to a command's complete(): the readline token state
-// plus the shell data island, VFS state, and the live command/alias names. The
-// non-token fields are injected by Shell, not readline -- readline stays free
-// of VFS/shell knowledge.
+// Completion context that a command's complete() receives: the readline token
+// state plus the shell data island, the VFS state, and the live command and
+// alias names. Shell adds the fields beyond the token, not readline, so
+// readline knows nothing of the VFS or the shell.
 export interface CompleteContext extends CompletionContext {
   data: ShellData;
   cwd: string;
@@ -141,13 +141,14 @@ export interface Command {
   usage?: string;
   /** DESCRIPTION paragraph for `man`; defaults to the summary. */
   details?: string;
-  /** A shell builtin -- `type` reports it as such, and no /usr/bin program is
-   *  installed for it (so `which` does not find it), matching bash. External
-   *  commands (the default) get an executable stub under /usr/bin on register. */
+  /** A shell builtin. As in bash, `type` reports it as one, and it has no
+   *  program under /usr/bin, so `which` does not find it. External commands,
+   *  the default, get an executable stub under /usr/bin on register. */
   builtin?: boolean;
   hidden?: boolean;
   complete?(ctx: CompleteContext): string[];
-  /** Returns the exit status; an undefined return is treated as 0 (success). */
+  /** Returns the exit status. The shell reads an undefined return as 0,
+   *  success. */
   run(ctx: CommandContext): number | undefined;
 }
 
@@ -156,13 +157,14 @@ export interface ShellOptions {
   history?: string[];
   /** Persist the full history after each accepted line. */
   persist?: (history: readonly string[]) => void;
-  /** Sink for diagnostics; defaults to the terminal. Tests pass a capturing
+  /** Sink for diagnostics, the terminal by default. Tests pass a capturing
    *  sink to read stderr separately from stdout. */
   stderr?: Sink;
-  /** Called instead of the next prompt when a command requests exit (the
-   *  `exit` builtin). The host owns what "exit" means -- production disposes
-   *  the terminal and shows the reconnect overlay; headless shells that pass
-   *  no handler keep prompting, so exit degrades to a no-op there. */
+  /** Runs instead of the next prompt when a command, such as the `exit`
+   *  builtin, requests exit. The host decides what "exit" means. The home
+   *  terminal disposes the terminal and shows the reconnect overlay. A
+   *  headless shell that passes no handler keeps prompting, so exit does
+   *  nothing there. */
   onExit?: () => void;
 }
 
@@ -237,13 +239,13 @@ export function expandNoSplit(word: Word, exp: Expander): string {
   return out;
 }
 
-// Expand a word into fields. Unquoted expansion results undergo IFS word
-// splitting (space/tab/newline); literals and quoted parts do not. A bare
-// unquoted empty expansion contributes zero fields (a null word), while a
-// quoted "" contributes one empty field.
+// Expand a word into fields. IFS word splitting on space, tab, and newline
+// applies to unquoted expansion results, and not to literals or quoted parts.
+// A bare unquoted empty expansion contributes zero fields (a null word), but
+// a quoted "" contributes one empty field.
 export function expandFields(word: Word, exp: Expander): string[] {
-  // An empty quoted word ("") has no parts but still contributes one field;
-  // any other partless word (only possible when unquoted-and-empty) contributes
+  // An empty quoted word ("") has no parts but still contributes one field.
+  // Every other word without parts is unquoted and empty, and contributes
   // none.
   if (word.parts.length === 0) return word.quoted ? [""] : [];
   const fields: string[] = [];
@@ -304,9 +306,10 @@ function evalParamExpr(pe: ParamExpr, exp: Expander): string {
   }
 }
 
-// Remove the shortest (or longest) prefix/suffix of `value` matching `pattern`
-// (a glob). No leading-dot rule -- ${VAR#pat} patterns are plain globs. `k` is
-// the affix length tried; shortest scans up from 0, longest down from len.
+// Remove the shortest or longest prefix or suffix of `value` that matches the
+// glob `pattern`. The leading-dot rule does not apply, because ${VAR#pat}
+// patterns are plain globs. `k` is the affix length to try. The shortest
+// match scans up from 0, and the longest scans down from len.
 function stripAffix(value: string, pattern: string, end: "prefix" | "suffix", longest: boolean): string {
   const re = globToRegExp(pattern);
   const len = value.length;
@@ -375,8 +378,8 @@ export class Shell {
       write: (s) => { this.term.write(s); },
       writeln: (s) => { this.term.writeln(s); },
     };
-    // Diagnostics route here; production keeps rendering them to the terminal,
-    // while tests pass a capturing sink to read stderr apart from stdout.
+    // Diagnostics go here. The home terminal renders them to the terminal, and
+    // tests pass a capturing sink to read stderr apart from stdout.
     this.errSink = opts.stderr ?? this.termSink;
 
     this.readline = new Readline(term, {
@@ -414,8 +417,9 @@ export class Shell {
   register(...cmds: Command[]): void {
     for (const cmd of cmds) {
       this.registry.set(cmd.name, cmd);
-      // External programs gain a stub under /usr/bin so `which`/`type`/`ls`
-      // resolve to a path that actually exists; builtins and hidden eggs do not.
+      // Each external program gains a stub under /usr/bin, so `which`, `type`,
+      // and `ls` resolve to a path that exists. Builtins and hidden eggs get
+      // none.
       if (!cmd.builtin && !cmd.hidden) this.vfs.installBinary(cmd.name);
     }
   }
@@ -429,9 +433,8 @@ export class Shell {
     this.prompt();
   }
 
-  // Execute one line without the readline/prompt machinery, returning its exit
-  // status. The seam a headless driver (or a future `source`/scripting hook)
-  // runs lines through.
+  // Execute one line without the readline and prompt machinery, and return
+  // its exit status. A headless driver runs its lines through this method.
   runLine(line: string): number {
     this.exec(line);
     return this.status;
@@ -475,9 +478,9 @@ export class Shell {
 
   private onLine(line: string): void {
     this.exec(line);
-    // An exit request ends the read loop: hand the session to the host's
-    // onExit instead of prompting again. Without a handler the shell has
-    // nowhere to go, so it keeps prompting (headless/test shells).
+    // An exit request ends the read loop, so hand the session to the host's
+    // onExit instead of prompting again. Without a handler, as in headless and
+    // test shells, the shell has nowhere to go, so it keeps prompting.
     if (this.exitRequested) {
       this.exitRequested = false;
       if (this.onExit) { this.onExit(); return; }
@@ -498,8 +501,9 @@ export class Shell {
     this.execParsed(parsed, this.termSink);
   }
 
-  // Execute a parsed program, sending the terminal-bound stage's stdout to
-  // `finalOut` (the terminal normally; a capture sink for command substitution).
+  // Execute a parsed program. The stdout of the stage that ends at the
+  // terminal goes to `finalOut`, which is the terminal for a typed line and a
+  // capture sink for command substitution.
   private execParsed(parsed: ParseResult, finalOut: Sink): void {
     if (parsed.error) {
       this.errSink.writeln(color(PALETTE.red, `bash: ${parsed.error}`));
@@ -535,10 +539,10 @@ export class Shell {
     }
   }
 
-  // Run a command substitution in an isolated subshell: cwd and the full
-  // variable state are snapshotted and restored so `$(cd /etc)` does not move
-  // the outer shell. `$?` is intentionally left as the sub's last status (bash
-  // behavior). All trailing newlines are stripped, as bash collapses them.
+  // Run a command substitution in an isolated subshell. runSub saves and
+  // restores cwd and the full variable state, so `$(cd /etc)` does not move
+  // the outer shell. Like bash, it leaves `$?` as the last status of the
+  // substitution. It strips every trailing newline, as bash does.
   private runSub(prog: ParseResult): string {
     const savedCwd = this.cwdPath;
     const savedEnv = this.env.snapshot();
@@ -566,8 +570,9 @@ export class Shell {
       let stdinOverride: string[] | null = null;
       const fileSinks: FileSink[] = [];
 
-      // Redirects apply left-to-right: a dup (2>&1) aliases whatever the target
-      // fd points at *at that moment*, so `> f 2>&1` and `2>&1 > f` diverge.
+      // Redirects apply from left to right. A dup (2>&1) copies the target
+      // fd's destination *at that moment*, so `> f 2>&1` and `2>&1 > f`
+      // diverge.
       let blocked = false;
       for (const r of cmd.redirs) {
         if (r.kind === "read") {
@@ -575,7 +580,7 @@ export class Shell {
           const node = this.vfs.lookup(this.vfs.resolvePath(this.cwdPath, target));
           if (!node) { this.errSink.writeln(color(PALETTE.red, `bash: ${target}: No such file or directory`)); blocked = true; break; }
           if (node.kind === "dir") { this.errSink.writeln(color(PALETTE.red, `bash: ${target}: Is a directory`)); blocked = true; break; }
-          // Last `<` wins; overrides any upstream pipe output.
+          // The last `<` wins and overrides any upstream pipe output.
           stdinOverride = node.content().map(stripAnsi);
         } else if (r.kind === "file") {
           const target = expandNoSplit(r.target, exp);
@@ -583,9 +588,10 @@ export class Shell {
             if (r.fd === 2) err = NULL_SINK; else out = NULL_SINK;
             continue;
           }
-          // Validate parent existence at setup (bash opens redirs before
-          // running); the target-is-a-directory case is surfaced by writeFile
-          // at flush time, so a bare `> existing-dir` still reports it.
+          // Check that the parent exists at setup, because bash opens each
+          // redirect before it runs the command. writeFile reports a target
+          // that is a directory at flush time, so a bare `> existing-dir`
+          // still reports it.
           const abs = this.vfs.resolvePath(this.cwdPath, target);
           const parent = this.vfs.lookup(this.vfs.resolvePath(abs, ".."));
           if (parent?.kind !== "dir") {
@@ -602,10 +608,11 @@ export class Shell {
           out = err;
         }
       }
-      // The command only runs if every redirect opened; a failure leaves it
-      // unexecuted (status 1) but still commits the file redirects staged before
-      // the failure, so `echo x > f < nope` truncates f the way bash does (its
-      // buffer is empty since the command never wrote).
+      // The command runs only when every redirect opened. After a failure the
+      // command does not run (status 1), but the shell still commits the file
+      // redirects it staged before the failure. `echo x > f < nope` therefore
+      // truncates f the way bash does, and f stays empty because the command
+      // never wrote.
       if (blocked) code = 1;
       else code = this.runCommand(cmd, stdinOverride ?? stdin, out, err);
 
@@ -623,8 +630,8 @@ export class Shell {
   private runCommand(cmd: SimpleCommand, stdin: string[], out: Sink, err: Sink): number {
     const exp = this.expander();
 
-    // Leading NAME=value assignments configure the environment. The RHS is
-    // expanded without word splitting (bash assignment semantics).
+    // Leading NAME=value assignments configure the environment. As in a bash
+    // assignment, the RHS expands without word splitting.
     let wi = 0;
     for (const w of cmd.words) {
       if (!isAssignmentWord(w)) break;
@@ -656,8 +663,8 @@ export class Shell {
     }
     // External programs run only while their binary still exists on $PATH:
     // delete /usr/bin/ls (or wipe the tree) and `ls` becomes "command not
-    // found", just like bash. Builtins need no file, and hidden eggs ship no
-    // stub, so both bypass the check.
+    // found", just like bash. Builtins do not need a file, and hidden eggs
+    // never get a stub, so both bypass the check.
     if (!command.builtin && !command.hidden
       && !this.vfs.resolveCommand(name, this.cwdPath, this.env.lookup("PATH"))) {
       err.writeln(color(PALETTE.red, `bash: ${name}: command not found`));
@@ -686,7 +693,7 @@ export class Shell {
 
   private writeNotFound(name: string, err: Sink, isTTY: boolean): void {
     err.writeln(color(PALETTE.red, `bash: ${name}: command not found`));
-    // Keep the friendly hint, but only on an interactive terminal -- a pipe or
+    // Keep the friendly hint, but only on an interactive terminal. A pipe or a
     // capture must see the bash-accurate message alone.
     if (isTTY) {
       const suggestion = this.closest(name);

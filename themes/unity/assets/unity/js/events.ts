@@ -5,7 +5,7 @@
 
 import type { UPPageWindowState } from "./types";
 
-/** Fires on document once the desktop has started. */
+/** Fires on document when the desktop has started. */
 export const READY_EVENT = "up:ready";
 
 /** The class body carries after the desktop has started. app.ts adds it

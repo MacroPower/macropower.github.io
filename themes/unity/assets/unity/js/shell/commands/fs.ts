@@ -65,8 +65,9 @@ function dirRows(node: DirNode, showAll: boolean): Row[] {
 
 function renderShort(ctx: CommandContext, rows: Row[]): void {
   if (rows.length === 0) return;
-  // One entry per line when piped/redirected (like real ls to a non-tty), so
-  // downstream filters see each name on its own line; columns only on a tty.
+  // One entry per line when piped or redirected, like real ls to a non-tty,
+  // so downstream filters see each name on its own line. Columns appear only
+  // on a tty.
   if (!ctx.isTTY) {
     for (const row of rows) ctx.writeln(cell(row));
     return;

@@ -1,12 +1,14 @@
-// Minimal Standard MIDI File parser. Reads an ArrayBuffer (format 0 or 1) into a
-// flat, time-ordered note list with beat-based timing, plus the tempo. Just
-// enough to drive the player in audio.ts — no controllers, no pitch-bend.
-// Times are in beats (quarter notes); the player converts to seconds via the
-// bpm. Multi-tempo files are honored by warping: every note's raw beat
+// Minimal Standard MIDI File parser. Reads an ArrayBuffer (format 0 or 1) into
+// a flat, time-ordered note list with beat-based timing, plus the tempo. It
+// reads just enough to drive the player in audio.ts, so it skips controllers
+// and pitch bend. Times are in beats (quarter notes), and the player converts
+// them to seconds through the bpm.
+//
+// The parser honors a multi-tempo file by warping it. Each note's raw beat
 // position runs through the file's tempo map into real seconds and back into
-// dominant-tempo-equivalent beats, so a single-tempo player reproduces the
-// original pacing exactly (rubato, count-ins, and section changes included)
-// while the rest of the pipeline keeps thinking in plain beats.
+// beats at the dominant tempo. A single-tempo player then reproduces the
+// original pacing exactly, rubato, count-ins, and section changes included,
+// and the rest of the pipeline keeps working in plain beats.
 
 export interface MidiNote {
   channel: number; // 0-15 (channel 9 is the GM drum kit)
@@ -92,9 +94,10 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
 
   notes.sort((a, b) => a.start - b.start);
 
-  // Pick the dominant tempo — the one active for the most beats — rather than
-  // the first or last. MIDIs of pop songs often bookend a steady body with a
-  // fast count-in and a slowing outro; those shouldn't set the nominal speed.
+  // Pick the dominant tempo, the one active for the most beats, rather than
+  // the first or the last. MIDI files of pop songs often bookend a steady body
+  // with a fast count-in and a slowing outro, and those should not set the
+  // nominal speed.
   tempos.sort((a, b) => a.tick - b.tick);
   let rawEnd = 0;
   for (const n of notes) rawEnd = Math.max(rawEnd, n.start + n.dur);
@@ -108,11 +111,12 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
   const bpm = 60000000 / us;
 
   // Warp multi-tempo files: map each raw beat through the tempo map into real
-  // seconds, then back into beats at the dominant tempo. Sections authored at
-  // other tempos land between the nominal beat grid but play at their true
-  // speed; files with a single uniform tempo pass through unchanged (one
-  // segment — the map is identity). The SMF default of 120 BPM applies until
-  // the first set_tempo, so a lone late set_tempo still means two segments.
+  // seconds, then back into beats at the dominant tempo. Sections that the
+  // author wrote at other tempos land between the nominal beat grid but play
+  // at their true speed. A file with a single uniform tempo passes through
+  // unchanged, because its map has one segment and is the identity. The SMF
+  // default of 120 BPM applies until the first set_tempo, so a lone late
+  // set_tempo still means two segments.
   interface Seg { beat: number; spb: number; sec: number; }
   const segs: Seg[] = [];
   const firstTempo = tempos[0];
@@ -136,7 +140,7 @@ export function parseMidi(buf: ArrayBuffer): MidiSong {
       n.start = s * scale;
       n.dur = Math.max(0, e - s) * scale;
     }
-    // The warp is monotonic, so the start-sorted order is preserved.
+    // The warp is monotonic, so the notes keep their start order.
   }
 
   // Trim any silent lead-in so playback (and each loop) starts on the first note

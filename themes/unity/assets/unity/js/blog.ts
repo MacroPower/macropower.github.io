@@ -128,9 +128,9 @@ interface SortState {
     const onScroll = (): void => {
       if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); }
     };
-    // Capture-phase so element scroll events from any container reach us:
-    // the real scroller can change identity after init (the reader pane
-    // only becomes scrollable once images load).
+    // Listen in the capture phase, so scroll events from any container reach
+    // this listener. The real scroller can change after init, because the
+    // reader pane becomes scrollable only after its images load.
     document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     window.addEventListener("resize", updateProgress);
     updateProgress();

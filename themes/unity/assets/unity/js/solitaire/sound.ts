@@ -1,14 +1,16 @@
 // Sound effects for the solitaire table, synthesized on the fly with Web
-// Audio (no samples to ship). The AudioContext is created lazily by
-// `unlock()` inside a user gesture so browser autoplay policy is satisfied,
-// and every effect degrades to silence when the context is missing or
-// suspended. Browsers disagree on which gesture counts: Chrome accepts a
-// mouse pointerdown but not a touch one, and WebKit wants mousedown,
-// touchend, click, or keydown and may leave a resume() from anything else
-// pending forever. So the table calls `unlock()` from every one of those,
-// `unlock()` also starts a silent buffer inside the gesture (the classic
-// iOS trick), and `play()` keeps retrying resume() until the context
-// reports running. Session-only: mute resets on reload.
+// Audio, so the theme ships no samples. `unlock()` creates the AudioContext
+// inside a user gesture, which satisfies the browser's autoplay policy, and
+// every effect falls silent when the context is missing or suspended. Mute
+// lasts for the session only and resets on reload.
+//
+// Browsers disagree on which gesture counts. Chrome accepts a mouse
+// pointerdown but not a touch one. WebKit wants mousedown, touchend, click,
+// or keydown, and it might leave a resume() from anything else pending
+// forever. The table therefore calls `unlock()` from every one of those.
+// `unlock()` also starts a silent buffer inside the gesture (the classic iOS
+// trick), and `play()` keeps retrying resume() until the context reports
+// running.
 
 export type SfxName =
   | "pickup" | "place" | "flip" | "invalid" | "foundation" | "deal"
@@ -29,17 +31,17 @@ export class Sfx {
   private lastBounce = 0;
   muted = false;
 
-  /** Create the context, or nudge a suspended one awake. Call from any
-   *  gesture handler; repeated calls are cheap. */
+  /** Create the context, or nudge a suspended one awake. Any gesture handler
+   *  can call it, and repeated calls cost little. */
   unlock(): void {
     if (!this.graph) {
       // Firefox with media.webaudio.enabled off has no Web Audio.
       if (typeof AudioContext === "undefined") return;
       const ctx = new AudioContext();
       const master = ctx.createGain();
-      // Scheduled rather than assigned: the mute toggle goes through the
-      // automation timeline, and this keeps the startup level on the same
-      // path.
+      // Schedule the level rather than assign it. The mute toggle goes
+      // through the automation timeline, and scheduling keeps the startup
+      // level on the same path.
       master.gain.setValueAtTime(this.muted ? 0 : 0.6, 0);
       const comp = ctx.createDynamicsCompressor();
       comp.threshold.value = -18;
@@ -61,7 +63,8 @@ export class Sfx {
       src.connect(ctx.destination);
       src.start(0);
     } catch {
-      // Older WebKit throws on start() outside a gesture; nothing to do.
+      // Older WebKit throws on start() outside a gesture, and the resume()
+      // call still stands, so ignore the error.
     }
   }
 
@@ -158,7 +161,7 @@ export class Sfx {
     return this.noise;
   }
 
-  /** A filtered noise burst with a fast decay; `sweepTo` glides the filter. */
+  /** A filtered noise burst with a fast decay. `sweepTo` glides the filter. */
   private burst(g: SfxGraph, t: number, dur: number, type: BiquadFilterType, freq: number, sweepTo: number, peak: number, q: number): void {
     const ctx = g.ctx;
     const src = ctx.createBufferSource();

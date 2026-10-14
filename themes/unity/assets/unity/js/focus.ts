@@ -1,8 +1,8 @@
-// Which floating window (trash, studio) currently has focus, if any. A single
-// slot models Unity's focus rules: focusing one window implicitly unfocuses the
-// others, and the page window is focused exactly when no overlay window is.
-// page-window.ts, trash.ts, daw.ts, and top-panel.ts all subscribe so only one
-// window/title looks focused at a time.
+// Which floating window (trash, studio) has focus, if any. A single slot
+// models Unity's focus rules. Focusing one window unfocuses the others, and
+// the page window has focus exactly when no overlay window does.
+// page-window.ts, trash.ts, daw.ts, and top-panel.ts all subscribe, so only
+// one window and its title look focused at a time.
 
 export type OverlayWindow = "trash" | "studio";
 

@@ -7,8 +7,9 @@
 // $(...) / `...` command substitutions, and $(( )) arithmetic. The shell
 // expands those into fields just before a command runs, so $? and same-line
 // assignments read live values. Quoting gates expansion the way a real shell
-// does -- a parameter inside single quotes is literal -- and tracks per-part
-// quoting so unquoted expansions can be word-split while quoted ones are not.
+// does, so a parameter inside single quotes is literal. The parser also
+// tracks the quoting of each part, so the shell word-splits unquoted
+// expansions but not quoted ones.
 
 // Source for tilde expansion (resolved while parsing).
 export interface ParseEnv {
@@ -40,14 +41,14 @@ export interface Word {
   /** True if the word contained quotes. A word whose only content is an empty
    *  quote ("") has no parts but quoted=true, so it still yields one field. */
   quoted: boolean;
-  /** True when an unquoted literal glob metacharacter (* ? [) was consumed,
-   *  marking the word eligible for filename globbing after expansion. */
+  /** True when the word holds an unquoted literal glob metacharacter (* ? [).
+   *  Such a word takes part in filename globbing after expansion. */
   hasUnquotedGlob: boolean;
 }
 
-// A redirection on a simple command. "file" sends an fd to a path (the session
-// VFS is writable, so the file is created/appended); "read" feeds a file to
-// stdin (`< file`); "dup" points one fd at another (2>&1).
+// A redirection on a simple command. "file" sends an fd to a path, and the
+// writable session VFS creates the file or appends to it. "read" feeds a file
+// to stdin (`< file`), and "dup" points one fd at another (2>&1).
 export type Redirect =
   | { kind: "file"; fd: number; op: ">" | ">>"; target: Word }
   | { kind: "read"; fd: 0; target: Word }
@@ -69,8 +70,9 @@ export interface ParseResult {
   error?: string;
 }
 
-// A redirection token emitted by the tokenizer. "file"/"both" await a target
-// word; "dup" stands alone. "both" is &> / &>> (stdout+stderr to one file).
+// A redirection token that the tokenizer emits. "file" and "both" await a
+// target word, and "dup" stands alone. "both" is &> or &>>, which sends
+// stdout and stderr to one file.
 type RedirSpec =
   | { kind: "file"; fd: number; op: ">" | ">>" }
   | { kind: "read"; fd: 0 }
@@ -88,9 +90,9 @@ const SPECIAL_PARAM = "?$#!*@-";
 
 const EMPTY_WORD: Readonly<Word> = { parts: [], quoted: false, hasUnquotedGlob: false };
 
-// Scan a balanced run starting just after an opening delimiter, returning the
-// inner text and the index just past the closing delimiter. `open`/`close`
-// nest; returns next=-1 when the closing delimiter is missing.
+// Scan a balanced run that starts just after an opening delimiter. Returns
+// the inner text and the index just past the closing delimiter, or next=-1
+// when the closing delimiter is missing. `open` and `close` nest.
 function scanBalanced(s: string, start: number, open: string, close: string): { inner: string; next: number } {
   let depth = 1;
   let i = start;
@@ -119,7 +121,8 @@ function readBacktick(s: string, i: number, env: ParseEnv): { part: WordPart; ne
 
 // Split a ${...} brace body into a ParamExpr (or a plain {param}).
 function parseBraceBody(body: string, env: ParseEnv): WordPart {
-  // ${#NAME} -- string length (but ${#} alone is the positional-count param).
+  // ${#NAME} is the string length, but ${#} alone is the positional-count
+  // param.
   if (body[0] === "#" && body.length > 1) {
     return { paramExpr: { name: readName(body, 1).name, op: "len", word: EMPTY_WORD } };
   }

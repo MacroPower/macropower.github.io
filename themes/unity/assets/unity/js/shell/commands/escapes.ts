@@ -1,9 +1,9 @@
 // Shared C-style backslash-escape decoding for the echo and printf builtins.
-// Decodes the escape starting at s[i] (which must be "\\"), returning the
+// Decodes the escape that starts at s[i], which must be "\\". Returns the
 // decoded text and how many source characters it spans, so callers can both
-// emit the text and advance their cursor from one result. Unknown escapes are
-// returned verbatim (backslash + char). echo's \c (stop output) is handled by
-// that caller before decoding, since printf treats \c literally.
+// emit the text and advance their cursor from one result. An unknown escape
+// comes back as written (backslash + char). The echo caller handles \c (stop
+// output) before decoding, because printf treats \c literally.
 
 export function decodeEscape(s: string, i: number): { text: string; len: number } {
   const c = s[i + 1];

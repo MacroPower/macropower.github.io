@@ -14,8 +14,8 @@ interface DialogEntry {
   buttons: readonly UPDialogButton[];
   // Resolves with one of `buttons`' ids or with null, never another string.
   resolve: (value: string | null) => void;
-  // Focus returns here on dismiss (the control that opened the dialog; for
-  // stacked dialogs, a control inside the dialog below).
+  // Focus returns here on dismiss. It holds the control that opened the
+  // dialog, or, for a stacked dialog, a control inside the dialog underneath.
   opener: HTMLElement | null;
 }
 
@@ -88,8 +88,8 @@ function installDialogDrag(d: DialogEntry): void {
   let oy = 0;
   let activeId: number | null = null;
   titlebar.addEventListener("pointerdown", (e) => {
-    // Primary button/finger only: a right-mousedown opens the context menu,
-    // which swallows the matching up and would leave the dialog gliding.
+    // Primary button or finger only. A right-mousedown opens the context menu,
+    // which swallows the matching up and leaves the dialog gliding.
     if (e.button !== 0 || !e.isPrimary || activeId !== null) return;
     const target = e.target;
     if (!(target instanceof Element)) return;
@@ -211,8 +211,8 @@ function uiDialog<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Pr
       const custom = document.createElement("div");
       custom.className = "up-dlg-custom";
       // Slot into the `.up-dlg-content` column (cdetailsEl's parent), after the
-      // body/details and before the footer, so custom controls flow with the
-      // dialog text rather than spanning the icon gutter.
+      // body and details and before the footer, so custom controls flow with
+      // the dialog text rather than spanning the icon gutter.
       cdetailsEl.parentElement?.appendChild(custom);
       opts.render(custom);
     }
@@ -283,9 +283,9 @@ export function initDialogs(): void {
       return;
     }
     if (e.key === "Tab") {
-      // aria-modal hides the page behind the backdrop from screen readers;
-      // contain Tab so DOM focus cannot wander out there either. Handles
-      // stacked dialogs, which sibling `inert` could not.
+      // aria-modal hides the page behind the backdrop from screen readers.
+      // Contain Tab too, so DOM focus cannot wander out there either. The
+      // containment handles stacked dialogs, which sibling `inert` could not.
       const els = focusables(top);
       if (!els.length) {
         e.preventDefault();
@@ -307,12 +307,12 @@ export function initDialogs(): void {
       return;
     }
     if (e.key === "Enter") {
-      // Enter on a focused control activates that control natively; the
-      // confirm-the-primary binding only applies when focus is elsewhere
-      // (e.g. still on the dialog root after open). Without this, Tab to
-      // Cancel + Enter fired the primary -- destructive in the trash
-      // confirmations -- and Enter on the Preferences switch closed the
-      // dialog instead of toggling it.
+      // Enter on a focused control activates that control natively. The
+      // binding that confirms the primary applies only when focus is
+      // elsewhere, such as on the dialog root after open. Without this check,
+      // Tab to Cancel and then Enter would fire the primary, which destroys
+      // files in the trash confirmations. Enter on the Preferences switch
+      // would also close the dialog instead of toggling the switch.
       const active = document.activeElement;
       if (
         active instanceof HTMLElement &&

@@ -1,11 +1,11 @@
 // Pixel art for the solitaire table: a 5x7 bitmap font, suit pips, the
-// face-card busts, the aubergine card back, and the empty-slot outlines. All
-// of it is authored as strings of '#'/'.' (or a per-sprite legend) and
-// rasterized with 1px fillRects at the table's logical resolution; index.ts
-// upscales the whole frame with nearest-neighbor sampling, which is what
-// gives the game its chunky Balatro look. Card faces and backs are drawn
-// once into offscreen canvases and cached, so a frame is only drawImage
-// calls.
+// face-card busts, the aubergine card back, and the empty-slot outlines. Each
+// sprite's source is strings of '#' and '.', or of a per-sprite legend, and
+// this module rasterizes it with 1px fillRects at the table's logical
+// resolution. index.ts upscales the whole frame with nearest-neighbor
+// sampling, which gives the game its chunky Balatro look. Card faces and
+// backs draw once into offscreen canvases that this module caches, so a
+// frame is only drawImage calls.
 
 import { isRed, itemAt, RANK_LABELS, type Suit } from "./klondike";
 

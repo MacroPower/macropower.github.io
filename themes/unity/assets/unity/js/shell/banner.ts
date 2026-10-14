@@ -15,10 +15,11 @@ import {
 
 const GAP = 3; // columns between the ASCII art and the info block
 
-// Applies the color-mask (assets/unity/home/colors.txt) over a single ASCII art line,
-// grouping same-colored runs into truecolor SGR sequences. Colored runs reset
-// only the foreground (FG_DEFAULT), never the full attributes, so a line-level
-// BOLD wrapper survives across every run -- the whole art renders semi-bold.
+// Applies the color mask (assets/unity/home/colors.txt) over a single ASCII
+// art line and wraps each run of one color in a truecolor SGR sequence. Each
+// colored run resets only the foreground (FG_DEFAULT), never the full
+// attributes, so a line-level BOLD wrapper survives across every run and the
+// whole art renders semi-bold.
 function colorizeLine(line: string, mask: string): string {
   let out = "";
   let runHex = "";
@@ -52,19 +53,20 @@ function paletteRow(hexes: string[]): string {
   return hexes.map((h) => `${bg(h)}   ${RESET}`).join("");
 }
 
-// A social row's rendered (post-truncation) display text mapped to its full
-// URL, so the renderer can linkify the bare-domain display the web-links addon
-// would otherwise ignore (it only matches full http(s) URLs).
+// A social row's display text after truncation, mapped to its full URL. The
+// web-links addon matches only full http and https URLs and so ignores the
+// bare-domain display, and the renderer links that display through this map.
 export interface BannerLink {
   text: string;
   url: string;
 }
 
-// Builds the info block: header, rule, Name/Title/Uptime rows, social links
-// (trimmed display form), and the two color-swatch rows. `valueWidth` caps the
-// value column so no line exceeds the terminal width and wraps -- a wrap would
-// shove rows out of alignment. Returns the rendered social display strings as
-// link annotations so the renderer can make them clickable.
+// Builds the info block: the header, the rule, the Name, Title, Focus, and
+// Uptime rows, the social links in their trimmed display form, and the two
+// color-swatch rows. `valueWidth` caps the value column so no line exceeds the
+// terminal width and wraps, because a wrap would shove rows out of alignment.
+// Returns the rendered social display strings as link annotations, so the
+// renderer can make them clickable.
 function infoLines(
   data: ShellData,
   labelWidth: number,
@@ -79,8 +81,8 @@ function infoLines(
 
   const lines: string[] = [header, rule];
   const links: BannerLink[] = [];
-  // title/focus come from optional site params; absent ones drop out
-  // instead of rendering a labeled blank.
+  // The title and focus rows come from optional site params. A row whose
+  // param is absent drops out instead of rendering a labeled blank.
   lines.push(row("name", data.name, PALETTE.fg));
   if (data.title) lines.push(row("title", data.title, PALETTE.fg));
   if (data.focus) lines.push(row("focus", data.focus, PALETTE.fg));
@@ -107,11 +109,11 @@ const MIN_VALUE = 12; // value column narrower than this -> drop the art
 
 /**
  * Renders the neofetch banner as an array of ANSI lines sized to `cols`.
- * Side-by-side (art left, info right) when wide enough; otherwise the art is
- * skipped entirely -- clipping it to `cols` would slice glyphs mid-character
- * (the old SSR design likewise hid the art under 560px) -- and the info block
- * renders alone at full width. Either way the info value column is truncated
- * so no line wraps, which would break alignment.
+ * When the terminal is wide enough, the art and the info sit side by side,
+ * with the art on the left. Otherwise the banner drops the art, because
+ * clipping it to `cols` would slice glyphs mid-character, and the info block
+ * renders alone at full width. Either way the banner truncates the info's
+ * value column, so no line wraps and breaks the alignment.
  */
 export function renderBanner(data: ShellData, cols: number): { lines: string[]; links: BannerLink[] } {
   const artLines = data.ascii.replace(/\n+$/, "").split("\n");

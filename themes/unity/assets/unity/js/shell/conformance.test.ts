@@ -1,8 +1,9 @@
-// Differential tests: the same program is run through our shell and through
-// real bash, asserting stdout and exit status agree. Auto-skips when bash is
-// absent. Only commands that are not TTY-format-sensitive appear here (echo,
-// printf, test/[, true/false, arithmetic, cat/wc -l on stdin); ls/grep -n
-// columns, globbing, and multi-column wc are JS-only golden tests elsewhere.
+// Differential tests: each program runs through our shell and through real
+// bash, and the test asserts that stdout and the exit status agree. The tests
+// skip themselves when bash is absent. Only commands whose output does not
+// depend on TTY formatting appear here: echo, printf, test and [, true and
+// false, arithmetic, and cat and wc -l on stdin. The columns of ls and
+// grep -n, globbing, and multi-column wc have JS-only golden tests elsewhere.
 
 import { describe, it } from "vitest";
 import { bashAvailable, expectMatchesBash, makeShell, runBash } from "./testkit";
@@ -95,9 +96,9 @@ const ROWS: string[] = [
   "echo -nx hi",
   "echo -x hi",
 
-  // --- Phase 5: pure stdin/arg coreutils filters ----------------------------
-  // These resolve to host coreutils (GNU on the dev/CI image); rows are kept to
-  // behaviors identical across coreutils variants.
+  // --- Phase 5: coreutils filters over stdin and arguments ------------------
+  // These resolve to the host's coreutils, GNU on the dev and CI image, so the
+  // rows keep to behaviors that every coreutils variant shares.
   R`printf 'a:b:c\n' | cut -d: -f2`,
   R`printf 'a:b:c\n' | cut -d: -f1,3`,
   R`printf 'a:b:c:d\n' | cut -d: -f2-`,
@@ -125,8 +126,9 @@ describe.skipIf(!bashAvailable())("bash conformance", () => {
 });
 
 // The harness must never spawn a filesystem-mutating program against the real
-// host (FS-mutating behavior is covered by in-memory makeShell tests). This
-// guard runs regardless of bash availability -- it throws before any spawn.
+// host. The in-memory makeShell tests cover behavior that changes files
+// instead. This guard runs whether or not bash is present, because it throws
+// before any spawn.
 describe("runBash refuses to mutate the host filesystem", () => {
   for (const danger of ["rm -rf /", "rm -rf --no-preserve-root /", "mkdir x", "touch y", "echo hi | tee z"]) {
     it(`rejects: ${danger}`, () => {
@@ -135,8 +137,8 @@ describe("runBash refuses to mutate the host filesystem", () => {
   }
 });
 
-// Nondeterministic / DOM-bound parameters are asserted in isolation, never
-// diffed against bash.
+// Parameters that are nondeterministic or bound to the DOM get assertions of
+// their own and never a diff against bash.
 describe("nondeterministic params (JS-only)", () => {
   it("$$ is a stable positive integer", () => {
     const sh = makeShell();

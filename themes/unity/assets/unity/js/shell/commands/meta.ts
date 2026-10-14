@@ -96,8 +96,9 @@ export const echo: Command = {
     let args = ctx.args;
     let newline = true;
     let escapes = false;
-    // Leading flag tokens are exactly -, then one or more of n/e/E; the first
-    // token with any other char (or a non-flag) stops parsing and is an operand.
+    // Each leading flag token is exactly -, then one or more of n, e, and E.
+    // The first token with any other char, or a non-flag, stops parsing and
+    // counts as an operand.
     while (args.length) {
       const a = args[0] ?? "";
       if (a.length < 2 || a[0] !== "-" || ![...a.slice(1)].every((c) => "neE".includes(c))) break;

@@ -25,10 +25,10 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
     preview.innerHTML = initialPreviewHTML;
   }
 
-  // Selection model driven by projects-desktop. The anchor is both the range
-  // origin for Shift-click and the preview source when one tile is shown. The
-  // Set/anchor mechanics live in desktop-select (shared with trash.ts); this
-  // page contributes the preview-pane painting via onRender.
+  // Selection model that projects-desktop drives. The anchor is both the range
+  // origin for Shift-click and the preview source when the pane shows one
+  // tile. The Set and anchor mechanics live in desktop-select, which trash.ts
+  // shares, and this page adds the preview-pane painting through onRender.
   const selection = createSelection({ tiles, onRender: renderPreviewPane });
 
   function renderPreviewPane(): void {
@@ -45,9 +45,9 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
   let currentFilter = "all";
 
-  // Hugo decides which of the starred, recent, and forks filters each tile
-  // belongs to (data-filters), so the thresholds live only in the theme's
-  // params and the sidebar counts always agree with the grid.
+  // Hugo writes each tile's filters (starred, recent, forks) into
+  // data-filters, so the thresholds live only in the theme's params and the
+  // sidebar counts always agree with the grid.
   function filterMatches(tile: HTMLElement): boolean {
     if (currentFilter === "all") return true;
     if (currentFilter.startsWith("lang:")) {
@@ -204,8 +204,9 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
     preview.appendChild(body);
   }
 
-  // Multi-select summary: reuses the preview header/body scaffolding with a
-  // plain folder (no language emblem) and lists selected names as chips.
+  // Multi-select summary. It reuses the preview header and body scaffolding
+  // with a plain folder (no language emblem) and lists the selected names as
+  // chips.
   function buildMultiPreview(n: number): void {
     if (!preview) return;
     preview.classList.remove("up-empty-pane");

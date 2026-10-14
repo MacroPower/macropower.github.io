@@ -116,9 +116,10 @@ interface BatteryManager {
   dischargingTime: number;
 }
 
-// Shape of the Network Information API's `navigator.connection`, which the lib
-// config doesn't type. Every field is optional: Chromium exposes them, but
-// Firefox/Safari omit `connection` entirely. Mirrors the BatteryManager shim.
+// Fields of the Network Information API's `navigator.connection`, which the
+// lib config does not type. Every field is optional, because Chromium exposes
+// them but Firefox and Safari omit `connection` entirely. The BatteryManager
+// shim follows the same pattern.
 interface NetworkInformation {
   effectiveType?: string;
   downlink?: number;
@@ -197,7 +198,7 @@ function renderCalendar(host: HTMLElement, now: Date): void {
 
 async function showTime(): Promise<void> {
   const opts = Intl.DateTimeFormat().resolvedOptions();
-  const offMin = new Date().getTimezoneOffset(); // minutes; positive when behind UTC
+  const offMin = new Date().getTimezoneOffset(); // in minutes, positive when behind UTC
   const sign = offMin <= 0 ? "+" : "-";
   const abs = Math.abs(offMin);
   const hh = String(Math.floor(abs / 60)).padStart(2, "0");
@@ -240,7 +241,8 @@ async function showPower(): Promise<void> {
       });
       return;
     } catch {
-      // Permission denied or unavailable; fall through to the simulation.
+      // The browser refused the Battery API or lacks it, so fall through to
+      // the simulation.
     }
   }
   const sim = computeSimBattery(new Date());
@@ -275,8 +277,9 @@ async function showWired(): Promise<void> {
     });
     return;
   }
-  // Firefox/Safari don't expose navigator.connection; report the one real bit
-  // we do have — online/offline — with a playful nod to the missing details.
+  // Firefox and Safari do not expose navigator.connection, so report the one
+  // real fact the page has, online or offline, with a playful nod to the
+  // missing details.
   const online = navigator.onLine;
   await dlg({
     icon: online ? "info" : "warning",
@@ -335,8 +338,8 @@ async function handleHotspot(): Promise<void> {
     indicator?.classList.remove("is-hotspot");
     body?.querySelector("[data-hotspot-status]")?.remove();
     if (trigger) trigger.textContent = t("js_panel_enable_hotspot");
-    // Passive state change, passive surface: a bubble, not a modal dialog —
-    // network-manager's own manners.
+    // A passive state change gets a passive surface, a bubble and not a modal
+    // dialog, as network-manager does it.
     notify({ icon: "network", title: t("js_panel_hotspot_disabled_title"),
       body: t("js_panel_hotspot_disabled_body") });
     return;
@@ -438,8 +441,8 @@ async function netClick(row: HTMLElement): Promise<void> {
   });
   if (r !== "connect") return;
   if (row.hasAttribute("data-net-hidden")) {
-    // The one network you can never join; the gag survives the others
-    // becoming connectable.
+    // The one network you can never join. The gag stays even though the
+    // others connect.
     await dlg({
       icon: "warning", title: t("js_panel_net_failed_title"),
       body: t("js_panel_net_failed_body", { name: isolate(name) }),
@@ -609,8 +612,8 @@ export function initTopPanel(): void {
 
   const closeOpen = (): void => {
     if (!openTrigger || !openDropdown) return;
-    // If focus is about to be hidden along with the dropdown, hand it back to
-    // the trigger so keyboard users aren't dumped at the top of the document.
+    // When the dropdown that closes holds focus, hand focus back to the
+    // trigger, so keyboard users do not land at the top of the document.
     const refocus = openDropdown.contains(document.activeElement) ? openTrigger : null;
     openDropdown.hidden = true;
     openTrigger.classList.remove("is-open");
@@ -776,8 +779,9 @@ export function initTopPanel(): void {
     }
   };
 
-  // Keeps the now-playing label in sync too, so callers never have to remember
-  // the pairing (the mute/volume readout and the label both reflect `vol`).
+  // Paints `vol` into the mute glyph, the slider, and the readout, and keeps
+  // the now-playing label in step too. All of them read `vol`, so callers
+  // never pair the two updates by hand.
   const syncVolUI = (): void => {
     toggleGlyphPair(volGlyphs, "data-vol-glyph-mute", vol.muted);
     if (slider) {
@@ -800,12 +804,13 @@ export function initTopPanel(): void {
 
   // Unity's sound indicator takes the scroll wheel. The change reports
   // through the synchronous notify-osd bubble, except while the sound menu
-  // is open — its own slider/readout already show the level, and the bubble
-  // would paint over the menu (mirroring the now-playing suppression below).
+  // is open. The menu's own slider and readout already show the level, and
+  // the bubble would paint over the menu. The now-playing bubble stays quiet
+  // for the same reason.
   const volTrigger = panel.querySelector<HTMLElement>('[data-indicator="vol"]');
   volTrigger?.addEventListener("wheel", (e) => {
-    // Horizontal trackpad swipes (deltaY 0) are not a volume gesture; let
-    // them through untouched rather than reading "not up" as "down".
+    // A horizontal trackpad swipe (deltaY 0) is not a volume gesture, so let
+    // it through untouched rather than read "not up" as "down".
     if (e.deltaY === 0) return;
     e.preventDefault();
     const step = e.deltaY < 0 ? 5 : -5;
@@ -852,15 +857,16 @@ export function initTopPanel(): void {
     void dispatchAction(action);
   });
 
-  // Play state flows through the audio module's pub/sub (not the toggle()
-  // promise) so the Studio transport and this panel always agree, whichever
-  // one started or stopped playback.
+  // Play state flows through audio.onChange, not the toggle() promise, so the
+  // Studio transport and this panel always agree, whichever one started or
+  // stopped playback.
   //
-  // Playback starting or switching tracks also raises the Rhythmbox-style
-  // "now playing" bubble — except while the sound menu is open, where its own
-  // label already says so (and the bubble would paint over the menu). A track
-  // switch mid-playback emits stop+start back to back; notify()'s replace
-  // semantics fold those into one bubble.
+  // When playback starts or switches tracks, it also raises the
+  // Rhythmbox-style "now playing" bubble. The bubble stays away while the
+  // sound menu is open, because the menu's own label already names the track
+  // and the bubble would paint over the menu. A track switch mid-playback
+  // emits a stop and a start back to back, and notify() replaces the bubble in
+  // place, so the two fold into one.
   if (UP_STUDIO) {
     let lastTrack = audio.trackIndex();
     let lastPlaying = audio.isPlaying();

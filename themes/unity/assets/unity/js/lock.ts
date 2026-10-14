@@ -1,9 +1,10 @@
-// Full-viewport lock screen / greeter (Ubuntu style). Session-only, no
-// persistence: showLock() reveals the SSR overlay, ticks a live clock, traps
-// Esc, and unlocks on form submit (a non-empty password) or Esc. The overlay
-// sits above the dialog stack (z-index 2000+) so it covers everything. Passing
-// `onUnlock` turns it into a logout greeter: signing in runs that callback
-// (e.g. reload a fresh session) instead of simply revealing the desktop.
+// Full-viewport lock screen and greeter in the Ubuntu style. State lasts for
+// the session only. showLock() reveals the server-rendered overlay, ticks a
+// live clock, traps Esc, and unlocks on form submit (a non-empty password) or
+// on Esc. The overlay sits above the dialog stack (z-index 2000+), so it
+// covers everything. Passing `onUnlock` turns it into a logout greeter, where
+// signing in runs that callback, such as a reload into a fresh session,
+// instead of only revealing the desktop.
 
 import { locale, t } from "./i18n";
 import { isReduceMotion } from "./prefs";
@@ -43,8 +44,8 @@ function unlock(): void {
   if (hintEl) hintEl.textContent = "";
   if (input) input.value = "";
 
-  // Logout greeter: run the sign-in callback (e.g. reload) and skip the fade —
-  // the page is going away anyway.
+  // Logout greeter: run the sign-in callback, such as a reload, and skip the
+  // fade, because the page is going away anyway.
   const cb = onUnlockCb;
   onUnlockCb = null;
   if (cb) { cb(); return; }
@@ -59,8 +60,8 @@ function unlock(): void {
   if (isReduceMotion()) {
     finish();
   } else {
-    // Fade out, then hide once the opacity transition lands. The safety timeout
-    // covers a transitionend that never fires (e.g. tab backgrounded).
+    // Fade out, then hide when the opacity transition ends. The safety timeout
+    // covers a transitionend that never fires, as in a background tab.
     root.addEventListener("transitionend", finish);
     setTimeout(finish, 400);
   }
@@ -101,8 +102,8 @@ export function initLock(): void {
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     if (input && input.value.trim() === "") {
-      // Empty submit: keep the greeter up so the playful nudge is actually
-      // visible. Any typed password (or Esc) lets you through.
+      // Empty submit: keep the greeter up so the playful nudge shows. Any
+      // typed password, or Esc, unlocks the screen.
       if (hintEl) hintEl.textContent = t("js_lock_hint");
       return;
     }

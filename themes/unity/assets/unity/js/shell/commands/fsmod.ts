@@ -1,9 +1,10 @@
-// File-mutation commands -- thin wrappers over the VFS session write API
-// (vfs.ts). Each wraps a bash-style failure reason (e.g. "Is a directory") in
-// its own conventional message prefix (`mkdir: cannot create directory '...'`,
-// `rm: cannot remove '...'`, ...) and routes it through ctx.errln; they reuse
-// completePath for tab completion. All are external programs (a /usr/bin stub
-// is installed), so the `builtin` flag stays off.
+// File-mutation commands, thin wrappers over the VFS session write API in
+// vfs.ts. Each wraps a bash-style failure reason, such as "Is a directory",
+// in its own conventional message prefix, such as `mkdir: cannot create
+// directory '...'` or `rm: cannot remove '...'`, and routes it through
+// ctx.errln. They reuse completePath for tab completion. All of them are
+// external programs with a stub under /usr/bin, so the `builtin` flag stays
+// off.
 
 import type { Command } from "../shell";
 import { color, PALETTE } from "../ansi";
@@ -12,11 +13,12 @@ import { pathComplete, splitFlags } from "./text";
 
 const red = (s: string): string => color(PALETTE.red, s);
 
-// The path cp/mv would write to, spelled the way GNU coreutils echoes it in
-// diagnostics: the DEST operand as typed, with src's last component appended
-// when DEST is an existing directory (`mv d d` reports the target as 'd/d',
-// `mv f .` as './f'). The VFS computes the same target in absolute form; the
-// operand spelling only the wrapper knows, so the display lives here.
+// The path that cp or mv writes to, spelled the way GNU coreutils echoes it in
+// diagnostics. It is the DEST operand as typed, plus src's last component
+// when DEST is an existing directory, so `mv d d` reports the target as
+// `'d/d'` and `mv f .` as `'./f'`. The VFS computes the same target in
+// absolute form, but only the wrapper knows the operand's spelling, so the
+// display lives here.
 function targetDisplay(src: string, dest: string, destIsDir: boolean): string {
   if (!destIsDir) return dest;
   const base = src.replace(/\/+$/, "").split("/").pop() || src;

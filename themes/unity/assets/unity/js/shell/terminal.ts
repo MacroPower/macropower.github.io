@@ -8,7 +8,7 @@ import { monoFamily } from "../fonts";
 import { safeNavUrl } from "../url";
 
 // Renderer-agnostic terminal surface. The shell core (readline, shell,
-// commands) talks only to this interface; XtermTerminal is the sole xterm
+// commands) talks only to this interface, and XtermTerminal is the sole xterm
 // binding, so swapping renderers means writing one new implementation.
 export interface TerminalIO {
   write(data: string): void;
@@ -17,8 +17,9 @@ export interface TerminalIO {
   focus(): void;
   fit(): void;
   cols(): number;
-  /** Make each link's display `text` clickable (opens its `url`) wherever it
-   *  appears in the buffer; replaces any previously registered set. */
+  /** Make each link's display `text` clickable wherever it appears in the
+   *  buffer, so a click opens its `url`. Replaces the set from any earlier
+   *  call. */
   registerLinks(links: { text: string; url: string }[]): void;
   onData(cb: (data: string) => void): void;
   /** Call `cb` with each window title that the output sets through an
@@ -69,12 +70,12 @@ export class XtermTerminal implements TerminalIO {
       // Send Option+key as a Meta escape (ESC-prefixed) so the readline Alt
       // word bindings (Alt-B/F/D) work on macOS, as in a real terminal.
       macOptionIsMeta: true,
-      // Announce output through xterm's live region (the helper textarea is
-      // already labeled "Terminal input"). This also removes the keyboard
-      // trap: with screenReaderMode on, xterm stops cancelling Shift+Tab, so
-      // it moves focus natively out of the terminal (documented in
-      // shortcuts.ts) while plain Tab keeps driving completion -- the ESC[Z it
-      // would emit is dead input to readline either way.
+      // Announce output through xterm's live region. The helper textarea
+      // already carries the label "Terminal input". The mode also removes the
+      // keyboard trap. With screenReaderMode on, xterm stops cancelling
+      // Shift+Tab, so Shift+Tab moves focus natively out of the terminal, as
+      // shortcuts.ts documents. Plain Tab keeps driving completion, and the
+      // ESC[Z that Shift+Tab would emit is dead input to readline either way.
       screenReaderMode: true,
       theme: {
         // Transparent background lets the container's .up-neofetch HUD
@@ -110,8 +111,8 @@ export class XtermTerminal implements TerminalIO {
     this.term.open(mount);
     this.fit();
 
-    // Re-fit on mount resize (debounced via rAF) and on page-window
-    // maximize/restore.
+    // Fit again when the mount resizes, debounced through rAF, and when the
+    // page window maximizes or restores.
     if (typeof ResizeObserver !== "undefined") {
       this.resizeObserver = new ResizeObserver(() => { this.scheduleFit(); });
       this.resizeObserver.observe(mount);
@@ -196,8 +197,8 @@ export class XtermTerminal implements TerminalIO {
     try {
       this.fitAddon.fit();
     } catch {
-      // FitAddon throws if the mount has no layout yet; ignore and retry on
-      // the next resize tick.
+      // FitAddon throws when the mount has no layout yet, so ignore the error
+      // and retry on the next resize tick.
     }
   }
 

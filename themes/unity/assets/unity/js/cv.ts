@@ -1,12 +1,12 @@
-// The CV page's Evince-style document viewer. Renders the PDF named by
-// [data-cv-viewer]'s data-pdf-url through the pdf.js build vendored under
+// The CV page's Evince-style document viewer. It renders the PDF that
+// [data-cv-viewer]'s data-pdf-url names through the pdf.js build in
 // assets/unity/third_party/pdf-js/, which this bundle includes
-// (_partials/unity/page/cv.html names the worker in data-pdfjs-worker):
-// every page becomes a sheet in the scrollable page well, plus a clickable
-// thumbnail rail and a toolbar with page-number / zoom controls. Zoom is
-// fit-to-width until the user zooms explicitly; the fit relayouts on view
-// resizes (window maximize, phone rotation) via a ResizeObserver.
-// Session-only; no persistence.
+// (_partials/unity/page/cv.html names the worker in data-pdfjs-worker). Every
+// page becomes a sheet in the scrollable page well, with a clickable
+// thumbnail rail and a toolbar of page-number and zoom controls. Zoom fits
+// the width until the user zooms by hand, and a ResizeObserver lays the fit
+// out again when the view resizes, as on a window maximize or a phone
+// rotation. State lasts for the session only.
 
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
@@ -39,7 +39,7 @@ import { scrollBehavior } from "./prefs";
   const zoomFitBtn = root.querySelector<HTMLButtonElement>("[data-docv-zoom-fit]");
   const zoomReadout = root.querySelector<HTMLElement>("[data-docv-zoom-readout]");
 
-  // 100% means the PDF's own point size at CSS 96dpi, matching Evince.
+  // 100% means the PDF's own point size at CSS 96dpi, as in Evince.
   const PT_TO_CSS = 96 / 72;
   const ZOOM_STEPS = [0.5, 0.7, 0.85, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
   const ZOOM_MIN = Math.min(...ZOOM_STEPS);
@@ -118,14 +118,15 @@ import { scrollBehavior } from "./prefs";
           canvas.getContext("2d")?.drawImage(off, 0, 0);
         })
         .catch(() => {
-          /* stale or failed render; the sheet keeps its last paint */
+          /* a stale or failed render, so the sheet keeps its last paint */
         });
     }
     updateZoomUI();
   }
 
-  /** Relayout keeping the point at the vertical center of the view fixed,
-   *  proportionally — the closest cheap equivalent of Evince's anchored zoom. */
+  /** Lay the pages out again and keep the point at the view's vertical center
+   *  fixed in proportion. It comes closest to Evince's anchored zoom at a low
+   *  cost. */
   function relayoutAnchored(): void {
     const ratio =
       (view.scrollTop + view.clientHeight / 2) / Math.max(1, view.scrollHeight);
@@ -155,7 +156,7 @@ import { scrollBehavior } from "./prefs";
     const target = Math.min(Math.max(1, n), doc.numPages);
     const sheet = sheets[target - 1];
     if (!sheet) return;
-    // A little breathing room above the sheet, mirroring the well's padding.
+    // A little breathing room above the sheet, like the well's padding.
     const top = Math.max(0, sheet.el.offsetTop - 14);
     view.scrollTo({ top, behavior: scrollBehavior() });
     setCurrent(target);
@@ -277,8 +278,8 @@ import { scrollBehavior } from "./prefs";
     { passive: false },
   );
 
-  // Re-fit on real width changes only — maximize/restore, phone rotation,
-  // the phone media query dropping the thumbnail rail.
+  // Fit again only on a real width change, such as a maximize or restore, a
+  // phone rotation, or the phone media query dropping the thumbnail rail.
   let resizeRaf = 0;
   new ResizeObserver(() => {
     if (!doc || !fitWidth) return;
@@ -294,8 +295,8 @@ import { scrollBehavior } from "./prefs";
   if (GlobalWorkerOptions.workerSrc === "" && worker) {
     GlobalWorkerOptions.workerSrc = worker;
   }
-  // enableHWA keeps the GPU-backed canvases the viewer drew into before
-  // pdf.js took over creating the 2D context; pdf.js defaults to CPU ones.
+  // enableHWA keeps the GPU-backed canvases that the viewer drew into before
+  // pdf.js took over creating the 2D context. pdf.js defaults to CPU canvases.
   getDocument({ url, enableHWA: true })
     .promise.then(async (d) => {
       doc = d;

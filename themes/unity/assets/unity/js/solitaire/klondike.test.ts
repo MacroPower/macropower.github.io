@@ -1,6 +1,6 @@
-// Rules suite for klondike.ts. Deals come from a seeded generator so every
-// assertion is reproducible; the "rigged" helper builds a game by hand for
-// the rules that need a specific board.
+// Rules suite for klondike.ts. Deals come from a seeded generator, so every
+// assertion is reproducible, and the "rigged" helper builds a game by hand
+// for the rules that need a specific board.
 
 import { describe, expect, it } from "vitest";
 import { Klondike, isRed, type Card, type Loc, type Suit } from "./klondike";

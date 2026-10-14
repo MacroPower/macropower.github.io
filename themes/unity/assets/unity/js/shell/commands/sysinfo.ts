@@ -1,6 +1,6 @@
-// System-identity commands. Most read static facts or the ShellData island;
-// `cal` is the one that consults a real Date (like `date`), so its output is
-// nondeterministic and is only shape-checked in tests.
+// System-identity commands. Most read static facts or the ShellData island.
+// `cal`, like `date` in meta.ts, reads a real Date, so its output is
+// nondeterministic, and the tests check only its layout.
 
 import type { Command } from "../shell";
 import { splitFlags } from "./text";

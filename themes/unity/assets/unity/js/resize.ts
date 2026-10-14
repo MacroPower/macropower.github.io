@@ -28,12 +28,13 @@ const DIRS: readonly Dir[] = [
   { cls: "up-resize-se", bottom: true, right: true },
 ];
 
-// Drag-to-resize from all 8 edges/corners via thin invisible hit-zone divs
-// appended to the window chrome. Size is applied as inline width/height;
-// north/west resizes move the window origin through the shared DragHandle so
-// drag and resize never disagree about position. Pointer Events (capture +
-// pointercancel) so touch resizes too, matching drag.ts; the zones carry
-// touch-action:none in main.css, with fatter coarse-pointer hit zones.
+// Drag-to-resize from every edge and corner through thin invisible hit-zone
+// divs that this module appends to the window chrome. The size goes into the
+// inline width and height. A north or west resize moves the window origin
+// through the shared DragHandle, so drag and resize never disagree about
+// position. Like drag.ts, it uses Pointer Events with capture and
+// pointercancel, so touch resizes too. The zones carry touch-action:none in
+// main.css, with fatter hit zones for a coarse pointer.
 export function installResize(
   el: HTMLElement,
   opts: InstallResizeOptions,
@@ -49,9 +50,9 @@ export function installResize(
       if (e.button !== 0 || !e.isPrimary || active) return;
       if (opts.gate && !opts.gate()) return;
       e.preventDefault();
-      // No stopPropagation, and canceling pointerdown suppresses the compat
-      // mousedown the chrome-level focus handlers rely on — re-dispatch it so
-      // grabbing a handle still focuses the window.
+      // No stopPropagation. Canceling pointerdown suppresses the compat
+      // mousedown that the chrome-level focus handlers rely on, so dispatch it
+      // again, and grabbing a handle still focuses the window.
       dispatchCompatMousedown(e);
       opts.onStart?.();
       active = true;
@@ -62,10 +63,11 @@ export function installResize(
       const startX = e.clientX;
       const startY = e.clientY;
 
-      // Lock the zone's own CSS cursor on the body so the pointer doesn't
-      // flicker when it overshoots the thin strip mid-gesture. Read before
-      // adding up-resizing — its cursor:inherit override would otherwise
-      // resolve the zone's computed cursor to the body's (still-unset) one.
+      // Lock the zone's own CSS cursor on the body so the pointer does not
+      // flicker when it overshoots the thin strip mid-gesture. Read it before
+      // adding up-resizing, because the cursor:inherit override of that class
+      // would otherwise resolve the zone's computed cursor to the body's
+      // cursor, which is still unset.
       document.body.style.cursor = getComputedStyle(zone).cursor;
       document.body.classList.add("up-resizing");
 
@@ -121,7 +123,7 @@ export function installResize(
     zones.push(zone);
   }
 
-  // Removing the zones removes their pointerdown handlers with them; a gesture
+  // Removing the zones removes their pointerdown handlers with them. A gesture
   // already in flight keeps its window listeners until its own pointerup.
   return () => {
     for (const zone of zones) zone.remove();

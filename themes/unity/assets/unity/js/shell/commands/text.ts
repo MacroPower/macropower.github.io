@@ -1,5 +1,7 @@
-// Text-filter commands. Each reads its file operands, or standard input (the
-// left side of a pipe) when no files are given, mirroring the real utilities.
+// Text-filter commands and the small utilities that sit with them. Most read
+// their file operands, or standard input (the left side of a pipe) when the
+// command line names no file, as the real utilities do. tr and tee read
+// standard input only, and seq, true, and false read no input at all.
 
 import type { Command, CommandContext } from "../shell";
 import { color, PALETTE, stripAnsi } from "../ansi";
@@ -39,7 +41,8 @@ export function splitFlags(args: string[]): { flags: Set<string>; operands: stri
   return { flags, operands };
 }
 
-// Parse a `-n N` / `-nN` / `-N` line count for head/tail; the rest are files.
+// Parse a `-n N`, `-nN`, or `-N` line count for head and tail. The other
+// arguments are files.
 function parseLineCount(args: string[]): { n: number; files: string[]; err?: string } {
   let n = 10;
   const files: string[] = [];
@@ -184,8 +187,8 @@ export const sort: Command = {
   },
 };
 
-// Parse a cut LIST ("1", "1,3", "2-", "-3", "1-5") into inclusive ranges; an
-// open upper bound becomes Infinity. Returns null on a malformed field.
+// Parse a cut LIST ("1", "1,3", "2-", "-3", "1-5") into inclusive ranges, where
+// an open upper bound becomes Infinity. Returns null on a malformed field.
 function parseRanges(spec: string): [number, number][] | null {
   const ranges: [number, number][] = [];
   for (const part of spec.split(",")) {

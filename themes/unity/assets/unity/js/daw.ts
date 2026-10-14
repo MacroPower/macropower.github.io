@@ -1,14 +1,15 @@
-// The Studio window — a tiny period-correct DAW (think LMMS on 14.04) over the
-// audio.ts engine. Owns the window's open/minimize/close state machine and
-// launcher-tile cycle (mirroring trash.ts), and builds the whole instrument
-// surface client-side from the parsed MIDI: track strips with mute/solo/level,
-// a synth rack of rotary knobs, a draggable BPM LCD, and a canvas piano roll
-// with a live playhead. Notes are the engine's own objects, so dragging one
-// vertically transposes the actual playback within the scheduler's lookahead.
+// The Studio window, a small period-correct DAW in the style of LMMS on 14.04,
+// over the audio.ts engine. It owns the window's open, minimize, and close
+// states and the launcher tile's cycle, like trash.ts. It builds the whole
+// instrument surface in the browser from the parsed MIDI. The surface holds
+// track strips with mute, solo, and level, a synth rack of rotary knobs, a
+// draggable BPM LCD, and a canvas piano roll with a live playhead. Notes are
+// the engine's own objects, so dragging one vertically transposes the actual
+// playback within the scheduler's lookahead.
 //
-// Everything here is session-only — window position, knob values, and note
-// edits all reset on reload (knob/note state lives in audio.ts and the shared
-// MidiSong; nothing is persisted).
+// Everything here lasts for the session only. Window position, knob values,
+// and note edits all reset on reload, because the knob and note state lives in
+// audio.ts and the shared MidiSong, and nothing persists it.
 
 import * as audio from "./audio";
 import { installTitlebarDrag } from "./drag";
@@ -32,7 +33,7 @@ const PITCH_MAX = 108; // C8
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"] as const;
 const BLACK: ReadonlySet<number> = new Set([1, 3, 6, 8, 10]);
 
-const ACCENT = "#E95420"; // playhead — Unity orange, deliberately not themed
+const ACCENT = "#E95420"; // playhead color, Unity orange whatever the accent preset
 
 function noteName(pitch: number): string {
   return NOTE_NAMES[pitch % 12] + String(Math.floor(pitch / 12) - 1);
@@ -50,15 +51,15 @@ interface Track {
 
 const KEYS_COLORS = ["#E8C25A", "#B98AE8", "#5AC8C0", "#E8975A"] as const;
 
-// Group the flat note list by mixer-strip key (the MIDI channel, except that
-// a single-channel song splits into its bass/lead voices — audio.stripKey)
-// and give each strip a DAW-ish identity: channel 9 is the GM kit, the
-// lowest-pitched melodic strip reads as the bassline, the highest as the
-// lead, anything between as keys.
+// Group the flat note list by mixer-strip key and give each strip a DAW-like
+// identity. The key is the MIDI channel, except that audio.noteStripKey splits
+// a single-channel song into its bass and lead voices. Channel 9 is the GM
+// kit, the lowest-pitched melodic strip reads as the bassline, the highest as
+// the lead, and anything between as keys.
 function deriveTracks(song: MidiSong): Track[] {
   const byKey = new Map<number, MidiNote[]>();
   for (const n of song.notes) {
-    const key = audio.noteStripKey(n); // frozen per note — see audio.ts
+    const key = audio.noteStripKey(n); // frozen per note, as audio.ts explains
     let arr = byKey.get(key);
     if (!arr) { arr = []; byKey.set(key, arr); }
     arr.push(n);
@@ -106,9 +107,10 @@ interface KnobSpec {
   onInput: (v: number) => void;
 }
 
-// A rotary knob: 270° sweep, drag up/down (or scroll / arrow keys) to turn,
-// double-click to reset. The dial's pointer and value arc render purely from
-// the --up-rot / --up-arc custom properties; the readout below is a mini LCD.
+// A rotary knob with a 270° sweep. Drag it up or down, scroll it, or press the
+// arrow keys to turn it, and double-click it to reset it. The dial's pointer
+// and value arc render from the --up-rot and --up-arc custom properties alone,
+// and the readout under the dial is a mini LCD.
 function makeKnob(spec: KnobSpec): HTMLElement {
   const root = document.createElement("div");
   root.className = `up-daw-knob${spec.small ? " is-sm" : ""}`;
@@ -126,9 +128,9 @@ function makeKnob(spec: KnobSpec): HTMLElement {
   value.className = "up-daw-knob-value";
   root.append(dial, label, value);
 
-  // `cur` stays continuous even on stepped knobs — snapping happens only at
-  // the output/display edge, so slow drags and small wheel/key nudges
-  // accumulate instead of being rounded away each event.
+  // `cur` stays continuous even on stepped knobs, and the knob snaps only
+  // where it outputs and displays the value. Slow drags and small wheel and
+  // key nudges therefore add up, instead of each event rounding them away.
   let cur = spec.value;
   const snap = (v: number): number => spec.step ? Math.round(v / spec.step) * spec.step : v;
   let lastOut = snap(spec.value);
@@ -148,7 +150,7 @@ function makeKnob(spec: KnobSpec): HTMLElement {
     dial.setAttribute("aria-valuenow", String(sv));
     dial.setAttribute("aria-valuetext", spec.fmt(sv));
     value.textContent = spec.fmt(sv);
-    // Small (track-strip) knobs hide the readout; surface it as a tooltip.
+    // Small knobs on a track strip hide the readout, so show it as a tooltip.
     if (spec.small) dial.title = spec.fmt(sv);
   };
 
@@ -170,12 +172,12 @@ function makeKnob(spec: KnobSpec): HTMLElement {
     return Math.max(base, spec.step / (spec.max - spec.min));
   };
 
-  // Pointer Events so the dial turns under touch too (the dial carries
-  // touch-action:none in main.css). Primary button only — a right-mousedown
-  // opens the context menu, which swallows the matching up and would leave
-  // the knob turning with no button held. The window-focus and patch-menu
-  // side effects ride the real pointerdown's bubble, so canceling the compat
-  // mousedown here loses nothing.
+  // Pointer Events, so the dial turns under touch too (the dial carries
+  // touch-action:none in main.css). Only the primary button turns it. A
+  // right-mousedown opens the context menu, which swallows the matching up and
+  // leaves the knob turning with no button held. The window-focus and
+  // patch-menu side effects run in the bubble phase of the real pointerdown,
+  // so canceling the compat mousedown here loses nothing.
   let turning = false;
   dial.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || !e.isPrimary || turning) return;
@@ -229,9 +231,10 @@ const fmtHz = (v: number): string => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `
 const fmtCents = (v: number): string => `${Math.round(v)}ct`;
 const fmtSigned = (v: number): string => (v > 0 ? `+${v}` : String(v));
 
-// 16x16 voice glyphs (currentColor, so the lit/custom tints apply): single
-// cycles for the waveform voices, pictograms for the rest — stacked dual
-// waves for Auto's bass/lead split, a keyboard, a bell, a plectrum, a cloud.
+// 16x16 voice glyphs. Each paints with currentColor, so the lit and custom
+// tints apply. The waveform voices show one cycle, and the rest show a
+// pictogram: stacked dual waves for the bass and lead split of Auto, a
+// keyboard, a bell, a plectrum, and a cloud.
 const PATCH_GLYPHS: Readonly<Record<audio.PatchKey, string>> = {
   auto: '<path d="M2 5 Q4.75 1.5 7.5 5 T13 5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1 11.5 Q4.5 7.5 8 11.5 T15 11.5" fill="none" stroke="currentColor" stroke-width="1.4"/>',
   sine: '<path d="M1 8 Q4.5 1 8 8 T15 8" fill="none" stroke="currentColor" stroke-width="1.6"/>',
@@ -258,8 +261,8 @@ interface Patch {
 
 let openImpl: (() => void) | null = null;
 
-// Open (or re-focus) the Studio window. Safe to call before initDaw on pages
-// without the partial — it just no-ops.
+// Open or refocus the Studio window. Before initDaw, and on a page without
+// the partial, it does nothing.
 export function openStudio(): void {
   openImpl?.();
 }
@@ -400,9 +403,10 @@ export function initDaw(): void {
     stopLoop();
   };
 
-  // Maximize fills the desktop between the launcher and the top panel (the
-  // is-maximized CSS overrides position/size and neutralizes the drag
-  // transform); the ResizeObserver below re-fits the canvas on both legs.
+  // Maximize fills the desktop between the launcher and the top panel. The
+  // is-maximized CSS overrides the position and size and neutralizes the drag
+  // transform, and the roll's ResizeObserver re-fits the canvas on maximize
+  // and on restore.
   const toggleMaximize = (): void => {
     maximized = !maximized;
     stage.classList.toggle("is-maximized", maximized);
@@ -427,10 +431,10 @@ export function initDaw(): void {
     render();
   });
 
-  // pointerdown, not mousedown: the knob/BPM/roll gesture starts cancel
-  // their pointerdown (which suppresses the compat mousedown), but the real
-  // pointerdown always bubbles — so focus-on-press works for mouse and touch
-  // alike, including presses that begin a drag.
+  // pointerdown, not mousedown. The knob, BPM, and roll gestures cancel the
+  // pointerdown that starts them, which suppresses the compat mousedown, but
+  // the real pointerdown always bubbles. Focus-on-press therefore works for
+  // mouse and touch alike, including presses that begin a drag.
   chrome.addEventListener("pointerdown", () => {
     if (!getStudioFocused() && open && !minimized) {
       setStudioFocused(true);
@@ -481,11 +485,11 @@ export function initDaw(): void {
     }
   }
 
-  // (Re)build the whole instrument surface for the active playlist entry.
-  // Keyed on the track index so it's an idempotent no-op until the selection
-  // actually changes (audio.onChange calls it on every emit). A switch
-  // mid-fetch is safe: the newer call takes the surface and the older one
-  // bails at the index check after its await.
+  // Build or rebuild the whole instrument surface for the active playlist
+  // entry. audio.onChange calls it on every emit, so it keys on the track
+  // index and does nothing until the selection changes. A switch mid-fetch
+  // does no harm, because the newer call takes the surface and the older one
+  // returns at the index check after its await.
   let surfaceIdx = -1;
 
   async function loadSurface(): Promise<void> {
@@ -680,9 +684,9 @@ export function initDaw(): void {
   }
 
   // One instrument popover at a time, anchored to the strip's patch button.
-  // The anchor is tracked so the outside-mousedown closer leaves clicks on
-  // the owning button alone — its click handler then toggles the menu shut
-  // instead of racing a close-then-reopen.
+  // patchMenuAnchor lets the closer for outside presses leave clicks on the
+  // owning button alone. The button's click handler then toggles the menu
+  // shut instead of racing a close and a reopen.
   let patchMenu: HTMLElement | null = null;
   let patchMenuAnchor: HTMLElement | null = null;
   const closePatchMenu = (): void => {
@@ -690,10 +694,10 @@ export function initDaw(): void {
     patchMenu = null;
     patchMenuAnchor = null;
   };
-  // pointerdown (house style, see projects-desktop's menu closer): unlike the
-  // compat mousedown it fires for touch presses and for gesture starts that
-  // preventDefault their pointerdown, so grabbing a knob or titlebar anywhere
-  // still dismisses the menu.
+  // Close on pointerdown, the house style that the menu closer in
+  // projects-desktop.ts follows too. Unlike the compat mousedown, it fires for
+  // touch presses and for gesture starts that cancel their pointerdown, so
+  // grabbing a knob or the titlebar anywhere still dismisses the menu.
   document.addEventListener("pointerdown", (e) => {
     if (!patchMenu) return;
     const node = e.target;
@@ -707,12 +711,12 @@ export function initDaw(): void {
   tracksHost?.addEventListener("scroll", closePatchMenu);
   chrome.querySelector(".up-daw-rack")?.addEventListener("scroll", closePatchMenu);
 
-  // Edge/corner resize shares the drag's transform offset so north/west
-  // resizes move the origin without the two fighting. The piano roll re-fits
-  // itself via the roll's ResizeObserver; the rack scrolls as the fallback at
-  // the 520x360 minimum. Installed here (not next to the drag) because
-  // closePatchMenu is a const above — the menu anchors via
-  // getBoundingClientRect and would mis-anchor mid-resize.
+  // Edge and corner resizes share the drag's transform offset, so a north or
+  // west resize moves the origin without the two fighting. The piano roll
+  // re-fits itself through its ResizeObserver, and the rack scrolls as the
+  // fallback at the 520x360 minimum. The call sits here and not next to the
+  // drag, because it needs the closePatchMenu const. The menu anchors through
+  // getBoundingClientRect, so a resize must close it.
   installResize(chrome, {
     minW: 520, minH: 360, yMin: 24,
     gate: () => !maximized,
@@ -744,9 +748,9 @@ export function initDaw(): void {
       });
       menu.appendChild(item);
     }
-    // Mount inside .up-daw-body so the --up-daw-* custom properties cascade; the
-    // positioned ancestor is still the chrome, so chrome-relative coordinates
-    // are unchanged.
+    // Mount inside .up-daw-body so the --up-daw-* custom properties cascade.
+    // The positioned ancestor is still the chrome, so chrome-relative
+    // coordinates stay the same.
     (chrome.querySelector(".up-daw-body") ?? chrome).appendChild(menu);
     const cr = chrome.getBoundingClientRect();
     const ar = anchor.getBoundingClientRect();
@@ -772,7 +776,8 @@ export function initDaw(): void {
     name.textContent = trk.name;
     name.title = tn("js_studio_track_info", trk.notes.length, { channel: trk.channel + 1 });
 
-    // Instrument selector (pitched strips only — the kit is the kit).
+    // Instrument selector, for pitched strips only, because the drum kit plays
+    // fixed sounds.
     let patchEl: HTMLElement;
     if (trk.channel === 9) {
       patchEl = document.createElement("span");
@@ -1004,7 +1009,7 @@ export function initDaw(): void {
   function drumRowIndex(pitch: number): number {
     if (pitch === 35 || pitch === 36) return 2; // kick
     if (pitch === 38 || pitch === 40) return 1; // snare
-    return 0; // everything else is rendered as the hat
+    return 0; // every other drum draws on the hat row
   }
 
   function draw(): void {
@@ -1027,7 +1032,7 @@ export function initDaw(): void {
     g.fillStyle = "#1B1E23";
     g.fillRect(0, 0, vw, vh);
 
-    // pitch rows — black-key rows darker, like every piano roll since forever
+    // pitch rows, with the black-key rows darker, as in every piano roll
     for (let p = pitchHi; p >= pitchLo; p--) {
       const y = yOfPitch(p, sy);
       if (y + ROW_H < RULER_H || y > vh) continue;
@@ -1105,7 +1110,7 @@ export function initDaw(): void {
       g.globalAlpha = 1;
     }
 
-    // playhead — drawn while stopped too, marking the pause/seek resume point
+    // playhead. It draws while stopped too, to mark where a pause or a seek resumes.
     {
       const x = KEYS_W + pos * zb - sx;
       if (x >= KEYS_W && x <= vw) {
@@ -1226,10 +1231,11 @@ export function initDaw(): void {
     return i === 2 ? t("js_studio_drum_kick") : i === 1 ? t("js_studio_drum_snare") : t("js_studio_drum_hat");
   }
 
-  // Both coordinate spaces: content (cx/cy, scroll-offset — for notes and the
-  // grid, which scroll) and viewport (vx/vy — for the ruler and key column,
-  // which the canvas paints screen-sticky). Testing the sticky chrome against
-  // content coords silently breaks once the roll is scrolled.
+  // Both coordinate spaces. Content coordinates (cx, cy) include the scroll
+  // offset and serve the notes and the grid, which scroll. Viewport
+  // coordinates (vx, vy) serve the ruler and the key column, which the canvas
+  // paints sticky to the screen. Testing the sticky chrome against content
+  // coordinates breaks silently when the roll scrolls.
   function pointInfo(e: MouseEvent): { cx: number; cy: number; vx: number; vy: number } {
     const r = scroller.getBoundingClientRect();
     const vx = e.clientX - r.left;
@@ -1242,17 +1248,17 @@ export function initDaw(): void {
   }
 
   // The scroller is the roll's only scroll mechanism on touch, so the note
-  // grid must keep its native pan (no touch-action lockdown here). Presses
-  // are disambiguated by hit-test at pointerdown: only the ruler region —
-  // canvas-painted chrome, not an element — claims the pointer for every
-  // input type. Mouse presses keep all their old behaviors at pointerdown;
-  // touch/pen presses on the grid are left alone so the pan wins, and their
-  // taps come back as compatibility mouse events (handled further down).
+  // grid must keep its native pan (no touch-action lockdown here). A hit test
+  // at pointerdown tells the presses apart. Only the ruler region, which the
+  // canvas paints and which is not an element, claims the pointer for every
+  // input type. Mouse presses keep all their behaviors at pointerdown. Touch
+  // and pen presses on the grid pass through, so the pan wins, and their taps
+  // come back as compatibility mouse events that the mousedown handler takes.
   let rollPointerType = ""; // pointerType of the scroller's last pointerdown
   let rollGesture = false;  // a scrub or transpose drag is in flight
 
-  // Drum hits audition but don't transpose (the kit rows are fixed
-  // mappings, not a pitch axis); right-click still mutes them.
+  // Drum hits audition but do not transpose, because the kit rows are fixed
+  // mappings and not a pitch axis. Right-click still mutes them.
   const auditionDrumHit = (hit: Hit): void => {
     audio.auditionNote(hit.note.pitch, 9);
     const vars = { track: hit.track.name, drum: drumLabel(hit.note.pitch) };
@@ -1286,8 +1292,9 @@ export function initDaw(): void {
     };
     let last = -1;
     const scrub = (clientX: number): void => {
-      // Snap to the sixteenth grid the synth schedules on; skip no-op seeks
-      // so a scrub doesn't re-cut the voices every pointermove.
+      // Snap to the sixteenth grid the synth schedules on, and skip seeks that
+      // change nothing, so a scrub does not cut the voices again on every
+      // pointermove.
       const b = Math.max(0, Math.round(beatAt(clientX) * 4) / 4);
       if (b === last) return;
       last = b;
@@ -1296,9 +1303,9 @@ export function initDaw(): void {
       setStatus(audio.isPlaying() ? t("js_studio_scrub_playing", { bar }) : t("js_studio_scrub_paused", { bar }));
     };
     scrub(e.clientX);
-    // Canceling pointerdown does not stop a touch pan — only canceling the
-    // raw touchmoves does. The scroller's touch-action must stay pannable for
-    // grid presses, so the block lives only for the scrub's duration.
+    // Canceling pointerdown does not stop a touch pan. Only canceling the raw
+    // touchmoves stops it. The scroller's touch-action must stay pannable for
+    // grid presses, so the block lasts only as long as the scrub.
     const blockPan = (ev: TouchEvent): void => ev.preventDefault();
     if (e.pointerType !== "mouse") {
       window.addEventListener("touchmove", blockPan, { passive: false });
@@ -1324,9 +1331,9 @@ export function initDaw(): void {
     window.addEventListener("pointercancel", finish);
   };
 
-  // Drag to transpose (mouse-only — a vertical touch drag must pan the roll):
-  // the note object is the engine's, so the edit is audible on the
-  // scheduler's next pass — sculpt the melody while it loops.
+  // Drag to transpose, with a mouse only, because a vertical touch drag must
+  // pan the roll. The note object is the engine's, so the scheduler plays the
+  // edit on its next pass, and you can sculpt the melody while it loops.
   const beginTranspose = (e: PointerEvent, hit: Hit): void => {
     rollGesture = true;
     const id = e.pointerId;
@@ -1376,10 +1383,10 @@ export function initDaw(): void {
     if (e.button !== 0 || !e.isPrimary || rollGesture || !song) return;
     const { cx, cy, vx, vy } = pointInfo(e);
 
-    // Ruler: press (or scrub) to move the transport — every pointer type.
-    // Works paused too: the playhead becomes the resume point, so you can
-    // cue up a section. Canceling the pointerdown also suppresses the compat
-    // mousedown, so the tap path below can't double-seek.
+    // Ruler: every pointer type can press or scrub it to move the transport.
+    // While paused, a press moves the resume point, so you can cue a section.
+    // Canceling the pointerdown also suppresses the compat mousedown, so the
+    // mousedown tap path cannot seek twice.
     if (vy < RULER_H && vx >= KEYS_W) {
       e.preventDefault();
       beginRulerScrub(e);
@@ -1403,10 +1410,10 @@ export function initDaw(): void {
     auditionEmptyAt(cy);
   });
 
-  // Touch/pen taps on the grid arrive as compatibility mouse events after the
-  // finger lifts (a pan fires none, and the cancelled ruler pointerdown
-  // suppresses its own). Mouse presses were already handled at pointerdown
-  // above, so they're filtered out by the recorded pointer type.
+  // Touch and pen taps on the grid arrive as compatibility mouse events after
+  // the finger lifts. A pan fires none, and the cancelled ruler pointerdown
+  // suppresses its own. The pointerdown handler has already taken the mouse
+  // presses, so this handler skips them by the recorded pointer type.
   scroller.addEventListener("mousedown", (e) => {
     if (rollPointerType === "mouse") return;
     if (e.button !== 0 || !song) return;
@@ -1417,7 +1424,7 @@ export function initDaw(): void {
       auditionDrumHit(hit);
       return;
     }
-    if (hit) return; // transposing needs a mouse; the hover status already painted
+    if (hit) return; // transposing needs a mouse, and the hover status has already painted
     auditionEmptyAt(cy);
   });
 
@@ -1452,8 +1459,8 @@ export function initDaw(): void {
   });
   scroller.addEventListener("mouseleave", () => setStatus(defaultStatus));
 
-  // Right-click toggles a note's mute (session-only `dead` flag the scheduler
-  // skips); the note stays visible as a ghost so it can be restored.
+  // Right-click toggles a note's mute, the session-only `dead` flag that the
+  // scheduler skips. The note stays visible as a ghost, so you can restore it.
   scroller.addEventListener("contextmenu", (e) => {
     if (!song) return;
     const { cx, cy, vx, vy } = pointInfo(e);
@@ -1490,8 +1497,8 @@ export function initDaw(): void {
         const vw = roll.clientWidth;
         const x = KEYS_W + pos * pxb() - scroller.scrollLeft;
         if (x > vw * 0.78 || x < KEYS_W) {
-          // Jump-scroll so the playhead re-enters at the first third — one
-          // discrete reposition per page, not a per-frame creep.
+          // Jump-scroll so the playhead re-enters at the first third, with one
+          // discrete reposition per page and not a per-frame creep.
           setScrollLeft(pos * pxb() - (vw - KEYS_W) * 0.3);
         }
       }

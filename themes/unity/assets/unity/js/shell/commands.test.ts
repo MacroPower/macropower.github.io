@@ -1,5 +1,6 @@
-// Command behavior that is JS-only (not bash-diffable): VFS-backed file output,
-// our column/number formatting, stderr routing, and bash-format diagnostics.
+// Command behavior that only the JS shell can check, because no bash diff
+// covers it: VFS-backed file output, our column and number formatting,
+// stderr routing, and bash-format diagnostics.
 
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import { makeShell, TEST_DATA } from "./testkit";
@@ -63,7 +64,7 @@ describe("stderr routing", () => {
     expect(r.status).toBe(1);
   });
   it("does not pipe a command's stderr into the next stage", () => {
-    // cat's error is suppressed; nothing reaches wc, so the count is 0.
+    // 2>/dev/null drops cat's error, and nothing reaches wc, so the count is 0.
     expect(makeShell().run("cat nope.txt 2>/dev/null | wc -l").stdout).toBe("0\n");
   });
   it("2>&1 merges stderr into stdout", () => {
@@ -134,12 +135,12 @@ describe("writable filesystem", () => {
   });
   it("opens redirects left-to-right, committing those staged before a failure", () => {
     const sh = makeShell();
-    // `> f` opens (truncates) before `< nope` fails; f is left empty.
+    // `> f` opens and truncates f before `< nope` fails, so f stays empty.
     sh.run("printf 'old\\n' > f");
     expect(sh.run("echo x > f < nope").status).toBe(1);
     expect(sh.run("[ -f f ] && wc -l f").stdout).toBe("0 f\n");
-    // Reverse order: `< nope` fails first, so `> g` is never opened and a
-    // pre-existing g is untouched.
+    // Reverse order: `< nope` fails first, so `> g` never opens, and a g that
+    // already exists stays untouched.
     sh.run("printf 'keep\\n' > g");
     expect(sh.run("cat < nope > g").status).toBe(1);
     expect(sh.run("cat g").stdout).toBe("keep\n");
@@ -213,7 +214,7 @@ describe("file-mutation commands", () => {
   it("after wiping the tree, builtins survive but binaries do not", () => {
     const sh = makeShell();
     sh.run("rm -rf --no-preserve-root /");
-    // builtins need no file on disk
+    // builtins do not need a file on disk
     expect(sh.run("echo hello").stdout).toBe("hello\n");
     expect(sh.run("cd /").status).toBe(0);
     // external programs are gone
@@ -252,10 +253,10 @@ describe("file-mutation commands", () => {
     expect(sh.run("cat d/a").stdout).toBe("hi\n");
   });
 
-  // Self-move/self-copy guards. The messages below are byte-for-byte GNU
-  // coreutils 9.11 stderr (mv/cp mutate, so the conformance table's read-only
-  // runBash cannot diff them; the strings are verified against real bash by
-  // hand instead).
+  // Self-move and self-copy guards. Each message matches the stderr of GNU
+  // coreutils 9.11 byte for byte. mv and cp change files, so the read-only
+  // runBash of the conformance table cannot diff them. The strings come from
+  // a manual run of real bash instead.
   it("mv refuses to move a file onto itself", () => {
     const sh = makeShell();
     sh.run("echo hi > f");
@@ -301,7 +302,7 @@ describe("file-mutation commands", () => {
     const r = sh.run("cp -r d d");
     expect(r.stderr).toBe("cp: cannot copy a directory, 'd', into itself, 'd/d'\n");
     expect(r.status).toBe(1);
-    expect(sh.run("ls d").stdout).toBe(""); // no d/d was created
+    expect(sh.run("ls d").stdout).toBe(""); // the refused copy made no d/d
   });
 });
 
@@ -442,7 +443,7 @@ describe("command resolution agrees with the filesystem", () => {
   it("which prints a path that actually exists and is executable", () => {
     const sh = makeShell();
     expect(sh.run("which ls").stdout).toBe("/usr/bin/ls\n");
-    // The advertised path resolves in the VFS -- the inconsistency this fixes.
+    // The path that `which` prints exists in the VFS too.
     expect(sh.run("ls /usr/bin/ls").stdout).toBe("/usr/bin/ls\n");
     expect(sh.run('[ -x "$(which ls)" ] && echo ok').stdout).toBe("ok\n");
   });

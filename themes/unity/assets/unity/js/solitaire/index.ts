@@ -1,17 +1,17 @@
 // The solitaire table: everything between the Klondike rules (klondike.ts)
 // and the screen. The whole game renders into a small offscreen canvas at
-// its logical resolution and is then upscaled with nearest-neighbor sampling
-// onto the visible canvas, so movement, rotation, and scaling all quantize
-// to chunky pixels. Cards own a "view" position that springs toward the
-// spot the layout assigns them, so every state change (a play, an undo, a
-// draw, the deal) animates without special cases. Session-only: nothing is
-// persisted, a reload deals a fresh game. The arrow keys steer a cursor
-// whose moves live in cursor.ts, which runs headless like the rules.
+// its logical resolution. A nearest-neighbor upscale then draws it onto the
+// visible canvas, so movement, rotation, and scaling all quantize to chunky
+// pixels. Cards own a "view" position that springs toward the spot
+// the layout assigns them, so every state change (a play, an undo, a draw,
+// the deal) animates without special cases. Nothing persists, and a reload
+// deals a fresh game. The arrow keys steer a cursor whose moves live in
+// cursor.ts, which runs headless like the rules.
 //
-// DOM contract (unity/page/solitaire.html): [data-solitaire] root with
-// [data-sol-stage] (the sized area), [data-sol-canvas], [data-sol-live] (the
-// aria-live status line), and [data-sol-action="<id>"] buttons that mirror
-// the on-canvas controls for keyboard and screen-reader users.
+// The DOM contract lives in unity/page/solitaire.html. A [data-solitaire]
+// root holds [data-sol-stage] (the sized area), [data-sol-canvas], and
+// [data-sol-live] (the aria-live status line). Its [data-sol-action="<id>"]
+// buttons mirror the on-canvas controls for keyboard and screen-reader users.
 
 import { locale, t, tn } from "../i18n";
 import {
@@ -51,7 +51,7 @@ const WASTE: Readonly<Loc> = { kind: "waste", pile: 0 };
 interface View {
   x: number;
   y: number;
-  /** Radians; only the dragged run tilts. */
+  /** Radians. Only the dragged run tilts. */
   rot: number;
   /** Which side the card currently shows (lags the model during a flip). */
   faceUp: boolean;
@@ -385,8 +385,8 @@ function cardNames(cards: readonly Card[]): string {
     requestFrame();
   }
 
-  /** Spring every card toward its layout spot. Cards already heading there
-   *  are left alone; the dragged run is skipped. */
+  /** Spring every card toward its layout spot. sync leaves alone the cards
+   *  already heading there, and it skips the dragged run. */
   function sync(opts: { stagger?: (p: Placement) => number; animate?: boolean } = {}): void {
     computeLayout();
     keyCursor = clampCursor(game, keyCursor);
@@ -894,10 +894,10 @@ function cardNames(cards: readonly Card[]): string {
     requestFrame();
   }
 
-  /** The `?rig=auto` demo: deal until the solver finds a winning line
-   *  (draw one; a deal that blows the search budget is dealt again), then
-   *  play it out card by card once the deal has landed, drawing through
-   *  the stock whenever the next card is buried there. */
+  /** The `?rig=auto` demo. Deal until the solver finds a winning line under
+   *  draw-one rules, and deal again when a search exhausts its budget. After
+   *  the deal lands, play the line out card by card, and draw through the
+   *  stock whenever the stock still holds the next card. */
   function playRig(): void {
     drawMode = 1;
     let deal = game;
@@ -1035,7 +1035,7 @@ function cardNames(cards: readonly Card[]): string {
     loCtx.fillRect(0, top, W, 1);
     for (const b of buttons) drawButton(b, now, b.id === focus);
 
-    // Readouts, right-aligned; on the second row when the HUD wraps.
+    // Readouts, aligned right, and on the second row when the HUD wraps.
     const y = (hudRows === 2 ? top + HUD_ROW : top) + 3;
     const score = Math.round(scoreShown);
     const chips: [IconName, string, string][] = [
@@ -1347,8 +1347,8 @@ function cardNames(cards: readonly Card[]): string {
       tweens = tweens.filter((t) => !finished.includes(t));
       for (const t of finished) t.onDone?.();
     }
-    // The model is won the moment the last move is applied, which during
-    // auto-complete is while earlier cards are still flying; wait for
+    // The model reaches its won state the moment the last move applies.
+    // During auto-complete, earlier cards are still flying then, so wait for
     // every card to land before the cascade takes over the frame.
     if (game.won() && !won && tweens.length === 0) startWin();
     for (const f of flips) {

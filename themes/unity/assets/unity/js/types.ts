@@ -67,7 +67,7 @@ export interface UPSite {
   solitaire: boolean;
 }
 
-/** Runtime UI strings from the theme's _partials/unity/ui/i18n.html; read
+/** Runtime UI strings from the theme's _partials/unity/ui/i18n.html. Read
  *  them through t() and tn() in i18n.ts. */
 export interface UPI18n {
   strings: Record<string, string>;
@@ -86,10 +86,17 @@ export interface UPPageWindowState {
 
 declare global {
   /** Whether the site has a Studio playlist. baseof.html passes it to
-   *  esbuild as a define, so it is a literal in the built bundle. Every
-   *  call into daw.ts or audio.ts from another module sits inside an
-   *  UP_STUDIO check, so esbuild drops the Studio from the bundle of a
-   *  site without MIDI files. */
+   *  esbuild as a define, so it is a literal in the built bundle, and
+   *  esbuild drops the Studio from the bundle of a site without MIDI files.
+   *  These rules keep the Studio out of that bundle:
+   *  - Every call into daw.ts or audio.ts from another module sits inside an
+   *    `if (UP_STUDIO)` block or after `UP_STUDIO &&`. Never guard one with
+   *    an early `if (!UP_STUDIO) return`, because esbuild keeps the modules
+   *    that the code after a return names.
+   *  - daw.ts and audio.ts make no top-level call and no top-level object
+   *    spread, because esbuild keeps both even when nothing reads the result.
+   *  - A table that calls t() lives inside the function that reads it, as in
+   *    initDaw(). */
   const UP_STUDIO: boolean;
 
   interface Window {

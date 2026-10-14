@@ -1,13 +1,16 @@
-// NotifyOSD — the dark passive notification bubbles from Ubuntu's notify-osd
-// daemon. Two slots, mirroring the real daemon's layout: a "synchronous"
-// bubble on top (volume/brightness-style icon + value bar, replaced in place
-// on every update) and an asynchronous text bubble below it (icon + summary +
-// body, queued one at a time). Bubbles are strictly passive: the host is
-// pointer-events:none so clicks fall through to whatever is underneath, and a
-// document-level mousemove hit-test veils a bubble the pointer crosses —
-// notify-osd's signature "look through me" fade. Session-only, like prefs.ts:
-// nothing persists, and every timer/element lives in module state torn down
-// by its own removal path.
+// NotifyOSD, the dark passive notification bubbles from Ubuntu's notify-osd
+// daemon. Two slots follow the real daemon's layout. A "synchronous" bubble
+// on top holds an icon and a value bar, like the volume and brightness
+// bubbles, and each update replaces it in place. An asynchronous text bubble
+// under it holds an icon, a summary, and a body, and its queue shows one at a
+// time.
+//
+// Bubbles are strictly passive. The host is pointer-events:none, so clicks
+// fall through to whatever is underneath. A document-level mousemove hit
+// test veils a bubble that the pointer crosses, which is notify-osd's
+// signature "look through me" fade. State lasts for the session only, like
+// prefs.ts. Nothing persists, and each timer and element lives in module
+// state that its own removal path tears down.
 //
 // The desktop side (top-panel.ts) calls notify()/notifyValue() directly. The
 // home page's terminal, in its separate bundle, and a site's own scripts
@@ -23,12 +26,13 @@ export interface NotifyOpts {
   /** A key from the SSR'd icon template (info, warning, music, ...) or a
    *  freedesktop-style alias (dialog-information, audio-volume-high, ...). */
   icon?: string | undefined;
-  /** Display time; clamped to 1–20s like notify-send's expire-time. */
+  /** Display time, clamped between 1 and 20 seconds, inclusive, like
+   *  notify-send's expire-time. */
   timeoutMs?: number | undefined;
 }
 
 export interface NotifyValueOpts {
-  /** Bar fill, 0–100. */
+  /** Bar fill, between 0 and 100, inclusive. */
   value: number;
   icon?: string;
   /** Screen-reader text for the otherwise text-free bubble. */
@@ -40,9 +44,9 @@ const VALUE_TIMEOUT = 2000;
 const QUEUE_MAX = 3;
 const FADE_MS = 300;
 
-// freedesktop icon names (what notify-send users will reach for) mapped onto
-// the keys the SSR'd template actually ships. Unknown names simply render no
-// icon, matching the real daemon's behavior for a missing theme icon.
+// freedesktop icon names, which notify-send users reach for, mapped onto the
+// keys that the server-rendered template ships. An unknown name renders no
+// icon, as the real daemon does for a missing theme icon.
 const ICON_ALIASES: Readonly<Record<string, string>> = {
   "dialog-information": "info",
   "dialog-warning": "warning",
@@ -88,8 +92,8 @@ function resolveIcon(name: string | undefined): Element | null {
 
 // notify-osd's "veil": bubbles never take input, but a pointer resting on one
 // turns it translucent so the content underneath stays readable. Because the
-// host is pointer-events:none we can't use :hover — a document mousemove
-// hit-test (only attached while a bubble is up) does the job instead.
+// host is pointer-events:none, :hover never matches, so a document mousemove
+// hit test does the job instead. It listens only while a bubble is up.
 function onPointerMove(e: MouseEvent): void {
   for (const b of [textBubble, valueBubble]) {
     if (!b) continue;
@@ -108,15 +112,17 @@ function syncPointerWatch(): void {
 }
 
 function reveal(el: HTMLElement): void {
-  // Mount hidden, force a reflow, then fade — the lock/dash reveal pattern.
+  // Mount hidden, force a reflow, then fade, as the lock screen and the Dash
+  // reveal themselves.
   void el.offsetWidth;
   el.classList.add("is-visible");
 }
 
 function dismiss(b: Bubble, after?: () => void): void {
   window.clearTimeout(b.timer);
-  // transitionend (~250ms) and the backstop timeout (300ms) race; finish must
-  // be one-shot or `after` double-fires and double-advances the text queue.
+  // transitionend (about 250ms) and the backstop timeout (300ms) race. finish
+  // must run one time only, or `after` fires twice and advances the text queue
+  // twice.
   let done = false;
   const finish = (): void => {
     if (done) return;
@@ -180,12 +186,13 @@ function armTextTimer(b: NonNullable<typeof textBubble>, timeoutMs?: number): vo
   window.clearTimeout(b.timer);
   const timeout = timeoutMs !== undefined ? Math.min(20000, Math.max(1000, timeoutMs)) : TEXT_TIMEOUT;
   b.timer = window.setTimeout(() => {
-    // Free the slot the moment expiry starts, not when the fade lands: a
-    // notification arriving mid-fade must see an empty slot (and show fresh,
-    // cross-fading with the dying bubble) rather than renew a condemned one.
+    // Free the slot the moment expiry starts, not when the fade ends. A
+    // notification that arrives mid-fade must see an empty slot and show
+    // fresh, cross-fading with the dying bubble, rather than renew it.
     if (textBubble === b) textBubble = null;
     dismiss(b, () => {
-      // A bubble mounted during the fade owns the screen; don't advance over it.
+      // A bubble that mounted during the fade owns the screen, so do not
+      // advance over it.
       if (textBubble) return;
       const next = queue.shift();
       if (next) showText(next);
@@ -218,8 +225,8 @@ export function notifyValue(opts: NotifyValueOpts): void {
   const label = opts.label ?? t("js_notify_value", { percent: value });
 
   if (valueBubble) {
-    // Synchronous bubbles update in place — a volume drag is one bubble
-    // tracking the slider, not a stack of stale ones.
+    // Synchronous bubbles update in place, so a volume drag is one bubble that
+    // tracks the slider and not a stack of stale ones.
     valueBubble.fill.style.width = `${value}%`;
     valueBubble.iconBox.replaceChildren(resolveIcon(opts.icon) ?? "");
     valueBubble.srText.textContent = label;

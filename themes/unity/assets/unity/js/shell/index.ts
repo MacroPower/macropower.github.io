@@ -28,7 +28,8 @@ function saveHistory(items: readonly string[]): void {
   try {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(-500)));
   } catch {
-    // localStorage may be unavailable (private mode); history stays in-memory.
+    // localStorage might be unavailable, as in private mode, so history stays
+    // in memory.
   }
 }
 
@@ -90,8 +91,9 @@ function saveHistory(items: readonly string[]): void {
 
     const reconnect = (): void => {
       overlay.remove();
-      // Release the height frozen at exit; the fresh boot re-derives the
-      // window's natural size from xterm's rendered rows, like first load.
+      // Release the height that the exit froze. The fresh boot derives the
+      // window's natural size from xterm's rendered rows again, as on first
+      // load.
       mount.style.minHeight = "";
       boot().focus();
     };
@@ -124,8 +126,9 @@ function saveHistory(items: readonly string[]): void {
         // instead of shrink-wrapping it to a small box mid-desktop.
         mount.style.minHeight = `${mount.offsetHeight}px`;
         term.dispose();
-        // dispose() removes xterm's element; replaceChildren is the backstop
-        // that guarantees an empty mount for the overlay (and the next boot).
+        // dispose() removes xterm's element, and replaceChildren is the
+        // backstop that guarantees an empty mount for the overlay and the next
+        // boot.
         mount.replaceChildren();
         root.removeAttribute("data-shell-ready");
         showReconnect();
@@ -152,7 +155,8 @@ function saveHistory(items: readonly string[]): void {
   if (document.fonts?.load) {
     const fonts = Promise.all(fontProbes(monoFamily(mount)).map((f) => document.fonts.load(f)));
     const timeout = new Promise<void>((r) => setTimeout(r, FONT_TIMEOUT_MS));
-    // load() rejects on fetch failure for a known face; start either way.
+    // load() rejects when the fetch fails for a known face, so start either
+    // way.
     void Promise.race([fonts, timeout]).then(start, start);
   } else {
     start();

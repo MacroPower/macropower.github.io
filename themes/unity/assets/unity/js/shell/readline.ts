@@ -1,10 +1,10 @@
 import type { TerminalIO } from "./terminal";
 import { cursorLeft, cursorRight, eraseLine, RESET } from "./ansi";
 
-// Matches a single complete terminal key escape (CSI, SS3, or a 2-char Fe/Alt
-// sequence) and nothing after it. A paste that merely starts with ESC has
-// trailing bytes and so fails the anchored match, falling through to the
-// sanitizer instead of being dropped wholesale.
+// Matches a single complete terminal key escape (CSI, SS3, or a 2-char Fe or
+// Alt sequence) and nothing after it. A paste that starts with ESC has
+// trailing bytes, so it fails the anchored match. The sanitizer then cleans
+// it, and readline keeps the rest instead of dropping the whole paste.
 const UNHANDLED_KEY_ESC = /^\x1b(\[[0-9;?]*[A-Za-z~]|O[A-Za-z]|.)$/;
 
 const WORD = /[A-Za-z0-9]/;
@@ -22,7 +22,7 @@ export function stripControls(s: string): string {
 export interface CompletionContext {
   /** Tokens preceding the one under the cursor. */
   tokens: string[];
-  /** The token currently being completed (may be empty). */
+  /** The token under completion, which can be empty. */
   current: string;
   /** Index of the current token; 0 is the command name. */
   index: number;
@@ -42,8 +42,8 @@ export interface ReadlineOptions {
   onHistoryChange?: ((history: readonly string[]) => void) | undefined;
 }
 
-// Renderer-agnostic single-line editor. Owns the line buffer, cursor, kill
-// ring, and history; renders edits by writing ANSI through TerminalIO.
+// Renderer-agnostic single-line editor. It owns the line buffer, cursor, kill
+// ring, and history, and it renders edits by writing ANSI through TerminalIO.
 export class Readline {
   private buffer = "";
   private cursor = 0;
@@ -124,10 +124,10 @@ export class Readline {
       case "\t": this.tab(); return;
       default: break;
     }
-    // A lone, complete escape sequence is an unhandled special key (function
-    // keys, unmapped Alt combos); ignore it. Anything else -- including a paste
-    // that merely starts with ESC -- is sanitized and inserted, so pasted
-    // control sequences cannot corrupt the screen.
+    // A lone, complete escape sequence is an unhandled special key, such as a
+    // function key or an unmapped Alt combo, so ignore it. Readline sanitizes
+    // and inserts anything else, including a paste that starts with ESC,
+    // so pasted control sequences cannot corrupt the screen.
     if (UNHANDLED_KEY_ESC.test(data)) return;
     const clean = stripControls(data);
     if (clean) this.insert(clean);
@@ -190,7 +190,7 @@ export class Readline {
     this.cursor = this.buffer.length;
   }
 
-  // Index of the start of the word at/just left of the cursor (alnum runs).
+  // Index of the start of the word at or just left of the cursor (alnum runs).
   private wordLeftIndex(): number {
     let i = this.cursor;
     while (i > 0 && !isWord(this.buffer[i - 1])) i -= 1;
@@ -198,7 +198,7 @@ export class Readline {
     return i;
   }
 
-  // Index just past the word at/just right of the cursor (alnum runs).
+  // Index just past the word at or just right of the cursor (alnum runs).
   private wordRightIndex(): number {
     const n = this.buffer.length;
     let i = this.cursor;
@@ -372,7 +372,8 @@ export class Readline {
       this.renderSearch();
       return;
     }
-    // Any escape sequence (arrows, etc.) accepts the match, then re-dispatches.
+    // Any escape sequence, such as an arrow key, accepts the match and then
+    // dispatches the key again.
     if (data.startsWith("\x1b")) { this.acceptSearch(); this.handle(data); return; }
     const clean = stripControls(data);
     if (!clean) { this.acceptSearch(); return; }

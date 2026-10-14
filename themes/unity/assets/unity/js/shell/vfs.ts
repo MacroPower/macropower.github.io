@@ -1,15 +1,17 @@
-// The home terminal's virtual filesystem: pure data + path logic, no DOM or
-// xterm coupling (matches the renderer-agnostic shell core). Everything is
-// static -- sizes, modes, and mtimes come from literals, never Date/random --
-// so `ls` and `ls -l` render identically on every run. File bodies are thunks
-// so they can interpolate ShellData (socials, title, host) lazily.
+// The home terminal's virtual filesystem: pure data and path logic, with no
+// tie to the DOM or xterm, like the renderer-agnostic shell core. Everything
+// is static. Sizes, modes, and mtimes come from literals and never from Date
+// or Math.random, so `ls` and `ls -l` render the same on every run. File
+// bodies are thunks, so they fill in ShellData (socials, title, host) only
+// when a command reads them.
 //
-// The tree is also writable for the session: redirections (`>`/`>>`) and the
-// file-mutation commands (mkdir/touch/rm/cp/mv/...) change it in place. Writes
-// are in-memory only and reset on reload (unlike persisted history). To keep
-// the golden `ls`/glob tests deterministic, every written node's mtime is the
-// module-level SESSION_MTIME constant -- never a real Date passed in from a
-// command -- and its size is a pure function of its content.
+// The tree is also writable for the session. Redirections (`>` and `>>`) and
+// the file-mutation commands, such as mkdir, touch, rm, cp, and mv, change it
+// in place. Writes live in memory only and reset on reload, unlike the
+// command history, which persists. Every written node's mtime is the
+// module-level SESSION_MTIME constant, never a real Date from a command, and
+// its size is a pure function of its content. The golden `ls` and glob tests
+// therefore stay deterministic.
 
 import type { ShellData } from "./shell";
 import { color, PALETTE } from "./ansi";
@@ -21,10 +23,11 @@ type NodeKind = "dir" | "file";
 // consistent with the static `binary()` mtime.
 export const SESSION_MTIME = "2025-07-13";
 
-// Split a buffer into stored file lines the same way a pipeline capture does
-// (shell.ts CaptureSink.lines): break on "\n", drop a trailing "\r" per line,
-// and discard the trailing empty element a final newline leaves behind. Shared
-// so `echo hi > f; cat f` yields one line, not a spurious blank.
+// Split a buffer into stored file lines. It breaks on "\n", drops a trailing
+// "\r" from each line, and discards the trailing empty element that a final
+// newline leaves. A pipeline capture (CaptureSink.lines in shell.ts) and
+// Vfs.writeFile both call it, so `echo hi > f; cat f` yields one line and
+// not a spurious blank.
 export function splitLines(s: string): string[] {
   const parts = s.split("\n").map((l) => l.replace(/\r$/, ""));
   if (parts.length && parts[parts.length - 1] === "") parts.pop();
@@ -110,10 +113,10 @@ function dir(
   };
 }
 
-// An executable stub for a /bin or /usr/bin program. Lets `which`, `type`,
+// An executable stub for a /bin or /usr/bin program. It lets `which`, `type`,
 // `ls`, and `test -x` agree on where a command lives without shipping real
-// machine code; `cat` shows a file(1)-style line instead of dumping bytes. The
-// size is a stable function of the name so listings never jitter.
+// machine code, and `cat` shows a file(1)-style line instead of dumping bytes.
+// The size is a stable function of the name, so listings never jitter.
 function binary(name: string): FileNode {
   return file(name, {
     mode: "755",
@@ -128,14 +131,15 @@ function binary(name: string): FileNode {
   });
 }
 
-// Any execute bit set in the octal mode marks a node runnable -- the predicate
-// the PATH search and `test -x` share.
+// Any execute bit in the octal mode marks a node runnable. The PATH search and
+// `test -x` share this predicate.
 function isExecutable(node: FsNode): boolean {
   return [...node.mode].some((d) => Number(d) & 1);
 }
 
-// A file created/rewritten during the session. `content` closes over the stored
-// lines; `size` is supplied by the caller (a pure function of the raw buffer).
+// A file that the session creates or rewrites. `content` closes over the
+// stored lines, and the caller passes `size`, a pure function of the raw
+// buffer.
 function writtenFile(name: string, lines: string[], size: number): FileNode {
   return {
     name,
@@ -152,9 +156,9 @@ function newDir(name: string): DirNode {
   return { name, kind: "dir", mode: "755", mtime: SESSION_MTIME, size: 4096, children: new Map() };
 }
 
-// Deep-clone a node under a (possibly new) name for cp. Child Maps are copied so
-// the clone is independent; FileNode content thunks are immutable, so sharing
-// the reference is safe.
+// Deep-clone a node under a name, new or the same, for cp. The clone gets its
+// own child Maps, so it stays independent. FileNode content thunks never
+// change, so the clone can share the reference.
 function cloneNode(node: FsNode, name: string): FsNode {
   if (node.kind === "file") return { ...node, name };
   const children = new Map<string, FsNode>();
@@ -182,9 +186,9 @@ export class Vfs {
   }
 
   // Normalize `input` against `cwd` to an absolute path with no trailing slash
-  // (root stays "/"). Leading ~ expands to home; absolute input restarts from
-  // root, relative from cwd; `.`/empty segments drop, `..` pops (never past
-  // root).
+  // (root stays "/"). A leading ~ expands to home. Absolute input starts from
+  // root, and relative input from cwd. Each `.` and empty segment drops, and
+  // each `..` pops one segment but never past root.
   resolvePath(cwd: string, input: string): string {
     let base: string;
     let path: string;
@@ -234,18 +238,21 @@ export class Vfs {
 
   // --- Session write API ----------------------------------------------------
   // Each mutator takes an absolute path (callers resolve through resolvePath)
-  // and returns a bash-style failure reason (e.g. "Is a directory") or
+  // and returns a bash-style failure reason, such as "Is a directory", or
   // undefined on success. Callers prepend their own `cmd: name:` prefix, the
-  // way `cat`/`ls` already format diagnostics -- except for a few lowercase
-  // sentinel reasons ("omitting directory", "same file", "into itself") whose
-  // GNU messages don't fit that shape; the cp/mv wrappers rephrase those.
-  // Writes are permissive: anything whose parent directory exists may be
-  // written; per-file permissions are not modeled, but bash's structural
-  // errors are reproduced.
+  // way `cat` and `ls` format diagnostics. A few lowercase sentinel reasons
+  // ("omitting directory", "same file", "into itself") are the exception,
+  // because their GNU messages do not fit that format. The cp and mv wrappers
+  // rephrase those.
+  //
+  // Writes are permissive, so a command can write any path whose parent
+  // directory exists. The VFS does not model per-file permissions, but it
+  // reproduces bash's structural errors.
 
-  // Create, overwrite, or (with append) extend a file. The buffer is normalized
-  // into stored lines like a pipeline capture; raw bytes (including ANSI) are
-  // otherwise kept so `cat` re-emits them and text filters strip on read.
+  // Create, overwrite, or (with append) extend a file. splitLines turns the
+  // buffer into stored lines like a pipeline capture, and every other byte,
+  // ANSI included, stays as written. `cat` then emits the bytes again, and
+  // the text filters strip the ANSI on read.
   writeFile(absPath: string, raw: string, opts: { append?: boolean } = {}): string | undefined {
     if (absPath === "/") return "Is a directory";
     const { parentPath, base } = splitPath(absPath);
@@ -264,8 +271,8 @@ export class Vfs {
     return undefined;
   }
 
-  // Create a directory. With `parents` (mkdir -p), intermediate dirs are made as
-  // needed and an existing target is not an error.
+  // Create a directory. With `parents` (mkdir -p), it also creates each
+  // missing parent, and an existing target is not an error.
   mkdir(absPath: string, opts: { parents?: boolean } = {}): string | undefined {
     if (absPath === "/") return opts.parents ? undefined : "File exists";
     if (opts.parents) {
@@ -313,11 +320,11 @@ export class Vfs {
   }
 
   // Copy src to dst (deep clone). A directory source needs `recursive`. When dst
-  // is an existing directory, the copy is dropped under it by src's basename,
-  // like bash. Copying a node onto itself ("same file") or a directory into its
-  // own subtree ("into itself") is refused with a sentinel reason, matching GNU
-  // cp; the missing-parent check runs first because GNU reports ENOENT before
-  // the into-itself diagnostic.
+  // is an existing directory, the copy lands in it under src's basename, like
+  // bash. Like GNU cp, copy refuses a node onto itself ("same file") and a
+  // directory into its own subtree ("into itself") with a sentinel reason. The
+  // missing-parent check runs first, because GNU reports ENOENT before the
+  // into-itself diagnostic.
   copy(srcAbs: string, dstAbs: string, opts: { recursive?: boolean } = {}): string | undefined {
     const src = this.lookup(srcAbs);
     if (!src) return "No such file or directory";
@@ -332,14 +339,15 @@ export class Vfs {
     return undefined;
   }
 
-  // Move/rename src to dst by relinking (no clone). When dst is an existing
-  // directory, src is dropped under it by basename. Relinking a directory
-  // inside its own subtree would detach it into an unreachable self-cycle
-  // (silent data loss), so a target equal to src ("same file") or under it
-  // ("into itself") is refused before any mutation -- sentinel reasons the mv
-  // wrapper rephrases, like cp's "omitting directory". The subtree guard only
-  // applies to directory sources: a path under a *file* src falls through to
-  // the structural parent checks, as in GNU mv.
+  // Move or rename src to dst by relinking it, without a clone. When dst is an
+  // existing directory, src lands in it under its basename. Relinking a
+  // directory inside its own subtree would detach it into an unreachable
+  // self-cycle and lose its data without a word. So move refuses a target
+  // equal to src ("same file") or under it ("into itself") before it changes
+  // anything. The mv wrapper rephrases both sentinel reasons, as the cp
+  // wrapper does "omitting directory". The subtree guard applies only to a
+  // directory source. A path under a *file* src falls through to the
+  // structural parent checks, as in GNU mv.
   move(srcAbs: string, dstAbs: string): string | undefined {
     const src = this.lookup(srcAbs);
     if (!src) return "No such file or directory";
@@ -358,25 +366,26 @@ export class Vfs {
     return undefined;
   }
 
-  // Create an empty file if missing; an existing path is a no-op (no mtime bump,
-  // so listings stay deterministic).
+  // Create an empty file at a missing path. An existing path stays as it is,
+  // mtime included, so listings stay deterministic.
   touch(absPath: string): string | undefined {
     if (this.lookup(absPath)) return undefined;
     return this.writeFile(absPath, "");
   }
 
-  // Resolve the effective write path for cp/mv: when dst is an existing
-  // directory, append src's basename; otherwise dst is used verbatim.
+  // Resolve the effective write path for cp and mv. When dst is an existing
+  // directory, append src's basename, and otherwise keep dst as it is.
   private dropTarget(src: FsNode, dstAbs: string): string {
     const dst = this.lookup(dstAbs);
     if (dst?.kind === "dir") return dstAbs === "/" ? `/${src.name}` : `${dstAbs}/${src.name}`;
     return dstAbs;
   }
 
-  // Resolve a command word the way the shell's path search does: an explicit
-  // path (one containing "/") is checked relative to `cwd`; a bare name is
-  // searched across the colon-separated `path`. Returns the absolute path of the
-  // first executable file found, or undefined -- the seam `which`/`type` share.
+  // Resolve a command word the way the shell's path search does. It checks an
+  // explicit path, one that contains "/", relative to `cwd`, and it searches
+  // the colon-separated `path` for a bare name. Returns the absolute path of
+  // the first executable file it finds, or undefined. `which` and `type` share
+  // this method.
   resolveCommand(name: string, cwd: string, path: string): string | undefined {
     if (name.includes("/")) {
       const abs = this.resolvePath(cwd, name);
@@ -392,7 +401,7 @@ export class Vfs {
     return undefined;
   }
 
-  // Collapse home to ~ for the prompt, matching bash.
+  // Collapse home to ~ for the prompt, as bash does.
   displayPath(absPath: string): string {
     if (absPath === this.homePath) return "~";
     if (absPath.startsWith(`${this.homePath}/`))
@@ -400,10 +409,10 @@ export class Vfs {
     return absPath;
   }
 
-  // Expand a filename glob against the tree, returning matches shaped like the
-  // input (absolute if the pattern was, relative to `cwd` otherwise), sorted.
-  // Returns [] when nothing matches -- the caller keeps the literal pattern,
-  // matching bash with nullglob off.
+  // Expand a filename glob against the tree. Returns the matches sorted, each
+  // absolute when the pattern is and relative to `cwd` otherwise. Returns []
+  // when nothing matches, and the caller then keeps the literal pattern, as
+  // bash does with nullglob off.
   glob(cwd: string, pattern: string): string[] {
     const isAbs = pattern.startsWith("/");
     const segs = pattern.split("/").filter((s) => s !== "");
@@ -472,8 +481,8 @@ export function globToRegExpBody(pat: string): string {
 const REGEX_META = /[.*+?^${}()|[\]\\]/;
 
 // Anchored full-match RegExp for a glob pattern. With `leadingDot`, a pattern
-// that starts with a metacharacter does not match a leading "." -- the
-// filename-globbing rule; parameter-expansion patterns leave it off.
+// that starts with a metacharacter does not match a leading ".". Filename
+// globbing follows that rule, and parameter-expansion patterns leave it off.
 export function globToRegExp(pat: string, opts: { leadingDot?: boolean } = {}): RegExp {
   const guard = opts.leadingDot && /[*?[]/.test(pat[0] ?? "") ? "(?!\\.)" : "";
   return new RegExp(`^${guard}${globToRegExpBody(pat)}$`);
@@ -585,8 +594,8 @@ export function buildFs(data: ShellData): Vfs {
 
   // A small FHS skeleton so the paths the shell advertises actually exist:
   // `/bin/bash` (the seeded $SHELL), the PATH dirs `which` searches, and a
-  // writable-looking `/tmp`. The command stubs under `/usr/bin` are injected
-  // after registration (see Shell.register) so they never drift from the
+  // writable-looking `/tmp`. Shell.register adds the command stubs under
+  // `/usr/bin` as it registers each command, so they never drift from the
   // registry.
   const root = dir("/", {
     mtime: "2025-07-13",
@@ -625,7 +634,7 @@ export function buildFs(data: ShellData): Vfs {
 
 // Shared formatting + completion helpers used by the fs commands.
 
-/** drwxr-xr-x / -rw-r--r-- from a node's kind + octal mode string. */
+/** The `drwxr-xr-x` or `-rw-r--r--` string for a node's kind and octal mode. */
 export function formatMode(node: FsNode): string {
   const rwx = (digit: number): string =>
     `${digit & 4 ? "r" : "-"}${digit & 2 ? "w" : "-"}${digit & 1 ? "x" : "-"}`;
@@ -642,8 +651,8 @@ export function formatDate(iso: string): string {
 // Completes a path token against the VFS. Splits `current` into a directory
 // part (kept verbatim so ~/, ../, and absolute prefixes survive) and a leaf,
 // then returns full-token replacements for children whose name starts with the
-// leaf. Dotfiles are hidden unless the leaf itself starts with ".". A dir-part
-// that resolves to nothing or to a file yields [] -- never throws.
+// leaf. It hides dotfiles unless the leaf itself starts with ".". A directory
+// part that resolves to nothing or to a file yields [], and it never throws.
 export function completePath(
   vfs: Vfs,
   cwd: string,

@@ -28,8 +28,8 @@ run("dialogs", initDialogs);
 // Before initTopPanel so its bubbles are available the moment the volume
 // slider (or any other panel control) first fires one.
 run("notify", initNotify);
-// Before initTopPanel so the lock overlay's window keydown listener is
-// registered first and can stopImmediatePropagation past the dropdown-close
+// Before initTopPanel, so the lock overlay registers its window keydown
+// listener first and can stopImmediatePropagation past the dropdown-close
 // handler when Esc unlocks.
 run("lock", initLock);
 run("top panel", initTopPanel);

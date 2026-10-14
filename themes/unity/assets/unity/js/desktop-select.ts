@@ -1,21 +1,22 @@
-// Shared icon-grid selection model: a Set of selected tiles plus an anchor —
-// the range origin for Shift-click and the "primary" tile of a multi-selection.
-// projects.ts (preview pane) and trash.ts (footer count) each create one
-// instance and drive it through projects-desktop's gestures. The generic class
-// toggling (.is-active/.is-anchor/.is-focused) lives here; each consumer paints
-// its own selection-dependent pane via onRender.
+// Shared icon-grid selection model. It holds a Set of selected tiles plus an
+// anchor, the range origin for Shift-click and the "primary" tile of a
+// multi-selection. projects.ts (preview pane) and trash.ts (footer count) each
+// create one instance and drive it through projects-desktop's gestures. The
+// generic class toggling (.is-active, .is-anchor, .is-focused) lives here, and
+// each consumer paints its own selection-dependent pane through onRender.
 //
-// Imported by both the app.ts and projects.ts bundles — esbuild duplicates the
-// module into each, so the instances are independent. Keep all state inside
-// createSelection; module-level mutable state would silently desync the copies.
+// Both the app.ts and projects.ts bundles import this module. esbuild copies
+// it into each, so the instances are independent. Keep all state inside
+// createSelection, because module-level mutable state would silently desync
+// the copies.
 
 export interface SelectionDeps {
   /** Tile elements in DOM order. Shared by reference with the gesture engine,
    *  which reorders and splices it in place. */
   tiles: HTMLElement[];
-  /** Which tiles selection operations may target. Defaults to attached,
-   *  visible tiles — filter-hiding (projects) and tile removal (trash) both
-   *  fall out of the same predicate via syncAfterChange. */
+  /** Which tiles selection operations can target, attached and visible tiles
+   *  by default. Through syncAfterChange, the same predicate covers the
+   *  projects filter hiding a tile and the trash removing one. */
   selectable?(tile: HTMLElement): boolean;
   /** Paint the consumer's selection-dependent UI (preview pane, footer). */
   onRender(): void;
@@ -46,8 +47,9 @@ export function createSelection(deps: SelectionDeps): Selection {
 
   const selectableTiles = (): HTMLElement[] => deps.tiles.filter(selectable);
 
-  // Last insertion-order member of a Set (the fallback anchor when the current
-  // one is removed). Avoids spreading the whole Set just to index its tail.
+  // Last member of a Set in insertion order, the fallback anchor when the
+  // current anchor leaves. It avoids spreading the whole Set just to index its
+  // tail.
   const lastOf = (set: Set<HTMLElement>): HTMLElement | null => {
     let v: HTMLElement | null = null;
     for (const t of set) v = t;
@@ -64,17 +66,17 @@ export function createSelection(deps: SelectionDeps): Selection {
     for (const t of deps.tiles) {
       const active = selection.has(t);
       t.classList.toggle("is-active", active);
-      // Mirror selection for AT: the is-active class is invisible to screen
-      // readers. Both consumers' tiles are <button>s; the guard keeps the
-      // attribute (a button semantic) off any non-button item a future
-      // consumer routes through here.
+      // Mirror the selection for assistive technology, because screen readers
+      // do not see the is-active class. Both consumers' tiles are <button>s,
+      // and the guard keeps the attribute, which only a button supports, off
+      // any other item that a later consumer routes through here.
       if (t.tagName === "BUTTON") t.setAttribute("aria-pressed", active ? "true" : "false");
-      // The anchor ring only distinguishes the primary tile among several
-      // selected tiles; a lone selection keeps the plain active look.
+      // The anchor ring marks the primary tile only among several selected
+      // tiles. A lone selection keeps the plain active look.
       t.classList.toggle("is-anchor", multi && t === anchor);
-      // Selection drives keyboard focus: clearing .is-focused lets filter-nav's
-      // arrow nav resume from the selected (.is-active) tile, while filter-nav
-      // re-adds the focus ring itself when navigating onto an unselected tile.
+      // Selection drives keyboard focus. Clearing .is-focused lets filter-nav's
+      // arrow keys resume from the selected (.is-active) tile, and filter-nav
+      // adds the focus ring back itself when it moves onto an unselected tile.
       t.classList.remove("is-focused");
     }
     deps.onRender();
@@ -139,10 +141,10 @@ export function createSelection(deps: SelectionDeps): Selection {
     render();
   }
 
-  // Seed the AT-visible state so unselected tiles read as unpressed toggle
-  // buttons before the first render() (which only runs on selection changes).
-  // A full render() here would call onRender before the consumer's instance
-  // binding exists, so only the attribute is painted.
+  // Seed the state that assistive technology sees, so unselected tiles read
+  // as unpressed toggle buttons before the first render(), which runs only on
+  // a selection change. A full render() here would call onRender before the
+  // consumer's instance binding exists, so paint only the attribute.
   for (const t of deps.tiles) {
     if (t.tagName === "BUTTON") t.setAttribute("aria-pressed", "false");
   }

@@ -12,8 +12,8 @@ export const sudo: Command = {
 };
 
 // Launches the site's solitaire table when one exists (any page with
-// `layout = "solitaire"`); hidden so it ships no /usr/bin stub on sites
-// without the game.
+// `layout = "solitaire"`). Like every hidden command, it never gets a
+// /usr/bin stub, and completion and the did-you-mean hint leave it out.
 export const solitaire: Command = {
   name: "solitaire",
   summary: "deal a game of klondike",

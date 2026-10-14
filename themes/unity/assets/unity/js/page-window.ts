@@ -114,7 +114,8 @@ export function installPageWindow(): void {
   async function flyIn(): Promise<boolean> {
     if (transitioning) return false;
     stage.style.visibility = "";
-    // Force layout so the shrunk transform is committed before we animate back.
+    // Force layout so the browser commits the shrunk transform before the
+    // animation back.
     chrome.getBoundingClientRect();
     chrome.style.transition = "transform .3s cubic-bezier(.2,.8,.3,1), opacity .22s ease";
     chrome.style.transform = "";

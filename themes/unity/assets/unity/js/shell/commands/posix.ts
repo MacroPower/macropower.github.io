@@ -29,9 +29,9 @@ const BINARY_INT: ReadonlySet<string> = new Set(["-eq", "-ne", "-lt", "-le", "-g
 class TestError extends Error {}
 
 // Recursive-descent evaluator over the already-tokenized operands, supporting
-// `!`, `-a`, `-o`, parentheses, and the string/integer/file primaries. This
-// approximates bash's `[` for the common shapes; it does not reproduce the
-// arg-count special cases of the POSIX grammar.
+// `!`, `-a`, `-o`, parentheses, and the string, integer, and file primaries.
+// It approximates bash's `[` for the common forms, but it does not reproduce
+// the arg-count special cases of the POSIX grammar.
 class TestEval {
   private i = 0;
   private readonly toks: string[];
@@ -80,8 +80,9 @@ class TestEval {
       return r;
     }
     if (UNARY_STR.has(t) || UNARY_FILE.has(t)) {
-      // A unary operator is only an operator when an operand follows; bash
-      // otherwise treats it as a plain string (`[ -z ]` -> true, non-empty).
+      // bash reads a unary operator as an operator only when an operand
+      // follows, and otherwise as a plain string (`[ -z ]` -> true,
+      // non-empty).
       const after = this.toks[this.i + 1];
       if (after !== undefined && !this.isCloser(after)) {
         this.next();
@@ -244,8 +245,8 @@ export const printf: Command = {
       }
     };
 
-    // Reprocess the format until args are exhausted; a pass that consumes no
-    // arg ends the loop (a format with no conversions runs exactly once).
+    // Reprocess the format until the args run out. A pass that consumes no
+    // arg ends the loop, so a format with no conversions runs exactly once.
     do {
       const before = ai;
       onePass();
