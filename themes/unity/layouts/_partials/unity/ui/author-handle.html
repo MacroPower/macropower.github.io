@@ -1,23 +1,28 @@
 {{- /*
   The owner's unix-style handle on the desktop: params.desktop.user, else
-  the first word of the author's name, lowercased and stripped to letters,
-  digits, dashes, and underscores, else "user". A site without a title
-  whose params.author sets no name gets "user", because the name that
-  unity/author.html falls back to there is a page title or a host name.
+  the first word of author.name from unity/author.html, lowercased and
+  stripped to letters, digits, dashes, and underscores, else "user". A
+  site without params.author takes the first word of its title. A site
+  without a title whose params.author sets no name gets "user", because
+  the name that unity/author.html falls back to there is a page title or
+  a host name.
   Shared by unity/ui/runtime.html's UP_SITE global and the terminal-prompt
   fiction (unity/ui/term-prompt.html) so the desktop never disagrees about
   who is logged in. The home terminal's guest login is params.terminal.user
   instead, because a visitor, not the owner, opens that session.
 
-  The result is the same on every page, so call it through partialCached.
+  The result reads only the site, so it is the same on every page of a
+  language. Call it through partialCached.
 */ -}}
 {{- $handle := site.Params.desktop.user | default "" -}}
 {{- if not $handle -}}
+  {{- $named := ne site.Title "" -}}
   {{- with site.Params.author -}}
-    {{- if or site.Title (not (reflect.IsMap .)) .name -}}
-      {{- $first := index (split (partialCached "unity/author.html" .).name " ") 0 -}}
-      {{- $handle = $first | lower | replaceRE `[^\p{L}\p{N}_-]` "" -}}
-    {{- end -}}
+    {{- if or (not (reflect.IsMap .)) .name }}{{ $named = true }}{{ end -}}
+  {{- end -}}
+  {{- if $named -}}
+    {{- $first := index (split (partialCached "unity/author.html" .).name " ") 0 -}}
+    {{- $handle = $first | lower | replaceRE `[^\p{L}\p{N}_-]` "" -}}
   {{- end -}}
 {{- end -}}
 {{- return (default "user" $handle) -}}

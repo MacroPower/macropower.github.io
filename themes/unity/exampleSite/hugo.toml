@@ -163,7 +163,7 @@ mainSections = ["posts"]
     # The network name the hotspot broadcasts after a visitor turns it on.
     # hotspot = "jane-laptop"
     # The owner's login on the lock screen, the user menu, and the post
-    # sign-offs. user defaults to the author's first name, lowercased.
+    # sign-offs. user defaults to the first word of author.name, lowercased.
     # user = "jane"
     # host = "unity"
 

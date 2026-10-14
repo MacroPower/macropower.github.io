@@ -170,7 +170,7 @@ The theme does not set these, so set them in your site:
 | `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
 | `desktop.hud` | `true` | `false` removes the HUD and its Alt tap, which some keyboard and screen reader users rely on for the browser's own menus. |
 | `desktop.indicators` | `messages`, `network`, `sound`, `battery`, `clock`, `user` | The top panel's indicators, in order. A list or one name. Without `messages`, the panel loses its Compose and Subscribe actions. Without `sound`, the panel loses the Studio's player, but the Dash still opens the Studio. A multilingual site's language badge comes before the list. |
-| `desktop.user`, `desktop.host` | the author's first name, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. |
+| `desktop.user`, `desktop.host` | the first word of `author.name` in lowercase, `unity` | The owner's login on the lock screen, the user menu, the Trash, and the post sign-offs. A site without a title or an `author.name` logs in as `user`. |
 | `desktop.hotspot` | `personal-site` | The network name the network indicator's hotspot broadcasts. |
 | `desktop.networks` | three access points | The network indicator's access points, of which the first starts connected. An entry is a name or a `{name, mono}` table, and one name also works in place of the list. |
 | `blog.dateFormat`, `blog.listDateFormat` | `:date_medium`, `2006-01-02` | Date formats in the post reader and post list. `blog.dateFormat` also titles a post without a title. Hugo's `:date_medium` follows the page's language. |

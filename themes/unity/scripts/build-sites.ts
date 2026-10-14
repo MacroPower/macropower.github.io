@@ -1578,6 +1578,22 @@ mainSections = ["posts"]
       ];
     },
   },
+  // An owner named only by the site's title, without params.author.
+  titled: {
+    files: {
+      "hugo.toml": `${BARE}title = "Jane Doe"
+mainSections = ["posts"]
+`,
+      "content/posts/one.md": page("One"),
+    },
+    check: (out) => {
+      const post = read(join(out, "posts/one/index.html"));
+      return [
+        !post.includes("jane@unity:~/posts$") && "posts/one/index.html signs off without the handle jane",
+        !post.includes('<div class="up-lock-user">jane</div>') && "the lock screen does not name jane",
+      ];
+    },
+  },
   // An owner with an email but no name, on a site without a title. The
   // owner takes the home page's title as a name, but the handle stays
   // user, because that title names no person.
