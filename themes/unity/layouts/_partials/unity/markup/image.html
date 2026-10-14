@@ -1,23 +1,30 @@
 {{- /*
   Resolves a Markdown image for render-image.html and its feed twin, as
-  a dict of src, width, height, and srcset. A relative destination
+  a dict of src, width, height, srcset, and sizes. A relative destination
   resolves against the page bundle and then the site's assets, so
   `![](photo.jpg)` beside an index.md works, and a root-relative one
   that matches neither resolves under the site's baseURL (see
   site-url.html). In absolute mode, any other relative one resolves
-  against the page's permalink. Raster images
-  Hugo can read get width and height, and a JPEG, PNG, or WebP wider
-  than the text column also gets a srcset of narrower copies. Browsers
-  turn the original by its Exif orientation, but Hugo's copies drop the
-  tag, so the width, height, and copies all come from an oriented image.
-  The other keys are empty when they do not apply.
+  against the page's permalink. Raster images Hugo can read get width
+  and height. Browsers turn the original by its Exif orientation, but
+  Hugo's copies drop the tag, so the width, height, and copies all come
+  from an oriented image. The other keys are empty when they do not
+  apply.
+
+  A JPEG, PNG, or WebP image also gets a srcset, and src keeps naming
+  the original. The partial converts a JPEG or PNG to WebP only when
+  the WebP copy of the whole image is smaller than the original,
+  because lossy WebP grows a flat PNG such as a diagram. One wider than
+  the text column lists copies at narrower widths and at its own, with
+  sizes for the column. A narrower one lists only its WebP copy, and
+  nothing when it keeps its format.
 
   Args (dict): page     - the page whose images to resolve (.PageInner)
                dest     - the image destination
                absolute - true for URLs with scheme and host
 */ -}}
 {{- $u := urls.Parse .dest -}}
-{{- $out := dict "src" $u.String "width" 0 "height" 0 "srcset" "" -}}
+{{- $out := dict "src" $u.String "width" 0 "height" 0 "srcset" "" "sizes" "" -}}
 {{- if and (not $u.IsAbs) (not $u.Host) -}}
   {{- $path := strings.TrimPrefix "./" $u.Path -}}
   {{- $src := "" -}}
@@ -29,17 +36,34 @@
         {{- $img = .Filter images.AutoOrient -}}
       {{- end -}}
       {{- $out = merge $out (dict "width" $img.Width "height" $img.Height) -}}
-      {{- /* 800px is the widest text column, the plain page's. */ -}}
-      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt $img.Width 800) -}}
-        {{- $set := slice -}}
-        {{- range slice 800 1600 -}}
-          {{- if lt . $img.Width -}}
-            {{- $copy := $img.Resize (printf "%dx" .) -}}
-            {{- $set = $set | append (printf "%s %dw" (cond $.absolute $copy.Permalink $copy.RelPermalink) .) -}}
+      {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
+        {{- /* $full is the srcset's full-width candidate, and $format is
+              the Resize option for the narrower copies, where "" keeps
+              the original's format. */ -}}
+        {{- $full := . -}}
+        {{- $format := "" -}}
+        {{- if ne .MediaType.SubType "webp" -}}
+          {{- $webp := $img.Process "webp" -}}
+          {{- if lt (len $webp.Content) (len .Content) -}}
+            {{- $full = $webp -}}
+            {{- $format = " webp" -}}
           {{- end -}}
         {{- end -}}
-        {{- $set = $set | append (printf "%s %dw" $src $img.Width) -}}
-        {{- $out = merge $out (dict "srcset" (delimit $set ", ")) -}}
+        {{- $fullURL := cond $.absolute $full.Permalink $full.RelPermalink -}}
+        {{- /* 800px is the widest text column, the plain page's. */ -}}
+        {{- if gt $img.Width 800 -}}
+          {{- $set := slice -}}
+          {{- range slice 800 1600 -}}
+            {{- if lt . $img.Width -}}
+              {{- $copy := $img.Resize (printf "%dx%s" . $format) -}}
+              {{- $set = $set | append (printf "%s %dw" (cond $.absolute $copy.Permalink $copy.RelPermalink) .) -}}
+            {{- end -}}
+          {{- end -}}
+          {{- $set = $set | append (printf "%s %dw" $fullURL $img.Width) -}}
+          {{- $out = merge $out (dict "srcset" (delimit $set ", ") "sizes" "(max-width: 840px) 100vw, 800px") -}}
+        {{- else if $format -}}
+          {{- $out = merge $out (dict "srcset" $fullURL) -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- else -}}

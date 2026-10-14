@@ -52,6 +52,13 @@ mainSections = ["posts"]
   [markup.highlight]
     style = "monokai"
 
+# JPEG and PNG post images load as WebP copies when WebP makes them
+# smaller, and Hugo encodes the copies with these settings. The values
+# are Hugo's defaults.
+# [imaging.webp]
+#   quality = 75
+#   hint    = "photo"
+
 [params]
   # Site description for <meta name="description"> and the feeds.
   description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."

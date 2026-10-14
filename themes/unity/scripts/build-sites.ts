@@ -509,30 +509,65 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       ];
     },
   },
-  // A post image whose Exif orientation turns it a quarter, as a phone
-  // photo's does. Browsers show it turned, so its width, height, and
-  // srcset copies must follow the turned image.
+  // Post images. WebP shrinks wide.png and small.png, so their srcsets
+  // must list WebP copies. It grows flat.png and tiny.png, so theirs must
+  // keep the PNG format. Each src must name the original PNG, which is
+  // all the feed shows. The Exif orientation of turned.png turns it a
+  // quarter, as a phone photo's does. Its width, height, and copies must
+  // follow the turned image that browsers show.
   images: {
     files: {
-      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
-      "content/posts/shots/index.md": "+++\ntitle = 'Shots'\n+++\n![](turned.png)\n",
-      "content/posts/shots/turned.png": png(2000, 1000, { orientation: 6 }),
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[params.blog]
+  feedFullContent = true
+`,
+      "content/posts/shots/index.md":
+        "+++\ntitle = 'Shots'\n+++\n![](wide.png) ![](small.png) ![](flat.png) ![](tiny.png) ![](turned.png)\n",
+      "content/posts/shots/wide.png": png(2000, 1000, { stored: true }),
+      "content/posts/shots/small.png": png(400, 300, { stored: true }),
+      "content/posts/shots/flat.png": png(2000, 1000, { fill: "checkered" }),
+      "content/posts/shots/tiny.png": png(400, 300, { fill: "checkered" }),
+      "content/posts/shots/turned.png": png(2000, 1000, { fill: "checkered", orientation: 6 }),
     },
     check: (out) => {
       const html = read(join(out, "posts/shots/index.html"));
-      const srcset = /<img src="\/posts\/shots\/turned\.png"[^>]*\ssrcset="([^"]*)"/.exec(html)?.[1] ?? "";
-      const copy = srcset.split(" ")[0] ?? "";
-      const size = (file: string): number[] => {
-        const head = readFileSync(file);
+      // Each image's attributes after src, keyed by the original's name.
+      const attrs = new Map([...html.matchAll(/<img src="\/posts\/shots\/(\w+)\.png"([^>]*)>/g)].map((m) => [m[1]!, m[2]!]));
+      const attr = (name: string, key: string): string => new RegExp(`\\s${key}="([^"]*)"`).exec(attrs.get(name) ?? "")?.[1] ?? "";
+      const urls = [...attrs.keys()].flatMap((name) => attr(name, "srcset").split(", ").filter(Boolean).map((c) => c.split(" ")[0]!));
+      const want: Record<string, [srcset: string, sizes: boolean]> = {
+        wide: ["wide_hu.webp 800w, wide_hu.webp 1600w, wide_hu.webp 2000w", true],
+        small: ["small_hu.webp", false],
+        flat: ["flat_hu.png 800w, flat_hu.png 1600w, flat.png 2000w", true],
+        tiny: ["", false],
+        turned: ["turned_hu.png 800w, turned.png 1000w", true],
+      };
+      // A PNG's width and height, from its IHDR chunk.
+      const size = (url: string): number[] => {
+        const head = readFileSync(join(out, url));
         return [head.readUInt32BE(16), head.readUInt32BE(20)];
       };
+      const turnedCopy = attr("turned", "srcset").split(" ")[0] ?? "";
+      const feed = read(join(out, "index.xml"));
       return [
-        !html.includes('src="/posts/shots/turned.png" alt="" width="1000" height="2000"')
+        ...Object.entries(want).flatMap(([name, [srcset, sizes]]) => [
+          !attrs.has(name) && `posts/shots/ has no img whose src is the original ${name}.png`,
+          attr(name, "srcset").replaceAll("/posts/shots/", "").replace(/_hu_\w+\./g, "_hu.") !== srcset
+            && `${name}.png's srcset is not "${srcset}"`,
+          (attr(name, "sizes") !== "") !== sizes && `${name}.png ${sizes ? "lacks" : "has"} a sizes attribute`,
+        ]),
+        ...urls.map((url) => {
+          const file = join(out, url);
+          if (!existsSync(file)) return `posts/shots/ lists ${url}, which the site does not publish`;
+          const head = readFileSync(file).subarray(0, 12).toString("latin1");
+          return url.endsWith(".webp") && !/^RIFF.{4}WEBP$/s.test(head) && `${url} is not a WebP file`;
+        }),
+        (attr("turned", "width") !== "1000" || attr("turned", "height") !== "2000")
           && "turned.png's width and height do not follow its orientation",
-        !/^\/posts\/shots\/turned_hu_\w+\.png 800w, \/posts\/shots\/turned\.png 1000w$/.test(srcset)
-          && "turned.png's srcset does not list an 800w copy and the 1000w original",
-        (!copy || !existsSync(join(out, copy)) || !isDeepStrictEqual(size(join(out, copy)), [800, 1600]))
+        (!turnedCopy || !existsSync(join(out, turnedCopy)) || !isDeepStrictEqual(size(turnedCopy), [800, 1600]))
           && "turned.png's 800w copy is not a published 800x1600 image",
+        !feed.includes("src=&#34;https://example.org/posts/shots/wide.png&#34;") && "index.xml does not show the original wide.png",
+        /srcset|\.webp/.test(feed) && "index.xml lists the WebP copies",
       ];
     },
   },
@@ -1639,10 +1674,15 @@ function unescapeHTML(value: string): string {
     : named[name?.toLowerCase() ?? ""] ?? all);
 }
 
-// A blank grayscale PNG of the given size, for sites whose checks need
-// Hugo to read and resize an image. A nonzero orientation adds an Exif
-// Orientation tag with that value, as a phone photo carries.
-function png(width: number, height: number, { orientation = 0 } = {}): Uint8Array {
+// A grayscale PNG of the given size, for sites whose checks need Hugo to
+// read and resize an image. It is black unless fill is "checkered",
+// which alternates black and white pixels that WebP encodes far larger
+// than PNG does. stored leaves the pixels uncompressed, as an
+// unoptimized export does, so WebP shrinks the image. A nonzero
+// orientation adds an Exif Orientation tag with that value, as a phone
+// photo carries.
+type PngOptions = { fill?: "black" | "checkered"; stored?: boolean; orientation?: number };
+function png(width: number, height: number, { fill = "black", stored = false, orientation = 0 }: PngOptions = {}): Uint8Array {
   const chunk = (type: string, data: Buffer): Buffer => {
     const body = Buffer.concat([Buffer.from(type, "latin1"), data]);
     const head = Buffer.alloc(4);
@@ -1656,8 +1696,14 @@ function png(width: number, height: number, { orientation = 0 } = {}): Uint8Arra
   header.writeUInt32BE(width, 0);
   header.writeUInt32BE(height, 4);
   header[8] = 8;
-  // Each row is a filter byte and then one byte per pixel, all zero.
-  const pixels = deflateSync(Buffer.alloc((width + 1) * height));
+  // Each row is a filter byte, which is 0, and then one byte per pixel.
+  const rows = Buffer.alloc((width + 1) * height);
+  if (fill === "checkered") {
+    for (let y = 0; y < height; y++) {
+      for (let x = y % 2; x < width; x += 2) rows[y * (width + 1) + 1 + x] = 255;
+    }
+  }
+  const pixels = deflateSync(rows, stored ? { level: 0 } : {});
   // A big-endian TIFF header and one IFD entry, Orientation (0x0112), a
   // SHORT that holds the value.
   const exif = Buffer.from([0x4d, 0x4d, 0, 0x2a, 0, 0, 0, 8, 0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, orientation, 0, 0, 0, 0, 0, 0]);

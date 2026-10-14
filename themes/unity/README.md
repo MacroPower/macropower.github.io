@@ -210,7 +210,7 @@ The launcher, the Dash, and the HUD show each `icon` as an image file that the b
 
 The theme's render hooks extend Hugo's Markdown:
 
-- **Links and images.** A relative link or image resolves to a page, then a file in the page's bundle, then a file under `assets/`, so `[intro](other-post.md)` and `![](photo.jpg)` beside an `index.md` both work. A root-relative path that matches none of them, such as `/files/cv.pdf`, resolves under your `baseURL`, so it keeps working on a site served from a subdirectory. Images Hugo can read get a width and height. Feeds get absolute URLs, and an alert becomes a plain blockquote led by its title.
+- **Links and images.** A relative link or image resolves to a page, then a file in the page's bundle, then a file under `assets/`, so `[intro](other-post.md)` and `![](photo.jpg)` beside an `index.md` both work. A root-relative path that matches none of them, such as `/files/cv.pdf`, resolves under your `baseURL`, so it keeps working on a site served from a subdirectory. Images Hugo can read get a width and height. Browsers load a WebP copy of each JPEG or PNG image when WebP makes it smaller, and Hugo encodes the copies with your site's [`[imaging.webp]` settings](https://gohugo.io/configuration/imaging/#webp). Feeds get absolute URLs and the original images, and an alert becomes a plain blockquote led by its title.
 - **Headings.** Every heading ends with a `#` link to itself, which shows on hover. Feeds get the plain heading.
 - **Alerts.** GitHub-style alerts render as info bars. The types are `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION`, text after the marker replaces the title, and a `+` or `-` after the type makes the alert collapsible, open or closed:
 
