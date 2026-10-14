@@ -1,0 +1,11 @@
+{{- /*
+  The posts of one top-level blog section, at any depth, oldest first.
+  A post's pathbar arrows step through this list. Call it through
+  partialCached with the section as the variant key, so each language
+  builds the list once per section rather than once per post.
+
+  Context: the section's name, such as a post's .Section. The result
+  must depend on nothing else, because every post in the section shares
+  the cached copy.
+*/ -}}
+{{- return (where (partialCached "unity/blog-posts.html" .) "Section" .).ByDate -}}

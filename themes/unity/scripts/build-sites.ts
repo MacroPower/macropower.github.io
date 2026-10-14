@@ -314,6 +314,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
       "content/posts/_index.md": page("Posts"),
+      "content/posts/old.md": page("Old post", "date = 2023-01-01\n"),
       "content/posts/top.md": page("Top post", "date = 2025-01-01\n"),
       "content/posts/2024/_index.md": page("2024"),
       "content/posts/2024/deep.md": page("Deep post", "date = 2024-01-01\n"),
@@ -321,10 +322,21 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
     check: (out) => {
       const list = read(join(out, "posts/index.html"));
       const deep = read(join(out, "posts/2024/deep/index.html"));
+      // Each post's older and newer pathbar arrows, by date across the
+      // nested section, with # for a disabled arrow.
+      const arrows: Record<string, string> = {
+        "posts/old/index.html": "# /posts/2024/deep/",
+        "posts/2024/deep/index.html": "/posts/old/ /posts/top/",
+        "posts/top/index.html": "/posts/2024/deep/ #",
+      };
       return [
         !list.includes("Deep post") && "posts/index.html omits the nested post",
         !deep.includes('class="up-pathbar-btn" href="/posts/"') && "the nested post's pathbar omits the blog section",
-        !deep.includes('href="/posts/top/"') && "the nested post has no arrow to the newer post outside its section",
+        ...Object.entries(arrows).map(([file, want]) => {
+          const got = [...read(join(out, file)).matchAll(/class="up-pathbar-arrow[^"]*"\s+href="([^"]*)"/g)]
+            .map((m) => m[1]).join(" ");
+          return got !== want && `${file}'s pathbar arrows go to "${got}", not "${want}"`;
+        }),
       ];
     },
   },
