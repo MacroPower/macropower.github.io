@@ -194,11 +194,39 @@ describe("template strings", () => {
     text: readFileSync(path, "utf8").replace(/\{\{-?\s*\/\*[\s\S]*?\*\/\s*-?\}\}/g, ""),
   }));
 
+  // A direct call of T or of its aliases i18n and lang.Translate, with
+  // the function's name before its argument or after a pipe. The
+  // lookbehind skips a method such as $x.T and names inside a path or
+  // an id, such as unity/ui/i18n.html.
+  const DIRECT_T =
+    /(?<![\w.$/-])(?:T|i18n|lang\.Translate)\s+["`($.]|\|\s*(?:T|i18n|lang\.Translate)\s*(?:-?\}\}|\))/g;
+
   it("go through unity/ui/t, which falls back to the theme's English", () => {
     const direct = files
       .filter((f) => f.name !== "_partials/unity/ui/t.html" && f.name !== "_partials/unity/ui/i18n.html")
-      .flatMap((f) => [...f.text.matchAll(/(?<![\w.$])T ["(]/g)].map(() => f.name));
+      .flatMap((f) => [...f.text.matchAll(DIRECT_T)].map(() => f.name));
     expect(direct).toEqual([]);
+  });
+
+  it("find every spelling of a direct call", () => {
+    const calls = [
+      '{{ T "k" }}',
+      '{{ T ("k") }}',
+      "{{ T $k }}",
+      "{{ T .k }}",
+      '{{ i18n "k" }}',
+      '{{ lang.Translate "k" }}',
+      '{{ "k" | T }}',
+      '{{ "k" | i18n -}}',
+      '{{ ("k" | lang.Translate) }}',
+    ];
+    const others = [
+      '{{ partial "unity/ui/i18n.html" . }}',
+      '{{ warnidf "unity-i18n-missing" "x" }}',
+      '{{ $x.T "a" }}',
+    ];
+    expect(calls.filter((s) => !s.match(DIRECT_T))).toEqual([]);
+    expect(others.filter((s) => s.match(DIRECT_T))).toEqual([]);
   });
 
   // Every key the templates pass to unity/ui/t. The alert render hooks
