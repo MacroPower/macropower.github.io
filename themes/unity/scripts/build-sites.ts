@@ -1101,13 +1101,19 @@ mainSections = ["posts"]
   // Menu entries whose pageRef finds no page: Blog in both languages,
   // because the site has no posts yet, and About in German. Each one
   // drops out of that language's desktop with a warning, so no tile
-  // links to the home page and claims every page as current.
+  // links to the home page and claims every page as current. The home
+  // entry renames the Home tile, which keeps its icon and still claims
+  // only the home page.
   unresolved: {
     files: {
       "hugo.toml": `${BARE}[languages.en]
   weight = 1
 [languages.de]
   weight = 2
+[[menu.main]]
+  identifier = "home"
+  name = "Start"
+  pageRef = "/"
 [[menu.main]]
   identifier = "blog"
   name = "Blog"
@@ -1137,6 +1143,9 @@ mainSections = ["posts"]
         active("about/index.html") !== "about"
           && `about/index.html marks "${active("about/index.html")}" current, not "about"`,
         active("de/index.html") !== "home" && `de/index.html marks "${active("de/index.html")}" current, not "home"`,
+        !/<a class="up-launcher-tile[^"]*" href="\/" data-launcher="home" aria-label="Start"[^>]*><span class="up-launcher-icon"><img src="[^"]*\/launcher\/home\./
+          .test(read(join(out, "about/index.html")))
+          && "about/index.html's Home tile is not named Start with the home icon",
         !nav("en").includes('about:"/about/"') && `the English nav lacks About: ${nav("en")}`,
         /\bblog:/.test(nav("en")) && `the English nav maps Blog: ${nav("en")}`,
         /\b(?:blog|about):/.test(nav("de")) && `the German nav maps Blog or About: ${nav("de")}`,

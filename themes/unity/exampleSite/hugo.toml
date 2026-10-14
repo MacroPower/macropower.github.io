@@ -218,12 +218,13 @@ mainSections = ["posts"]
 
 # menu.main drives the theme's site-pages registry: the launcher dock, the
 # Dash's Applications category, the top panel's File menu, and the nav:<key>
-# actions. Home is implicit and always first. pageRef points an entry at a
-# page and follows its permalink and language. url takes any address, and
-# one without a scheme resolves under baseURL, once even when it starts
-# with the baseURL's path. An entry whose pageRef finds no page and that
-# sets no url drops out with a warning. List unity-menu-unresolved in
-# ignoreLogs to silence it.
+# actions. Home is implicit and always first, and an entry with identifier
+# "home" changes the Home tile instead of adding one. pageRef points an
+# entry at a page and follows its permalink and language. url takes any
+# address, and one without a scheme resolves under baseURL, once even when
+# it starts with the baseURL's path. An entry whose pageRef finds no page
+# and that sets no url drops out with a warning. List unity-menu-unresolved
+# in ignoreLogs to silence it.
 # Optional [menu.main.params]:
 #   icon      — launcher artwork under the theme's assets/unity/icons/
 #   match     — "exact" or "prefix" URL matching for active state
@@ -234,6 +235,11 @@ mainSections = ["posts"]
 #               "running" docks it only while it is the current page
 #   dash      — false keeps the page out of the Dash
 [menu]
+  # Renames the Home tile, which keeps its icon and exact match.
+  # [[menu.main]]
+  #   identifier = "home"
+  #   name       = "Start"
+  #   pageRef    = "/"
   [[menu.main]]
     identifier = "cv"
     name       = "CV"

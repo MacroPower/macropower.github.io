@@ -13,13 +13,16 @@
 
   The registry is driven by the site's [menu.main] configuration: one entry
   per page, ordered by weight, keyed by identifier (falling back to the
-  anchorized name). Home is implicit and always first. Per-entry
+  anchorized name). Home is implicit and always first. An entry with the
+  identifier home sets the Home tile's label, url, and params in place of
+  adding a page, and launcher and dash do not apply to it. Per-entry
   [menu.main.params] tune the desktop presentation:
 
     icon      — launcher artwork under assets/unity/icons/ (e.g. "launcher/cv");
                 defaults by identifier below, generic browser window otherwise
     match     — "exact" or "prefix": how the page claims the current URL for
-                launcher active state (default "prefix")
+                launcher active state (default "prefix", and "exact" for
+                home)
     kw        — the Dash's search haystack (defaults by identifier, else the
                 lowercased name)
     dashLabel — Dash tile label override (the home terminal shows as
@@ -90,12 +93,21 @@
     {{- warnidf "unity-menu-unresolved" "unity: the menu.main entry %q points at no page in %q, so the desktop leaves it out. Check its pageRef %q, or give it a url." .Name site.Language.Name .PageRef -}}
     {{- continue -}}
   {{- end -}}
+  {{- $fallback := dict
+      "icon" (or $def.icon "launcher/browser-window")
+      "match" "prefix"
+      "kw" (or $def.kw (lower .Name))
+  -}}
+  {{- /* A home entry keeps the Home tile's icon, keywords, and exact
+        match for each param it leaves out. Under a prefix match, the
+        home page's URL starts every page's URL. */ -}}
+  {{- if eq $key "home" }}{{ $fallback = $home }}{{ end -}}
   {{- $p := dict
       "label" .Name
-      "icon" (or .Params.icon $def.icon "launcher/browser-window")
+      "icon" (or .Params.icon $fallback.icon)
       "url" $u
-      "match" (or .Params.match "prefix")
-      "kw" (or .Params.kw $def.kw (lower .Name))
+      "match" (or .Params.match $fallback.match)
+      "kw" (or .Params.kw $fallback.kw)
   -}}
   {{- with .Params.dashLabel }}{{ $p = merge $p (dict "dashLabel" .) }}{{ end -}}
   {{- with .Params.dashIcon }}{{ $p = merge $p (dict "dashIcon" .) }}{{ end -}}
