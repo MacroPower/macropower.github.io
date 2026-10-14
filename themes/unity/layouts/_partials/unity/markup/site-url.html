@@ -7,6 +7,10 @@
   subpath keeps working. With lang, such a path resolves the same way as
   /files/x.pdf, so its language prefix lands after the base path.
 
+  The base path without its trailing slash, such as /sub, names the base
+  path itself. It resolves to /sub/, and with lang to the language's
+  home page.
+
   Args (dict): path     - an escaped path from the site root, such as
                           /files/x.pdf
                absolute - true for a URL with scheme and host
@@ -14,16 +18,18 @@
                           relLangURL does
 */ -}}
 {{- $base := urls.Parse site.BaseURL -}}
-{{- $prefixed := and (ne $base.Path "") (ne $base.Path "/") (hasPrefix .path $base.Path) -}}
+{{- $path := .path -}}
+{{- with strings.TrimSuffix "/" $base.Path }}{{ if eq $path . }}{{ $path = $base.Path }}{{ end }}{{ end -}}
+{{- $prefixed := and (ne $base.Path "") (ne $base.Path "/") (hasPrefix $path $base.Path) -}}
 {{- $out := "" -}}
 {{- if .lang -}}
-  {{- $p := cond $prefixed (strings.TrimPrefix $base.Path .path) (strings.TrimPrefix "/" .path) -}}
+  {{- $p := cond $prefixed (strings.TrimPrefix $base.Path $path) (strings.TrimPrefix "/" $path) -}}
   {{- $out = cond .absolute (absLangURL $p) (relLangURL $p) -}}
 {{- else if $prefixed -}}
-  {{- $out = .path -}}
-  {{- if .absolute }}{{ $out = printf "%s://%s%s" $base.Scheme $base.Host .path }}{{ end -}}
+  {{- $out = $path -}}
+  {{- if .absolute }}{{ $out = printf "%s://%s%s" $base.Scheme $base.Host $path }}{{ end -}}
 {{- else -}}
-  {{- $p := strings.TrimPrefix "/" .path -}}
+  {{- $p := strings.TrimPrefix "/" $path -}}
   {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
 {{- end -}}
 {{- return $out -}}

@@ -108,6 +108,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Sponsor `url`, `avatar`, and `sponsorUrl` values resolve to a file in the page's bundle, a file under `assets/`, or a path under your `baseURL`, so they work on a site served from a subdirectory.
 - A `%` that starts no escape in a Markdown link or image, such as `[sale](/50%off)`, renders as `%25`, the way Hugo renders it without the theme's render hooks, instead of failing the build.
 - Markdown links to `tel:` and `sms:` keep their scheme, where they used to lead to `#ZgotmplZ`.
+- On a site at `https://example.org/sub/`, a menu url or Markdown link to `/sub` leads to the home page, where it used to lead to `/sub/sub`.
 - A `menu.main` entry with the identifier `home` keeps the Home tile's icon, search words, and exact match for each param that it leaves out. The Home tile then shows as current only on the home page.
 - With `params.home.layout = "page"`, the Dash lists the home page as Home, and the keyboard shortcuts dialog leaves out the terminal's keys.
 - On a site that gives each language its own `baseURL`, the language menu leads to each language's host.

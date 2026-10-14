@@ -167,7 +167,8 @@ const SITES: Record<string, SiteSpec> = {
   // whether or not it already starts with /sub/, and a menu url keeps its
   // case and query. A menu url takes the language's prefix after /sub/.
   // A menu url with a scheme such as tel: keeps it, but a javascript:
-  // url never reaches an href.
+  // url never reaches an href. A menu url or a Markdown link to /sub,
+  // the base path without its slash, leads to the language's home page.
   urls: {
     files: {
       "hugo.toml": `${config("https://example.org/sub/")}[[menu.main]]
@@ -195,12 +196,16 @@ const SITES: Record<string, SiteSpec> = {
 [[menu.help]]
   name = "Script"
   url = "JavaScript:alert(1)"
+[[menu.help]]
+  name = "Start"
+  url = "/sub"
 [languages.en]
   weight = 1
 [languages.de]
   weight = 2
 `,
       "content/sponsors.md": page("Sponsors", "layout = 'sponsors'\n"),
+      "content/start.md": `${page("Start")}\n[start](/sub) [query](/sub?q=1#top)\n`,
       "data/sponsors.yaml": "- name: Ada\n  avatar: /ada.png\n- name: Grace\n  avatar: grace.png\n- name: Hopper\n  avatar: /sub/hopper.png\n",
       "assets/grace.png": "PNG",
       // The files that the menu entries and the avatars link, for the
@@ -219,6 +224,7 @@ const SITES: Record<string, SiteSpec> = {
     check: (out) => {
       const html = read(join(out, "sponsors/index.html"));
       const de = read(join(out, "de/index.html"));
+      const start = read(join(out, "start/index.html"));
       return [
         ...[
           'href="/sub/files/" data-launcher="files"',
@@ -227,6 +233,7 @@ const SITES: Record<string, SiteSpec> = {
           'href="tel:&#43;15550100" data-launcher="phone"',
           '<a class="up-menu-item" href="/sub/imprint/"',
           '<a class="up-menu-item" href="sms:&#43;15550100"',
+          '<a class="up-menu-item" href="/sub/"',
           'src="/sub/ada.png"',
           'src="/sub/grace.png"',
           'src="/sub/hopper.png"',
@@ -237,7 +244,13 @@ const SITES: Record<string, SiteSpec> = {
           'href="/sub/de/notes/" data-launcher="notes"',
           'href="/sub/de/Search/?q=Go" data-launcher="search"',
           '<a class="up-menu-item" href="/sub/de/imprint/"',
+          '<a class="up-menu-item" href="/sub/de/"',
         ].map((want) => !de.includes(want) && `de/index.html lacks ${want}`),
+        ...['<a href="/sub/">start</a>', '<a href="/sub/?q=1#top">query</a>']
+          .map((want) => !start.includes(want) && `start/index.html lacks ${want}`),
+        ...Object.entries({ "sponsors/index.html": html, "de/index.html": de, "start/index.html": start })
+          .filter(([, text]) => text.includes('href="/sub/sub'))
+          .map(([file]) => `${file} links /sub/sub, the base path twice`),
       ];
     },
   },
