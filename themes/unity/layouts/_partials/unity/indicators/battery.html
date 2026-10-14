@@ -1,0 +1,22 @@
+{{- /*
+  The battery indicator, the "battery" entry of params.desktop.indicators.
+  The headline renders a placeholder level, which top-panel.ts replaces on
+  load with a simulated charge that follows the visitor's time of day,
+  through the data-bat-* hooks. Context: the page.
+*/ -}}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="{{ partial "unity/ui/t" "battery" }}" aria-haspopup="true" aria-expanded="false">
+    {{ partial "unity/icon.html" "glyphs/panel-battery" }}
+    {{ partial "unity/icon.html" "glyphs/panel-battery-charging" }}
+  </button>
+  <div class="up-dropdown" data-dropdown-for="bat" data-align="end" data-flyout-keepopen hidden>
+    <div class="up-dropdown-header">{{ partial "unity/ui/t" "battery" }}</div>
+    <div class="up-dropdown-body">
+      <div class="up-bat-headline" data-bat-headline>{{ partial "unity/ui/t" (slice "battery_discharging" (dict "Percent" 76)) }}</div>
+      <div class="up-bat-detail" data-bat-detail>{{ partial "unity/ui/t" "battery_remaining" }}</div>
+      <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill></div></div>
+      {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "enable_power_saver") "action" "dlg:power-saver") }}
+      {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "power_settings") "action" "dlg:power") }}
+    </div>
+  </div>
+</div>

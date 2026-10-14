@@ -1,10 +1,3 @@
-{{- $handle := partial "unity/ui/author-handle.html" . -}}
-{{- /* time.Format names the days and months in the page's language, and
-      :date_full orders them the way that language does. top-panel.ts
-      replaces these with the visitor's clock. */ -}}
-{{- $longDate := time.Format ":date_full" now -}}
-{{- $time := time.Format "15:04" now -}}
-{{- $shortDate := time.Format "Mon, Jan 2" now -}}
 {{- $playlist := partialCached "unity/playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
@@ -58,124 +51,17 @@
 
   {{ partial "unity/lang-indicator.html" . }}
 
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ partial "unity/ui/t" "messages" }}" aria-haspopup="true" aria-expanded="false">
-      {{ partial "unity/icon.html" "glyphs/panel-inbox" }}
-    </button>
-    <div class="up-dropdown" data-dropdown-for="inbox" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">{{ partial "unity/ui/t" "messages" }}</div>
-      <div class="up-dropdown-body">
-        <div class="up-dropdown-empty">{{ partial "unity/ui/t" "no_new_messages" }}</div>
-        <div class="up-dropdown-row-buttons">
-          {{ with (partialCached "unity/author.html" .).email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">{{ partial "unity/ui/t" "compose" }}</a>{{ end }}
-          <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">{{ partial "unity/ui/t" "subscribe_to_feed" }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ partial "unity/ui/t" "network" }}" aria-haspopup="true" aria-expanded="false">
-      {{ partial "unity/icon.html" "glyphs/panel-net" }}
-    </button>
-    <div class="up-dropdown" data-dropdown-for="net" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">{{ partial "unity/ui/t" "network" }}</div>
-      <div class="up-dropdown-body">
-        {{- /* params.desktop.networks lists the access points, and the
-              first one starts connected. An entry is a name or a
-              {name, mono} table, where mono sets the name in monospace. */}}
-        {{- range $i, $n := site.Params.desktop.networks }}
-          {{- $row := cond (reflect.IsMap $n) $n (dict "name" $n) }}
-        {{ partial "unity/ui/net-row.html" (dict "name" $row.name "mono" $row.mono "on" (eq $i 0) "strong" (eq $i 0)) }}
-        {{- end }}
-        {{ partial "unity/ui/net-row.html" (dict "name" (partial "unity/ui/t" "hidden_network") "muted" true "hidden" true) }}
-        <div class="up-dropdown-sep"></div>
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "wired_connection") "action" "dlg:wired") }}
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "enable_hotspot") "action" "dlg:hotspot") }}
-      </div>
-    </div>
-  </div>
-
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="{{ partial "unity/ui/t" "volume" }}" aria-haspopup="true" aria-expanded="false">
-      {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
-      {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
-    </button>
-    <div class="up-dropdown" data-dropdown-for="vol" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">{{ partial "unity/ui/t" "sound" }}</div>
-      <div class="up-dropdown-body">
-        <div class="up-dropdown-row-flex">
-          <button type="button" class="up-vol-toggle" data-action="vol-toggle" aria-label="{{ partial "unity/ui/t" "toggle_mute" }}">
-            {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
-            {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
-          </button>
-          <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="{{ partial "unity/ui/t" "volume" }}">
-          <span class="up-vol-readout" data-vol-readout>62</span>
-        </div>
-        <div class="up-dropdown-meta">{{ partial "unity/ui/t" "output" }} <span class="up-dropdown-meta-strong">{{ partial "unity/ui/t" "built_in_audio" }}</span></div>
-        {{- if $playlist }}
-        <div class="up-dropdown-meta-em">
-          <button type="button" class="up-vol-play" data-action="vol-play" aria-label="{{ partial "unity/ui/t" "play_pause" }}">
-            {{ partial "unity/icon.html" "glyphs/panel-play" }}
-            {{ partial "unity/icon.html" "glyphs/panel-pause" }}
-          </button>
-          <span data-vol-nowplaying>{{ partial "unity/ui/t" "paused" }}</span>
-          <button type="button" class="up-vol-next" data-action="vol-next" aria-label="{{ partial "unity/ui/t" "next_track" }}" title="{{ partial "unity/ui/t" "next_track" }}">
-            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5l7 4.5-7 4.5v-9zM11 3h2v10h-2V3z" fill="currentColor"/></svg>
-          </button>
-        </div>
-        <div class="up-dropdown-row-buttons">
-          <button type="button" class="up-dropdown-btn is-ghost" data-action="daw:open">{{ partial "unity/ui/t" "open_in_studio" }}</button>
-        </div>
-        {{- end }}
-      </div>
-    </div>
-  </div>
-
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="{{ partial "unity/ui/t" "battery" }}" aria-haspopup="true" aria-expanded="false">
-      {{ partial "unity/icon.html" "glyphs/panel-battery" }}
-      {{ partial "unity/icon.html" "glyphs/panel-battery-charging" }}
-    </button>
-    <div class="up-dropdown" data-dropdown-for="bat" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">{{ partial "unity/ui/t" "battery" }}</div>
-      <div class="up-dropdown-body">
-        <div class="up-bat-headline" data-bat-headline>{{ partial "unity/ui/t" (slice "battery_discharging" (dict "Percent" 76)) }}</div>
-        <div class="up-bat-detail" data-bat-detail>{{ partial "unity/ui/t" "battery_remaining" }}</div>
-        <div class="up-bat-bar"><div class="up-bat-bar-fill" data-bat-fill></div></div>
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "enable_power_saver") "action" "dlg:power-saver") }}
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "power_settings") "action" "dlg:power") }}
-      </div>
-    </div>
-  </div>
-
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="{{ partial "unity/ui/t" "clock" }}" aria-haspopup="true" aria-expanded="false">
-      <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
-      <span data-clock-narrow hidden>{{ $time }}</span>
-    </button>
-    <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
-      <div class="up-dropdown-body">
-        <div class="up-calendar" data-calendar></div>
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "open_calendar") "action" "dlg:cal") }}
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "time_settings") "action" "dlg:time") }}
-      </div>
-    </div>
-  </div>
-
-  <div class="up-panel-item">
-    <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ partial "unity/ui/t" "user" }}" aria-haspopup="true" aria-expanded="false">
-      {{ partial "unity/icon.html" "glyphs/panel-user" }}
-    </button>
-    <div class="up-dropdown" data-dropdown-for="user" data-align="end" data-flyout-keepopen hidden>
-      <div class="up-dropdown-header">{{ $handle }}</div>
-      <div class="up-dropdown-body">
-        {{- $lock := ne site.Params.desktop.lock false }}
-        {{ if $lock }}{{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "lock_screen") "action" "dlg:lock") }}{{ end }}
-        {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "restart_session") "action" "reload") }}
-        {{ if $lock }}{{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "log_out") "action" "dlg:logout" "danger" true) }}{{ end }}
-      </div>
-    </div>
-  </div>
+  {{- /* params.desktop.indicators names the indicators after the language
+        badge, in order. Each name renders
+        _partials/unity/indicators/<name>.html with the page as context, so
+        a site adds an indicator by adding that partial and naming it in the
+        list. */}}
+  {{- range site.Params.desktop.indicators }}
+    {{- $path := printf "unity/indicators/%s.html" . }}
+    {{- if templates.Exists (printf "_partials/%s" $path) }}
+  {{ partial $path $ }}
+    {{- else }}
+      {{- warnf "unity: params.desktop.indicators names %q, but layouts/_partials/%s does not exist" . $path }}
+    {{- end }}
+  {{- end }}
 </div>

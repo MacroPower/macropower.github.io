@@ -331,6 +331,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
   social = "jane"
 [params.desktop]
   accent = "purple"
+  indicators = ["clock", "nope"]
 [params.desktop.accents.pale]
   label = "Pale"
 [params.desktop.accents."sea green"]
@@ -347,6 +348,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       /params\.desktop\.accent "purple" names no preset /,
       /params\.desktop\.accents\.pale has no color/,
       /params\.desktop\.accents\.sea green has a name with characters other than /,
+      /params\.desktop\.indicators names "nope", but /,
       /params\.home\.layout "grid" is not /,
       /params\.social should be a list /,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
@@ -361,6 +363,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
         !home.includes('data-up-accent="orange"') && "index.html does not fall back to the orange accent",
         accentNames(out) !== "orange green aubergine blue"
           && `the Preferences dialog offers ${accentNames(out)}, not the theme's presets alone`,
+        !home.includes('data-indicator="clock"') && "index.html drops the clock beside the unknown indicator",
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
         home.includes("jane") && "index.html renders the malformed params.social",
         home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",
@@ -446,11 +449,15 @@ mainSections = ["posts"]
   lock  = false
   hud   = false
   trash = false
+  indicators = ["network", "clock", "user"]
 `,
     },
     check: (out) => {
       const home = read(join(out, "index.html"));
       return [
+        ...["inbox", "vol", "bat"]
+          .filter((key) => home.includes(`data-indicator="${key}"`))
+          .map((key) => `index.html keeps the ${key} indicator`),
         home.includes("data-up-lock") && "index.html keeps the lock screen",
         home.includes('"dlg:lock"') && "index.html keeps the Lock action",
         home.includes("data-up-hud") && "index.html keeps the HUD",
@@ -512,6 +519,26 @@ mainSections = ["posts"]
           && "the stylesheet lacks the brand preset's rule with its light shade and a mixed dark shade",
         !teal?.includes(flat("--up-accent-light:color-mix(in srgb, #00897B 85%, white)"))
           && "the stylesheet lacks the teal preset's rule with a mixed light shade",
+      ];
+    },
+  },
+  // Indicators in a site's own order, one of them the site's own partial
+  // and one of them a name with no partial.
+  indicators: {
+    files: {
+      "hugo.toml": `${BARE}[params.desktop]
+  indicators = ["clock", "weather", "nope"]
+`,
+      "layouts/_partials/unity/indicators/weather.html":
+        '<div class="up-panel-item" data-indicator="weather">{{ .Kind }}</div>\n',
+    },
+    warns: [/params\.desktop\.indicators names "nope"/],
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      const keys = [...home.matchAll(/data-indicator="([a-z]+)"/g)].map((m) => m[1]).join(" ");
+      return [
+        keys !== "clock weather" && `index.html renders the indicators "${keys}", not "clock weather"`,
+        !home.includes('data-indicator="weather">home<') && "the site's indicator does not get the page as its context",
       ];
     },
   },

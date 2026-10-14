@@ -1,0 +1,28 @@
+{{- /*
+  The network indicator, the "network" entry of params.desktop.indicators.
+  Its menu lists the access points from params.desktop.networks, a hidden
+  network that never connects, and the wired and hotspot actions.
+  top-panel.ts moves the connection between the .up-net-row rows and adds
+  the hotspot's status row to the menu body. Context: the page.
+*/ -}}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ partial "unity/ui/t" "network" }}" aria-haspopup="true" aria-expanded="false">
+    {{ partial "unity/icon.html" "glyphs/panel-net" }}
+  </button>
+  <div class="up-dropdown" data-dropdown-for="net" data-align="end" data-flyout-keepopen hidden>
+    <div class="up-dropdown-header">{{ partial "unity/ui/t" "network" }}</div>
+    <div class="up-dropdown-body">
+      {{- /* params.desktop.networks lists the access points, and the
+            first one starts connected. An entry is a name or a
+            {name, mono} table, where mono sets the name in monospace. */}}
+      {{- range $i, $n := site.Params.desktop.networks }}
+        {{- $row := cond (reflect.IsMap $n) $n (dict "name" $n) }}
+      {{ partial "unity/ui/net-row.html" (dict "name" $row.name "mono" $row.mono "on" (eq $i 0) "strong" (eq $i 0)) }}
+      {{- end }}
+      {{ partial "unity/ui/net-row.html" (dict "name" (partial "unity/ui/t" "hidden_network") "muted" true "hidden" true) }}
+      <div class="up-dropdown-sep"></div>
+      {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "wired_connection") "action" "dlg:wired") }}
+      {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "enable_hotspot") "action" "dlg:hotspot") }}
+    </div>
+  </div>
+</div>

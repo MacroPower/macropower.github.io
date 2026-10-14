@@ -29,6 +29,9 @@ interface ShortcutSection {
 
 // A site can turn the HUD off, and its Alt tap with it.
 const hasHud = typeof document !== "undefined" && document.querySelector("[data-up-hud]") !== null;
+// A site can leave the sound indicator out of params.desktop.indicators,
+// and its scroll wheel with it.
+const hasVolume = typeof document !== "undefined" && document.querySelector('[data-indicator="vol"]') !== null;
 
 const SECTIONS: readonly ShortcutSection[] = [
   {
@@ -40,7 +43,7 @@ const SECTIONS: readonly ShortcutSection[] = [
       { combos: [["Enter"]], desc: t("js_shortcuts_confirm_dialog") },
       { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_window"), gesture: true },
       { combos: [[t("js_shortcuts_double_click")]], desc: t("js_shortcuts_maximize"), gesture: true },
-      { combos: [[t("js_shortcuts_scroll")]], desc: t("js_shortcuts_volume"), gesture: true },
+      ...(hasVolume ? [{ combos: [[t("js_shortcuts_scroll")]], desc: t("js_shortcuts_volume"), gesture: true }] : []),
     ],
   },
   {

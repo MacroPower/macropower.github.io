@@ -1,0 +1,20 @@
+{{- /*
+  The user indicator, the "user" entry of params.desktop.indicators. Its
+  menu names the owner's handle and holds the session actions. Lock and
+  Log Out drop out when params.desktop.lock is false, and the Dash offers
+  both whether or not this indicator renders. Context: the page.
+*/ -}}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ partial "unity/ui/t" "user" }}" aria-haspopup="true" aria-expanded="false">
+    {{ partial "unity/icon.html" "glyphs/panel-user" }}
+  </button>
+  <div class="up-dropdown" data-dropdown-for="user" data-align="end" data-flyout-keepopen hidden>
+    <div class="up-dropdown-header">{{ partial "unity/ui/author-handle.html" . }}</div>
+    <div class="up-dropdown-body">
+      {{- $lock := ne site.Params.desktop.lock false }}
+      {{ if $lock }}{{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "lock_screen") "action" "dlg:lock") }}{{ end }}
+      {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "restart_session") "action" "reload") }}
+      {{ if $lock }}{{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "log_out") "action" "dlg:logout" "danger" true) }}{{ end }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+{{- /*
+  The sound indicator, the "sound" entry of params.desktop.indicators. Its
+  menu holds the volume slider and, when the site has a Studio playlist,
+  the Studio's play, next-track, and Open in Studio controls. top-panel.ts
+  reads the data-vol-* hooks and turns the scroll wheel over the trigger
+  into volume steps. The playlist itself rides on the panel, because the
+  Studio plays it whether or not this indicator renders. Context: the page.
+*/ -}}
+{{- $playlist := partialCached "unity/playlist.html" . -}}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="{{ partial "unity/ui/t" "volume" }}" aria-haspopup="true" aria-expanded="false">
+    {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
+    {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
+  </button>
+  <div class="up-dropdown" data-dropdown-for="vol" data-align="end" data-flyout-keepopen hidden>
+    <div class="up-dropdown-header">{{ partial "unity/ui/t" "sound" }}</div>
+    <div class="up-dropdown-body">
+      <div class="up-dropdown-row-flex">
+        <button type="button" class="up-vol-toggle" data-action="vol-toggle" aria-label="{{ partial "unity/ui/t" "toggle_mute" }}">
+          {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
+          {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
+        </button>
+        <input type="range" min="0" max="100" value="62" class="up-vol-slider" data-vol-slider aria-label="{{ partial "unity/ui/t" "volume" }}">
+        <span class="up-vol-readout" data-vol-readout>62</span>
+      </div>
+      <div class="up-dropdown-meta">{{ partial "unity/ui/t" "output" }} <span class="up-dropdown-meta-strong">{{ partial "unity/ui/t" "built_in_audio" }}</span></div>
+      {{- if $playlist }}
+      <div class="up-dropdown-meta-em">
+        <button type="button" class="up-vol-play" data-action="vol-play" aria-label="{{ partial "unity/ui/t" "play_pause" }}">
+          {{ partial "unity/icon.html" "glyphs/panel-play" }}
+          {{ partial "unity/icon.html" "glyphs/panel-pause" }}
+        </button>
+        <span data-vol-nowplaying>{{ partial "unity/ui/t" "paused" }}</span>
+        <button type="button" class="up-vol-next" data-action="vol-next" aria-label="{{ partial "unity/ui/t" "next_track" }}" title="{{ partial "unity/ui/t" "next_track" }}">
+          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5l7 4.5-7 4.5v-9zM11 3h2v10h-2V3z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="up-dropdown-row-buttons">
+        <button type="button" class="up-dropdown-btn is-ghost" data-action="daw:open">{{ partial "unity/ui/t" "open_in_studio" }}</button>
+      </div>
+      {{- end }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{{- /*
+  The messages indicator, the "messages" entry of params.desktop.indicators.
+  Its menu holds the panel's Compose link, which mails the author's email
+  and shows only when the site sets one, and its Subscribe action, which
+  copies the feed's address. Context: the page.
+*/ -}}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ partial "unity/ui/t" "messages" }}" aria-haspopup="true" aria-expanded="false">
+    {{ partial "unity/icon.html" "glyphs/panel-inbox" }}
+  </button>
+  <div class="up-dropdown" data-dropdown-for="inbox" data-align="end" data-flyout-keepopen hidden>
+    <div class="up-dropdown-header">{{ partial "unity/ui/t" "messages" }}</div>
+    <div class="up-dropdown-body">
+      <div class="up-dropdown-empty">{{ partial "unity/ui/t" "no_new_messages" }}</div>
+      <div class="up-dropdown-row-buttons">
+        {{ with (partialCached "unity/author.html" .).email }}<a class="up-dropdown-btn" href="mailto:{{ . }}">{{ partial "unity/ui/t" "compose" }}</a>{{ end }}
+        <button type="button" class="up-dropdown-btn is-ghost" data-action="dlg:subscribe">{{ partial "unity/ui/t" "subscribe_to_feed" }}</button>
+      </div>
+    </div>
+  </div>
+</div>
