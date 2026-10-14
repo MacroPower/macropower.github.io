@@ -47,9 +47,10 @@ function valuesOf(value: unknown): unknown[] {
   return isRecord(value) ? Object.values(value) : [];
 }
 
-// A Markdown file's body, without its TOML front matter.
+// A Markdown file's body, without its TOML front matter, which might be
+// empty.
 function body(file: string): string {
-  return readFileSync(file, "utf8").replace(/^\+\+\+\n[\s\S]*?\n\+\+\+\n/, "");
+  return readFileSync(file, "utf8").replace(/^\+\+\+\n(?:[\s\S]*?\n)?\+\+\+\n/, "");
 }
 
 // What a built site's home page hands the scripts.

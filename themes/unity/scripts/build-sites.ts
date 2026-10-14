@@ -116,13 +116,16 @@ const SITES: Record<string, SiteSpec> = {
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
   },
   // No title, params, or content. Every page still names itself, and the
-  // home page takes the host of baseURL.
+  // home page takes the host of baseURL. The terminal's window takes the
+  // default guest login.
   bare: {
     files: { "hugo.toml": BARE },
     check: (out) => {
       const names = accentNames(out);
       return [
         !read(join(out, "index.html")).includes("<title>example.org</title>") && "index.html is not titled by its host",
+        !read(join(out, "index.html")).includes('class="up-titlebar-text">user@example.org: ~<')
+          && "index.html's titlebar is not the default guest login",
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
         names !== "orange green aubergine blue" && `the Preferences dialog offers ${names}, not the theme's presets`,
         ...studioProblems(out, "index.html", false),
@@ -565,6 +568,34 @@ mainSections = ["posts"]
         .map(([file, bundle]) => `${file} does not load the ${bundle} bundle`),
       ...htmlFiles(out).flatMap((file) => bundleMismatches(relative(out, file), read(file))),
     ],
+  },
+  // A home terminal with its own guest login and a site title. The
+  // login titles the terminal's window, and the share title stays the
+  // site's. The title in the German home's front matter replaces the
+  // login.
+  terminal: {
+    files: {
+      "hugo.toml": `${BARE}title = "Jane Doe"
+[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+[params.terminal]
+  user = "guest"
+  host = "box"
+`,
+      "content/_index.de.md": page("Lobby"),
+    },
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      return [
+        !home.includes('class="up-titlebar-text">guest@box: ~<') && "index.html's titlebar is not the guest login",
+        !/data-panel-slot="title">\s*guest@box: ~\s*</.test(home) && "index.html's panel title is not the guest login",
+        !home.includes('og:title" content="Jane Doe"') && "index.html's share title is not the site's title",
+        !read(join(out, "de/index.html")).includes('class="up-titlebar-text">Lobby<')
+          && "de/index.html's titlebar ignores the home's title",
+      ];
+    },
   },
   // A Studio playlist that names one track and leaves the other anonymous.
   studio: {

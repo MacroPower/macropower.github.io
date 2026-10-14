@@ -149,8 +149,9 @@ mainSections = ["posts"]
   # [params.home]
   #   layout = "page"
 
-  # The home terminal is an SSH session into the site as a guest login.
-  # Both default from the site: "user" and the host of baseURL.
+  # The home terminal is an SSH session into the site as a guest login,
+  # which also titles the terminal's window. Both default from the site:
+  # "user" and the host of baseURL.
   # [params.terminal]
   #   user = "guest"
   #   host = "example.org"

@@ -1,0 +1,13 @@
+{{- /*
+  The guest login of the home terminal, which plays an SSH session into
+  the site's host. Returns a dict with user, params.terminal.user or
+  "user", and host, params.terminal.host or the host name of baseURL
+  without its port, else "localhost". The terminal's prompt, banner, and
+  window title all read it.
+
+  Context: any page. The result depends only on the site's language, so
+  call it through partialCached.
+*/ -}}
+{{- $user := site.Params.terminal.user | default "user" -}}
+{{- $host := site.Params.terminal.host | default ((urls.Parse site.BaseURL).Hostname | default "localhost") -}}
+{{- return dict "user" $user "host" $host -}}

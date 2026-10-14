@@ -9,10 +9,7 @@
 
   Context: the home page.
 */ -}}
-{{- /* The terminal plays an SSH session into the site's host as a guest
-      login. params.terminal.user and params.terminal.host rename both. */ -}}
-{{- $user := site.Params.terminal.user | default "user" -}}
-{{- $host := site.Params.terminal.host | default ((urls.Parse site.BaseURL).Host | default "localhost") -}}
+{{- $login := partialCached "unity/terminal-login.html" . -}}
 {{- /* since: the date the banner's uptime counts from. It is the owner's
       birth date when params.author.born is set, otherwise the date of the
       oldest content page, otherwise empty. The shell bundle turns it into
@@ -66,8 +63,8 @@
   ) -}}
 {{- end -}}
 {{- $payload := dict
-    "handle" $user
-    "host" $host
+    "handle" $login.user
+    "host" $login.host
     "name" $author.name
     "title" $author.jobTitle
     "focus" $author.focus
@@ -140,6 +137,6 @@
     {{- /* Without JS the terminal never mounts, so main.css shows the
           banner block under @media (scripting: none), and this error
           line follows it. */}}
-    <div class="up-shell-noscript">{{ $user }}@{{ $host }}: {{ partial "unity/ui/t" "terminal_requires_js" }}</div>
+    <div class="up-shell-noscript">{{ $login.user }}@{{ $login.host }}: {{ partial "unity/ui/t" "terminal_requires_js" }}</div>
   </noscript>
 </section>

@@ -1,5 +1,4 @@
 +++
-title = "Jane Doe"
 +++
 
 # Hi, I'm Jane

@@ -1,0 +1,18 @@
+{{- /*
+  The text of the page window's titlebar and of the top panel's title.
+  The home terminal reads like a terminal window's title, such as
+  "user@example.org: ~", from unity/terminal-login.html. A title in the
+  home's front matter replaces it. The test reads .Params.title, because
+  Hugo fills an untitled home's .Title from the site's title. Every other
+  page shows its name from unity/page-title.html.
+
+  Context: the page.
+*/ -}}
+{{- $title := "" -}}
+{{- if and (partial "unity/is-terminal.html" .) (not .Params.title) -}}
+  {{- $login := partialCached "unity/terminal-login.html" . -}}
+  {{- $title = printf "%s@%s: ~" $login.user $login.host -}}
+{{- else -}}
+  {{- $title = partial "unity/page-title.html" . -}}
+{{- end -}}
+{{- return $title -}}
