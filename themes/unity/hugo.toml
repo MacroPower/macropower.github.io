@@ -75,6 +75,9 @@
     lock = true
     # The HUD, which a tap of Alt opens to search the panel's menus.
     hud = true
+    # Preloads of the regular Ubuntu face, and of Ubuntu Mono on the home
+    # terminal.
+    fontPreload = true
     # Names in the Trash window. A trailing slash marks a folder. false
     # removes the Trash from the launcher, the Dash, and the desktop.
     trash = [

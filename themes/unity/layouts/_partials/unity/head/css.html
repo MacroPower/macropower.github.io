@@ -87,10 +87,15 @@
 {{- end -}}
 {{- $text := print $main.Content "@layer unity.chroma{" $chroma.Content "}" -}}
 {{- with $rules }}{{ $text = printf "%s\n@layer unity.theme{%s}" $text (delimit . "\n") }}{{ end -}}
-{{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
-      terminal. */ -}}
-{{- $preload := slice "ubuntu-400-latin" -}}
-{{- if partial "unity/is-terminal.html" . }}{{ $preload = $preload | append "ubuntu-mono-400-latin" }}{{ end -}}
+{{- /* Ubuntu 400 paints nearly every view, and Ubuntu Mono 400 paints the
+      home terminal. The preloads cannot see what the --up-font-* tokens
+      hold, so params.desktop.fontPreload = false turns them off for a
+      site whose tokens name other fonts. */ -}}
+{{- $preload := slice -}}
+{{- if ne site.Params.desktop.fontPreload false -}}
+  {{- $preload = $preload | append "ubuntu-400-latin" -}}
+  {{- if partial "unity/is-terminal.html" . }}{{ $preload = $preload | append "ubuntu-mono-400-latin" }}{{ end -}}
+{{- end -}}
 {{- range $main.Data.Artifacts -}}
   {{- if eq .MediaType.MainType "font" -}}
     {{- $face := replaceRE `-[A-Z0-9]+\.woff2$` "" (path.Base .RelPermalink) -}}

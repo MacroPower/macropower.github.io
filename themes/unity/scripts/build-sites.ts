@@ -364,6 +364,35 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
+  // A second language that turns the font preloads off. The first keeps
+  // the theme's preloads: the regular Ubuntu face on every page, and
+  // Ubuntu Mono beside it on the home terminal.
+  preload: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+  [languages.de.params.desktop]
+    fontPreload = false
+`,
+      "content/about.md": page("About"),
+      "content/about.de.md": page("Über"),
+    },
+    check: (out) => {
+      const faces = (file: string): string =>
+        [...read(join(out, file)).matchAll(/<link rel="preload" as="font"[^>]* href="[^"]*\/([a-z0-9-]+)-[A-Z0-9]+\.woff2"/g)]
+          .map((m) => m[1]).sort().join(" ") || "nothing";
+      return [
+        faces("index.html") !== "ubuntu-400-latin ubuntu-mono-400-latin"
+          && `index.html preloads ${faces("index.html")}, not Ubuntu and Ubuntu Mono`,
+        faces("about/index.html") !== "ubuntu-400-latin" && `about/index.html preloads ${faces("about/index.html")}, not Ubuntu`,
+        ...["de/index.html", "de/about/index.html"]
+          .filter((file) => read(join(out, file)).includes('rel="preload"'))
+          .map((file) => `${file} preloads a font with fontPreload off`),
+      ];
+    },
+  },
   // A section outside mainSections renders as a plain list of its pages.
   notes: {
     files: {

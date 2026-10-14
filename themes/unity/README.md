@@ -152,6 +152,7 @@ The theme does not set these, so set them in your site:
 | `desktop.accent` | the first preset, `orange` | The accent preset each page starts with, named by its key under `desktop.accents`. Visitors can switch it in Edit > Preferences. |
 | `desktop.accents` | `orange`, `green`, `aubergine`, `blue` | The accent presets that Edit > Preferences offers. See **Accent colors** under [Customizing](#customizing). |
 | `desktop.wallpaper` | the aubergine gradient | An image that covers the desktop and the lock screen, given as a path under `assets/` or `static/` or as a URL. A `--up-wallpaper` that your `custom.css` sets beats it. |
+| `desktop.fontPreload` | `true` | `false` stops the pages from preloading the theme's Ubuntu fonts. See **Colors and fonts** under [Customizing](#customizing). |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |
 | `desktop.lock` | `true` | `false` removes the lock screen and the Lock and Log Out actions. |
@@ -242,7 +243,7 @@ The theme's render hooks extend Hugo's Markdown:
   | `--up-font-sans` | Ubuntu, then the system's sans-serif font | The desktop's text. |
   | `--up-font-mono` | Ubuntu Mono, then the system's monospace font | The terminal, code, and other monospaced text, the Studio's piano roll included. |
 
-  The build resolves each `url()` in `custom.css` the way it resolves an `@import` and publishes the file, so keep a wallpaper image under your site's `assets/`, such as beside `custom.css`. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the font properties hold.
+  The build resolves each `url()` in `custom.css` the way it resolves an `@import` and publishes the file, so keep a wallpaper image under your site's `assets/`, such as beside `custom.css`. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. Every page preloads the theme's regular Ubuntu face, and the home terminal also preloads regular Ubuntu Mono, whatever the font properties hold. When your properties name other fonts, set `fontPreload = false` under `[params.desktop]`, so browsers do not download the theme's faces. Browsers then download a theme face only for text that still uses it.
 
   ```css
   :root{

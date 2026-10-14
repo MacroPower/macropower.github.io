@@ -110,6 +110,9 @@ mainSections = ["posts"]
     # the aubergine gradient. Give a path under assets/ or static/, or a
     # URL.
     # wallpaper = "images/wallpaper.jpg"
+    # false stops the pages from preloading the theme's Ubuntu fonts, for
+    # a custom.css that sets --up-font-sans and --up-font-mono to others.
+    # fontPreload = false
     # The corner watermark's lines; an empty list removes it.
     # label = ["jane/personal-site", "est. 2024"]
     # The Trash window's contents. A trailing slash marks a folder, and
