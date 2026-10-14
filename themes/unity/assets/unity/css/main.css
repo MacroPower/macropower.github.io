@@ -2356,9 +2356,10 @@ details.up-alert{
 /* ---- menu items (File/Edit/View/Help) ---------------------------------- */
 
 .up-menu-item{
-  /* both <div> (static rows) and <button> (action rows) reach this rule;
-     reset the button user-agent chrome so the two render identically */
+  /* <div> (static rows), <button> (action rows), and <a> (link rows) all
+     reach this rule; reset the user-agent chrome so they render identically */
   appearance:none;border:0;font:inherit;width:100%;text-align:inherit;
+  text-decoration:none;
   display:flex; align-items:center; gap:10px;
   padding-block:4px; padding-inline:26px 14px;
   position:relative;

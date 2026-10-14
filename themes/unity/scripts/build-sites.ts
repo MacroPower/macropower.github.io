@@ -69,6 +69,8 @@ const SITES: Record<string, SiteSpec> = {
         !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
         !read(join(out, "projects/index.html")).includes('href="https://github.com/jane"')
           && "the projects sidebar lacks the GitHub social link",
+        !read(join(out, "about/index.html")).includes('<a class="up-menu-item" href="/privacy/">')
+          && "the Help menu lacks the menu.help link to the privacy page",
         // The chrome renders once per language around the parts that follow
         // the page: the panel's title and the launcher's current tiles.
         ...Object.entries({ "index.html": "home", "about/index.html": "", "cv/index.html": "cv",
@@ -124,6 +126,14 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
   multilingual: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "en"
+[[menus.help]]
+  name = "Imprint"
+  pageRef = "/imprint"
+  weight = 1
+[[menus.help]]
+  name = "Contact"
+  url = "/contact/"
+  weight = 2
 [languages.en]
   weight = 1
 [languages.de]
@@ -134,6 +144,9 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
 `,
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
+      "content/imprint.md": page("Imprint"),
+      "content/contact.md": page("Contact"),
+      "content/contact.de.md": page("Kontakt"),
       "i18n/de.toml": '[menu_file]\nother = "Datei"\n[messages]\nother = "Nachrichten"\n',
     },
     check: (out) => [
@@ -152,6 +165,15 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         && "de/about/index.html ignores the language's badge",
       !read(join(out, "about/index.html")).includes('class="up-lang-badge" aria-hidden="true">En<')
         && "about/index.html lacks the default En badge",
+      // The Help menu lists menu.help by weight. A url entry gets the
+      // language prefix, and a pageRef entry with no page in the language
+      // stays out of that language's menu.
+      ...Object.entries({ "index.html": ["/imprint/", "/contact/"], "de/index.html": ["/de/contact/"] })
+        .flatMap(([file, hrefs]) => {
+          const links = [...read(join(out, file)).matchAll(/<a class="up-menu-item" href="([^"]*)"/g)]
+            .map((m) => m[1]).join(" ");
+          return links !== hrefs.join(" ") && `${file} links the Help menu to "${links}", not "${hrefs.join(" ")}"`;
+        }),
     ],
   },
   // A section outside mainSections renders as a plain list of its pages.

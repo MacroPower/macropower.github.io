@@ -166,6 +166,14 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 
 `menu.main` drives the launcher dock, the Dash's Applications category, the File menu, and the panel's navigation actions. Home is implicit and always first. Point an entry at a page with `pageRef`, which follows the page's permalink and language, or at any other address with `url`. Per-entry `[menu.main.params]` accept `icon` (an SVG name under `assets/unity/icons/`, such as `launcher/cv`, which your site may add to), `match` (`"exact"` or `"prefix"`), `kw` (Dash keywords), `dashLabel`, `dashIcon`, and the `launcher` and `dash` booleans that keep a page off the dock or out of the Dash. `launcher = "running"` docks a page only while it is open. Known identifiers (`cv`, `blog`, `posts`, `projects`, `sponsors`, `icons`, `solitaire`, `about`) get fitting icons and keywords automatically.
 
+`menu.help` adds links to the end of the top panel's Help menu, ordered by weight. It suits pages that every page must reach but the dock should not hold, such as a privacy notice or an imprint. Its entries resolve `pageRef` and `url` the same way as `menu.main`, and the HUD finds them like any other menu row. An entry whose `pageRef` names no page in the current language stays out of that language's Help menu.
+
+```toml
+[[menu.help]]
+  name    = "Privacy"
+  pageRef = "/privacy"
+```
+
 ## Content
 
 - `content/posts/*.md` are blog posts. `categories` and `series` front matter feed the sidebar lenses, and `params.blog.taxonomies` points either lens at another taxonomy. The theme finds the blog section through Hugo's `mainSections`, so `content/blog/` works too. Posts may sit in nested sections such as `content/posts/2024/`, and each section's list shows the posts at any depth below it. A list shows every post and filters and sorts them in the browser, so Hugo's `pagination` settings do not apply. A site without sections has no blog, and its pages render as plain windows.

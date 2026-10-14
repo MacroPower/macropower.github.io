@@ -44,6 +44,16 @@
 {{- if index $reg.pages "icons" -}}
   {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "icon_vault") "action" "nav:icons") -}}
 {{- end -}}
+{{- /* The site's menu.help entries close the menu as links, by weight. An
+     entry whose pageRef names no page in this language has no address,
+     so it stays out. */ -}}
+{{- $helpLinks := slice -}}
+{{- range site.Menus.help -}}
+  {{- if .URL -}}
+    {{- $helpLinks = $helpLinks | append (dict "label" .Name "url" (partial "unity/menu-url.html" .)) -}}
+  {{- end -}}
+{{- end -}}
 {{- $helpItems := slice (dict "label" (partial "unity/ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}
 {{- with $helpExtras }}{{ $helpItems = $helpItems | append (dict "sep" true) | append . }}{{ end -}}
+{{- with $helpLinks }}{{ $helpItems = $helpItems | append (dict "sep" true) | append . }}{{ end -}}
 {{ partial "unity/ui/panel-menu.html" (dict "menu" "help" "label" (partial "unity/ui/t" "menu_help") "items" $helpItems) }}

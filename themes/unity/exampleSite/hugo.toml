@@ -236,3 +236,16 @@ mainSections = ["posts"]
       # The icon vault: searchable in the Dash and linked from
       # Help > Icon vault, but never a dock tile.
       launcher = false
+
+  # menu.help adds links to the end of the top panel's Help menu, by
+  # weight, for pages every page must reach but the dock should not hold,
+  # such as a privacy notice or an imprint. pageRef and url resolve the
+  # same way as in menu.main.
+  [[menu.help]]
+    name    = "Privacy"
+    pageRef = "/privacy"
+    weight  = 1
+  # [[menu.help]]
+  #   name   = "Imprint"
+  #   url    = "https://example.org/imprint/"
+  #   weight = 2

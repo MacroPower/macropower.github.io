@@ -102,7 +102,7 @@ export function initHud(): void {
         : trigger.getAttribute("aria-label") ?? key;
       for (const el of Array.from(
         dropdown.querySelectorAll<HTMLElement>(
-          "button[data-action], a.up-dropdown-btn[href], a.up-dropdown-row[href]:not([aria-current])",
+          "button[data-action], a.up-menu-item[href], a.up-dropdown-btn[href], a.up-dropdown-row[href]:not([aria-current])",
         ),
       )) {
         if (el.hasAttribute("disabled")) continue;

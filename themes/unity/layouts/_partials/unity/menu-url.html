@@ -1,0 +1,15 @@
+{{- /*
+  Returns the address of one menu entry, so every menu the theme reads
+  resolves its entries the same way. Context: the menu entry.
+
+  A pageRef entry resolves to its page, which already carries the language
+  prefix. A url entry gets the prefix from relLangURL unless it points
+  off-site. An entry whose pageRef names no page in the current language
+  has an empty .URL, so a caller that must not link it to the home page
+  checks .URL first.
+*/ -}}
+{{- $u := .URL -}}
+{{- if not (or .Page (hasPrefix $u "http://") (hasPrefix $u "https://")) -}}
+  {{- $u = relLangURL $u -}}
+{{- end -}}
+{{- return $u -}}
