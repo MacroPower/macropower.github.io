@@ -1,25 +1,35 @@
 {{- /*
-  Bundles assets/unity/css/main.css through css.Build and emits the stylesheet
-  link plus font preloads. css.Build lowers the native nesting for the
-  target browsers and publishes the fonts main.css references with hashed
-  names, so the preloads read their URLs from the build's artifacts.
+  Builds the site's one stylesheet with css.Build and emits its link plus
+  font preloads. css.Build lowers the native nesting for the target
+  browsers and publishes the fonts main.css references with hashed names,
+  so the preloads read their URLs from the build's artifacts.
 
-  The syntax highlighter's classes for the site's markup.highlight.style
-  follow the theme's rules, so a site that sets markup.highlight.noClasses
-  to false gets colored code without inline styles. A site's
-  assets/css/custom.css goes through the same build and lands last, so
-  its rules win on equal specificity.
+  The entry puts assets/unity/css/main.css in the unity.theme cascade
+  layer, and the syntax highlighter's classes for the site's
+  markup.highlight.style in the later unity.chroma layer. A site that sets
+  markup.highlight.noClasses to false therefore gets colored code without
+  inline styles, and the highlight style's colors win over the theme's.
+  A site's assets/css/custom.css comes last with no layer, so its rules
+  beat every theme rule whatever their specificity, except the theme's
+  !important declarations. css.Build moves an external @import in it to
+  the top of the output, where browsers honor it.
 
   Context: the page. Call it through partialCached keyed on whether the
   page is the home terminal (unity/is-terminal.html), the only input that
   changes the output.
 */ -}}
-{{- $opts := dict
+{{- $entry := `@layer unity.theme, unity.chroma;
+@import "/unity/css/main.css" layer(unity.theme);
+@import "/unity/css/chroma.css" layer(unity.chroma);
+` -}}
+{{- if resources.Get "css/custom.css" }}{{ $entry = print $entry `@import "/css/custom.css";` }}{{ end -}}
+{{- $main := resources.FromString "unity/css/entry.css" $entry | css.Build (dict
+  "importContext" (slice (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")))
   "minify" hugo.IsProduction
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")
   "target" (slice "chrome115" "edge115" "firefox116" "ios16.4" "opera101" "safari16.4")
--}}
-{{- $main := resources.Get "unity/css/main.css" | css.Build (merge $opts (dict "targetPath" "css/main.css")) -}}
+  "targetPath" "css/main.css"
+) -}}
 {{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home
       terminal. */ -}}
 {{- $preload := slice "ubuntu-400-latin" -}}
@@ -32,10 +42,5 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- $parts := slice $main (css.ChromaStyles (dict "targetPath" "css/chroma.css") | css.Build (merge $opts (dict "targetPath" "css/chroma.css"))) -}}
-{{- with resources.Get "css/custom.css" -}}
-  {{- $parts = $parts | append (. | css.Build (merge $opts (dict "targetPath" "css/custom.css"))) -}}
-{{- end -}}
-{{- $css := $parts | resources.Concat "css/main.css" -}}
-{{- $css = $css | resources.Fingerprint }}
+{{- $css := $main | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

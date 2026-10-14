@@ -167,16 +167,19 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
-  // A site that uses every documented hook: a custom.css that imports a
-  // sibling file and nests a rule, and the three extend-* partials. Each
-  // partial holds an element marker, because html/template drops HTML
+  // A site that uses every documented hook. Its custom.css imports an
+  // external stylesheet and a sibling file and nests a rule. Each extend-*
+  // partial holds an element marker, because `html/template` drops HTML
   // comments.
   hooks: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
       "content/about.md": page("About"),
       "content/posts/one.md": page("One"),
-      "assets/css/custom.css": '@import "extra.css";\n.hooks-custom{order:1;.hooks-nested{order:2}}\n',
+      "assets/css/custom.css": `@import url("https://fonts.example.org/hooks.css");
+@import "extra.css";
+.hooks-custom{order:1;.hooks-nested{order:2}}
+`,
       "assets/css/extra.css": ".hooks-extra{order:3}\n",
       "layouts/_partials/extend-head.html": '<meta name="hooks" content="HEAD-HOOK">\n',
       "layouts/_partials/extend-footer.html": "<span hidden>FOOTER-HOOK</span>\n",
@@ -186,14 +189,20 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       const pages = ["index.html", "about/index.html", "posts/one/index.html"].map((p) => [p, read(join(out, p))] as const);
       const href = /<link rel="stylesheet" href="([^"]+)"/.exec(pages[0]![1])?.[1];
       const css = href ? read(join(out, href)) : "";
-      const theme = css.indexOf(".up-top-panel");
+      const imported = css.search(/\.hooks-extra\s*\{/);
+      // Unlowered nesting never puts the two classes side by side.
+      const nested = css.search(/\.hooks-custom \.hooks-nested\s*\{/);
       const post = pages[2]![1];
       return [
-        theme < 0 && "the stylesheet lacks the theme's rules",
-        !(css.search(/\.hooks-extra\s*\{/) > theme) && "the stylesheet lacks the file custom.css imports, after the theme's rules",
-        // Unlowered nesting never puts the two classes side by side.
-        !(css.search(/\.hooks-custom \.hooks-nested\s*\{/) > theme)
-          && "the stylesheet lacks custom.css's nested rule, lowered, after the theme's rules",
+        // Browsers ignore an @import after any rule other than @charset or
+        // an @layer statement.
+        !/^@layer unity\.theme,\s*unity\.chroma;\s*@import\s*(?:url\()?"https:\/\/fonts\.example\.org\/hooks\.css"/.test(css)
+          && "the stylesheet does not open with the layer order and then custom.css's external @import",
+        layerAt(css, css.indexOf(".up-top-panel")) !== "unity.theme" && "the theme's rules sit outside the unity.theme layer",
+        // The lookbehind skips the layer's own name in "@layer unity.chroma{".
+        layerAt(css, css.search(/(?<=[{}])\.chroma\s*\{/)) !== "unity.chroma" && "the highlighter's rules sit outside the unity.chroma layer",
+        (imported < 0 || layerAt(css, imported) !== "") && "the stylesheet lacks the file custom.css imports, unlayered",
+        (nested < 0 || layerAt(css, nested) !== "") && "the stylesheet lacks custom.css's nested rule, lowered and unlayered",
         ...pages.flatMap(([name, html]) => {
           const head = html.indexOf('content="HEAD-HOOK"');
           const foot = html.indexOf("FOOTER-HOOK");
@@ -493,6 +502,19 @@ function read(file: string): string {
 function hugo(args: string[]): { ok: boolean; log: string } {
   const run = spawnSync("hugo", args, { encoding: "utf8" });
   return { ok: run.status === 0, log: `${run.stdout ?? ""}${run.stderr ?? ""}` };
+}
+
+// The cascade layer whose block holds offset i of a stylesheet, or "" when
+// no @layer block holds it or i is negative.
+function layerAt(css: string, i: number): string {
+  if (i < 0) return "";
+  const open: string[] = [];
+  // Blank the quoted strings, whose braces do not open or close a block.
+  for (const m of css.slice(0, i).replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, '""').matchAll(/@layer\s+([\w.-]+)\s*\{|[{}]/g)) {
+    if (m[0] === "}") open.pop();
+    else open.push(m[1] ?? "");
+  }
+  return open.filter(Boolean).at(-1) ?? "";
 }
 
 function htmlFiles(dir: string): string[] {
