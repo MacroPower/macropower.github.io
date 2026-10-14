@@ -113,9 +113,9 @@ jobs:
           hugo-version: '0.165.0'
           extended: false
 
-      # Node 22.18 and later run the TypeScript build script without a
-      # flag. The script imports only Node built-ins, so this job skips
-      # npm ci.
+      # Node 22.18 or later on the 22 line, and Node 24.2 or later, run
+      # the TypeScript build script without a flag. The script imports
+      # only Node built-ins, so this job skips npm ci.
       - uses: actions/setup-node@v7
         with:
           node-version: 22

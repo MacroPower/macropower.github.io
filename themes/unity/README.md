@@ -436,7 +436,7 @@ npm run test:sites       # hugo: the example site and small test sites, warnings
 npm run test:browser     # playwright: every example page in Chromium
 ```
 
-The dev tooling needs Node 22.18 or later, the first Node 22 release that runs the TypeScript under `scripts/` without a flag.
+The dev tooling needs Node 22.18 or later on the 22 line, or Node 24.2 or later. Both releases run the TypeScript under `scripts/` without a flag.
 
 The browser suite serves the example site with the Content Security Policy under [Customizing](#customizing). It fails on any uncaught exception or console error that a page raises while it loads and starts the desktop. It also fails on each inline script or style that the policy blocks. It runs Chromium through Playwright, so download the browser once with `npx playwright install chromium`.
 

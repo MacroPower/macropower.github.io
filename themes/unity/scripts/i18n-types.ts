@@ -5,7 +5,8 @@
 // after adding, renaming, or removing a js_ key or a placeholder, and
 // commit the result. i18n.test.ts fails while the committed file differs
 // from this script's output.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 export const EN_TOML = new URL("../i18n/en.toml", import.meta.url);
 export const KEYS_TS = new URL("../assets/unity/js/i18n-keys.ts", import.meta.url);
@@ -72,4 +73,10 @@ export function renderKeys(catalog: ReadonlyMap<string, Readonly<Record<string, 
   ].join("\n");
 }
 
-if (import.meta.main) writeFileSync(KEYS_TS, renderKeys(readCatalog(readFileSync(EN_TOML, "utf8"))));
+// Node releases from 23.6 to 24.1, inclusive, run this file but lack
+// import.meta.main, and engines does not stop them from running it. So
+// the script checks that Node started it by its path. process.argv[1]
+// keeps any symlink that the command named, so the check resolves it.
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  writeFileSync(KEYS_TS, renderKeys(readCatalog(readFileSync(EN_TOML, "utf8"))));
+}

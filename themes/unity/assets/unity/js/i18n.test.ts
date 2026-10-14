@@ -1,4 +1,6 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -46,6 +48,25 @@ describe("runtime strings", () => {
 
   it("matches the generated key types", () => {
     expect(readFileSync(KEYS_TS, "utf8"), "run `npm run i18n:types`").toBe(renderKeys(catalog));
+  });
+
+  // The generator runs on a copy of the theme, so the check above still
+  // reads the committed file. Node starts it through a symlink, because a
+  // site can link the theme in.
+  it("regenerates the key types when Node runs the generator", () => {
+    const root = mkdtempSync(join(tmpdir(), "up-i18n-"));
+    try {
+      const theme = join(root, "theme");
+      for (const dir of ["scripts", "i18n", "assets/unity/js"]) mkdirSync(join(theme, dir), { recursive: true });
+      writeFileSync(join(theme, "package.json"), '{ "type": "module" }\n');
+      copyFileSync(join(here, "..", "..", "..", "scripts", "i18n-types.ts"), join(theme, "scripts", "i18n-types.ts"));
+      copyFileSync(EN_TOML, join(theme, "i18n", "en.toml"));
+      symlinkSync(theme, join(root, "link"), "dir");
+      execFileSync(process.execPath, [join(root, "link", "scripts", "i18n-types.ts")], { stdio: "pipe" });
+      expect(readFileSync(join(theme, "assets", "unity", "js", "i18n-keys.ts"), "utf8")).toBe(renderKeys(catalog));
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("passes every key as a string literal", () => {

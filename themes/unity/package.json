@@ -19,7 +19,7 @@
     "vendor:pdfjs": "node scripts/vendor-pdfjs.ts"
   },
   "engines": {
-    "node": ">=22.18"
+    "node": "^22.18.0 || >=24.2.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
