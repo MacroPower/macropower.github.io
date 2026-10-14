@@ -1,0 +1,18 @@
+{{- /*
+  Returns the scheme of a url that runs script or carries its own
+  content, javascript:, vbscript:, or data:, in lower case. Returns ""
+  for any other url. The theme leaves out every such url that a site's
+  config names, because its scripts follow some of those urls outside
+  html/template's reach.
+
+  A browser skips leading spaces and control characters and drops each
+  tab and newline before it reads the scheme, so this partial reads it
+  the same way, and "java<tab>script:" counts as javascript:.
+
+  Arg: the url.
+*/ -}}
+{{- $u := replaceRE `[\t\n\r]` "" (printf "%v" .) -}}
+{{- $u = replaceRE `^[\x00-\x20]+` "" $u -}}
+{{- $scheme := "" -}}
+{{- range findRESubmatch `^([A-Za-z][A-Za-z0-9+.-]*):` $u 1 }}{{ $scheme = lower (index . 1) }}{{ end -}}
+{{- return cond (in (slice "javascript" "vbscript" "data") $scheme) $scheme "" -}}

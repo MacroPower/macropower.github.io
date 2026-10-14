@@ -166,12 +166,24 @@ const SITES: Record<string, SiteSpec> = {
   // a subdirectory in two languages. Each resolves under baseURL once,
   // whether or not it already starts with /sub/, and a menu url keeps its
   // case and query. A menu url takes the language's prefix after /sub/.
-  // A menu url with a scheme such as tel: keeps it, but a javascript:
-  // url never reaches an href. A menu url or a Markdown link to /sub,
-  // the base path without its slash, leads to the language's home page.
+  // A menu url with a scheme such as tel: keeps it. A menu or social url
+  // that runs script drops its entry with a warning, so it reaches no
+  // href, no File menu row, and no script. A menu url or a Markdown link
+  // to /sub, the base path without its slash, leads to the language's
+  // home page.
   urls: {
     files: {
-      "hugo.toml": `${config("https://example.org/sub/")}[[menu.main]]
+      "hugo.toml": `${config("https://example.org/sub/")}[[params.social]]
+  name = "Chat"
+  url = "VBScript:msgbox(1)"
+[[params.social]]
+  name = "Tab"
+  url = "java\\tscript:alert(4)"
+[[menu.main]]
+  identifier = "launch"
+  name = "Launch"
+  url = "javascript:alert(2)"
+[[menu.main]]
   identifier = "files"
   name = "Files"
   url = "/files/"
@@ -221,11 +233,27 @@ const SITES: Record<string, SiteSpec> = {
       "static/ada.png": "PNG",
       "static/hopper.png": "PNG",
     },
+    warns: [
+      /the menu entry "Launch" links a javascript: url, which the theme leaves out/,
+      /the menu entry "Script" links a javascript: url, which the theme leaves out/,
+      /the params\.social entry "Chat" links a vbscript: url, which the theme leaves out/,
+      /the params\.social entry "Tab" links a javascript: url, which the theme leaves out/,
+    ],
     check: (out) => {
       const html = read(join(out, "sponsors/index.html"));
       const de = read(join(out, "de/index.html"));
       const start = read(join(out, "start/index.html"));
       return [
+        ...["en", "de"].map((lang) => /javascript:/i.test(runtime(out, lang)) && `js/runtime.${lang}.*.js carries a javascript: url`),
+        ...htmlFiles(out).flatMap((file) => {
+          const text = read(file);
+          const name = relative(out, file);
+          return [
+            text.includes('data-action="nav:launch"') && `${name} offers the javascript: menu url in the File menu`,
+            text.includes("#ZgotmplZ") && `${name} renders a #ZgotmplZ href`,
+            /alert\(|msgbox\(/.test(text) && `${name} carries a menu or social url that runs script`,
+          ];
+        }),
         ...[
           'href="/sub/files/" data-launcher="files"',
           'href="/sub/notes/" data-launcher="notes"',
@@ -238,7 +266,6 @@ const SITES: Record<string, SiteSpec> = {
           'src="/sub/grace.png"',
           'src="/sub/hopper.png"',
         ].map((want) => !html.includes(want) && `sponsors/index.html lacks ${want}`),
-        /href="javascript:/i.test(html) && "sponsors/index.html links the javascript: menu url",
         ...[
           'href="/sub/de/files/" data-launcher="files"',
           'href="/sub/de/notes/" data-launcher="notes"',
@@ -1011,10 +1038,13 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
     },
   },
   // Config, data, and front matter that the theme rejects. Each mistake
-  // warns, and the build falls back to the default it replaces.
+  // warns, and the build falls back to the default it replaces. The urls
+  // site checks a params.social url that runs script, because
+  // params.social here is a string.
   misconfigured: {
     files: {
       "hugo.toml": `${BARE}[params]
+  repoUrl = "javascript:alert(1)"
   social = "jane"
 [params.author]
   born = "Jan 1990"
@@ -1034,6 +1064,10 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
   identifier = "ghost"
   name = "Ghost"
   pageRef = "/ghost"
+[[menu.main]]
+  identifier = "script"
+  name = "Script"
+  url = "javascript:alert(1)"
 `,
       "data/projects.yaml": "- name: named-project\n  updated: last week\n- description: nameless-project\n",
       "content/cv.md": page("CV", "layout = 'cv'\n"),
@@ -1051,6 +1085,8 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
       /params\.author\.born "Jan 1990" is not a date/,
       /the data\/projects entry "named-project" sets updated to "last week"/,
       /the menu\.main entry "Ghost" points at no page in "en"/,
+      /the menu entry "Script" links a javascript: url, which the theme leaves out/,
+      /params\.repoUrl "javascript:alert\(1\)" is not an http or https address/,
       /\/cv\/ uses layout cv but sets no pdf /,
     ],
     check: (out) => {
@@ -1065,6 +1101,9 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
         !home.includes('data-up-window="trash"') && "index.html drops the Trash when params.desktop.trash is true",
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
         home.includes('data-launcher="ghost"') && "index.html docks the menu entry whose pageRef finds no page",
+        home.includes('data-launcher="script"') && "index.html docks the menu entry with a javascript: url",
+        home.includes('data-action="dlg:github"') && "index.html offers View source for a javascript: params.repoUrl",
+        /javascript:/i.test(runtime(out, "en")) && "js/runtime.en.*.js carries a javascript: url",
         home.includes("jane") && "index.html renders the malformed params.social",
         home.includes("Jan 1990") && "index.html renders the malformed params.author.born",
         home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",

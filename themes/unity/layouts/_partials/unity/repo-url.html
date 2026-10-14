@@ -1,0 +1,20 @@
+{{- /*
+  The site's params.repoUrl, which Help > View source links, or "" when
+  the site sets none. Only an http or https address passes. Any other
+  value makes the build warn and returns "", which leaves View source out
+  of the Help menu, because the View source dialog links the url from a
+  script. unity/top-panel/menus.html and unity/ui/runtime.html both read
+  it here, so the row and the dialog agree.
+
+  It reads nothing from the page, so call it through partialCached.
+*/ -}}
+{{- $url := "" -}}
+{{- with site.Params.repoUrl -}}
+  {{- $s := printf "%v" . -}}
+  {{- if findRE `^(?i)https?:` $s 1 -}}
+    {{- $url = $s -}}
+  {{- else -}}
+    {{- warnf "unity: params.repoUrl %q is not an http or https address, so the Help menu leaves out View source." $s -}}
+  {{- end -}}
+{{- end -}}
+{{- return $url -}}

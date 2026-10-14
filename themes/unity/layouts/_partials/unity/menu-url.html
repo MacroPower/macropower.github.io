@@ -15,19 +15,24 @@
   html/template keeps only the http, https, and mailto schemes in an href
   and replaces any other with #ZgotmplZ. The site's own config names the
   url, so a url with another scheme, such as tel: or sms:, comes back
-  marked safe. A javascript:, vbscript:, or data: url stays a plain
-  string, because each one runs or embeds content in the page, and
-  html/template still replaces it.
+  marked safe. A javascript:, vbscript:, or data: url returns "" with a
+  warning instead, because the panel's script navigates to each url that
+  unity/site-pages.html publishes, outside html/template's reach. Both
+  callers render through partialCached, so the warning fires once per
+  menu in each language.
 */ -}}
 {{- $u := "" -}}
+{{- $scheme := partial "unity/ui/script-scheme.html" (.MenuConfig.URL | default "") -}}
 {{- with .Page -}}
   {{- $u = .RelPermalink -}}
+{{- else with $scheme -}}
+  {{- warnidf "unity-menu-scheme" "unity: the menu entry %q links a %s: url, which the theme leaves out." $.Name . -}}
 {{- else with .MenuConfig.URL -}}
   {{- $u = . -}}
   {{- $parsed := urls.Parse . -}}
   {{- if not (or $parsed.IsAbs $parsed.Host) -}}
     {{- $u = partial "unity/markup/site-url.html" (dict "path" . "lang" true) -}}
-  {{- else if and $parsed.Scheme (not (in (slice "javascript" "vbscript" "data") $parsed.Scheme)) -}}
+  {{- else if $parsed.Scheme -}}
     {{- $u = safeURL . -}}
   {{- end -}}
 {{- end -}}

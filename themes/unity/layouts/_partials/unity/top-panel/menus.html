@@ -48,7 +48,7 @@
 )) }}
 
 {{- $helpExtras := slice -}}
-{{- with site.Params.repoUrl -}}
+{{- with partialCached "unity/repo-url.html" site -}}
   {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "view_source") "action" "dlg:github") -}}
 {{- end -}}
 {{- /* The icon vault is a hidden page, so offer it only when the site
@@ -58,7 +58,8 @@
 {{- end -}}
 {{- /* The site's menu.help entries close the menu as links, by weight. An
      entry whose pageRef names no page in this language has no address,
-     so it stays out. */ -}}
+     so it stays out, and so does an entry whose url unity/menu-url.html
+     refuses. */ -}}
 {{- $helpLinks := slice -}}
 {{- range $entry := site.Menus.help -}}
   {{- with partial "unity/menu-url.html" $entry -}}

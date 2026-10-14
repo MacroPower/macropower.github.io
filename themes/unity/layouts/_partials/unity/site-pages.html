@@ -87,10 +87,14 @@
   {{- $def := index $defaults $key | default dict -}}
   {{- /* An entry with neither a page nor a url drops out with a warning.
         A link to the home page in its place would match every page's
-        URL under the default prefix match. */ -}}
+        URL under the default prefix match. An entry whose url
+        unity/menu-url.html refuses drops out too, and that partial has
+        warned about it. */ -}}
   {{- $u := partial "unity/menu-url.html" . -}}
   {{- if not $u -}}
-    {{- warnidf "unity-menu-unresolved" "unity: the menu.main entry %q points at no page in %q, so the desktop leaves it out. Check its pageRef %q, or give it a url." .Name site.Language.Name .PageRef -}}
+    {{- if not .MenuConfig.URL -}}
+      {{- warnidf "unity-menu-unresolved" "unity: the menu.main entry %q points at no page in %q, so the desktop leaves it out. Check its pageRef %q, or give it a url." .Name site.Language.Name .PageRef -}}
+    {{- end -}}
     {{- continue -}}
   {{- end -}}
   {{- $fallback := dict

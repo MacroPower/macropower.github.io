@@ -21,7 +21,7 @@
 {{- range (partialCached "unity/accents.html" . site.Language.Name).presets }}{{ $accents = $accents | append (dict "name" .name "label" .label) }}{{ end -}}
 {{- $site := dict
   "handle" (partialCached "unity/ui/author-handle.html" .)
-  "repo" (site.Params.repoUrl | default "")
+  "repo" (partialCached "unity/repo-url.html" site)
   "rss" $rss
   "hotspot" (site.Params.desktop.hotspot | default "personal-site")
   "nav" $nav
