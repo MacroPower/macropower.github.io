@@ -1,14 +1,16 @@
-# Projects shown on /projects/ (and searchable in the Dash). One entry per
-# repository. Every key but name is optional, though a tile without a url
-# opens nothing. language is free text;
-# the theme ships emblems for Go, Python, TypeScript, JavaScript, Rust,
-# Shell, C, HTML, Ruby, and Lua, and shows a generic emblem for the rest.
+# Projects shown on /projects/ and in the Dash, one entry per
+# repository. Every key but name is optional, and a tile without a url
+# opens nothing. language takes any name. The theme draws its own emblem
+# for Go, Python, TypeScript, JavaScript, Rust, Shell, C, HTML, Ruby, and
+# Lua, and a generic emblem for the rest. license takes a name such as
+# MIT, which the preview pane shows beside the stars and forks.
 - name: sample-cli
   description: A command-line tool that does one thing well.
   language: Go
   stars: 128
   forks: 9
   updated: "2024-05-20"
+  license: MIT
   topics:
     - cli
     - productivity
@@ -27,6 +29,7 @@
   stars: 17
   forks: 1
   updated: "2024-02-28"
+  license: Apache-2.0
   topics:
     - typescript
     - ui

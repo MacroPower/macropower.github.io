@@ -20,6 +20,33 @@ enableEmoji     = true
 # Hugo defaults this to the section with the most pages.
 mainSections = ["posts"]
 
+# Warning ids to silence. unity-menu-unresolved names a menu.main entry
+# whose pageRef finds no page in a language. unity-i18n-missing names
+# the keys that fall back to the theme's English, and only a site whose
+# default language is not English sees it.
+# ignoreLogs = ["unity-menu-unresolved", "unity-i18n-missing"]
+
+# A second language adds a language badge to the top panel. The badge
+# shows the first two letters of the language's key, and languageBadge
+# replaces them. Each language can also set its own wallpaper, accent,
+# accents, fontPreload, and markup.highlight.style. direction = "rtl"
+# mirrors the desktop for a right-to-left language.
+# [languages.en]
+#   weight = 1
+# [languages.ar]
+#   label     = "العربية"
+#   direction = "rtl"
+#   weight    = 2
+#   [languages.ar.params.desktop]
+#     languageBadge = "Ar"
+#     accent        = "green"
+
+# Hugo writes assets/jsconfig.json into the site each time it bundles
+# the theme's scripts. true stops it. Leave it unset if an editor or tsc
+# reads that file.
+# [build]
+#   noJSConfigInAssets = true
+
 [services.rss]
   # Maximum number of items in the RSS feed.
   limit = 10
@@ -39,7 +66,7 @@ mainSections = ["posts"]
 #   filename = "sitemap.xml"
 
 [permalinks]
-  # Optional; the theme works with any permalink shape.
+  # Optional. The theme works with any permalink pattern.
   posts = "/posts/:year/:month/:title/"
 
 # Hugo merges a theme's taxonomies and markup into a site only when the
@@ -91,12 +118,12 @@ mainSections = ["posts"]
     # email backs the Messages indicator's Compose button.
     email = "jane@example.org"
     # The terminal banner's title row and the focus line beneath it. Both
-    # optional; absent rows drop out of the banner. jobTitle is also the
-    # home page's JSON-LD jobTitle.
+    # are optional, and the banner leaves out each row the site does not
+    # set. jobTitle is also the home page's JSON-LD jobTitle.
     jobTitle = "Software Engineer"
     focus    = "Distributed Systems"
-    # Optional: the terminal banner's uptime is your age when set,
-    # otherwise the time since your first post.
+    # Optional. When set, the terminal banner's uptime is your age.
+    # Otherwise it counts from the oldest page with a date.
     # born = "1990-01-31"
 
   [params.desktop]
@@ -118,7 +145,7 @@ mainSections = ["posts"]
     # false stops the pages from preloading the theme's Ubuntu fonts, for
     # a custom.css that sets --up-font-sans and --up-font-mono to others.
     # fontPreload = false
-    # The corner watermark's lines; an empty list removes it.
+    # The corner watermark's lines. An empty list removes it.
     # label = ["jane/personal-site", "est. 2024"]
     # The Trash window's contents. A trailing slash marks a folder, and
     # false removes the Trash.
@@ -131,9 +158,9 @@ mainSections = ["posts"]
     # indicator, or add _partials/unity/indicators/<name>.html to the site
     # and name it here.
     # indicators = ["messages", "network", "sound", "battery", "clock", "user"]
-    # The network indicator's access points; the first starts connected.
+    # The network indicator's access points. The first starts connected.
     # networks = ["home-wifi", { name = "wg0", mono = true }]
-    # The network name the hotspot broadcasts once a visitor enables it.
+    # The network name the hotspot broadcasts after a visitor turns it on.
     # hotspot = "jane-laptop"
     # The owner's login on the lock screen, the user menu, and the post
     # sign-offs. user defaults to the author's first name, lowercased.
@@ -150,7 +177,7 @@ mainSections = ["posts"]
     # Put each post's whole body in the feed instead of its summary.
     # feedFullContent = true
     # Open each post with a table of contents. A post's toc front matter
-    # overrides this either way; the welcome post sets it.
+    # overrides this either way, and the welcome post sets it.
     # toc = true
     # The taxonomies behind the blog's lenses and post chips. Without
     # category, the blog reads categories, or tags on a site that has tags
@@ -200,8 +227,12 @@ mainSections = ["posts"]
   # Social links: terminal banner rows, JSON-LD sameAs, and the home
   # page's rel="me" links. `short` overrides the terminal label. A
   # "github" entry also powers the sponsors page's sponsor button and
-  # the projects sidebar's GitHub link, and a "twitter" entry becomes
-  # the twitter:site card metadata.
+  # the projects sidebar's GitHub link, and a "twitter" or "x" entry
+  # becomes the twitter:site card metadata. A table of name = "url"
+  # pairs, which lists the entries by name, can replace the list:
+  # [params.social]
+  #   github   = "https://github.com/jane"
+  #   mastodon = "https://mastodon.social/@jane"
 
   [[params.social]]
     name = "github"
@@ -225,15 +256,15 @@ mainSections = ["posts"]
 # it starts with the baseURL's path. An entry whose pageRef finds no page
 # and that sets no url drops out with a warning. List unity-menu-unresolved
 # in ignoreLogs to silence it.
-# Optional [menu.main.params]:
-#   icon      — launcher artwork under the theme's assets/unity/icons/
-#   match     — "exact" or "prefix" URL matching for active state
-#   kw        — Dash search keywords
-#   dashLabel — Dash tile label override
-#   dashIcon  — Dash tile icon override
-#   launcher  — false keeps the page off the dock (still in the Dash);
-#               "running" docks it only while it is the current page
-#   dash      — false keeps the page out of the Dash
+#
+# Each entry can set these [menu.main.params]. icon names an SVG under
+# assets/unity/icons/, such as "launcher/cv", and the site can add its
+# own there. match = "exact" marks the tile current only on the entry's
+# own URL, and "prefix", the default, also on every URL under it. kw
+# holds the words the Dash search matches. dashLabel and dashIcon
+# replace the Dash tile's label and icon. launcher = false keeps the
+# page off the dock and the File menu, and launcher = "running" docks
+# it only while it is open. dash = false keeps the page out of the Dash.
 [menu]
   # Renames the Home tile, which keeps its icon and exact match.
   # [[menu.main]]
@@ -280,9 +311,9 @@ mainSections = ["posts"]
       launcher = false
 
   # menu.help adds links to the end of the top panel's Help menu, by
-  # weight, for pages every page must reach but the dock should not hold,
-  # such as a privacy notice or an imprint. pageRef and url resolve the
-  # same way as in menu.main.
+  # weight. It suits pages that every page must reach but the dock
+  # should not hold, such as a privacy notice or an imprint. pageRef and
+  # url resolve the same way as in menu.main.
   [[menu.help]]
     name    = "Privacy"
     pageRef = "/privacy"
