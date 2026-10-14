@@ -26,7 +26,7 @@
               "chips" (slice (lower $term))
               "date" .Count) }}
         {{- else }}
-          <div class="up-post-empty">{{ partial "unity/ui/t" (slice "no_terms_yet" (dict "Plural" (lower $title))) }}</div>
+          <div class="up-post-empty">{{ partial "unity/ui/t" (slice "no_terms_yet" (dict "Plural" $title)) }}</div>
         {{- end }}
       </section>
       {{ partial "unity/page/empty-pane.html" (dict

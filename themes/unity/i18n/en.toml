@@ -72,14 +72,16 @@ other = "Date"
 other = "sorted descending"
 [no_posts_match]
 other = "No posts match."
+# A taxonomy page without terms. {{ .Plural }} is the page's title.
 [no_terms_yet]
-other = "No {{ .Plural }} yet."
+other = "{{ .Plural }}: none yet."
 [posts_count]
 one = "{{ .Count }} post"
 other = "{{ .Count }} posts"
+# A term's page, such as a tag's. {{ .Tag }} is the term, shown as #name.
 [posts_tagged]
-one = "{{ .Count }} post tagged"
-other = "{{ .Count }} posts tagged"
+one = "{{ .Count }} post tagged {{ .Tag }}."
+other = "{{ .Count }} posts tagged {{ .Tag }}."
 [contents]
 other = "Contents"
 [back_to_all_posts]

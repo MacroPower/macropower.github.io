@@ -25,8 +25,14 @@
           <h1 class="up-reader-title">{{ $title }}</h1>
           <div class="up-reader-body">
             {{ .Content }}
-            <p>{{ partial "unity/ui/t" (slice "posts_tagged" (len .Pages)) }}
-              <span class="up-reader-chip">#{{ lower $title }}</span>.</p>
+            {{- /* The translation holds the whole sentence, so it sets the
+                  word order and punctuation around the chip. Translations
+                  are text, so the template passes a NUL as {{ .Tag }},
+                  escapes the sentence, and then replaces the NUL with the
+                  chip's markup. */}}
+            {{- $chip := printf `<span class="up-reader-chip">#%s</span>` (lower $title | htmlEscape) }}
+            {{- $tagged := partial "unity/ui/t" (slice "posts_tagged" (dict "Count" (len .Pages) "Tag" "\x00")) | htmlEscape }}
+            <p>{{ replace $tagged "\x00" $chip | safeHTML }}</p>
           </div>
           <div class="up-reader-signoff">— {{ partial "unity/ui/term-prompt.html" (dict "path" "~") }} grep -l "{{ lower $title }}" {{ with partialCached "unity/blog-section.html" . }}{{ .Section }}{{ else }}posts{{ end }}/*.md</div>
         </div>

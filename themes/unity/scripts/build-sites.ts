@@ -474,6 +474,34 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
         && "posts/one/index.html lacks the #intro chip",
     ],
   },
+  // Tag pages and an empty taxonomy in English and in a German
+  // translation that puts the tag first. Each sentence comes whole from
+  // the translation, and a taxonomy's title keeps its case.
+  terms: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]\n  weight = 1\n[languages.de]\n  weight = 2\n`,
+      "i18n/de.toml": `[posts_tagged]
+one = "{{ .Tag }}: {{ .Count }} Beitrag"
+other = "{{ .Tag }}: {{ .Count }} Beiträge"
+[no_terms_yet]
+other = "{{ .Plural }}: noch keine."
+`,
+      "content/one.md": page("One", "tags = ['intro', 'R&D']\n"),
+      "content/two.md": page("Two", "tags = ['intro']\n"),
+      "content/one.de.md": page("Eins", "tags = ['intro']\n"),
+      "content/categories/_index.de.md": page("Kategorien"),
+    },
+    check: (out) => {
+      const want: [file: string, text: string][] = [
+        ["tags/intro/index.html", '<p>2 posts tagged <span class="up-reader-chip">#intro</span>.</p>'],
+        ["tags/rd/index.html", '<p>1 post tagged <span class="up-reader-chip">#r&amp;d</span>.</p>'],
+        ["de/tags/intro/index.html", '<p><span class="up-reader-chip">#intro</span>: 1 Beitrag</p>'],
+        ["categories/index.html", ">Categories: none yet.<"],
+        ["de/categories/index.html", ">Kategorien: noch keine.<"],
+      ];
+      return want.map(([file, text]) => !read(join(out, file)).includes(text) && `${file} lacks ${text}`);
+    },
+  },
   // A non-English default language whose translation covers two keys.
   // The build must say so, and the other strings, in templates and
   // scripts alike, must fall back to English.
