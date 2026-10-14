@@ -108,7 +108,7 @@
     <h2>{{ partial "unity/ui/t" "links" }}</h2>
     <ul>
       {{- range $socials }}
-      <li><a href="{{ .url }}">{{ .label }}: {{ .display }}</a></li>
+      <li><a href="{{ .url }}" rel="me">{{ .label }}: {{ .display }}</a></li>
       {{- end }}
     </ul>
     <nav aria-label="{{ partial "unity/ui/t" "site" }}">

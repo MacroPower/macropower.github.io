@@ -175,10 +175,11 @@ mainSections = ["posts"]
   #     "midi/ah-vous-dirai-je.mid",
   #   ]
 
-  # Social links: terminal banner rows and JSON-LD sameAs. `short`
-  # overrides the terminal label. A "github" entry also powers the
-  # sponsors page's sponsor button and the projects sidebar's GitHub link;
-  # a "twitter" entry becomes the twitter:site card metadata.
+  # Social links: terminal banner rows, JSON-LD sameAs, and the home
+  # page's rel="me" links. `short` overrides the terminal label. A
+  # "github" entry also powers the sponsors page's sponsor button and
+  # the projects sidebar's GitHub link, and a "twitter" entry becomes
+  # the twitter:site card metadata.
 
   [[params.social]]
     name = "github"

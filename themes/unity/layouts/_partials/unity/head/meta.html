@@ -11,6 +11,11 @@
   that the home page gives them, so search engines read one site and one
   person.
 
+  The home page links each params.social profile with rel=me, which
+  Mastodon and IndieAuth read to verify that the profile and the site
+  share an owner. The links sit in the head, so either home layout
+  carries them.
+
   Front matter: description, images and imageAlt (see
   unity/page-images.html), noindex, and canonicalURL, which points the
   canonical link at the original of a syndicated post.
@@ -123,7 +128,10 @@
 {{- end }}
 {{- if .IsHome }}
 {{- $sameAs := slice }}
-{{- range partialCached "unity/socials.html" . }}{{ $sameAs = $sameAs | append .url }}{{ end }}
+{{- range partialCached "unity/socials.html" . }}
+<link rel="me" href="{{ .url }}">
+{{- $sameAs = $sameAs | append .url }}
+{{- end }}
 {{- $website := merge $websiteRef (dict
   "@type" "WebSite"
   "name" (or site.Title $title)

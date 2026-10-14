@@ -107,6 +107,9 @@ const SITES: Record<string, SiteSpec> = {
         // of every page's HTML.
         read(join(out, "about/index.html")).includes("<linearGradient") && "about/index.html inlines gradient art",
         ...iconImages(out).filter((src) => !isSvgFile(join(out, src))).map((src) => `${src} is not a standalone SVG`),
+        // The home's social links, which Mastodon and IndieAuth read.
+        !home.includes('<link rel="me" href="https://github.com/jane">') && "index.html's head lacks a rel=me GitHub link",
+        !home.includes('<a href="https://github.com/jane" rel="me">') && "index.html's GitHub link lacks rel=me",
         // Nothing a Content Security Policy without 'unsafe-inline' blocks.
         ...htmlFiles(out).flatMap((file) => {
           const html = read(file);
@@ -827,10 +830,16 @@ mainSections = ["posts"]
     },
   },
   // A home page in a plain window instead of the terminal. The Dash and
-  // the shortcuts dialog drop the terminal with it.
+  // the shortcuts dialog drop the terminal with it. Its head must still
+  // link the social profiles with rel=me.
   homepage: {
     files: {
-      "hugo.toml": `${BARE}[params.home]\n  layout = "page"\n`,
+      "hugo.toml": `${BARE}[params.home]
+  layout = "page"
+[[params.social]]
+  name = "mastodon"
+  url = "https://mastodon.example/@jane"
+`,
       "content/_index.md": page("Welcome"),
     },
     check: (out) => {
@@ -843,6 +852,7 @@ mainSections = ["posts"]
         !tile.includes('class="up-dash-tile-label">Home<') && "the Dash does not label the home page Home",
         tile.includes("shell") && "the home page's Dash tile carries shell keywords",
         !/terminal:(?:!1|false)\b/.test(runtime(out, "en")) && "UP_SITE does not say the site lacks the terminal",
+        !home.includes('<link rel="me" href="https://mastodon.example/@jane">') && "index.html lacks a rel=me Mastodon link",
       ];
     },
   },
