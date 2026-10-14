@@ -1,0 +1,14 @@
+{{- /*
+  Returns the image turned upright by its Exif orientation, or the image
+  itself when the tag does not turn it. Browsers turn an image by the
+  tag, but every copy that Hugo writes drops it, so a copy, a width, or
+  a height must come from the upright image. The guard keeps Hugo from
+  writing a copy of an image that is already upright.
+
+  Context: an image resource that Hugo can process.
+*/ -}}
+{{- $img := . -}}
+{{- if and (reflect.IsImageResourceWithMeta .) (gt .Meta.Orientation 1) -}}
+  {{- $img = .Filter images.AutoOrient -}}
+{{- end -}}
+{{- return $img -}}

@@ -584,7 +584,10 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
   // that the theme shares, a narrower one that front matter names with a
   // query, a remote one, and the site's default. Each image Hugo can read
   // must declare its size right after its og:image, and each alt text
-  // must describe only its own image.
+  // must describe only its own image. The Exif orientation of turned's
+  // and portrait's images turns each a quarter, as a phone photo's does.
+  // Each page must share a published upright copy, which for turned is
+  // also 1200 pixels wide.
   share: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -597,6 +600,10 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       "content/posts/wide/feature.png": png(2400, 1200),
       "content/posts/narrow/index.md": page("Narrow", "images = ['card.png?v=2']\n"),
       "content/posts/narrow/card.png": png(600, 315),
+      "content/posts/turned/index.md": page("Turned"),
+      "content/posts/turned/feature.png": png(2000, 1500, { orientation: 6 }),
+      "content/posts/portrait/index.md": page("Portrait", "images = ['photo.png']\n"),
+      "content/posts/portrait/photo.png": png(600, 450, { orientation: 6 }),
       "content/posts/remote.md": page("Remote", "images = ['https://cdn.example.org/card.png']\n"),
       "content/about.md": page("About", "imageAlt = 'A picture the page lacks'\n"),
     },
@@ -606,6 +613,15 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
       const wide = html("posts/wide");
       const copy = shareImages(wide)[0];
       const copyPath = copy?.url.replace("https://example.org/", "") ?? "";
+      // Whether the page shares only a published copy of its image that
+      // is width by height, in its tags and in the file.
+      const upright = (name: string, width: number, height: number): boolean => {
+        const images = shareImages(html(name));
+        const path = images[0]?.url.replace("https://example.org/", "") ?? "";
+        return images.length === 1 && new RegExp(`^${name}/\\w+_hu_\\w+\\.png$`).test(path) && existsSync(join(out, path))
+          && isDeepStrictEqual([images[0]?.width, images[0]?.height], [width, height])
+          && isDeepStrictEqual(pngSize(join(out, path)), [width, height]);
+      };
       return [
         (!/^posts\/wide\/feature_.*\.png$/.test(copyPath) || !existsSync(join(out, copyPath)))
           && "posts/wide/ does not share a published copy of its feature image",
@@ -615,6 +631,8 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
         !isDeepStrictEqual(jsonld(wide).image, [copy?.url]) && "posts/wide/'s JSON-LD image is not the shared copy's URL",
         !shares("posts/narrow", [{ url: "https://example.org/posts/narrow/card.png?v=2", width: 600, height: 315 }])
           && "posts/narrow/ does not share its card at its own size and URL",
+        !upright("posts/turned", 1200, 1600) && "posts/turned/ does not share a 1200x1600 upright copy of its feature image",
+        !upright("posts/portrait", 450, 600) && "posts/portrait/ does not share a 450x600 upright copy of its photo",
         !shares("posts/remote", [{ url: "https://cdn.example.org/card.png" }])
           && "posts/remote/ declares a size or alt text for an image Hugo cannot read",
         !shares("about", [{ url: "https://example.org/img/card.png", width: 1200, height: 630, alt: "A card for the whole site" }])
@@ -655,11 +673,6 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
         tiny: ["", false],
         turned: ["turned_hu.png 800w, turned.png 1000w", true],
       };
-      // A PNG's width and height, from its IHDR chunk.
-      const size = (url: string): number[] => {
-        const head = readFileSync(join(out, url));
-        return [head.readUInt32BE(16), head.readUInt32BE(20)];
-      };
       const turnedCopy = attr("turned", "srcset").split(" ")[0] ?? "";
       const feed = read(join(out, "index.xml"));
       return [
@@ -677,7 +690,7 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
         }),
         (attr("turned", "width") !== "1000" || attr("turned", "height") !== "2000")
           && "turned.png's width and height do not follow its orientation",
-        (!turnedCopy || !existsSync(join(out, turnedCopy)) || !isDeepStrictEqual(size(turnedCopy), [800, 1600]))
+        (!turnedCopy || !existsSync(join(out, turnedCopy)) || !isDeepStrictEqual(pngSize(join(out, turnedCopy)), [800, 1600]))
           && "turned.png's 800w copy is not a published 800x1600 image",
         !feed.includes("src=&#34;https://example.org/posts/shots/wide.png&#34;") && "index.xml does not show the original wide.png",
         /srcset|\.webp/.test(feed) && "index.xml lists the WebP copies",
@@ -1963,6 +1976,12 @@ function png(width: number, height: number, { fill = "black", stored = false, or
     chunk("IDAT", pixels),
     chunk("IEND", Buffer.alloc(0)),
   ]);
+}
+
+// A PNG file's width and height, from its IHDR chunk.
+function pngSize(file: string): number[] {
+  const head = readFileSync(file);
+  return [head.readUInt32BE(16), head.readUInt32BE(20)];
 }
 
 // A share image as a built page's Open Graph tags describe it.

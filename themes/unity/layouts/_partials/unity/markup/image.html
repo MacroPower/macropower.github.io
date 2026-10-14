@@ -6,10 +6,10 @@
   that matches neither resolves under the site's baseURL (see
   site-url.html). In absolute mode, any other relative one resolves
   against the page's permalink. Raster images Hugo can read get width
-  and height. Browsers turn the original by its Exif orientation, but
-  Hugo's copies drop the tag, so the width, height, and copies all come
-  from an oriented image. The other keys are empty when they do not
-  apply.
+  and height. Browsers turn the original by its Exif orientation, so
+  the width, height, and copies all come from the upright image that
+  unity/upright-image.html returns. The other keys are empty when they
+  do not apply.
 
   A JPEG, PNG, or WebP image also gets a srcset, and src keeps naming
   the original. The partial converts a JPEG or PNG to WebP only when
@@ -31,10 +31,7 @@
   {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
     {{- $src = cond $.absolute .Permalink .RelPermalink -}}
     {{- if reflect.IsImageResourceProcessable . -}}
-      {{- $img := . -}}
-      {{- if and (reflect.IsImageResourceWithMeta .) (gt .Meta.Orientation 1) -}}
-        {{- $img = .Filter images.AutoOrient -}}
-      {{- end -}}
+      {{- $img := partial "unity/upright-image.html" . -}}
       {{- $out = merge $out (dict "width" $img.Width "height" $img.Height) -}}
       {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
         {{- /* $full is the srcset's full-width candidate, and $format is

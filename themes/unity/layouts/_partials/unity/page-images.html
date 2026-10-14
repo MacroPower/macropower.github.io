@@ -7,11 +7,14 @@
   or thumbnail stands in, and otherwise the first of params.images.
 
   Each url is absolute. A raster image that Hugo can read gets its width
-  and height, and a JPEG, PNG, or WebP wider than $maxWidth gives way to
-  a copy that wide, the width Meta recommends for share images. Any
-  other image has a width and height of 0. The first image's alt is the
-  page's imageAlt when the image is the page's own, and params.imageAlt
-  when it is the site's default. Every other alt is empty.
+  and height. One that its Exif orientation turns gives way to an
+  upright copy, which shows upright whether or not a share preview
+  reads the tag. A JPEG, PNG, or WebP wider than $maxWidth then gives
+  way to a copy that wide, the width Meta recommends for share images.
+  Any other image has a width and height of 0. The first image's alt is
+  the page's imageAlt when the image is the page's own, and
+  params.imageAlt when it is the site's default. Every other alt is
+  empty.
 
   Context: the page.
 */ -}}
@@ -47,9 +50,9 @@
   {{- $share := dict "url" .url "width" 0 "height" 0 "alt" (cond (eq $i 0) ($alt | default "") "") -}}
   {{- with .image -}}
     {{- if reflect.IsImageResourceProcessable . -}}
-      {{- $copy := . -}}
-      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt .Width $maxWidth) -}}
-        {{- $copy = .Resize (printf "%dx" $maxWidth) -}}
+      {{- $copy := partial "unity/upright-image.html" . -}}
+      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt $copy.Width $maxWidth) -}}
+        {{- $copy = $copy.Resize (printf "%dx" $maxWidth) -}}
       {{- end -}}
       {{- /* Swap in the copy's permalink, keeping the entry's query and
             fragment. */ -}}
