@@ -1,5 +1,6 @@
 // This module parses main.css once for the stylesheet's tests, so each
-// test reads the rules and tokens instead of parsing the file again.
+// test reads the rules and tokens instead of parsing the file again. It
+// also reads the accent presets from the theme's hugo.toml.
 // tsconfig.test.json type-checks this module. Hugo never bundles it,
 // because no entrypoint imports it, and Vitest never runs it, because it
 // is not a *.test.ts file.
@@ -7,6 +8,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { parse as parseToml, TomlDate, type TomlTable, type TomlValue } from "smol-toml";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -107,3 +110,34 @@ function parse(): { rules: readonly Rule[]; declarations: readonly Declaration[]
 // Every rule in source order, one entry per selector, and every
 // declaration in source order.
 export const { rules, declarations } = parse();
+
+export interface AccentPreset {
+  // The preset's key under params.desktop.accents.
+  readonly name: string;
+  // The preset's colors as hugo.toml writes them. A key that the preset
+  // leaves out is undefined.
+  readonly color: string | undefined;
+  readonly light: string | undefined;
+  readonly dark: string | undefined;
+  readonly darker: string | undefined;
+}
+
+function isTable(value: TomlValue | undefined): value is TomlTable {
+  return typeof value === "object" && !Array.isArray(value) && !(value instanceof TomlDate);
+}
+
+const str = (value: TomlValue | undefined): string | undefined => (typeof value === "string" ? value : undefined);
+
+function presets(): readonly AccentPreset[] {
+  let table: TomlValue = parseToml(readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8"));
+  for (const key of ["params", "desktop", "accents"]) table = isTable(table) ? table[key] ?? {} : {};
+  if (!isTable(table)) return [];
+  // An entry that is not a table, such as false, removes a preset.
+  return Object.entries(table).flatMap(([name, p]) => isTable(p)
+    ? [{ name, color: str(p.color), light: str(p.light), dark: str(p.dark), darker: str(p.darker) }]
+    : []);
+}
+
+// The accent presets in the theme's hugo.toml, in the order it writes
+// them.
+export const accentPresets = presets();

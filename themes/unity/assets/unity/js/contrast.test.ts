@@ -1,14 +1,6 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { describe, expect, it } from "vitest";
 
-import { rules, type Rule } from "./testkit";
-
-const here = dirname(fileURLToPath(import.meta.url));
-
-const toml = readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8");
+import { accentPresets, rules, type Rule } from "./testkit";
 
 const isMore = (r: Rule): boolean => r.media.includes("prefers-contrast: more");
 const isForced = (r: Rule): boolean => r.media.includes("forced-colors: active");
@@ -93,14 +85,7 @@ interface Preset {
 
 // The dark shades of each accent preset, plus the internal accent
 // block's values, which paint a page whose site removes every preset.
-const presets: Preset[] = toml
-  .split(/^\s*(?=\[)/m)
-  .flatMap((section) => {
-    const name = /^\[params\.desktop\.accents\.(\w+)\]/.exec(section)?.[1];
-    const shade = (key: string): string | undefined =>
-      new RegExp(`^\\s*${key}\\s*=\\s*"(#[0-9a-f]{6})"`, "im").exec(section)?.[1];
-    return name ? [{ name, dark: shade("dark"), darker: shade("darker") }] : [];
-  });
+const presets: Preset[] = [...accentPresets];
 const fallback = rules.find((r) => r.selector === ":root" && r.decls.has("--up-accent-dark"))?.decls;
 presets.push({
   name: "fallback",
@@ -181,7 +166,7 @@ describe("contrast", () => {
         if (alpha === undefined) return [];
         return presets.flatMap((p) => {
           const hex = p[shade];
-          if (hex === undefined) return [`${p.name} has no ${shade} shade`];
+          if (hex === undefined || !/^#[0-9a-f]{6}$/i.test(hex)) return [`${p.name} has no #rrggbb ${shade} shade`];
           const under = rgb(hex);
           return contrast(over(WHITE, alpha, under), under) < 4.5 ? [`${selector} ${color} on ${p.name} ${shade}`] : [];
         });

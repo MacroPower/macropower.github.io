@@ -1,14 +1,6 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { describe, expect, it } from "vitest";
 
-import { rules, siteTokens } from "./testkit";
-
-const here = dirname(fileURLToPath(import.meta.url));
-
-const toml = readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8");
+import { accentPresets as presets, rules, siteTokens } from "./testkit";
 
 const accent = /var\(\s*--up-accent/;
 
@@ -36,15 +28,7 @@ function contrast(a: string, b: string): number {
   return (hi! + 0.05) / (lo! + 0.05);
 }
 
-// The theme's accent presets, as name, color, and light.
-const presets = toml
-  .split(/^\s*(?=\[)/m)
-  .flatMap((section) => {
-    const name = /^\[params\.desktop\.accents\.(\w+)\]/.exec(section)?.[1];
-    const color = /^\s*color\s*=\s*"(#[0-9a-f]{6})"/im.exec(section)?.[1];
-    const light = /^\s*light\s*=\s*"(#[0-9a-f]{6})"/im.exec(section)?.[1];
-    return name && color && light ? [{ name, color, light }] : [];
-  });
+const HEX = /^#[0-9a-f]{6}$/i;
 
 // The light surfaces under the rings that paint --up-accent: each stop of
 // the sidebar gradient and the content background.
@@ -90,12 +74,15 @@ describe("focus rings", () => {
     expect(onLight).toEqual([]);
     expect(presets.map((p) => p.name)).toEqual(expect.arrayContaining(["orange", "green", "aubergine", "blue"]));
     expect(surfaces.length).toBeGreaterThan(1);
-    const low = presets.flatMap(({ name, color, light }) => [
-      // The white ring sits on a selected row's fill, which starts at light.
-      ...(contrast(light, "#ffffff") < 3 ? [`${name}: white on light ${light}`] : []),
-      // The --up-accent ring sits on the light surfaces.
-      ...surfaces.filter((s) => contrast(color, s) < 3).map((s) => `${name}: color ${color} on ${s}`),
-    ]);
+    const low = presets.flatMap(({ name, color, light }) => {
+      if (!color || !HEX.test(color) || !light || !HEX.test(light)) return [`${name}: color ${color} or light ${light} is not #rrggbb`];
+      return [
+        // The white ring sits on a selected row's fill, which starts at light.
+        ...(contrast(light, "#ffffff") < 3 ? [`${name}: white on light ${light}`] : []),
+        // The --up-accent ring sits on the light surfaces.
+        ...surfaces.filter((s) => contrast(color, s) < 3).map((s) => `${name}: color ${color} on ${s}`),
+      ];
+    });
     expect(low).toEqual([]);
   });
 });
