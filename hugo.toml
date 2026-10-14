@@ -41,6 +41,7 @@ mainSections = ["posts"]
   # Default share image for Open Graph / Twitter cards (a screenshot of
   # the desktop home page); pages can override via front-matter images.
   images = ["/img/og-card.png"]
+  imageAlt = "Jacob Colvin's site as an Ubuntu Unity desktop, with a terminal showing his profile beside ASCII art"
 
   # Source repository for this site (linked from the "View source" dialog).
   repoUrl = "https://github.com/MacroPower/macropower.github.io"
