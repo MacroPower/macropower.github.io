@@ -241,7 +241,7 @@ other = "Devices"
 
 # Solitaire
 [solitaire_canvas]
-other = "Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: N new game, Z undo, H hint, Space draw, A finish, M sound."
+other = "Klondike solitaire. Drag cards with the pointer, or click a card to send it home. Keys: arrows move the cursor, Enter or Space holds and places cards, S draw, P play the hint, H hint, Z undo, N new game, A finish, D draw mode, M sound."
 [solitaire_needs_js]
 other = "Solitaire needs JavaScript to deal the cards."
 [game_controls]
@@ -998,12 +998,18 @@ other = "Solitaire"
 other = "Click a card to send it to the first place it fits."
 [js_shortcuts_move_cards]
 other = "Move a card or a run"
+[js_shortcuts_move_cursor]
+other = "Move the cursor between piles and along a column"
+[js_shortcuts_hold_place]
+other = "Hold or place the cards at the cursor"
 [js_shortcuts_draw_stock]
 other = "Draw from the stock"
 [js_shortcuts_undo]
 other = "Undo"
 [js_shortcuts_show_hint]
 other = "Show a hint (again for the next one)"
+[js_shortcuts_play_hint]
+other = "Play the hint, or the best move when no hint shows"
 [js_shortcuts_new_game]
 other = "New game"
 [js_shortcuts_auto_finish]
@@ -1159,5 +1165,31 @@ other = "MOVES {moves}"
 other = "YOU WIN!"
 [js_solitaire_banner_new_game]
 other = "NEW GAME"
+[js_solitaire_pile_stock]
+other = "Stock"
+[js_solitaire_pile_waste]
+other = "Waste"
+[js_solitaire_pile_foundation]
+other = "Foundation for {suit}"
+[js_solitaire_pile_column]
+other = "Column {column}"
+[js_solitaire_at_cards]
+other = "{pile}: {cards}."
+[js_solitaire_at_empty]
+other = "{pile}: empty."
+[js_solitaire_at_count]
+one = "{pile}: {n} card."
+other = "{pile}: {n} cards."
+[js_solitaire_face_down]
+one = "{n} card face down."
+other = "{n} cards face down."
+[js_solitaire_holding]
+other = "Holding {cards}."
+[js_solitaire_put_back]
+other = "Put {cards} back."
+[js_solitaire_no_fit]
+other = "{card} does not fit there."
+[js_solitaire_nothing_to_hold]
+other = "No card here can move."
 [js_shell_reconnect]
 other = "Reconnect to the terminal"

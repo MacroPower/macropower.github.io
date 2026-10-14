@@ -66,9 +66,12 @@ const SECTIONS: readonly ShortcutSection[] = [
     hint: t("js_shortcuts_solitaire_hint"),
     rows: [
       { combos: [[t("js_shortcuts_drag")]], desc: t("js_shortcuts_move_cards"), gesture: true },
-      { combos: [["Space"], ["Enter"]], desc: t("js_shortcuts_draw_stock") },
+      { combos: [[t("js_shortcuts_arrows")]], desc: t("js_shortcuts_move_cursor") },
+      { combos: [["Space"], ["Enter"]], desc: t("js_shortcuts_hold_place") },
+      { combos: [["S"]], desc: t("js_shortcuts_draw_stock") },
       { combos: [["Z"], ["Ctrl", "Z"]], desc: t("js_shortcuts_undo") },
       { combos: [["H"]], desc: t("js_shortcuts_show_hint") },
+      { combos: [["P"]], desc: t("js_shortcuts_play_hint") },
       { combos: [["N"]], desc: t("js_shortcuts_new_game") },
       { combos: [["A"]], desc: t("js_shortcuts_auto_finish") },
       { combos: [["D"]], desc: t("js_shortcuts_switch_draw") },

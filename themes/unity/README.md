@@ -13,7 +13,7 @@ A personal-site Hugo theme styled after the Ubuntu 14.04 Unity desktop. Your pag
 - **Blog.** A Nautilus-style post list with filtering, sorting, search, category and series lenses, a focused post reader, and a posts-only RSS feed.
 - **Projects page.** An icon-grid file manager over a YAML data file or your GitHub repositories, with drag-to-reorder, rubber-band selection, and a preview pane.
 - **CV page.** An Evince-style PDF viewer (vendored pdf.js) with thumbnails, zoom, and print and source actions.
-- **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, and auto-complete. The rules are a tested, DOM-free module.
+- **Solitaire page.** Klondike on a pixel-art table with synthesized sound, undo, hints, auto-complete, and a keyboard cursor that plays every move. The rules are a tested, DOM-free module.
 - **Translations.** Every label, dialog, and notification goes through Hugo's i18n, and a string your translation lacks shows in English rather than empty. Dates and the calendar follow the page's language, post bodies lay out right to left where the language does, and a multilingual site gets a language indicator in the top panel.
 - **Markdown.** Heading anchors, GitHub-style alerts, build-time MathML math, and responsive images.
 - **Accessibility and print.** A skip link, real landmarks, keyboard focus that follows each window, and a print stylesheet that puts a post on plain paper without the desktop.

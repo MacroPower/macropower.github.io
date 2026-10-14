@@ -5,7 +5,8 @@
 // to chunky pixels. Cards own a "view" position that springs toward the
 // spot the layout assigns them, so every state change (a play, an undo, a
 // draw, the deal) animates without special cases. Session-only: nothing is
-// persisted, a reload deals a fresh game.
+// persisted, a reload deals a fresh game. The arrow keys steer a cursor
+// whose moves live in cursor.ts, which runs headless like the rules.
 //
 // DOM contract (unity/page/solitaire.html): [data-solitaire] root with
 // [data-sol-stage] (the sized area), [data-sol-canvas], [data-sol-live] (the
@@ -22,6 +23,9 @@ import {
 } from "./sprites";
 import { Sfx } from "./sound";
 import { isToolbarAction, type TableButton, type ToolbarAction } from "./controls";
+import {
+  clampCursor, cursorAction, moveCursor, startCursor, topOf, type Cursor, type Direction,
+} from "./cursor";
 import { locate, solve, type SolverMove } from "./solver";
 import { eventElement, focusedElement } from "../dom";
 
@@ -37,6 +41,8 @@ const HUD_ROW = 20;
 const MIN_W = TABLEAU_W + 8;
 const MIN_H = TABLEAU_Y + FAN_DOWN * 6 + FAN_UP_MIN * 12 + CARD_H + HUD_ROW + 4;
 const DRAG_THRESHOLD = 4;
+/** How far a run the keyboard holds rises off the table. */
+const HELD_LIFT = 4;
 
 const STOCK: Loc = { kind: "stock", pile: 0 };
 const WASTE: Loc = { kind: "waste", pile: 0 };
@@ -228,6 +234,13 @@ function cardName(card: Card): string {
   let hint: Hint | null = null;
   let hintCursor = 0;
   let hintT0 = 0;
+  /** The keyboard cursor, and whether the table shows it. A pointer press
+   *  hides it and parks it on the stock, so Space and Enter draw until an
+   *  arrow key moves it. */
+  let keyCursor: Cursor = startCursor(game);
+  let keyCursorShown = false;
+  /** The run the keyboard holds, named by the spot of its lead card. */
+  let held: Cursor | null = null;
   let startedAt = 0;
   let frozenElapsed = 0;
   let scoreShown = 0;
@@ -366,6 +379,7 @@ function cardName(card: Card): string {
    *  are left alone; the dragged run is skipped. */
   function sync(opts: { stagger?: (p: Placement) => number; animate?: boolean } = {}): void {
     computeLayout();
+    keyCursor = clampCursor(game, keyCursor);
     const animate = opts.animate ?? true;
     for (const p of placements) {
       if (press?.dragging && press.run.includes(p.card)) continue;
@@ -478,6 +492,8 @@ function cardName(card: Card): string {
     frozenElapsed = 0;
     scoreShown = 0;
     game = prebuilt ?? new Klondike(drawMode);
+    held = null;
+    keyCursor = startCursor(game);
     // Every card starts on the stock, face down, and the tableau deals out
     // row by row from there.
     const stock = slotPos(STOCK);
@@ -567,6 +583,7 @@ function cardName(card: Card): string {
     if (!card) return false;
     const record = game.move(from, index, to);
     if (!record) return false;
+    held = null;
     touch();
     clearHint();
     const landed = (): void => {
@@ -616,6 +633,7 @@ function cardName(card: Card): string {
       sfx.play("invalid");
       return false;
     }
+    held = null;
     touch();
     clearHint();
     if (record.type === "draw") {
@@ -637,6 +655,7 @@ function cardName(card: Card): string {
       sfx.play("invalid");
       return;
     }
+    held = null;
     clearHint();
     sfx.play("undo");
     sync();
@@ -666,6 +685,7 @@ function cardName(card: Card): string {
   function autoComplete(): void {
     if (autoRunning || won || !game.autoCompleteAvailable()) return;
     autoRunning = true;
+    held = null;
     clearHint();
     announce(t("js_solitaire_finishing"));
     const step = (): void => {
@@ -735,6 +755,102 @@ function cardName(card: Card): string {
   }
   let wobbleUntil = 0;
   let wobbleIds = new Set<number>();
+
+  /** P: play the hint on show, or the best play when no hint is. */
+  function playHint(): void {
+    if (autoRunning || won || dealing) return;
+    const next = hint ?? game.hints()[0];
+    if (!next) {
+      sfx.play("invalid");
+      announce(t("js_solitaire_no_moves"));
+      return;
+    }
+    if (next.type === "draw") draw();
+    else applyMove(next.from, next.index, next.to, "click");
+  }
+
+  // ---- keyboard cursor ----------------------------------------------------------
+
+  function pileName(loc: Loc): string {
+    switch (loc.kind) {
+      case "stock": return t("js_solitaire_pile_stock");
+      case "waste": return t("js_solitaire_pile_waste");
+      case "foundation": return t("js_solitaire_pile_foundation", { suit: suitName(itemAt(SUITS, loc.pile)) });
+      case "tableau": return t("js_solitaire_pile_column", { column: loc.pile + 1 });
+    }
+  }
+
+  function cardNames(run: readonly Card[]): string {
+    return run.map(cardName).join(", ");
+  }
+
+  /** The status line for the cursor: its pile, then the cards from the
+   *  cursor's card to the top of the pile. */
+  function describeCursor(): string {
+    const { loc, index } = keyCursor;
+    const pile = game.pile(loc);
+    const name = pileName(loc);
+    if (!pile.length) return t("js_solitaire_at_empty", { pile: name });
+    if (loc.kind === "stock") return tn("js_solitaire_at_count", pile.length, { pile: name });
+    const cards = t("js_solitaire_at_cards", { pile: name, cards: cardNames(pile.slice(index)) });
+    const down = pile.filter((c) => !c.faceUp).length;
+    return down ? `${cards} ${tn("js_solitaire_face_down", down)}` : cards;
+  }
+
+  function cursorVisible(): boolean {
+    return keyCursorShown && !dealing && !autoRunning && focusedElement() === canvas;
+  }
+
+  /** The arrow keys. */
+  function steer(dir: Direction): void {
+    if (dealing || autoRunning || won) return;
+    keyCursorShown = true;
+    keyCursor = moveCursor(game, keyCursor, dir);
+    announce(describeCursor());
+    requestFrame();
+  }
+
+  function dropHeld(run: readonly Card[]): void {
+    held = null;
+    sfx.play("place");
+    announce(t("js_solitaire_put_back", { cards: cardNames(run) }));
+    requestFrame();
+  }
+
+  /** Enter and Space: draw on the stock, hold the run at the cursor, or
+   *  place the held run on the cursor's pile. */
+  function activate(): void {
+    if (dealing || autoRunning) return;
+    keyCursorShown = true;
+    const action = cursorAction(game, keyCursor, held);
+    switch (action.type) {
+      case "draw":
+        draw();
+        break;
+      case "hold":
+        held = keyCursor;
+        clearHint();
+        sfx.play("pickup");
+        announce(t("js_solitaire_holding", { cards: cardNames(action.run) }));
+        break;
+      case "drop":
+        dropHeld(action.run);
+        break;
+      case "place":
+        if (!action.fits) {
+          sfx.play("invalid");
+          announce(t("js_solitaire_no_fit", { card: cardName(action.run[0]) }));
+        } else if (applyMove(action.from.loc, action.from.index, action.to, "click")) {
+          keyCursor = topOf(game, action.to);
+        }
+        break;
+      case "none":
+        sfx.play("invalid");
+        announce(t("js_solitaire_nothing_to_hold"));
+        break;
+    }
+    requestFrame();
+  }
 
   // ---- win ----------------------------------------------------------------------
 
@@ -1038,6 +1154,19 @@ function cardName(card: Card): string {
     pxRoundOutline(loCtx, x - 2, y - 2, w + 4, h + 4, 3, color);
   }
 
+  /** The area the cards from `spot` to the top of its pile cover, or the
+   *  pile's slot when the pile has no card there. */
+  function spotRect(spot: Cursor): { x: number; y: number; w: number; h: number } {
+    const pile = game.pile(spot.loc);
+    const lead = placementById.get(pile[spot.index]?.id ?? -1);
+    if (!lead) {
+      const pos = slotPos(spot.loc);
+      return { x: pos.x, y: pos.y, w: CARD_W, h: CARD_H };
+    }
+    const last = placementById.get(pile.at(-1)?.id ?? -1) ?? lead;
+    return { x: lead.x, y: lead.y, w: CARD_W, h: last.y + CARD_H - lead.y };
+  }
+
   function drawHints(now: number): void {
     if (!hint) return;
     const phase = reduceMotion() ? 1 : (Math.sin((now - hintT0) / 140) + 1) / 2;
@@ -1047,14 +1176,27 @@ function cardName(card: Card): string {
       drawHighlight(s.x, s.y, CARD_W, CARD_H, color);
       return;
     }
-    const run = game.runAt(hint.from, hint.index);
-    const lead = placementById.get(game.pile(hint.from)[hint.index]?.id ?? -1);
-    if (run && lead) {
-      const last = placementById.get(run.at(-1)?.id ?? -1) ?? lead;
-      drawHighlight(lead.x, lead.y, CARD_W, last.y + CARD_H - lead.y, color);
+    if (game.runAt(hint.from, hint.index)) {
+      const r = spotRect({ loc: hint.from, index: hint.index });
+      drawHighlight(r.x, r.y, r.w, r.h, color);
     }
     const target = pileRect(hint.to);
     drawHighlight(target.x, target.y, target.w, target.h, PAL.green);
+  }
+
+  /** The keyboard's rings: gold around the held run, and around the
+   *  cursor white, or green where the held run fits. */
+  function drawKeyCursor(lifts: ReadonlyMap<number, number>): void {
+    const liftAt = (spot: Cursor): number => lifts.get(game.pile(spot.loc)[spot.index]?.id ?? -1) ?? 0;
+    const heldRun = held ? game.runAt(held.loc, held.index) : null;
+    if (held && heldRun) {
+      const r = spotRect(held);
+      drawHighlight(r.x, r.y - liftAt(held), r.w, r.h, PAL.gold);
+    }
+    if (!cursorVisible()) return;
+    const fits = held && heldRun && !sameLoc(held.loc, keyCursor.loc) && game.canDrop(heldRun, keyCursor.loc);
+    const r = spotRect(keyCursor);
+    drawHighlight(r.x, r.y - liftAt(keyCursor), r.w, r.h, fits ? PAL.green : PAL.white);
   }
 
   function drawParticles(dt: number): void {
@@ -1226,22 +1368,27 @@ function cardName(card: Card): string {
     loCtx.drawImage(felt, 0, 0);
     drawSlots();
     {
-      // Static cards in layout order, skipping anything in flight or held.
+      // Static cards in layout order, skipping anything in flight or dragged.
       const flying = new Set(tweens.filter((t) => t.started).map((t) => t.id));
-      const held = new Set(press?.dragging ? press.run.map((c) => c.id) : []);
-      const hovered = new Set<number>();
-      if (hover && !press && !autoRunning) {
-        const run = game.runAt(hover.loc, hover.index);
-        if (run) for (const c of run) hovered.add(c.id);
-      }
-      // The hovered run lifts straight up; a rotation this small only
+      const dragged = new Set(press?.dragging ? press.run.map((c) => c.id) : []);
+      // How far each lifted card rises. The run under the pointer and the
+      // run under the keyboard cursor rise a little, and the run the
+      // keyboard holds rises more.
+      const lifts = new Map<number, number>();
+      const liftRun = (spot: Cursor, by: number): void => {
+        for (const c of game.runAt(spot.loc, spot.index) ?? []) lifts.set(c.id, by);
+      };
+      if (hover && !press && !autoRunning) liftRun(hover, 2);
+      if (held) liftRun(held, HELD_LIFT);
+      else if (cursorVisible()) liftRun(keyCursor, 2);
+      // The lifted runs rise straight up; a rotation this small only
       // shears the sprite's rows at the logical resolution.
       for (const p of placements) {
-        if (flying.has(p.card.id) || held.has(p.card.id)) continue;
+        if (flying.has(p.card.id) || dragged.has(p.card.id)) continue;
         const v = viewOf(p.card);
         const f = flipScale(p.card.id, now);
-        const lift = hovered.has(p.card.id) ? 2 : 0;
-        drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y - lift, 0, f.sx, 1);
+        const lift = lifts.get(p.card.id) ?? 0;
+        drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y - lift, 0, f.sx, lift === HELD_LIFT ? 2 : 1);
       }
       drawHints(now);
       if (focus === "draw-stock") {
@@ -1252,10 +1399,11 @@ function cardName(card: Card): string {
         const r = pileRect(dropTarget);
         drawHighlight(r.x, r.y, r.w, r.h, PAL.green);
       }
+      drawKeyCursor(lifts);
       const inFlight = tweens.filter((t) => t.started).sort((a, b) => a.z - b.z);
       for (const t of inFlight) {
         const p = placementById.get(t.id);
-        if (!p || held.has(t.id)) continue;
+        if (!p || dragged.has(t.id)) continue;
         const v = itemAt(views, t.id);
         const f = flipScale(t.id, now);
         drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y, 0, f.sx, 1);
@@ -1381,6 +1529,9 @@ function cardName(card: Card): string {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     sfx.unlock();
     canvas.focus({ preventScroll: true });
+    keyCursorShown = false;
+    held = null;
+    keyCursor = startCursor(game);
     const { x, y } = toLogical(e);
     pointerX = x;
 
@@ -1558,6 +1709,12 @@ function cardName(card: Card): string {
       case "n": confirmNewGame(); break;
       case "z": case "u": undo(); break;
       case "h": showHint(); break;
+      case "p": playHint(); break;
+      case "s": draw(); break;
+      case "arrowleft": steer("left"); break;
+      case "arrowright": steer("right"); break;
+      case "arrowup": steer("up"); break;
+      case "arrowdown": steer("down"); break;
       case "a": autoComplete(); break;
       case "m": toggleSound(); break;
       case "d": toggleDrawMode(); break;
@@ -1566,12 +1723,14 @@ function cardName(card: Card): string {
           if (banner) newGame();
           else skipCascade();
         } else {
-          draw();
+          activate();
         }
         break;
       case "escape":
         if (press) {
           onPointerCancel();
+        } else if (held) {
+          dropHeld(game.runAt(held.loc, held.index) ?? []);
         } else if (hint) {
           clearHint();
           requestFrame();
@@ -1612,6 +1771,12 @@ function cardName(card: Card): string {
   // The next frame reads the focused toolbar button and rings its twin.
   root.addEventListener("focusin", requestFrame);
   root.addEventListener("focusout", requestFrame);
+  // Focus from the Tab key shows the keyboard cursor at once. A pointer
+  // press focuses the canvas too, but onPointerDown hides the cursor right
+  // after, so it stays hidden until a key moves it.
+  canvas.addEventListener("focus", () => {
+    if (canvas.matches(":focus-visible")) keyCursorShown = true;
+  });
   root.querySelectorAll<HTMLButtonElement>("[data-sol-action]").forEach((el) => {
     el.addEventListener("click", () => {
       sfx.unlock();
