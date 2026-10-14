@@ -106,6 +106,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Post images and share images from a phone camera come out upright, with their upright width and height.
 - Menu urls keep the case and characters that your site wrote, and `tel:` and `sms:` urls keep their scheme. Each url resolves under your `baseURL` and the language's prefix, whether or not it starts with the `baseURL`'s path.
 - Sponsor `url`, `avatar`, and `sponsorUrl` values resolve to a file in the page's bundle, a file under `assets/`, or a path under your `baseURL`, so they work on a site served from a subdirectory.
+- A `%` that starts no escape in a Markdown link or image, such as `[sale](/50%off)`, renders as `%25`, the way Hugo renders it without the theme's render hooks, instead of failing the build.
 - A `menu.main` entry with the identifier `home` keeps the Home tile's icon, search words, and exact match for each param that it leaves out. The Home tile then shows as current only on the home page.
 - With `params.home.layout = "page"`, the Dash lists the home page as Home, and the keyboard shortcuts dialog leaves out the terminal's keys.
 - On a site that gives each language its own `baseURL`, the language menu leads to each language's host.

@@ -601,7 +601,9 @@ enableRobotsTXT = true
   // description, and the fallback one names the site by its host. The
   // lastBuildDate must follow the latest edit rather than the latest
   // post, and the feed's copyright must be plain text. The feed must also
-  // link the newer post's Spotify album in place of its player.
+  // link the newer post's Spotify album in place of its player. Each %
+  // that starts no escape in a link or an image must reach the page and
+  // the feed as %25.
   feed: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -609,11 +611,20 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
 `,
       "content/posts/old.md": page("Old", "date = 2024-01-01\nlastmod = 2024-06-01\n"),
       "content/posts/new.md": `${page("New", "date = 2024-03-01\n")}\n{{< spotify album 4aawyAB9vmqN3uQ7FjRGTy >}}\n`,
+      "content/posts/links.md": `${page("Links", "date = 2024-02-01\n")}\n[sale](https://example.com/50%off) ![sale](/x/50%zz.png)\n`,
+      "static/x/50%zz.png": "PNG",
     },
     check: (out) => {
       const channel = read(join(out, "index.xml")).split("<item>")[0]!;
       const feed = unescapeHTML(read(join(out, "index.xml")));
+      const links = read(join(out, "posts/links/index.html"));
       return [
+        ...['<a href="https://example.com/50%25off">', '<img src="/x/50%25zz.png"']
+          .filter((want) => !links.includes(want))
+          .map((want) => `posts/links/index.html lacks ${want}`),
+        ...['<a href="https://example.com/50%25off">', '<img src="https://example.org/x/50%25zz.png"']
+          .filter((want) => !feed.includes(want))
+          .map((want) => `index.xml lacks ${want}`),
         !channel.includes("<description>Recent posts on example.org</description>")
           && "index.xml's channel description does not name the untitled site by its host",
         !channel.includes("<lastBuildDate>Sat, 01 Jun 2024 ") && "index.xml's lastBuildDate ignores the latest lastmod",

@@ -10,13 +10,23 @@
   against the page's permalink, because a feed reader shows the item
   away from the page.
 
+  Go's URL parser rejects a destination with a % that starts no escape,
+  such as 50%off. The partial then escapes each such % as %25, as
+  Goldmark does for a link without a hook, and parses the result again.
+  A destination that the parser still rejects passes through as written.
+
   Args (dict): page     - the page whose links to resolve (.PageInner)
                dest     - the link destination
                absolute - true for a URL with scheme and host
 */ -}}
-{{- $u := urls.Parse .dest -}}
-{{- $href := $u.String -}}
-{{- if and $href (not $u.IsAbs) (not $u.Host) -}}
+{{- $p := try (urls.Parse .dest) -}}
+{{- if $p.Err -}}
+  {{- $p = try (urls.Parse (replaceRE "%25([0-9A-Fa-f]{2})" "%$1" (replace .dest "%" "%25"))) -}}
+{{- end -}}
+{{- $u := $p.Value -}}
+{{- $href := .dest -}}
+{{- with $u }}{{ $href = .String }}{{ end -}}
+{{- if and $u $href (not $u.IsAbs) (not $u.Host) -}}
   {{- $suffix := "" -}}
   {{- with $u.RawQuery }}{{ $suffix = printf "?%s" . }}{{ end -}}
   {{- with $u.EscapedFragment }}{{ $suffix = printf "%s#%s" $suffix . }}{{ end -}}

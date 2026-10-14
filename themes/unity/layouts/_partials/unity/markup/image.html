@@ -11,6 +11,12 @@
   unity/upright-image.html returns. The other keys are empty when they
   do not apply.
 
+  Go's URL parser rejects a destination with a % that starts no escape,
+  such as 50%off. The partial then escapes each such % as %25, as
+  Goldmark does for an image without a hook, and parses the result
+  again. A destination that the parser still rejects comes back as the
+  src, without a size or copies.
+
   A JPEG, PNG, or WebP image also gets a srcset, and src keeps naming
   the original. The partial converts a JPEG or PNG to WebP only when
   the WebP copy of the whole image is smaller than the original,
@@ -23,9 +29,14 @@
                dest     - the image destination
                absolute - true for URLs with scheme and host
 */ -}}
-{{- $u := urls.Parse .dest -}}
-{{- $out := dict "src" $u.String "width" 0 "height" 0 "srcset" "" "sizes" "" -}}
-{{- if and (not $u.IsAbs) (not $u.Host) -}}
+{{- $p := try (urls.Parse .dest) -}}
+{{- if $p.Err -}}
+  {{- $p = try (urls.Parse (replaceRE "%25([0-9A-Fa-f]{2})" "%$1" (replace .dest "%" "%25"))) -}}
+{{- end -}}
+{{- $u := $p.Value -}}
+{{- $out := dict "src" .dest "width" 0 "height" 0 "srcset" "" "sizes" "" -}}
+{{- with $u }}{{ $out = merge $out (dict "src" .String) }}{{ end -}}
+{{- if and $u (not $u.IsAbs) (not $u.Host) -}}
   {{- $path := strings.TrimPrefix "./" $u.Path -}}
   {{- $src := "" -}}
   {{- with or (.page.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
