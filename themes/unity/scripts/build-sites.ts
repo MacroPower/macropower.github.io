@@ -88,6 +88,7 @@ const SITES: Record<string, SiteSpec> = {
         }),
         ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => exposedSvgs(relative(out, file), read(file))),
+        ...htmlFiles(out).flatMap((file) => nonconforming(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => duplicateIds(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => bundleMismatches(relative(out, file), read(file))),
         // The launcher's full-color art loads as images, so it stays out
@@ -870,33 +871,52 @@ function panelAriaProblems(name: string, html: string): string[] {
   });
 }
 
-// Every SVG on a page decorates a control that names itself. Each one
-// must sit under aria-hidden="true", on itself or on an ancestor. A named
-// image (role="img" with an aria-label) passes too. Minified files drop
-// the quotes around a plain attribute value. The walk skips comments,
-// scripts, and styles, and it never pushes a void or self-closed tag. An
-// end tag pops the stack to its start tag, so it also closes the tags
-// inside that a minifier left open.
+// The elements of a page's markup in document order. Each one comes
+// with its attributes as written and the elements still open around
+// it, outermost first. The walk skips comments, scripts, and styles,
+// and it never opens a void or self-closed tag. An end tag closes
+// every element back to its start tag, so it also closes the elements
+// inside that a minifier left open. Minified files drop the quotes
+// around a plain attribute value.
+type Element = { tag: string; attrs: string };
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
-function exposedSvgs(name: string, html: string): string[] {
-  const body = markup(html);
-  const stack: { tag: string; hidden: boolean }[] = [];
-  const problems: string[] = [];
-  for (const m of body.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g)) {
-    const [, end, rawTag, attrs] = m;
+function* elements(html: string): Generator<Element & { ancestors: Element[] }> {
+  const open: Element[] = [];
+  for (const m of markup(html).matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g)) {
+    const [, end, rawTag, rawAttrs] = m;
     const tag = rawTag!.toLowerCase();
+    const attrs = rawAttrs!;
     if (end) {
-      const at = stack.findLastIndex((e) => e.tag === tag);
-      if (at !== -1) stack.length = at;
+      const at = open.findLastIndex((e) => e.tag === tag);
+      if (at !== -1) open.length = at;
       continue;
     }
-    const hidden = (stack.at(-1)?.hidden ?? false) || /\saria-hidden="?true\b/.test(attrs!);
-    if (tag === "svg" && !hidden && !(/\srole="?img\b/.test(attrs!) && /\saria-label="?[^"\s>]/.test(attrs!))) {
-      problems.push(`${name} exposes an unnamed <svg${attrs!.slice(0, 60)}>`);
-    }
-    if (!VOID.has(tag) && !attrs!.endsWith("/")) stack.push({ tag, hidden });
+    yield { tag, attrs, ancestors: [...open] };
+    if (!VOID.has(tag) && !attrs.endsWith("/")) open.push({ tag, attrs });
   }
-  return problems;
+}
+
+// Every SVG on a page decorates a control that names itself. Each one
+// must sit under aria-hidden="true", on itself or on an ancestor. A named
+// image (role="img" with an aria-label) passes too.
+function exposedSvgs(name: string, html: string): string[] {
+  const hidden = (e: Element): boolean => /\saria-hidden="?true\b/.test(e.attrs);
+  return [...elements(html)]
+    .filter((e) => e.tag === "svg" && !hidden(e) && !e.ancestors.some(hidden)
+      && !(/\srole="?img\b/.test(e.attrs) && /\saria-label="?[^"\s>]/.test(e.attrs)))
+    .map((e) => `${name} exposes an unnamed <svg${e.attrs.slice(0, 60)}>`);
+}
+
+// Markup that the Nu HTML checker rejects. HTML allows a <main> only
+// inside <html>, <body>, <div>, and <form> elements and custom
+// elements.
+function nonconforming(name: string, html: string): string[] {
+  return [...elements(html)].flatMap((e): string[] => {
+    if (e.tag !== "main") return [];
+    return e.ancestors
+      .filter((a) => !["html", "body", "div", "form"].includes(a.tag) && !a.tag.includes("-"))
+      .map((a) => `${name} renders its <main> inside a <${a.tag}>`);
+  });
 }
 
 // An id names one element of its page. A document resolves a reference
