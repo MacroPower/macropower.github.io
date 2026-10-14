@@ -59,8 +59,14 @@ Git cannot add one directory of a repository as a submodule, so add the whole re
 
 ```bash
 git submodule add https://github.com/MacroPower/macropower.github.io themes/macropower
-echo 'theme = "macropower/themes/unity"' >> hugo.toml
 ```
+
+```toml
+# hugo.toml, above the first [table]
+theme = "macropower/themes/unity"
+```
+
+Put `theme` above every table header in `hugo.toml`, because TOML reads a key that follows a header as part of that table.
 
 The submodule checks out the whole site repository, including its posts and images, not only the theme. Run `git submodule update --remote` to update, then commit `themes/macropower` to record the new revision. A plain `git clone` of your site leaves `themes/macropower` empty. Clone it with `--recurse-submodules`, and set your CI's checkout to fetch submodules.
 
@@ -72,7 +78,11 @@ A sparse clone fetches only the theme's files, not the rest of the site around i
 git clone --depth 1 --filter=blob:none --sparse https://github.com/MacroPower/macropower.github.io /tmp/mp
 git -C /tmp/mp sparse-checkout set themes/unity
 cp -r /tmp/mp/themes/unity themes/unity
-echo 'theme = "unity"' >> hugo.toml
+```
+
+```toml
+# hugo.toml, above the first [table]
+theme = "unity"
 ```
 
 To update a copy, delete `themes/unity` and copy the theme again from a fresh sparse clone.
