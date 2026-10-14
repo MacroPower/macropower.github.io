@@ -139,6 +139,16 @@ describe("audio.ts", () => {
     }).not.toThrow();
   });
 
+  it("replaces the params on a change and keeps their defaults", async () => {
+    const audio = await load();
+    const defaults = { ...audio.PARAM_DEFAULTS };
+    const before = audio.getParams();
+    audio.setParam("cutoff", 500);
+    expect(audio.getParams()).toEqual({ ...defaults, cutoff: 500 });
+    expect(before).toEqual(defaults);
+    expect(audio.PARAM_DEFAULTS).toEqual(defaults);
+  });
+
   it("builds one graph and drives it from the live params", async () => {
     vi.stubGlobal("AudioContext", FakeContext);
     const audio = await load();

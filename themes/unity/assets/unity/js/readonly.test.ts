@@ -23,7 +23,6 @@ import type { ICONS, IconName, PAL } from "./solitaire/sprites";
 describe("exported tables", () => {
   it("are read-only", () => {
     expectTypeOf<typeof audio.PARAM_DEFAULTS>().toEqualTypeOf<Readonly<typeof audio.PARAM_DEFAULTS>>();
-    expectTypeOf<typeof audio.PATCHES>().toEqualTypeOf<Readonly<typeof audio.PATCHES>>();
     expectTypeOf<typeof PALETTE>().toEqualTypeOf<Readonly<typeof PALETTE>>();
     expectTypeOf<typeof PALETTE_BRIGHT>().toEqualTypeOf<Readonly<typeof PALETTE_BRIGHT>>();
     expectTypeOf<typeof MASK_COLORS>().toEqualTypeOf<Readonly<typeof MASK_COLORS>>();

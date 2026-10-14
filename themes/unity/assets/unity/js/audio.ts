@@ -118,16 +118,23 @@ export const PARAM_DEFAULTS: Readonly<SynthParams> = {
   velSens: 0.5,
 };
 
-const params: SynthParams = { ...PARAM_DEFAULTS };
+// setParam replaces this object and never writes into it, so params
+// starts as the defaults object itself. Copying the defaults here takes
+// an object spread, and esbuild keeps a top-level spread in the app
+// bundle of a site without the Studio.
+let params: Readonly<SynthParams> = PARAM_DEFAULTS;
 
-// The live params, typed read-only so that every write goes through
-// setParam, which also updates the audio graph.
+// The current params, typed read-only so that every write goes through
+// setParam, which also updates the audio graph. setParam replaces the
+// object, so a result read earlier keeps the values it had.
 export function getParams(): Readonly<SynthParams> {
   return params;
 }
 
 export function setParam<K extends keyof SynthParams>(key: K, value: SynthParams[K]): void {
-  params[key] = value;
+  const next = { ...params };
+  next[key] = value;
+  params = next;
   if (graph) {
     const now = graph.ctx.currentTime;
     if (key === "cutoff") graph.filter.frequency.setTargetAtTime(params.cutoff, now, 0.03);
@@ -180,25 +187,6 @@ export type PatchKey =
 // Any concrete voice — what a strip pins itself to, and what the global
 // Synth-section selector picks for "auto" strips' melody register.
 export type VoiceKey = Exclude<PatchKey, "auto">;
-
-export interface Patch {
-  key: PatchKey;
-  label: string;
-}
-
-// Non-empty, so PATCHES[0] ("auto") is always a fallback.
-export const PATCHES: readonly [Patch, ...Patch[]] = [
-  { key: "auto", label: t("js_sound_auto") },
-  { key: "sine", label: t("js_sound_sine") },
-  { key: "square", label: t("js_sound_square") },
-  { key: "saw", label: t("js_sound_saw") },
-  { key: "organ", label: t("js_sound_organ") },
-  { key: "pulse", label: t("js_sound_pulse") },
-  { key: "epiano", label: t("js_sound_epiano") },
-  { key: "bell", label: t("js_sound_bell") },
-  { key: "pluck", label: t("js_sound_pluck") },
-  { key: "pad", label: t("js_sound_pad") },
-];
 
 // Per-strip mixer state. The returned object is live — the Studio mutates it
 // directly and the scheduler reads it at note time.

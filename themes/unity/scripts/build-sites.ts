@@ -1571,12 +1571,14 @@ function bundles(html: string): string[] {
 
 // A page loads the app bundle with the Studio's code exactly when its
 // language has a playlist. The Studio window's data-daw hooks and the
-// synth's AudioContext mark that code.
+// synth's AudioContext mark that code. So do the Studio's label keys and
+// the velSens param. esbuild keeps them in the bundle without the Studio
+// when a top-level call or object spread in audio.ts or daw.ts reads them.
 function studioProblems(out: string, file: string, studio: boolean): string[] {
   const src = /<script[^>]*\ssrc="?([^"\s>]*\/js\/app[-.][^"\s>]*)/.exec(read(join(out, file)))?.[1];
   if (!src) return [`${file} loads no app bundle`];
   const js = read(join(out, src));
-  return ["data-daw", "AudioContext"]
+  return ["data-daw", "AudioContext", "js_studio_", "js_sound_", "velSens"]
     .filter((marker) => js.includes(marker) !== studio)
     .map((marker) => `${file} loads ${src}, which ${studio ? "lacks" : "carries"} the Studio's ${marker}`);
 }

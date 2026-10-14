@@ -33,11 +33,6 @@ const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", 
 const BLACK: ReadonlySet<number> = new Set([1, 3, 6, 8, 10]);
 
 const ACCENT = "#E95420"; // playhead — Unity orange, deliberately not themed
-const DRUM_ROWS = [
-  { label: t("js_studio_drum_hat_short"), pitch: 42 },
-  { label: t("js_studio_drum_snare_short"), pitch: 38 },
-  { label: t("js_studio_drum_kick_short"), pitch: 36 },
-] as const;
 
 function noteName(pitch: number): string {
   return NOTE_NAMES[pitch % 12] + String(Math.floor(pitch / 12) - 1);
@@ -252,17 +247,12 @@ const PATCH_GLYPHS: Readonly<Record<audio.PatchKey, string>> = {
 
 const patchSvg = (key: audio.PatchKey, size: number): string =>
   `<svg viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">${PATCH_GLYPHS[key]}</svg>`;
-const VOICE_FLAVOR: Readonly<Partial<Record<audio.PatchKey, string>>> = {
-  sine: t("js_studio_flavor_sine"),
-  square: t("js_studio_flavor_square"),
-  saw: t("js_studio_flavor_saw"),
-  organ: t("js_studio_flavor_organ"),
-  pulse: t("js_studio_flavor_pulse"),
-  epiano: t("js_studio_flavor_epiano"),
-  bell: t("js_studio_flavor_bell"),
-  pluck: t("js_studio_flavor_pluck"),
-  pad: t("js_studio_flavor_pad"),
-};
+
+// A patch as the Studio's pickers list it.
+interface Patch {
+  readonly key: audio.PatchKey;
+  readonly label: string;
+}
 
 // ---- module wiring ------------------------------------------------------------
 
@@ -312,6 +302,43 @@ export function initDaw(): void {
   const mono = monoFamily(roll);
 
   const defaultStatus = statusEl?.textContent ?? "";
+
+  // ---- translated tables ----------------------------------------------------
+
+  // esbuild keeps a module's top-level calls, even in the app bundle of a
+  // site without the Studio. So the tables that call t() live here, in the
+  // function that reads them.
+
+  // Every patch, in the order the pickers list them. Non-empty, so
+  // patches[0] ("auto") is always a fallback.
+  const patches: readonly [Patch, ...Patch[]] = [
+    { key: "auto", label: t("js_sound_auto") },
+    { key: "sine", label: t("js_sound_sine") },
+    { key: "square", label: t("js_sound_square") },
+    { key: "saw", label: t("js_sound_saw") },
+    { key: "organ", label: t("js_sound_organ") },
+    { key: "pulse", label: t("js_sound_pulse") },
+    { key: "epiano", label: t("js_sound_epiano") },
+    { key: "bell", label: t("js_sound_bell") },
+    { key: "pluck", label: t("js_sound_pluck") },
+    { key: "pad", label: t("js_sound_pad") },
+  ];
+  const voiceFlavor: Readonly<Record<audio.VoiceKey, string>> = {
+    sine: t("js_studio_flavor_sine"),
+    square: t("js_studio_flavor_square"),
+    saw: t("js_studio_flavor_saw"),
+    organ: t("js_studio_flavor_organ"),
+    pulse: t("js_studio_flavor_pulse"),
+    epiano: t("js_studio_flavor_epiano"),
+    bell: t("js_studio_flavor_bell"),
+    pluck: t("js_studio_flavor_pluck"),
+    pad: t("js_studio_flavor_pad"),
+  };
+  const drumRows = [
+    { label: t("js_studio_drum_hat_short"), pitch: 42 },
+    { label: t("js_studio_drum_snare_short"), pitch: 38 },
+    { label: t("js_studio_drum_kick_short"), pitch: 36 },
+  ] as const;
 
   // ---- window state machine (the trash.ts pattern + a running-app tile) ----
 
@@ -445,7 +472,7 @@ export function initDaw(): void {
   const rows = (): number => pitchHi - pitchLo + 1;
   const drumTop = (): number => RULER_H + rows() * ROW_H + DRUM_GAP;
   const contentW = (): number => song ? KEYS_W + Math.ceil(song.durationBeats + 4) * pxb() : 0;
-  const contentH = (): number => drumTop() + (hasDrums ? DRUM_ROWS.length * ROW_H : 0) + 8;
+  const contentH = (): number => drumTop() + (hasDrums ? drumRows.length * ROW_H : 0) + 8;
 
   function showLoading(text: string): void {
     if (loadingEl) {
@@ -513,13 +540,13 @@ export function initDaw(): void {
       const waves = document.createElement("div");
       waves.className = "up-daw-waves";
       const buttons = new Map<audio.VoiceKey, HTMLButtonElement>();
-      for (const p of audio.PATCHES) {
+      for (const p of patches) {
         if (p.key === "auto") continue;
         const key = p.key;
         const b = document.createElement("button");
         b.type = "button";
         b.className = "up-daw-wave";
-        const title = t("js_studio_voice_title", { name: p.label, flavor: VOICE_FLAVOR[key] ?? "" });
+        const title = t("js_studio_voice_title", { name: p.label, flavor: voiceFlavor[key] });
         b.title = title;
         b.setAttribute("aria-label", title);
         b.innerHTML = patchSvg(key, 16);
@@ -699,7 +726,7 @@ export function initDaw(): void {
     closePatchMenu();
     const menu = document.createElement("div");
     menu.className = "up-daw-patchmenu";
-    for (const p of audio.PATCHES) {
+    for (const p of patches) {
       const item = document.createElement("button");
       item.type = "button";
       item.className = `up-daw-patchmenu-item${trk.strip.patch === p.key ? " is-on" : ""}`;
@@ -755,7 +782,7 @@ export function initDaw(): void {
       btn.type = "button";
       btn.className = "up-daw-patch";
       const sync = (): void => {
-        const meta = audio.PATCHES.find((x) => x.key === trk.strip.patch) ?? audio.PATCHES[0];
+        const meta = patches.find((x) => x.key === trk.strip.patch) ?? patches[0];
         btn.innerHTML = patchSvg(meta.key, 12);
         const title = meta.key === "auto"
           ? t("js_studio_instrument_auto", { name: meta.label })
@@ -1017,7 +1044,7 @@ export function initDaw(): void {
     if (hasDrums && dt < vh) {
       g.fillStyle = "#14161A";
       g.fillRect(0, dt - DRUM_GAP, vw, DRUM_GAP);
-      for (let i = 0; i < DRUM_ROWS.length; i++) {
+      for (let i = 0; i < drumRows.length; i++) {
         g.fillStyle = i % 2 ? "#1E2126" : "#22262C";
         g.fillRect(0, dt + i * ROW_H, vw, ROW_H);
       }
@@ -1139,10 +1166,10 @@ export function initDaw(): void {
     }
     if (hasDrums && dt < vh) {
       g.fillStyle = "#23262C";
-      g.fillRect(0, dt - DRUM_GAP, KEYS_W, DRUM_GAP + DRUM_ROWS.length * ROW_H + 8);
+      g.fillRect(0, dt - DRUM_GAP, KEYS_W, DRUM_GAP + drumRows.length * ROW_H + 8);
       g.font = `9px ${mono}`;
       g.fillStyle = "#8E939B";
-      DRUM_ROWS.forEach((row, i) => {
+      drumRows.forEach((row, i) => {
         g.fillText(row.label, 6, dt + i * ROW_H + ROW_H / 2 + 0.5);
       });
     }
@@ -1180,7 +1207,7 @@ export function initDaw(): void {
       }
     } else if (hasDrums) {
       const dy = cy - drumTop();
-      if (dy >= 0 && dy < DRUM_ROWS.length * ROW_H) {
+      if (dy >= 0 && dy < drumRows.length * ROW_H) {
         const row = Math.floor(dy / ROW_H);
         for (const trk of tracks) {
           if (trk.channel !== 9) continue;
@@ -1241,7 +1268,7 @@ export function initDaw(): void {
       const hz = 440 * 2 ** ((pitch - 69) / 12);
       setStatus(`${noteName(pitch)} · ${hz.toFixed(1)} Hz`);
     } else if (hasDrums) {
-      const row = DRUM_ROWS[Math.floor((cy - drumTop()) / ROW_H)];
+      const row = drumRows[Math.floor((cy - drumTop()) / ROW_H)];
       if (row) {
         audio.auditionNote(row.pitch, 9);
         setStatus(drumLabel(row.pitch));
