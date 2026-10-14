@@ -84,6 +84,7 @@ const SITES: Record<string, SiteSpec> = {
           return panel !== titlebar && `${relative(out, file)} titles its panel "${panel}" and its window "${titlebar}"`;
         }),
         ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
+        ...htmlFiles(out).flatMap((file) => exposedSvgs(relative(out, file), read(file))),
         // Nothing a Content Security Policy without 'unsafe-inline' blocks.
         ...htmlFiles(out).flatMap((file) => {
           const html = read(file);
@@ -779,6 +780,35 @@ function panelAriaProblems(name: string, html: string): string[] {
       cls.includes("is-disabled") && attr(tag, "aria-disabled") !== "true" && `${label} is not aria-disabled`,
     ].filter((p) => p !== false);
   });
+}
+
+// Every SVG on a page is decoration beside a control's own name, so each
+// one must sit under aria-hidden="true", on itself or on an ancestor. A
+// named image (role="img" with an aria-label) passes too. Minified files
+// drop the quotes around a plain attribute value. The walk skips
+// comments, scripts, and styles, never pushes a void or self-closed tag,
+// and pops to the matching start tag, so an end tag that a minifier
+// omitted closes with its parent.
+const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
+function exposedSvgs(name: string, html: string): string[] {
+  const body = html.replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1>/g, "");
+  const stack: { tag: string; hidden: boolean }[] = [];
+  const problems: string[] = [];
+  for (const m of body.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g)) {
+    const [, end, rawTag, attrs] = m;
+    const tag = rawTag!.toLowerCase();
+    if (end) {
+      const at = stack.findLastIndex((e) => e.tag === tag);
+      if (at !== -1) stack.length = at;
+      continue;
+    }
+    const hidden = (stack.at(-1)?.hidden ?? false) || /\saria-hidden="?true\b/.test(attrs!);
+    if (tag === "svg" && !hidden && !(/\srole="?img\b/.test(attrs!) && /\saria-label="?[^"\s>]/.test(attrs!))) {
+      problems.push(`${name} exposes an unnamed <svg${attrs!.slice(0, 60)}>`);
+    }
+    if (!VOID.has(tag) && !attrs!.endsWith("/")) stack.push({ tag, hidden });
+  }
+  return problems;
 }
 
 function htmlFiles(dir: string): string[] {

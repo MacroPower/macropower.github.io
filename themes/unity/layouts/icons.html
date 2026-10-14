@@ -79,7 +79,7 @@
           {{- range .items }}
             <button type="button" class="up-icons-cell" data-vault-cell data-name="{{ .name }}"
                     title="{{ partial "unity/ui/t" "copy_svg" }}">
-              <span class="up-icons-art">{{ .svg | safeHTML }}</span>
+              <span class="up-icons-art" aria-hidden="true">{{ .svg | safeHTML }}</span>
               <span class="up-icons-label">{{ .name }}</span>
             </button>
           {{- end }}

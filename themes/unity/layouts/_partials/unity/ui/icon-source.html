@@ -1,12 +1,20 @@
 {{- /*
   Reads assets/unity/icons/<name>.svg once per build for unity/icon.html.
   Returns a dict of svg, the file's markup, and ids, the ids the file both
-  defines and references through url(#id) or href="#id". Call it through
-  partialCached keyed on the name.
+  defines and references through url(#id) or href="#id". The markup's
+  root <svg> carries aria-hidden="true", added when the file lacks it,
+  because every icon decorates a control that names itself. Call it
+  through partialCached keyed on the name.
 */ -}}
 {{- $out := dict -}}
 {{- with resources.Get (printf "unity/icons/%s.svg" .) -}}
   {{- $c := .Content -}}
+  {{- with findRE `<svg[^>]*>` $c 1 -}}
+    {{- $root := index . 0 -}}
+    {{- if not (strings.Contains $root "aria-hidden") -}}
+      {{- $c = replace $c $root (replace $root "<svg" `<svg aria-hidden="true"` 1) 1 -}}
+    {{- end -}}
+  {{- end -}}
   {{- $refs := slice -}}
   {{- range findRE `url\(#[^)]+\)` $c -}}
     {{- $refs = $refs | append (. | strings.TrimPrefix "url(#" | strings.TrimSuffix ")") -}}
