@@ -6,7 +6,7 @@
 // link check fails on any link to a file that a site's build lacks. Run
 // it with `npm run test:sites`. It needs only Hugo on PATH.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -168,7 +168,8 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
     },
   },
   // A site that uses every documented hook. Its custom.css imports an
-  // external stylesheet and a sibling file and nests a rule. Each extend-*
+  // external stylesheet and a sibling file, nests a rule, and sets the
+  // wallpaper token to an image beside it. Each extend-*
   // partial holds an element marker, because `html/template` drops HTML
   // comments.
   hooks: {
@@ -179,8 +180,10 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       "assets/css/custom.css": `@import url("https://fonts.example.org/hooks.css");
 @import "extra.css";
 .hooks-custom{order:1;.hooks-nested{order:2}}
+:root{--up-wallpaper:url("wall.png") center/cover}
 `,
       "assets/css/extra.css": ".hooks-extra{order:3}\n",
+      "assets/css/wall.png": "PNG",
       "layouts/_partials/extend-head.html": '<meta name="hooks" content="HEAD-HOOK">\n',
       "layouts/_partials/extend-footer.html": "<span hidden>FOOTER-HOOK</span>\n",
       "layouts/_partials/extend-post.html": "<p>POST-HOOK {{ .Title }}</p>\n",
@@ -192,6 +195,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       const imported = css.search(/\.hooks-extra\s*\{/);
       // Unlowered nesting never puts the two classes side by side.
       const nested = css.search(/\.hooks-custom \.hooks-nested\s*\{/);
+      const wall = /--up-wallpaper:\s*url\("?([^")]+)"?\)/.exec(css);
       const post = pages[2]![1];
       return [
         // Browsers ignore an @import after any rule other than @charset or
@@ -203,6 +207,8 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         layerAt(css, css.search(/(?<=[{}])\.chroma\s*\{/)) !== "unity.chroma" && "the highlighter's rules sit outside the unity.chroma layer",
         (imported < 0 || layerAt(css, imported) !== "") && "the stylesheet lacks the file custom.css imports, unlayered",
         (nested < 0 || layerAt(css, nested) !== "") && "the stylesheet lacks custom.css's nested rule, lowered and unlayered",
+        !(wall && layerAt(css, wall.index) === "" && existsSync(join(out, wall[1]!)))
+          && "the stylesheet lacks custom.css's wallpaper, unlayered, with its image published",
         ...pages.flatMap(([name, html]) => {
           const head = html.indexOf('content="HEAD-HOOK"');
           const foot = html.indexOf("FOOTER-HOOK");

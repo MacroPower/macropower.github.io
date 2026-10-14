@@ -202,13 +202,39 @@ The theme's render hooks extend Hugo's Markdown:
 
 ## Customizing
 
-- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme keeps its own rules in cascade layers and builds yours in after them with no layer, so your rules beat the theme's whatever their specificity. Theme declarations marked `!important` still win. Your file goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files. A bare path such as `@import "fonts.css"` resolves beside `custom.css` in your site's `assets/css/` first, then from `assets/`. An `@import url(...)` of an external stylesheet, such as a web font's, lands at the top of the built stylesheet, where browsers load it. Every theme selector is prefixed `up-`, and every custom property is prefixed `--up-`. The palette lives in custom properties on `:root`, and `--up-accent` holds the accent preset's color.
-- **Fonts.** Two custom properties on `:root` hold the theme's font stacks: `--up-font-sans` for the desktop's text and `--up-font-mono` for the terminal, code, and other monospaced text. Set either one in `custom.css` to change that typeface everywhere, the home terminal and the Studio's piano roll included. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the tokens hold.
+- **Extra CSS.** Add `assets/css/custom.css` to your site. The theme keeps its own rules in cascade layers and builds yours in after them with no layer, so your rules beat the theme's whatever their specificity. Theme declarations marked `!important` still win. Your file goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files. A bare path such as `@import "fonts.css"` resolves beside `custom.css` in your site's `assets/css/` first, then from `assets/`. An `@import url(...)` of an external stylesheet, such as a web font's, lands at the top of the built stylesheet, where browsers load it. Every theme selector is prefixed `up-`, and every custom property is prefixed `--up-`.
+- **Colors and fonts.** Custom properties on `:root` hold the theme's colors and font stacks. Set one in `custom.css` to change everything it paints. Leave the theme's other custom properties alone, because they are internal.
+
+  | Property | Default | Paints |
+  | --- | --- | --- |
+  | `--up-wallpaper` | The aubergine gradient | The desktop and the lock screen. It takes any `background` value. |
+  | `--up-panel-grad-1`, `--up-panel-grad-2` | `#3F3D3A`, `#252423` | The top panel, as a gradient from top to bottom. |
+  | `--up-chrome-1`, `--up-chrome-2` | `#3F3D3A`, `#2A2825` | The titlebar of the focused window and of every dialog, as a gradient. |
+  | `--up-chrome-inactive-1`, `--up-chrome-inactive-2` | `#4D4A47`, `#3B3835` | The titlebar of an unfocused window, as a gradient. |
+  | `--up-content-bg` | `#F6F5F4` | The body of each window. |
+  | `--up-content-fg` | `#2E2B28` | Text in windows and dialogs. |
+  | `--up-content-muted` | `#6B6764` | Secondary text, such as dates, counts, and hints. |
+  | `--up-content-line` | `#D8D5D2` | Borders and rules in windows. |
+  | `--up-link` | `#2B4E8E` | Links in posts, pages, and dialogs. |
+  | `--up-sidebar-bg` | A light gray gradient | The sidebar of the blog and of the CV viewer. It takes any `background` value. |
+  | `--up-terminal-bg` | `#1F0E1A` | The home terminal's translucent backdrop. |
+  | `--up-accent`, `--up-accent-light`, `--up-accent-dark`, `--up-accent-darker` | The `orange` preset | Highlights, such as selected text, menu rows under the pointer, primary buttons, progress bars, and focus rings. |
+  | `--up-font-sans` | Ubuntu, then the system's sans-serif font | The desktop's text. |
+  | `--up-font-mono` | Ubuntu Mono, then the system's monospace font | The terminal, code, and other monospaced text, the Studio's piano roll included. |
+
+  The accent preset sets the four accent properties. An accent property that your `custom.css` sets on a bare `:root` beats every preset, so Edit > Preferences stops changing it. To change only the accent each page starts with, leave `params.desktop.accent` unset and set the accent properties under `:root:not([data-up-accent])`. The build resolves each `url()` in `custom.css` the way it resolves an `@import` and publishes the file, so keep a wallpaper image under your site's `assets/`, such as beside `custom.css`. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the font properties hold.
 
   ```css
   :root{
+    --up-wallpaper:url("wallpaper.jpg") center/cover;
     --up-font-sans:"Fira Sans",system-ui,sans-serif;
     --up-font-mono:"Fira Mono",ui-monospace,monospace;
+  }
+  :root:not([data-up-accent]){
+    --up-accent:#0E8420;
+    --up-accent-light:#13A52A;
+    --up-accent-dark:#0B6A1A;
+    --up-accent-darker:#085014;
   }
   ```
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
