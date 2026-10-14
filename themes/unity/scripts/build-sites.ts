@@ -1046,8 +1046,9 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
   // properties and [dir="rtl"] rules follow. Shell lines and the home
   // terminal stay left to right, and the terminal stays English. Each
   // name the desktop shows takes the direction of its first letter, so a
-  // Latin title keeps its punctuation at its end. The projects page lays
-  // out a mirrored grid of tiles.
+  // Latin title keeps its punctuation at its end. A name inside a
+  // translated sentence, such as a File menu row, sits in a <bdi>.
+  // The projects page lays out a mirrored grid of tiles.
   rtl: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "ar"
@@ -1055,10 +1056,20 @@ mainSections = ["posts"]
 ignoreLogs = ["unity-i18n-missing"]
 [languages.ar]
   direction = "rtl"
+[[menu.main]]
+  identifier = "now"
+  name = "Now!"
+  pageRef = "/now"
+[[menu.help]]
+  name = "Imprint!"
+  url = "https://example.com/imprint"
+[params.desktop]
+  networks = ["home-wifi!"]
 `,
       "content/posts/one.md": page("Hello, world!", "tags = ['a']\n"),
       "content/projects.md": page("Projects", "layout = 'projects'\n"),
       "data/projects.yaml": "- {name: alpha, language: Go}\n- {name: beta, language: Rust}\n",
+      "content/now.md": page("Now"),
     },
     check: (out) => {
       const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
@@ -1066,6 +1077,10 @@ ignoreLogs = ["unity-i18n-missing"]
         ["index.html", '<div lang="en" dir="ltr" class="up-shell-term" data-shell-mount>'],
         ["index.html", '<span dir="auto" class="up-titlebar-text">user@example.org: ~</span>'],
         ["index.html", '<bdi dir="ltr">example.org/personal-site</bdi>'],
+        ["index.html", '<span dir="auto" class="up-tooltip" aria-hidden="true">Now!</span>'],
+        ["index.html", '<span dir="auto" class="up-menu-item-label">Open <bdi dir="auto">Now!</bdi></span>'],
+        ["index.html", '<span dir="auto" class="up-menu-item-label">Imprint!</span>'],
+        ["index.html", '<span dir="auto" class="up-net-row-name">home-wifi!</span>'],
         ["posts/index.html", '<div dir="auto" class="up-post-title">Hello, world!</div>'],
         ["posts/index.html", '<span dir="auto" class="up-post-chip">#a</span>'],
         ["posts/index.html", '<span dir="auto" class="up-pathbar-label">Posts</span>'],

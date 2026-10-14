@@ -2,7 +2,9 @@
   Top-panel app-menu row (the File / Edit / View / Help dropdown items).
 
   Caller params:
-    label    string  visible text (required)
+    label    string  visible text, or HTML that puts a name inside a
+                     translated sentence in a <bdi> (required)
+    dir      string  the label's dir, "auto" when it holds a name from the site
     url      string  link target; renders the row as an <a> (optional)
     action   string  data-action dispatch key (optional)
     shortcut string  keyboard hint; adds has-shortcut + the shortcut span
@@ -35,11 +37,11 @@
 {{- if .shortcut }}{{ $cls = printf "%s has-shortcut" $cls }}{{ end -}}
 {{- $role := cond (not .check) "menuitem" "menuitemcheckbox" -}}
 {{- if .disabled -}}
-<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} aria-disabled="true" tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} aria-disabled="true" tabindex="-1"><span{{ with .dir }} dir="{{ . }}"{{ end }} class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
 {{- else if .url -}}
-<a class="{{ $cls }}" href="{{ .url }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
+<a class="{{ $cls }}" href="{{ .url }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span{{ with .dir }} dir="{{ . }}"{{ end }} class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
 {{- else if .action -}}
-<button type="button" class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
+<button type="button" class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span{{ with .dir }} dir="{{ . }}"{{ end }} class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
 {{- else -}}
-<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span{{ with .dir }} dir="{{ . }}"{{ end }} class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
 {{- end -}}

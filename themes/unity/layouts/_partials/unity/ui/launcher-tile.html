@@ -5,7 +5,9 @@
   Caller params:
     tag     "a" | "button"   default "a"
     key     string           data-launcher value (required)
-    label   string           tooltip + aria-label (required)
+    label   string           tooltip + aria-label (required). The tooltip
+                             takes the direction of its first letter,
+                             because a page's label comes from the site.
     icon    string           launcher icon path, e.g. "launcher/home" (required)
     url     string           href, required when tag="a"
     active  bool             nav tiles: adds is-active + data-page-current
@@ -25,7 +27,7 @@
   <span class="up-launcher-icon">{{ partial "unity/icon-img.html" .icon }}</span>
   <span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden="true"></span>
   <span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden="true"></span>
-  <span class="up-tooltip" aria-hidden="true">{{ .label }}</span>
+  <span dir="auto" class="up-tooltip" aria-hidden="true">{{ .label }}</span>
 {{- if eq $tag "button" -}}
 </button>
 {{- else -}}

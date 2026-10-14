@@ -28,6 +28,8 @@ interface HudItem {
   /** Lowercased haystacks, precomputed at index time. */
   labelLc: string;
   fullLc: string;
+  /** Writes the label into the label span of a result row. */
+  fill: (span: HTMLElement) => void;
   exec: () => void;
 }
 
@@ -41,6 +43,34 @@ function subseq(q: string, hay: string): boolean {
     if (i === q.length) return true;
   }
   return q.length === 0;
+}
+
+// Copies a menu row's label into a result row. The copy keeps the
+// dir="auto" and the <bdi> that the menu gives a name from the site, so
+// the name keeps its own direction in the HUD.
+function copyLabel(src: HTMLElement): (span: HTMLElement) => void {
+  return (span) => {
+    if (src.dir) span.dir = src.dir;
+    span.append(...Array.from(src.childNodes, (n) => n.cloneNode(true)));
+  };
+}
+
+// Writes a translated sentence into a result row, with a name from the
+// site in place of each NUL. The span takes the sentence's direction,
+// and the name sits in a <bdi>, as in the File menu's rows.
+function sentenceLabel(sentence: string, name: string): (span: HTMLElement) => void {
+  return (span) => {
+    span.dir = "auto";
+    sentence.split("\0").forEach((part, i) => {
+      if (i) {
+        const bdi = document.createElement("bdi");
+        bdi.dir = "auto";
+        bdi.textContent = name;
+        span.append(bdi);
+      }
+      span.append(part);
+    });
+  };
 }
 
 // Lower is better; null = no match. Tokens all have to land somewhere.
@@ -80,13 +110,14 @@ export function initHud(): void {
 
   const buildIndex = (): HudItem[] => {
     const out: HudItem[] = [];
-    const push = (menu: string, label: string, exec: () => void): void => {
+    const push = (menu: string, label: string, fill: (span: HTMLElement) => void, exec: () => void): void => {
       if (!label) return;
       out.push({
         menu,
         label,
         labelLc: label.toLowerCase(),
         fullLc: `${menu} ${label}`.toLowerCase(),
+        fill,
         exec,
       });
     };
@@ -111,14 +142,19 @@ export function initHud(): void {
         // the HUD clicks them instead. Icon-only controls (mute toggle,
         // transport) have no text to type.
         const action = parseAction(el.dataset.action ?? "");
-        push(menu, rowLabel(el), action ? () => { void dispatchAction(action); } : () => el.click());
+        const label = rowLabel(el);
+        const src = el.querySelector<HTMLElement>(".up-menu-item-label");
+        push(menu, label, src ? copyLabel(src) : (span) => { span.textContent = label; },
+          action ? () => { void dispatchAction(action); } : () => el.click());
       }
       // Wi-Fi rows have no data-action — connecting is a click on the row
       // (top-panel.ts owns the semantics); skip the one already connected.
       for (const net of Array.from(
         dropdown.querySelectorAll<HTMLButtonElement>("button[data-net-name]:not([data-net-on])"),
       )) {
-        push(menu, t("js_hud_connect", { name: net.dataset.netName ?? "" }), () => net.click());
+        const name = net.dataset.netName ?? "";
+        const sentence = t("js_hud_connect", { name: "\0" });
+        push(menu, sentence.replaceAll("\0", name), sentenceLabel(sentence, name), () => net.click());
       }
     }
     return out;
@@ -160,7 +196,7 @@ export function initHud(): void {
         path.textContent = `${item.menu} ▸ `;
         const label = document.createElement("span");
         label.className = "up-hud-row-label";
-        label.textContent = item.label;
+        item.fill(label);
         li.append(path, label);
         li.addEventListener("click", () => run(item));
         return li;

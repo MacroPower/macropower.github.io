@@ -2,7 +2,9 @@
   A Wi-Fi access point row in the network indicator dropdown.
 
   Caller params:
-    name   string  SSID; fills both the label and data-net-name (required)
+    name   string  SSID; fills both the label and data-net-name (required).
+                   The label takes the direction of its first letter,
+                   because the SSID comes from the site's config.
     on     bool    connected — filled dot, is-on, and the data-net-on flag
     strong bool    is-strong (bold name)
     mono   bool    is-mono (monospace name, e.g. a tunnel)
@@ -21,5 +23,5 @@
 {{- if .muted }}{{ $cls = printf "%s is-muted" $cls }}{{ end -}}
 {{- if .on }}{{ $cls = printf "%s is-on" $cls }}{{ end -}}
 <button type="button" class="{{ $cls }}" data-net-name="{{ .name }}"{{ if .on }} data-net-on{{ end }}{{ if .hidden }} data-net-hidden{{ end }}>
-  <span class="up-net-row-dot">{{ if .on }}●{{ else }}○{{ end }}</span><span class="up-net-row-name">{{ .name }}</span>
+  <span class="up-net-row-dot">{{ if .on }}●{{ else }}○{{ end }}</span><span dir="auto" class="up-net-row-name">{{ .name }}</span>
 </button>

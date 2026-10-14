@@ -6,12 +6,24 @@
   once per language and must never read the page. Context: the site.
 */ -}}
 {{- /* One "Open <page>" row per launcher page (minus Home), straight from
-     the site-pages registry so the File menu, dock, and Dash agree. */ -}}
+     the site-pages registry so the File menu, dock, and Dash agree.
+     The translation holds the whole sentence, and the page's name sits
+     in a <bdi> inside it, so the name keeps its own direction. The
+     sentence takes the direction of its first letter outside the name,
+     so a sentence that falls back to English reads left to right on a
+     right-to-left page. The label is HTML, so the template escapes each
+     piece of the sentence that unity/ui/slots.html splits around the
+     name, and it fills the name's slot with the <bdi>. */ -}}
 {{- $reg := partialCached "unity/site-pages.html" . -}}
+{{- $open := partial "unity/ui/slots.html" (partial "unity/ui/t" (slice "open_page" (dict "Page" "\x01"))) -}}
 {{- $fileItems := slice -}}
 {{- range $reg.launcherOrder }}{{ if ne . "home" }}
   {{- $p := index $reg.pages . -}}
-  {{- $fileItems = $fileItems | append (dict "label" (partial "unity/ui/t" (slice "open_page" (dict "Page" $p.label))) "action" (printf "nav:%s" .)) -}}
+  {{- $label := "" -}}
+  {{- range $open -}}
+    {{- if eq . "\x01" }}{{ $label = printf `%s<bdi dir="auto">%s</bdi>` $label (htmlEscape $p.label) }}{{ else }}{{ $label = printf "%s%s" $label (htmlEscape .) }}{{ end -}}
+  {{- end -}}
+  {{- $fileItems = $fileItems | append (dict "label" ($label | safeHTML) "dir" "auto" "action" (printf "nav:%s" .)) -}}
 {{- end }}{{ end -}}
 {{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" (partial "unity/ui/t" "close_window") "disabled" true "shortcut" "Ctrl+W") -}}
 {{ partial "unity/ui/panel-menu.html" (dict "menu" "file" "label" (partial "unity/ui/t" "menu_file") "items" $fileItems) }}
@@ -50,7 +62,7 @@
 {{- $helpLinks := slice -}}
 {{- range $entry := site.Menus.help -}}
   {{- with partial "unity/menu-url.html" $entry -}}
-    {{- $helpLinks = $helpLinks | append (dict "label" $entry.Name "url" .) -}}
+    {{- $helpLinks = $helpLinks | append (dict "label" $entry.Name "dir" "auto" "url" .) -}}
   {{- end -}}
 {{- end -}}
 {{- $helpItems := slice (dict "label" (partial "unity/ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}
