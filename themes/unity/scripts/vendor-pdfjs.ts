@@ -3,7 +3,7 @@
 // below, run `npm run vendor:pdfjs`, and commit the result.
 //
 // The theme vendors pdf.js's legacy build. The modern build calls
-// JavaScript built-ins only the newest browsers ship, while the legacy
+// JavaScript built-ins that only the newest browsers ship. The legacy
 // build polyfills them and runs on Chrome 125, Safari 18, and Firefox ESR.
 //
 // The cv bundle inlines pdf.min.mjs, and esbuild keeps only legal

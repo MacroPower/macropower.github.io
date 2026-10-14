@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only theme is `themes/unity/`. It lives in-tree but is written as a standalone theme with its own README and CLAUDE.md, so read those for anything under it.
+Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only theme is `themes/unity/`. It lives in-tree but stands alone as a theme with its own README and CLAUDE.md, so read those for anything under it.
 
 ## Commands
 
@@ -15,7 +15,7 @@ Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only th
 ## Rules
 
 - Load the `prose` skill before writing any prose, including docs, comments, and commit messages.
-- Hugo and Node versions are pinned in both `devbox.json` and `.github/workflows/gh-pages.yml`. Bump both together. The workflow's `theme-floor` job pins the theme's minimum Hugo instead, so it moves only with the theme's floor.
-- Post URLs follow `/posts/:year/:month/:title/`, so changing a post's title or date breaks its URL. The `slug` front matter only names the post's file in the home terminal.
-- PRs build but do not deploy, and there is no preview environment. Validate changes with `hugo server`.
-- To customize a theme template or asset, copy it to the same path at the repo root. The theme's README lists the hooks that avoid copying: `assets/css/custom.css`, `layouts/_partials/extend-head.html`, `layouts/_partials/extend-footer.html`, and `layouts/_partials/extend-post.html`.
+- `devbox.json` and `.github/workflows/gh-pages.yml` both pin the Hugo and Node versions, so bump a version in both files together. The workflow's `theme-floor` job pins the theme's minimum Hugo instead, so it moves only with the theme's floor.
+- Post URLs follow `/posts/:year/:month/:title/`, so changing a post's title or date breaks its URL. The `slug` front matter names only the post's file in the home terminal, not its URL.
+- PRs build but do not deploy, and the site has no preview environment. Validate changes with `hugo server`.
+- To customize a theme template or asset, copy it to the same path at the repo root. The theme's README lists the hooks that avoid copying, such as `assets/css/custom.css` and the `extend-head.html`, `extend-footer.html`, and `extend-post.html` partials under `layouts/_partials/`.

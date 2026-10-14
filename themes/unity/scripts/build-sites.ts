@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Builds the sites the theme promises to support, with every Hugo warning
-// fatal: the example site, which must use every template, and small sites
-// that each exercise one shape a consuming site may take. A site's checks
+// fatal. The example site must use every template. Each small site covers
+// one setup that a consuming site can have, such as a subpath baseURL, a
+// right-to-left language, or a blog without categories. A site's checks
 // then read its output for regressions a clean build cannot catch, and a
 // link check fails on any link to a file that a site's build lacks. Run
 // it with `npm run test:sites`. It needs only Hugo on PATH.
@@ -34,9 +35,9 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // against its fresh source before the build, and its check reads what
 // that run wrote from the source. A reproducible site builds a second
 // time and must write the same files byte for byte. A site that gives
-// each language its own baseURL lists them in hosts, by the directory
-// that Hugo writes the language into, and the link check reads each
-// directory as a site of its own.
+// each language its own baseURL maps each language's output directory to
+// that baseURL in hosts. The link check then reads each directory as a
+// site of its own.
 type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string | Uint8Array>; prepare?: string[] }) & {
   check?: (out: string, source: string) => (string | false)[];
   warns?: RegExp[];
@@ -595,12 +596,12 @@ enableRobotsTXT = true
       ];
     },
   },
-  // A blog without a title or params.description whose older post was
-  // edited last, and a Markdown copyright. RSS requires a channel
-  // description, which names the site by its host, the lastBuildDate must
-  // follow the latest edit rather than the latest post, and the feed's
-  // copyright must be plain text. The feed must also link the newer
-  // post's Spotify album in place of its player.
+  // A blog without a title or params.description whose older post has
+  // the later lastmod, and a Markdown copyright. RSS requires a channel
+  // description, and the fallback one names the site by its host. The
+  // lastBuildDate must follow the latest edit rather than the latest
+  // post, and the feed's copyright must be plain text. The feed must also
+  // link the newer post's Spotify album in place of its player.
   feed: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -944,7 +945,7 @@ other = "{{ .Login }}：このターミナルには JavaScript が必要です�
     },
     check: (out) => {
       const box = "<input [^>]*data-docv-pagenum[^>]*>";
-      const count = "<span data-docv-pagecount>…</span>";
+      const count = "<span data-docv-pagecount>\u2026</span>";
       const want: [file: string, pattern: RegExp][] = [
         ["cv/index.html", new RegExp(`<div class="up-docv-pageentry">${box} of ${count}</div>`)],
         ["ja/cv/index.html", new RegExp(`<div class="up-docv-pageentry">全 ${count} ページ中 ${box} ページ目</div>`)],
@@ -1581,7 +1582,9 @@ mainSections = ["posts"]
       /data-up-project-tile\s+data-name=/.test(read(join(out, "projects/index.html"))) && "the projects page lists projects",
     ],
   },
-  // Config, front matter, and data in the looser shapes Hugo accepts.
+  // Config, front matter, and data that use a looser type where Hugo
+  // accepts one, such as a table for params.social and a string for
+  // categories.
   loose: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -1917,7 +1920,7 @@ function cwdTitle(html: string): unknown {
 }
 
 // Returns a problem unless the robots.txt at file, under out, names the
-// sitemap at want. An empty want means the file must not name one.
+// sitemap at want. An empty want means that the file must not name one.
 function robotsSitemap(out: string, file: string, want: string): string | false {
   const got = [...read(join(out, file)).matchAll(/^Sitemap: (.*)$/gm)].map((m) => m[1]).join(" ");
   return got !== want && `${file} names the sitemap "${got}", not "${want}"`;
