@@ -11,9 +11,12 @@
   that the home page gives them, so search engines read one site and one
   person.
 
-  Front matter: description, images (see unity/page-images.html), noindex, and
-  canonicalURL, which points the canonical link at the original of a
-  syndicated post.
+  Front matter: description, images and imageAlt (see
+  unity/page-images.html), noindex, and canonicalURL, which points the
+  canonical link at the original of a syndicated post.
+
+  Each og:image carries its width, height, and alt as the structured
+  properties right after it, which is where Open Graph reads them.
 
   Context: the page.
 */ -}}
@@ -93,11 +96,21 @@
 <meta property="og:type" content="website">
 {{- end }}
 {{- range first 6 $images }}
-<meta property="og:image" content="{{ . }}">
+<meta property="og:image" content="{{ .url }}">
+{{- if .width }}
+<meta property="og:image:width" content="{{ .width }}">
+<meta property="og:image:height" content="{{ .height }}">
+{{- end }}
+{{- with .alt }}
+<meta property="og:image:alt" content="{{ . }}">
+{{- end }}
 {{- end }}
 {{- with index $images 0 }}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="{{ . }}">
+<meta name="twitter:image" content="{{ .url }}">
+{{- with .alt }}
+<meta name="twitter:image:alt" content="{{ . }}">
+{{- end }}
 {{- else }}
 <meta name="twitter:card" content="summary">
 {{- end }}
@@ -142,6 +155,8 @@
 }}
 {{- with .PublishDate }}{{ $ld = merge $ld (dict "datePublished" (.Format $iso)) }}{{ end }}
 {{- with .Lastmod }}{{ $ld = merge $ld (dict "dateModified" (.Format $iso)) }}{{ end }}
-{{- with $images }}{{ $ld = merge $ld (dict "image" .) }}{{ end }}
+{{- $imageURLs := slice }}
+{{- range $images }}{{ $imageURLs = $imageURLs | append .url }}{{ end }}
+{{- with $imageURLs }}{{ $ld = merge $ld (dict "image" .) }}{{ end }}
 <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 {{- end }}

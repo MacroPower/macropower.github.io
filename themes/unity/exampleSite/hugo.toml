@@ -57,8 +57,10 @@ mainSections = ["posts"]
   description = "Jane Doe's personal site, styled after Ubuntu 14.04 Unity."
 
   # Default share image for Open Graph and Twitter cards, under static/
-  # or assets/. A page's own images front matter replaces it.
+  # or assets/. A page's own images front matter replaces it. One under
+  # assets/ also declares its width and height.
   # images = ["img/share.png"]
+  # imageAlt = "Jane Doe's desktop with the terminal open"
 
   # Browser UI color emitted as <meta name="theme-color">.
   themeColor = "#1b1c1d"

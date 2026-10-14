@@ -10,7 +10,9 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isDeepStrictEqual } from "node:util";
 import { runInNewContext } from "node:vm";
+import { crc32, deflateSync } from "node:zlib";
 
 const theme = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const themesDir = dirname(theme);
@@ -35,7 +37,7 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // each language its own baseURL lists them in hosts, by the directory
 // that Hugo writes the language into, and the link check reads each
 // directory as a site of its own.
-type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string>; prepare?: string[] }) & {
+type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string | Uint8Array>; prepare?: string[] }) & {
   check?: (out: string, source: string) => (string | false)[];
   warns?: RegExp[];
   reproducible?: boolean;
@@ -459,6 +461,48 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
         ]),
         posts.dated.datePublished !== "2024-01-02T03:04:05-05:00" && "posts/dated/ drops its date's time or zone",
         ("datePublished" in posts.undated || "dateModified" in posts.undated) && "posts/undated/ carries a date it lacks",
+      ];
+    },
+  },
+  // Share images: a bundle's feature image wider than the 1200 pixels
+  // that the theme shares, a narrower one that front matter names with a
+  // query, a remote one, and the site's default. Each image Hugo can read
+  // must declare its size right after its og:image, and each alt text
+  // must describe only its own image.
+  share: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[params]
+  images = ["img/card.png"]
+  imageAlt = "A card for the whole site"
+`,
+      "assets/img/card.png": png(1200, 630),
+      "content/posts/wide/index.md": page("Wide", "imageAlt = 'A grey banner'\n"),
+      "content/posts/wide/feature.png": png(2400, 1200),
+      "content/posts/narrow/index.md": page("Narrow", "images = ['card.png?v=2']\n"),
+      "content/posts/narrow/card.png": png(600, 315),
+      "content/posts/remote.md": page("Remote", "images = ['https://cdn.example.org/card.png']\n"),
+      "content/about.md": page("About", "imageAlt = 'A picture the page lacks'\n"),
+    },
+    check: (out) => {
+      const html = (name: string): string => read(join(out, name, "index.html"));
+      const shares = (name: string, want: ShareImage[]): boolean => isDeepStrictEqual(shareImages(html(name)), want);
+      const wide = html("posts/wide");
+      const copy = shareImages(wide)[0];
+      const copyPath = copy?.url.replace("https://example.org/", "") ?? "";
+      return [
+        (!/^posts\/wide\/feature_.*\.png$/.test(copyPath) || !existsSync(join(out, copyPath)))
+          && "posts/wide/ does not share a published copy of its feature image",
+        !isDeepStrictEqual(copy, { url: copy?.url, width: 1200, height: 600, alt: "A grey banner" })
+          && "posts/wide/ does not describe its copy as 1200x600 with its alt text",
+        !wide.includes('<meta name="twitter:image:alt" content="A grey banner">') && "posts/wide/ lacks its twitter:image:alt",
+        !isDeepStrictEqual(jsonld(wide).image, [copy?.url]) && "posts/wide/'s JSON-LD image is not the shared copy's URL",
+        !shares("posts/narrow", [{ url: "https://example.org/posts/narrow/card.png?v=2", width: 600, height: 315 }])
+          && "posts/narrow/ does not share its card at its own size and URL",
+        !shares("posts/remote", [{ url: "https://cdn.example.org/card.png" }])
+          && "posts/remote/ declares a size or alt text for an image Hugo cannot read",
+        !shares("about", [{ url: "https://example.org/img/card.png", width: 1200, height: 630, alt: "A card for the whole site" }])
+          && "about/ does not share the site's card with its size and the site's alt text",
       ];
     },
   },
@@ -1556,6 +1600,48 @@ function unescapeHTML(value: string): string {
     dec ? String.fromCodePoint(Number(dec))
     : hex ? String.fromCodePoint(Number.parseInt(hex, 16))
     : named[name?.toLowerCase() ?? ""] ?? all);
+}
+
+// A blank grayscale PNG of the given size, for sites whose checks need
+// Hugo to read and resize an image.
+function png(width: number, height: number): Uint8Array {
+  const chunk = (type: string, data: Buffer): Buffer => {
+    const body = Buffer.concat([Buffer.from(type, "latin1"), data]);
+    const head = Buffer.alloc(4);
+    head.writeUInt32BE(data.length);
+    const tail = Buffer.alloc(4);
+    tail.writeUInt32BE(crc32(body));
+    return Buffer.concat([head, body, tail]);
+  };
+  // Width, height, bit depth 8, and color type 0, which is grayscale.
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  // Each row is a filter byte and then one byte per pixel, all zero.
+  const pixels = deflateSync(Buffer.alloc((width + 1) * height));
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", header),
+    chunk("IDAT", pixels),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+// A share image as a built page's Open Graph tags describe it.
+type ShareImage = { url: string; width?: number; height?: number; alt?: string };
+
+// A built page's og:image tags, each with the structured properties that
+// follow it before the next og:image.
+function shareImages(html: string): ShareImage[] {
+  const images: ShareImage[] = [];
+  for (const [, field, value = ""] of html.matchAll(/<meta property="og:image(?::(width|height|alt))?" content="([^"]*)">/g)) {
+    if (!field) images.push({ url: value });
+    const last = images.at(-1);
+    if (last && field === "alt") last.alt = value;
+    if (last && (field === "width" || field === "height")) last[field] = Number(value);
+  }
+  return images;
 }
 
 // The JSON-LD fields the checks read. JSON.parse does not check them.

@@ -1,27 +1,62 @@
 {{- /*
-  The page's share images as absolute URLs, for Open Graph, Twitter
-  cards, and JSON-LD. The page's images front matter comes first, each
-  entry resolving to a page bundle resource, a file under assets/, or a
-  path under the site's baseURL. Without it, the first bundle image
-  whose name contains feature, cover, or thumbnail stands in, and
-  otherwise the first of params.images.
+  The page's share images, for Open Graph, Twitter cards, and JSON-LD,
+  as a slice of dicts of url, width, height, and alt. The page's images
+  front matter comes first, each entry resolving to a page bundle
+  resource, a file under assets/, or a path under the site's baseURL.
+  Without it, the first bundle image whose name contains feature, cover,
+  or thumbnail stands in, and otherwise the first of params.images.
+
+  Each url is absolute. A raster image that Hugo can read gets its width
+  and height, and a JPEG, PNG, or WebP wider than $maxWidth gives way to
+  a copy that wide, the width Meta recommends for share images. Any
+  other image has a width and height of 0. The first image's alt is the
+  page's imageAlt when the image is the page's own, and params.imageAlt
+  when it is the site's default. Every other alt is empty.
 
   Context: the page.
 */ -}}
-{{- $out := slice -}}
+{{- $maxWidth := 1200 -}}
+{{- $alt := .Params.imageAlt -}}
+{{- $sources := slice -}}
 {{- $names := .Params.images -}}
 {{- if and $names (not (reflect.IsSlice $names)) }}{{ $names = slice $names }}{{ end -}}
 {{- if not $names -}}
   {{- $bundle := .Resources.ByType "image" -}}
   {{- with or ($bundle.GetMatch "*feature*") ($bundle.GetMatch "{*cover*,*thumbnail*}") -}}
-    {{- $out = slice .Permalink -}}
+    {{- $sources = slice (dict "url" .Permalink "image" .) -}}
   {{- else -}}
     {{- $names = site.Params.images | default slice -}}
     {{- if not (reflect.IsSlice $names) }}{{ $names = slice $names }}{{ end -}}
     {{- $names = first 1 $names -}}
+    {{- $alt = site.Params.imageAlt -}}
   {{- end -}}
 {{- end -}}
 {{- range $names -}}
-  {{- $out = $out | append (partial "unity/ui/resolve-url.html" (dict "page" $ "url" . "absolute" true)) -}}
+  {{- /* The resource that unity/ui/resolve-url.html links to, if any. */ -}}
+  {{- $u := urls.Parse . -}}
+  {{- $image := false -}}
+  {{- if not (or $u.IsAbs $u.Host) -}}
+    {{- $path := strings.TrimPrefix "./" $u.Path -}}
+    {{- $image = or ($.Resources.Get $path) (resources.Get (strings.TrimPrefix "/" $path)) -}}
+  {{- end -}}
+  {{- $url := partial "unity/ui/resolve-url.html" (dict "page" $ "url" . "absolute" true) -}}
+  {{- $sources = $sources | append (dict "url" $url "image" $image) -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- range $i, $source := $sources -}}
+  {{- $share := dict "url" .url "width" 0 "height" 0 "alt" (cond (eq $i 0) ($alt | default "") "") -}}
+  {{- with .image -}}
+    {{- if reflect.IsImageResourceProcessable . -}}
+      {{- $copy := . -}}
+      {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt .Width $maxWidth) -}}
+        {{- $copy = .Resize (printf "%dx" $maxWidth) -}}
+      {{- end -}}
+      {{- /* Swap in the copy's permalink, keeping the entry's query and
+            fragment. */ -}}
+      {{- $url := printf "%s%s" $copy.Permalink (strings.TrimPrefix .Permalink $source.url) -}}
+      {{- $share = merge $share (dict "url" $url "width" $copy.Width "height" $copy.Height) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = $out | append $share -}}
 {{- end -}}
 {{- return $out -}}
