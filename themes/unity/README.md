@@ -239,7 +239,7 @@ The bash-conformance suite skips itself where bash is absent.
 
 Apache-2.0. See [LICENSE.md](https://github.com/MacroPower/macropower.github.io/blob/main/themes/unity/LICENSE.md).
 
-- [Ubuntu font family](https://design.ubuntu.com/font), self-hosted subsets under the [Ubuntu font licence](https://ubuntu.com/legal/font-licence).
+- [Ubuntu font family](https://design.ubuntu.com/font) 0.83 ([Ubuntu Font Licence 1.0](https://ubuntu.com/legal/font-licence)), self-hosted subsets under `assets/unity/fonts/`. The licence text is in `LICENCE.txt` and Canonical's copyright notice is in `copyright.txt` in the same directory.
 - [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/unity/third_party/xterm/`.
 - [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/unity/third_party/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation and is not affiliated with or endorsed by Canonical.
