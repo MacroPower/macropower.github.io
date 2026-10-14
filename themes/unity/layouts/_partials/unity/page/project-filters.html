@@ -15,8 +15,9 @@
 {{- $cutoff := now.AddDate 0 (mul -1 (int $months)) 0 -}}
 {{- $out := slice -}}
 {{- if ge (int (.stars | default 0)) (int $minStars) }}{{ $out = $out | append "starred" }}{{ end -}}
+{{- /* updated is YYYY-MM-DD, so comparing the strings compares the dates. */ -}}
 {{- with .updated -}}
-  {{- if (time.AsTime .).After $cutoff }}{{ $out = $out | append "recent" }}{{ end -}}
+  {{- if gt . ($cutoff.Format "2006-01-02") }}{{ $out = $out | append "recent" }}{{ end -}}
 {{- end -}}
 {{- if ge (int (.forks | default 0)) (int $minForks) }}{{ $out = $out | append "forks" }}{{ end -}}
 {{- return $out -}}

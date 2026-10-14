@@ -538,6 +538,8 @@ other = "{{ .Plural }}: noch keine."
     files: {
       "hugo.toml": `${BARE}[params]
   social = "jane"
+[params.author]
+  born = "Jan 1990"
 [params.desktop]
   accent = "purple"
   indicators = ["clock", "nope"]
@@ -554,7 +556,7 @@ other = "{{ .Plural }}: noch keine."
   name = "Ghost"
   pageRef = "/ghost"
 `,
-      "data/projects.yaml": "- name: named-project\n- description: nameless-project\n",
+      "data/projects.yaml": "- name: named-project\n  updated: last week\n- description: nameless-project\n",
       "content/cv.md": page("CV", "layout = 'cv'\n"),
     },
     warns: [
@@ -566,6 +568,8 @@ other = "{{ .Plural }}: noch keine."
       /params\.social should be a list /,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
       /data\/projects has an entry without a name: .*nameless-project/,
+      /params\.author\.born "Jan 1990" is not a date/,
+      /the data\/projects entry "named-project" sets updated to "last week"/,
       /the menu\.main entry "Ghost" points at no page in "en"/,
       /\/cv\/ uses layout cv but sets no pdf /,
     ],
@@ -581,6 +585,7 @@ other = "{{ .Plural }}: noch keine."
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
         home.includes('data-launcher="ghost"') && "index.html docks the menu entry whose pageRef finds no page",
         home.includes("jane") && "index.html renders the malformed params.social",
+        home.includes("Jan 1990") && "index.html renders the malformed params.author.born",
         home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",
         !dash.includes("named-project") && "the Dash drops the named project",
         dash.includes("nameless-project") && "the Dash lists the project without a name",
@@ -975,6 +980,38 @@ mainSections = ["posts"]
         !src && `the Art tile renders ${tile("art") || "no icon"}, not an image`,
         src !== undefined && !isSvgFile(join(out, src)) && `the Art tile's ${src} is not a standalone SVG`,
         !tile("tint").startsWith('<svg aria-hidden="true"') && `the Tint tile renders ${tile("tint") || "no icon"}, not its inline glyph`,
+      ];
+    },
+  },
+  // A birth date and a project date that Hugo cannot parse. Each warns
+  // with the param or entry that holds it and drops out. The banner's
+  // uptime then counts from the oldest page, and the vague project shows
+  // no date. A date in another form that Hugo parses becomes YYYY-MM-DD,
+  // and the Recent filter compares it with the cutoff.
+  dates: {
+    files: {
+      "hugo.toml": `${BARE}[params.author]
+  born = "Jan 1990"
+[params.projects]
+  recentMonths = 1200
+`,
+      "content/projects.md": page("Projects", "date = 2001-02-03\nlayout = 'projects'\n"),
+      "data/projects.yaml": "- name: stamped\n  updated: 2024-05-20T10:00:00Z\n- name: ancient\n  updated: 1901-01-01\n"
+        + "- name: vague\n  updated: last week\n",
+    },
+    warns: [/params\.author\.born "Jan 1990" is not a date/, /"vague" sets updated to "last week"/],
+    check: (out) => {
+      const html = read(join(out, "projects/index.html"));
+      const tile = (name: string): string => new RegExp(`<button[^>]*data-name="${name}"[^>]*>`).exec(html)?.[0] ?? "";
+      const recent = (name: string): boolean => /data-filters="[^"]*\brecent\b/.test(tile(name));
+      return [
+        !tile("stamped").includes('data-updated="2024-05-20"') && "the stamped project's date is not 2024-05-20",
+        !recent("stamped") && "the stamped project is not recent",
+        recent("ancient") && "the ancient project is recent",
+        !tile("vague").includes('data-updated=""') && "the vague project keeps a date",
+        recent("vague") && "the vague project is recent",
+        !read(join(out, "index.html")).includes('"since":"2001-02-03"')
+          && "the banner's uptime does not count from the oldest page",
       ];
     },
   },

@@ -2,9 +2,10 @@
   The projects the projects page and the Dash show, as a slice of dicts
   with name, description, language, stars, forks, updated, topics, url,
   and license. They come from the site's data/projects file, where every
-  key but name is optional: description and language default to "", and
-  topics to an empty list. An entry without a name warns and drops out.
-  Without that
+  key but name is optional: description, language, and updated default
+  to "", and topics to an empty list. An entry without a name warns and
+  drops out. updated becomes YYYY-MM-DD, and a value that is not a date
+  warns and becomes "", so no other template parses a date. Without that
   file, a site that sets params.projects.github gets that account's
   public repositories from the GitHub API at build time: sources with a
   language, no forks or archived repositories, most starred first. Set the
@@ -21,10 +22,18 @@
       {{- warnf "unity: data/projects has an entry without a name: %v" . -}}
       {{- continue -}}
     {{- end -}}
-    {{- $projects = $projects | append (merge . (dict
+    {{- $p := merge . (dict
         "description" (.description | default "")
         "language" (.language | default "")
-        "topics" (.topics | default slice))) -}}
+        "topics" (.topics | default slice)) -}}
+    {{- $updated := "" -}}
+    {{- with $p.updated -}}
+      {{- $updated = partial "unity/ui/iso-date.html" . -}}
+      {{- if not $updated -}}
+        {{- warnf "unity: the data/projects entry %q sets updated to %q, which is not a date such as 2024-05-20" (printf "%v" $p.name) (printf "%v" .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $projects = $projects | append (merge $p (dict "updated" $updated)) -}}
   {{- end -}}
 {{- else -}}
   {{- with site.Params.projects.github -}}
@@ -43,7 +52,7 @@
               "language" .language
               "stars" .stargazers_count
               "forks" .forks_count
-              "updated" ((time.AsTime .pushed_at).Format "2006-01-02")
+              "updated" (partial "unity/ui/iso-date.html" .pushed_at)
               "topics" (.topics | default slice)
               "url" .html_url
           -}}

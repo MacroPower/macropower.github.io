@@ -1,0 +1,19 @@
+{{- /*
+  A date that a site writes in its config or data, as YYYY-MM-DD, or ""
+  when the value is not a date. TOML dates and times pass, and so does
+  every string that time.AsTime parses, such as 2024-05-20 or
+  2024-05-20T10:00:00Z. A bare number such as 2024 fails, because
+  time.AsTime reads a number as seconds since 1970. Read every date
+  from params or data through here, and warn when a set value comes
+  back "", so a typo names its param instead of failing the build.
+
+  Arg: the value.
+*/ -}}
+{{- $v := . -}}
+{{- /* A time.Time with an offset from UTC does not parse back from its
+      %v text, so only the other types become strings. */ -}}
+{{- if ne (printf "%T" $v) "time.Time" }}{{ $v = printf "%v" $v }}{{ end -}}
+{{- $date := "" -}}
+{{- $t := try (time.AsTime $v) -}}
+{{- if not $t.Err }}{{ $date = $t.Value.Format "2006-01-02" }}{{ end -}}
+{{- return $date -}}

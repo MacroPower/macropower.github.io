@@ -2,8 +2,9 @@
   The site owner as a dict of name, email, born, jobTitle, and focus, read
   from params.author. A site that sets params.author to a plain string gets
   that string as the name. The name falls back to the site title, born is
-  normalized to YYYY-MM-DD, and every other missing key is "". Every
-  template that names the owner reads it through here, so call it through
+  normalized to YYYY-MM-DD, and every other missing key is "". A born
+  value that is not a date warns and becomes "". Every template that
+  names the owner reads it through here, so call it through
   partialCached.
 */ -}}
 {{- $a := dict "name" "" "email" "" "born" "" "jobTitle" "" "focus" "" -}}
@@ -13,10 +14,14 @@
     {{- range $k, $_ := $a -}}
       {{- with index $m $k }}{{ $a = merge $a (dict $k (printf "%v" .)) }}{{ end -}}
     {{- end -}}
+    {{- with $m.born -}}
+      {{- $born := partial "unity/ui/iso-date.html" . -}}
+      {{- if not $born }}{{ warnf "unity: params.author.born %q is not a date such as 1990-01-31" (printf "%v" .) }}{{ end -}}
+      {{- $a = merge $a (dict "born" $born) -}}
+    {{- end -}}
   {{- else -}}
     {{- $a = merge $a (dict "name" (printf "%v" .)) -}}
   {{- end -}}
 {{- end -}}
-{{- with $a.born }}{{ $a = merge $a (dict "born" ((time.AsTime .).Format "2006-01-02")) }}{{ end -}}
 {{- if not $a.name }}{{ $a = merge $a (dict "name" site.Title) }}{{ end -}}
 {{- return $a -}}
