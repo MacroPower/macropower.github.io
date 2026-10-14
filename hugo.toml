@@ -3,8 +3,8 @@ title   = "Jacob Colvin"
 locale  = "en-us"
 theme   = "unity"
 
-# Used by the theme's RSS feeds.
-copyright = '<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>'
+# Markdown. The theme shows it under each post and in the RSS feeds.
+copyright = "[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)"
 
 enableRobotsTXT = true
 enableEmoji     = true
