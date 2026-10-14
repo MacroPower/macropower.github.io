@@ -32,39 +32,13 @@
 
   {{ partialCached "unity/ui/runtime.html" . site.Language.Name }}
   {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/app.ts" "target" "js/app.js") "unity/js/app.ts" }}
-
-  {{/* blog.js and projects.js no-op without their root data attribute
-       ([data-blog-kind] / [data-projects-kind]); ship each only to the
-       layouts that emit it, mirroring the shell bundle's is-terminal gate. */}}
-  {{ if or (partial "unity/in-blog.html" .) (in (slice "taxonomy" "term") .Kind) }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/blog.ts" "target" "js/blog.js") "unity/js/blog.ts" }}
-  {{ end }}
-
-  {{ if eq .Layout "projects" }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/projects.ts" "target" "js/projects.js") "unity/js/projects.ts" }}
-  {{ end }}
-
-  {{/* cv.js no-ops without [data-cv-viewer], emitted only by pages that
-       select the CV viewer via `layout = "cv"` front matter. */}}
-  {{ if eq .Layout "cv" }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/cv.ts" "target" "js/cv.js") "unity/js/cv.ts" }}
-  {{ end }}
-
-  {{/* The solitaire bundle no-ops without [data-solitaire], emitted only
-       by pages that select the table via `layout = "solitaire"`. */}}
-  {{ if eq .Layout "solitaire" }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/solitaire/index.ts" "target" "js/solitaire.js") "unity/js/solitaire/index.ts" }}
-  {{ end }}
-
-  {{/* icons.js no-ops without [data-icon-vault], emitted only by pages
-       that select the vault via `layout = "icons"`. */}}
-  {{ if eq .Layout "icons" }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/icons.ts" "target" "js/icons.js") "unity/js/icons.ts" }}
-  {{ end }}
-
-  {{ if partial "unity/is-terminal.html" . }}
-  {{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/shell/index.ts" "target" "js/shell.js") "unity/js/shell/index.ts" }}
-  {{ end }}
+  {{- /* Every other bundle no-ops without its root element. The template
+        that renders a root names its bundle in the page's unity-bundles
+        store, and block "main" has rendered by here, so a page loads the
+        bundles its content uses under any layout name. */}}
+  {{- range $name, $entry := .Store.Get "unity-bundles" }}
+  {{ partialCached "unity/ui/script.html" (dict "entry" $entry "target" (printf "js/%s.js" $name)) $entry }}
+  {{- end }}
 
   {{ partial "extend-footer.html" . }}
 </body>

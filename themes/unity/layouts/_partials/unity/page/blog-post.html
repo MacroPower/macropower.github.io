@@ -15,6 +15,7 @@
 {{- $nextURL := "" }}{{ with $newer }}{{ $nextURL = .RelPermalink }}{{ end }}
 {{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = .Title }}{{ end }}
 {{- $nextTitle := "" }}{{ with $newer }}{{ $nextTitle = .Title }}{{ end }}
+{{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
 <article class="up-blog up-selectable" data-blog-kind="post">
   {{ partial "unity/page/nav-pathbar.html" (dict
       "segments" (partial "unity/page/crumbs.html" .)

@@ -20,6 +20,7 @@
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict "segments" (slice
       (dict "label" .Title "url" .RelPermalink))) }}
+  {{- .Store.SetInMap "unity-bundles" "solitaire" "unity/js/solitaire/index.ts" }}
   <div class="up-sol" data-solitaire>
     <div class="up-sol-stage" data-sol-stage>
       <canvas class="up-sol-canvas" data-sol-canvas tabindex="0" role="application"

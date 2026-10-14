@@ -5,6 +5,7 @@
   {{- $segments = $segments | append
         (dict "label" .Parent.Title "url" .Parent.RelPermalink)
         (dict "label" .Title "url" .RelPermalink) -}}
+  {{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
   <article class="up-blog up-selectable" data-blog-kind="term">
     {{ partial "unity/page/nav-pathbar.html" (dict "segments" $segments) }}
     <div class="up-blog-grid">

@@ -33,6 +33,7 @@
   {{- end -}}
   {{- $flat = sort $flat "name" -}}
 
+  {{- .Store.SetInMap "unity-bundles" "icons" "unity/js/icons.ts" }}
   <div class="up-icons" data-icon-vault>
     <header class="up-icons-head">
       <div class="up-icons-kicker">~/icons</div>

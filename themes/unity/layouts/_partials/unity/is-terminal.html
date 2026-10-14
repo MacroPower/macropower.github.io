@@ -1,6 +1,6 @@
 {{- /*
   Whether the page is the home terminal: the home page, unless
-  params.home.layout is "page". baseof.html ships the shell bundle and
+  params.home.layout is "page". home.html renders the terminal and
   unity/head/css.html preloads the terminal's font only for this page.
 */ -}}
 {{- return (and .IsHome (ne (partialCached "unity/home-layout.html" .) "page")) -}}

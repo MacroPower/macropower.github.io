@@ -2,6 +2,7 @@
      filterable post list, and the empty reader pane. Rendered by
      list.html for the blog section and every section nested in it, each
      listing the posts at any depth below it. */ -}}
+{{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
 <article class="up-blog up-selectable" data-blog-kind="section">
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict

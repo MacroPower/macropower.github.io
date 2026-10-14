@@ -7,10 +7,10 @@
   Both PDF paths may name a file in the page bundle, under assets/, or
   under static/, and resolve through unity/ui/resolve-url.html.
     sourceUrl    (optional) the document's source repository, offered as "Source"
-  The viewer JS ships only on this page (see baseof.html) and bundles the
-  pdf.js build vendored under the theme's assets/unity/third_party/pdf-js/. The pdf.js
-  worker is a separate file, published only when a page renders this
-  partial.
+  The cv bundle loads only on a page that renders the viewer (see
+  baseof.html), and it bundles the pdf.js build vendored under the
+  theme's assets/unity/third_party/pdf-js/. The pdf.js worker is a
+  separate file, published only when a page renders this partial.
 */ -}}
 <article class="up-cv-page up-selectable">
   <h1 class="up-sr-only">{{ .Title }}</h1>
@@ -19,6 +19,7 @@
   {{- with .Params.pdf }}
   {{- $pdf := partial "unity/ui/resolve-url.html" (dict "page" $ "url" .) -}}
   {{- $worker := resources.Get "unity/third_party/pdf-js/pdf.worker.min.mjs" | resources.Fingerprint -}}
+  {{- $.Store.SetInMap "unity-bundles" "cv" "unity/js/cv.ts" }}
   <div class="up-docv" data-cv-viewer
        data-pdf-url="{{ $pdf }}"
        data-pdfjs-worker="{{ $worker.RelPermalink }}">

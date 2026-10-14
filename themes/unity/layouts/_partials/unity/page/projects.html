@@ -7,6 +7,7 @@
   sprite get a generic emblem.
 */ -}}
 {{- $projects := partialCached "unity/projects-data.html" . -}}
+{{- .Store.SetInMap "unity-bundles" "projects" "unity/js/projects.ts" }}
 <article class="up-projects up-selectable" data-projects-kind="section">
   <h1 class="up-sr-only">{{ .Title }}</h1>
   {{ partial "unity/page/icons/lang-symbols.html" . }}

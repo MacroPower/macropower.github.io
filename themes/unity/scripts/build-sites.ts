@@ -89,6 +89,7 @@ const SITES: Record<string, SiteSpec> = {
         ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => exposedSvgs(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => duplicateIds(relative(out, file), read(file))),
+        ...htmlFiles(out).flatMap((file) => bundleMismatches(relative(out, file), read(file))),
         // The launcher's full-color art loads as images, so it stays out
         // of every page's HTML.
         read(join(out, "about/index.html")).includes("<linearGradient") && "about/index.html inlines gradient art",
@@ -429,6 +430,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
         !dash.includes("named-project") && "the Dash drops the named project",
         dash.includes("nameless-project") && "the Dash lists the project without a name",
         cv.includes("data-cv-viewer") && "cv/index.html renders the viewer without a pdf",
+        ...bundleMismatches("cv/index.html", cv),
         !/<div class="up-page-body"><p>Body of CV\./.test(cv) && "cv/index.html omits the page's body",
       ];
     },
@@ -483,6 +485,29 @@ mainSections = ["posts"]
         home.includes("/js/shell.") && "index.html still loads the shell bundle",
       ];
     },
+  },
+  // The theme's page partials under layouts that the site names, and a
+  // post whose own layout renders no post reader.
+  renamed: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/about.md": page("About"),
+      "content/work.md": page("Work", "layout = 'portfolio'\n"),
+      "content/resume.md": page("Resume", "layout = 'resume'\npdf = 'https://example.com/cv.pdf'\n"),
+      "content/game.md": page("Game", "layout = 'cards'\n"),
+      "content/posts/one.md": page("One"),
+      "content/posts/note.md": page("Note", "layout = 'plain'\n"),
+      "layouts/portfolio.html": '{{ define "main" }}{{ partial "unity/page/projects.html" . }}{{ end }}\n',
+      "layouts/resume.html": '{{ define "main" }}{{ partial "unity/page/cv.html" . }}{{ end }}\n',
+      "layouts/cards.html": '{{ define "main" }}{{ partial "unity/page/solitaire.html" . }}{{ end }}\n',
+      "layouts/plain.html": '{{ define "main" }}{{ .Content }}{{ end }}\n',
+    },
+    check: (out) => [
+      ...Object.entries({ "work/index.html": "projects", "resume/index.html": "cv", "game/index.html": "solitaire" })
+        .filter(([file, bundle]) => !bundles(read(join(out, file))).includes(bundle))
+        .map(([file, bundle]) => `${file} does not load the ${bundle} bundle`),
+      ...htmlFiles(out).flatMap((file) => bundleMismatches(relative(out, file), read(file))),
+    ],
   },
   // A Studio playlist that names one track and leaves the other anonymous.
   studio: {
@@ -862,6 +887,27 @@ function duplicateIds(name: string, html: string): string[] {
   const ids = [...markup(html).matchAll(/<[a-zA-Z][^>]*?\sid=(?:"([^"]*)"|([^\s>"']+))/g)].map((m) => m[1] ?? m[2]!);
   return [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))]
     .map((id) => `${name} gives the id ${id} to more than one element`);
+}
+
+// The bundles a page loads, by the name of their published file.
+function bundles(html: string): string[] {
+  return [...html.matchAll(/<script[^>]*\ssrc="?[^"\s>]*\/js\/([a-z]+)\./g)].map((m) => m[1]!);
+}
+
+// Each page bundle no-ops without its root element, so a page loads the
+// bundle exactly when it renders the root.
+const BUNDLE_ROOTS: Record<string, string> = {
+  blog: "data-blog-kind", cv: "data-cv-viewer", icons: "data-icon-vault",
+  projects: "data-projects-kind", shell: "data-shell", solitaire: "data-solitaire",
+};
+function bundleMismatches(name: string, html: string): string[] {
+  const body = markup(html);
+  const loaded = bundles(html);
+  return Object.entries(BUNDLE_ROOTS).flatMap(([bundle, attr]) => {
+    const rooted = new RegExp(`<[a-z][^>]*\\s${attr}[\\s=>]`).test(body);
+    if (rooted === loaded.includes(bundle)) return [];
+    return [rooted ? `${name} renders [${attr}] without the ${bundle} bundle` : `${name} loads the ${bundle} bundle without [${attr}]`];
+  });
 }
 
 // A page's HTML without its comments, scripts, and styles.

@@ -1,6 +1,6 @@
 // The icon vault page (layouts/icons.html): per-section size and backdrop
-// controls, and copy-to-clipboard on every tile. Ships only to pages with
-// `layout = "icons"` and no-ops without a [data-icon-vault] root.
+// controls, and copy-to-clipboard on every tile. Ships only to the page
+// that renders the vault, and no-ops without a [data-icon-vault] root.
 
 import { t } from "./i18n";
 import { eventElement } from "./dom";
