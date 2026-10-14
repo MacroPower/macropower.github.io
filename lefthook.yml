@@ -19,7 +19,9 @@ pre-commit:
         - "themes/unity/assets/unity/js/**/*.ts"
         - "themes/unity/scripts/**"
         - "themes/unity/biome.json"
-      run: npx --no-install biome lint --config-path themes/unity themes/unity
+      # Biome must start in the theme directory. Started from the site root,
+      # it reads themes/unity/biome.json as a second root config and exits.
+      run: npm run lint
     typecheck-test:
       glob:
         - "themes/unity/assets/unity/js/**/*.ts"
