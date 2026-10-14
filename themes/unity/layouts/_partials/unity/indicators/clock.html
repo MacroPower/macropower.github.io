@@ -3,20 +3,17 @@
   menu holds the long date and a month calendar, which top-panel.ts draws
   into data-calendar each time the menu opens. Context: the site.
 
-  time.Format names the days and months in the site's language, and
-  :date_full orders them the way that language does. top-panel.ts
-  replaces the build's time and dates with the visitor's clock.
+  The time and dates render empty, so the build's clock never reaches the
+  page and two builds write the same HTML. top-panel.ts fills them from
+  the visitor's clock in the page's language.
 */ -}}
-{{- $longDate := time.Format ":date_full" now -}}
-{{- $time := time.Format "15:04" now -}}
-{{- $shortDate := time.Format "Mon, Jan 2" now -}}
 <div class="up-panel-item">
   <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="{{ partial "unity/ui/t" "clock" }}" aria-controls="up-dropdown-clock" aria-expanded="false">
-    <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
-    <span data-clock-narrow hidden>{{ $time }}</span>
+    <span data-clock-wide></span>
+    <span data-clock-narrow hidden></span>
   </button>
   <div class="up-dropdown up-dropdown-wide" id="up-dropdown-clock" data-dropdown-for="clock" data-align="end" data-flyout-keepopen hidden>
-    <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
+    <div class="up-dropdown-header" data-clock-longdate></div>
     <div class="up-dropdown-body">
       <div class="up-calendar" data-calendar></div>
       {{ partial "unity/ui/dropdown-row.html" (dict "label" (partial "unity/ui/t" "open_calendar") "action" "dlg:cal") }}

@@ -6,7 +6,7 @@
 // link check fails on any link to a file that a site's build lacks. Run
 // it with `npm run test:sites`. It needs only Hugo on PATH.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,16 +30,19 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // patterns must match a warning, and each warning must match one of its
 // patterns. A files site with prepare runs Hugo with those arguments
 // against its fresh source before the build, and its check reads what
-// that run wrote from the source.
+// that run wrote from the source. A reproducible site builds a second
+// time and must write the same files byte for byte.
 type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string>; prepare?: string[] }) & {
   check?: (out: string, source: string) => (string | false)[];
   warns?: RegExp[];
+  reproducible?: boolean;
 };
 
 const SITES: Record<string, SiteSpec> = {
   example: {
     source: join(theme, "exampleSite"),
     flags: ["--printUnusedTemplates", "--themesDir", themesDir],
+    reproducible: true,
     check: (out) => {
       const sitemap = read(join(out, "sitemap.xml"));
       const home = read(join(out, "index.html"));
@@ -85,6 +88,7 @@ const SITES: Record<string, SiteSpec> = {
         }),
         ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
         ...htmlFiles(out).flatMap((file) => exposedSvgs(relative(out, file), read(file))),
+        ...htmlFiles(out).flatMap((file) => duplicateIds(relative(out, file), read(file))),
         // The launcher's full-color art loads as images, so it stays out
         // of every page's HTML.
         read(join(out, "about/index.html")).includes("<linearGradient") && "about/index.html inlines gradient art",
@@ -830,7 +834,7 @@ function panelAriaProblems(name: string, html: string): string[] {
 // inside that a minifier left open.
 const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
 function exposedSvgs(name: string, html: string): string[] {
-  const body = html.replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1>/g, "");
+  const body = markup(html);
   const stack: { tag: string; hidden: boolean }[] = [];
   const problems: string[] = [];
   for (const m of body.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g)) {
@@ -848,6 +852,31 @@ function exposedSvgs(name: string, html: string): string[] {
     if (!VOID.has(tag) && !attrs!.endsWith("/")) stack.push({ tag, hidden });
   }
   return problems;
+}
+
+// An id names one element of its page. A document resolves a reference
+// such as url(#id) to the first element with that id. A second inline
+// copy of an icon then paints with the first copy's gradients, and with
+// none when the first copy sits in a hidden subtree.
+function duplicateIds(name: string, html: string): string[] {
+  const ids = [...markup(html).matchAll(/<[a-zA-Z][^>]*?\sid=(?:"([^"]*)"|([^\s>"']+))/g)].map((m) => m[1] ?? m[2]!);
+  return [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))]
+    .map((id) => `${name} gives the id ${id} to more than one element`);
+}
+
+// A page's HTML without its comments, scripts, and styles.
+function markup(html: string): string {
+  return html.replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1>/g, "");
+}
+
+// The files that differ between two builds of one site, as paths from
+// the site's root.
+function differences(a: string, b: string): string[] {
+  const files = (dir: string): Set<string> =>
+    new Set(readdirSync(dir, { encoding: "utf8", recursive: true }).filter((f) => statSync(join(dir, f)).isFile()));
+  const [left, right] = [files(a), files(b)];
+  return [...new Set([...left, ...right])].sort()
+    .filter((f) => !left.has(f) || !right.has(f) || !readFileSync(join(a, f)).equals(readFileSync(join(b, f))));
 }
 
 // The icon images that a built site's pages load, as paths from the
@@ -994,10 +1023,10 @@ try {
       }
     }
     const out = join(work, `${name}-public`);
-    const args = ["--source", source, "--destination", out,
+    const args = (dest: string): string[] => ["--source", source, "--destination", dest,
       "--printPathWarnings", ...(site.warns ? [] : ["--quiet", "--panicOnWarning"]), ...flags];
     const prep = prepare ? hugo([...prepare, "--source", source]) : undefined;
-    const run = prep?.ok === false ? prep : hugo(args);
+    const run = prep?.ok === false ? prep : hugo(args(out));
     if (!run.ok) {
       process.stderr.write(run.log);
       console.error(`FAIL ${name}`);
@@ -1013,6 +1042,11 @@ try {
         ...warns.filter((p) => !warnings.some((w) => p.test(w))).map((p) => `no warning matches ${p}`),
         ...warnings.filter((w) => !warns.some((p) => p.test(w))).map((w) => `unexpected warning: ${w}`),
       );
+    }
+    if (site.reproducible) {
+      const again = join(work, `${name}-again`);
+      if (!hugo(args(again)).ok) problems.push("the second build failed");
+      else problems.push(...differences(out, again).map((f) => `${f} differs between two builds`));
     }
     for (const p of problems) console.error(`     ${name}: ${p}`);
     console.log(`${problems.length ? "FAIL" : "ok  "} ${name}`);

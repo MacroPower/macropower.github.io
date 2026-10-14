@@ -11,8 +11,6 @@
                   without one.
     currentColor  whether the icon paints with currentColor, which only
                   an inline copy inherits from the page.
-    ids           the ids the file both defines and references through
-                  url(#id) or href="#id".
 
   Call it through partialCached keyed on the name.
 */ -}}
@@ -30,18 +28,7 @@
       {{- $file = replace $c $root (replace $root "<svg" `<svg xmlns="http://www.w3.org/2000/svg"` 1) 1 -}}
     {{- end -}}
   {{- end -}}
-  {{- $refs := slice -}}
-  {{- range findRE `url\(#[^)]+\)` $c -}}
-    {{- $refs = $refs | append (. | strings.TrimPrefix "url(#" | strings.TrimSuffix ")") -}}
-  {{- end -}}
-  {{- range findRE `href="#[^"]+"` $c -}}
-    {{- $refs = $refs | append (. | strings.TrimPrefix `href="#` | strings.TrimSuffix `"`) -}}
-  {{- end -}}
-  {{- $ids := slice -}}
-  {{- range $refs | uniq -}}
-    {{- if strings.Contains $c (printf `id="%s"` .) }}{{ $ids = $ids | append . }}{{ end -}}
-  {{- end -}}
-  {{- $out = dict "svg" $svg "file" $file "currentColor" (gt (len (findRE `(?i)currentcolor` $c 1)) 0) "ids" $ids -}}
+  {{- $out = dict "svg" $svg "file" $file "currentColor" (gt (len (findRE `(?i)currentcolor` $c 1)) 0) -}}
 {{- else -}}
   {{- errorf "unity/icon.html: unity/icons/%s.svg not found" . -}}
 {{- end -}}
