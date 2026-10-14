@@ -79,6 +79,10 @@ const SITES: Record<string, SiteSpec> = {
         !welcome.includes('<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">')
           && "the welcome post's TeX block does not render as MathML",
         !welcome.includes('<pre tabindex="0" class="chroma">') && "the welcome post's code is not highlighted with classes",
+        // The site sets privacy.youtube.privacyEnhanced, so the welcome
+        // post's YouTube player sets no cookies when the post loads.
+        !welcome.includes('src="https://www.youtube-nocookie.com/embed/0RKpf3rK57I?')
+          && "the welcome post's YouTube player loads from a host other than youtube-nocookie.com",
         !sitemap.includes("/series/</loc>") && "sitemap.xml lacks the series taxonomy",
         robotsSitemap(out, "robots.txt", "https://example.org/sitemap.xml"),
         // The solitaire and icon pages set noindex.

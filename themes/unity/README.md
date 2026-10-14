@@ -261,6 +261,8 @@ The `spotify` shortcode embeds a Spotify player. It takes a `type`, which is `al
 
 The theme's `youtube` shortcode replaces Hugo's. It takes the same arguments as [Hugo's](https://gohugo.io/shortcodes/youtube/) and follows your `privacy.youtube` settings, but it sizes the player to 16:9 from the theme's stylesheet instead of style attributes. A `class` argument replaces the class that sizes the player, so give your class a size in `custom.css`.
 
+The Spotify player always loads from open.spotify.com, which sets cookies of its own. Unless your site sets `privacy.youtube.privacyEnhanced`, the YouTube player loads from www.youtube.com, which sets cookies of its own too.
+
 In feeds, each player becomes a link to the same item on Spotify or YouTube, because a feed reader shows a player without the theme's stylesheet.
 
 ## Customizing
