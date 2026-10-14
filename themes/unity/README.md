@@ -232,6 +232,8 @@ The theme's render hooks extend Hugo's Markdown:
     --up-font-mono:"Fira Mono",ui-monospace,monospace;
   }
   ```
+
+  The top panel and the home terminal declare `color-scheme: dark`, so the browser draws their scrollbars and form controls dark. If your site paints either one light, set `color-scheme: light` on `.up-top-panel` or `.up-neofetch` in `custom.css`.
 - **Accent colors.** The accent paints highlights, such as selected text, menu rows under the pointer, primary buttons, progress bars, and focus rings. Edit > Preferences offers a swatch for each preset under `params.desktop.accents`, and `params.desktop.accent` names the preset each page starts with. The theme defines `orange`, `green`, `aubergine`, and `blue`. Your site adds a preset with a table of its own and removes one by setting it to `false`:
 
   ```toml
