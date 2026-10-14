@@ -8,7 +8,7 @@
 // focus escape screenReaderMode enables); keep the table in sync when
 // bindings change.
 
-import { t } from "./i18n";
+import { locale, t } from "./i18n";
 
 interface ShortcutRow {
   /** Alternative combos; each combo is a list of keycap labels. */
@@ -108,6 +108,17 @@ export function shortcutSections(has: ShortcutSurfaces): ShortcutSection[] {
   ];
 }
 
+/** One piece of a row's keys: a combo, or the words that join two combos. */
+export type KeyPart = { combo: readonly string[] } | { join: string };
+
+/** A row's combos with the words between them, joined the way `lang`
+ *  joins alternatives, such as "A, B, or C" in English. */
+export function keyParts(combos: readonly (readonly string[])[], lang = locale()): KeyPart[] {
+  const list = new Intl.ListFormat(lang, { type: "disjunction" });
+  return list.formatToParts(combos.map((_, i) => String(i))).map((part) =>
+    part.type === "element" ? { combo: combos[Number(part.value)] ?? [] } : { join: part.value.trim() });
+}
+
 function join(text: string): HTMLElement {
   const span = document.createElement("span");
   span.className = "up-kbd-join";
@@ -118,16 +129,19 @@ function join(text: string): HTMLElement {
 function buildKeys(row: ShortcutRow): HTMLElement {
   const keys = document.createElement("div");
   keys.className = "up-shortcut-keys";
-  row.combos.forEach((combo, ci) => {
-    if (ci > 0) keys.appendChild(join(t("js_shortcuts_or")));
-    combo.forEach((label, ki) => {
+  for (const part of keyParts(row.combos)) {
+    if ("join" in part) {
+      keys.appendChild(join(part.join));
+      continue;
+    }
+    part.combo.forEach((label, ki) => {
       if (ki > 0 && !row.loose) keys.appendChild(join("+"));
       const kbd = document.createElement(row.gesture ? "span" : "kbd");
       kbd.className = row.gesture ? "up-kbd is-gesture" : "up-kbd";
       kbd.textContent = label;
       keys.appendChild(kbd);
     });
-  });
+  }
   return keys;
 }
 

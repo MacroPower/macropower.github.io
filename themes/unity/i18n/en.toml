@@ -1092,8 +1092,6 @@ other = "Up"
 other = "Down"
 [js_shortcuts_step_history]
 other = "Step through history"
-[js_shortcuts_or]
-other = "or"
 [js_shortcuts_title]
 other = "Keyboard shortcuts"
 

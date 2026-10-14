@@ -13,7 +13,7 @@
 // aria-live status line), and [data-sol-action="<id>"] buttons that mirror
 // the on-canvas controls for keyboard and screen-reader users.
 
-import { t, tn } from "../i18n";
+import { locale, t, tn } from "../i18n";
 import {
   Klondike, SUITS, itemAt, sameLoc, type Card, type Hint, type Loc, type Suit,
 } from "./klondike";
@@ -184,6 +184,12 @@ function suitName(suit: Suit): string {
 
 function cardName(card: Card): string {
   return t("js_solitaire_card", { rank: rankName(card.rank), suit: suitName(card.suit) });
+}
+
+/** The cards, joined the way the page's language joins a list, such as
+ *  "A, B, and C" in English. */
+function cardNames(cards: readonly Card[]): string {
+  return new Intl.ListFormat(locale(), { type: "conjunction" }).format(cards.map(cardName));
 }
 
 (() => {
@@ -639,7 +645,7 @@ function cardName(card: Card): string {
     if (record.type === "draw") {
       sfx.play("draw");
       sync();
-      announce(t("js_solitaire_drew", { cards: game.waste.slice(wasteBefore).map(cardName).join(", ") }));
+      announce(t("js_solitaire_drew", { cards: cardNames(game.waste.slice(wasteBefore)) }));
     } else {
       sfx.play("shuffle");
       sync({ stagger: (p) => (p.loc.kind === "stock" ? (record.count - 1 - p.index) * 12 : 0) });
@@ -778,10 +784,6 @@ function cardName(card: Card): string {
       case "foundation": return t("js_solitaire_pile_foundation", { suit: suitName(itemAt(SUITS, loc.pile)) });
       case "tableau": return t("js_solitaire_pile_column", { column: loc.pile + 1 });
     }
-  }
-
-  function cardNames(run: readonly Card[]): string {
-    return run.map(cardName).join(", ");
   }
 
   /** The status line for the cursor: its pile, then the cards from the

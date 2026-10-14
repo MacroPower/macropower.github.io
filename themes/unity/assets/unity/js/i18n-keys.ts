@@ -161,7 +161,6 @@ export interface Messages {
   js_shortcuts_open_dash: never;
   js_shortcuts_open_hud: never;
   js_shortcuts_open_selected: never;
-  js_shortcuts_or: never;
   js_shortcuts_paste_cut: never;
   js_shortcuts_play_hint: never;
   js_shortcuts_scroll: never;
