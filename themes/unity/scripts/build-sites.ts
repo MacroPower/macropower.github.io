@@ -496,15 +496,18 @@ mainSections = ["posts"]
       "content/work.md": page("Work", "layout = 'portfolio'\n"),
       "content/resume.md": page("Resume", "layout = 'resume'\npdf = 'https://example.com/cv.pdf'\n"),
       "content/game.md": page("Game", "layout = 'cards'\n"),
+      "content/glyphs.md": page("Glyphs", "layout = 'catalogue'\n"),
       "content/posts/one.md": page("One"),
       "content/posts/note.md": page("Note", "layout = 'plain'\n"),
       "layouts/portfolio.html": '{{ define "main" }}{{ partial "unity/page/projects.html" . }}{{ end }}\n',
       "layouts/resume.html": '{{ define "main" }}{{ partial "unity/page/cv.html" . }}{{ end }}\n',
       "layouts/cards.html": '{{ define "main" }}{{ partial "unity/page/solitaire.html" . }}{{ end }}\n',
+      "layouts/catalogue.html": '{{ define "main" }}{{ partial "unity/page/icons.html" . }}{{ end }}\n',
       "layouts/plain.html": '{{ define "main" }}{{ .Content }}{{ end }}\n',
     },
     check: (out) => [
-      ...Object.entries({ "work/index.html": "projects", "resume/index.html": "cv", "game/index.html": "solitaire" })
+      ...Object.entries({ "work/index.html": "projects", "resume/index.html": "cv", "game/index.html": "solitaire",
+        "glyphs/index.html": "icons" })
         .filter(([file, bundle]) => !bundles(read(join(out, file))).includes(bundle))
         .map(([file, bundle]) => `${file} does not load the ${bundle} bundle`),
       ...htmlFiles(out).flatMap((file) => bundleMismatches(relative(out, file), read(file))),
