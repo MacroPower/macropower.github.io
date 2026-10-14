@@ -4106,3 +4106,100 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   pre, img, figure, .up-alert{break-inside:avoid}
   h1, h2, h3, h4{break-after:avoid}
 }
+
+/* =========================================================================
+   forced colors: a Windows contrast theme or another palette the user
+   forces on every page. The browser replaces each color with a system
+   color and drops every shadow and gradient, so a state that only tints,
+   glows, or fills disappears. Here each focus state that draws no outline
+   gets a CanvasText ring, and each selected, current, or pressed state
+   fills with Highlight. A fill opts out of forced colors, because the
+   browser otherwise paints a Canvas plate behind its text, so the fill
+   and every rule inside it name their colors here. forced-colors.test.ts
+   fails when a state that paints only colors has no rule here.
+   ========================================================================= */
+@media (forced-colors: active){
+  /* Fields and small buttons, ringed outside their border. */
+  .up-docv-pagenum:focus,
+  .up-dash-search:focus,
+  .up-hud-input:focus,
+  .up-lock-input:focus,
+  .up-dash-more:focus-visible,
+  .up-dash-lens:focus-visible{outline:2px solid CanvasText;outline-offset:1px}
+  /* Tiles, menu rows, and panes, ringed inside their edge. */
+  .up-dash-tile:focus,
+  .up-ctx-item:focus-visible,
+  .up-docv-view:focus-visible,
+  .up-icons-cell:focus-visible,
+  .up-icons-seg button:focus-visible{outline:2px solid CanvasText;outline-offset:-2px}
+
+  /* Forced colors paints a transparent border, so each resting row's
+     bar takes the page color and only the selected row shows one. */
+  .up-naut-item,
+  .up-post-row{border-left-color:Canvas}
+
+  .up-naut-item.is-active,
+  .up-post-row.is-active,
+  .up-project-tile.is-active,
+  .up-trash-tile.is-active,
+  .up-hud-row.is-selected,
+  .up-dash-lens.is-active,
+  .up-icons-seg button.is-active,
+  .up-docv-thumb.is-active .up-docv-thumb-num,
+  .up-docv-zoom-readout[aria-pressed="true"]:not(:disabled),
+  .up-pathbar-btn.is-current,
+  .up-pathbar-icon-btn.is-active,
+  .up-pathbar-icon-btn[aria-expanded="true"],
+  .up-pathbar-icon-btn[aria-pressed="true"],
+  .up-pref-toggle.is-on,
+  .up-daw-btn.is-on,
+  .up-daw-wave.is-on,
+  .up-daw-time.is-on,
+  .up-daw-patchmenu-item.is-on{
+    forced-color-adjust:none;
+    background:Highlight;color:HighlightText;border-color:Highlight;
+    box-shadow:none;text-shadow:none;
+  }
+  /* The parts of a fill that main.css colors on their own. */
+  .up-naut-item.is-active .up-naut-item-icon,
+  .up-naut-item.is-active .up-naut-item-count,
+  .up-post-row.is-active .up-post-meta,
+  .up-post-row.is-active .up-post-date,
+  .up-hud-row.is-selected .up-hud-row-path,
+  .up-hud-row.is-selected .up-hud-row-label,
+  .up-project-tile.is-active .up-project-tile-label,
+  .up-trash-tile.is-active .up-trash-tile-label{color:inherit;background:none;text-shadow:none}
+  .up-docv-thumb.is-active .up-docv-thumb-frame{outline:2px solid Highlight}
+  .up-daw-led.is-on::before{background:Highlight}
+
+  /* The switch draws its track and knob with fills that forced colors
+     drops, so it gets an edge and a solid knob. */
+  .up-pref-toggle{
+    border:1px solid ButtonText;
+    &::after{top:1px;left:1px;background:ButtonText}
+  }
+  .up-pref-toggle.is-on::after{background:HighlightText}
+  /* Each swatch shows the color it picks. */
+  .up-accent-swatch{forced-color-adjust:none}
+  .up-accent-swatch.is-active{border-color:CanvasText}
+
+  /* The keyboard cursor of a list or grid, while focus sits elsewhere. */
+  .up-post-row.is-focused,
+  .up-project-tile.is-focused,
+  .up-trash-tile.is-focused{outline:2px dashed CanvasText;outline-offset:-2px}
+  .up-post-row.is-active.is-focused,
+  .up-project-tile.is-active.is-focused,
+  .up-trash-tile.is-active.is-focused{outline-color:HighlightText;box-shadow:none}
+  /* The primary tile of a multi-selection. */
+  .up-project-tile.is-anchor.is-active,
+  .up-trash-tile.is-anchor.is-active{box-shadow:inset 0 0 0 2px HighlightText}
+  /* Real focus draws a solid ring over the cursor, in the fill's text
+     color on a selected row. */
+  .up-post-row:focus-visible,
+  .up-project-tile:focus-visible,
+  .up-trash-tile:focus-visible{outline-style:solid}
+  .up-naut-item.is-active:focus-visible,
+  .up-post-row.is-active:focus-visible,
+  .up-project-tile.is-active:focus-visible,
+  .up-trash-tile.is-active:focus-visible{outline-color:HighlightText}
+}
