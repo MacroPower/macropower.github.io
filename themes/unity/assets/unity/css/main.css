@@ -702,10 +702,10 @@ body.up-resizing *{ cursor:inherit !important; }
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
   &.is-active{
-    /* The --up-accent-light to --up-accent gradient, deliberately kept
-       over the AA-darker shades a contrast pass once swapped in: the active
-       rows must match the tile-selection accent, and 13px bold white on it is
-       borderline-large text the text-shadow further separates. */
+    /* The --up-accent-light to --up-accent gradient, which matches the
+       selected tiles. White text on it contrasts less than 4.5:1 for some
+       presets. The prefers-contrast block fills the row with
+       --up-accent-dark for a visitor who asks for more contrast. */
     background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 95%, transparent) 0%, var(--up-accent) 100%);
     color:#fff;
     border-left-color:color-mix(in srgb, var(--up-accent-darker) 85%, black);
@@ -4106,6 +4106,43 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   }
   pre, img, figure, .up-alert{break-inside:avoid}
   h1, h2, h3, h4{break-after:avoid}
+}
+
+/* =========================================================================
+   more contrast: a visitor whose system asks for more contrast, such as
+   through the Increase contrast setting on macOS. By default each
+   highlight behind white text paints the brand's lighter accent shades,
+   such as on a selected row or the menu row under the pointer. White
+   text on those shades contrasts less than 4.5:1 for some presets. Here
+   each highlight fills with --up-accent-dark, and each button that
+   lightens under the pointer darkens to --up-accent-darker instead.
+
+   This block sits before the forced-colors block, so the Highlight fills
+   there win on a system that asks for both. contrast.test.ts fails when
+   this block has no rule for a fill under white text that reads
+   --up-accent or --up-accent-light. It also fails when white text on a
+   fill here contrasts less than 4.5:1.
+   ========================================================================= */
+@media (prefers-contrast: more){
+  .up-naut-item.is-active,
+  .up-post-row.is-active,
+  .up-project-tile.is-active,
+  .up-trash-tile.is-active,
+  .up-hud-row.is-selected,
+  .up-docv-thumb.is-active .up-docv-thumb-num,
+  .up-icons-seg button.is-active,
+  .up-cal-cell.is-today,
+  .up-menu-item:hover,
+  .up-dropdown-row:hover,
+  .up-ctx-item:hover,
+  .up-ctx-item:focus-visible,
+  .up-code-copy.is-copied,
+  .up-dropdown-btn,
+  .up-dlg-btn.is-primary,
+  .up-skip-link{background:var(--up-accent-dark)}
+  .up-dropdown-btn:hover,
+  .up-dlg-btn.is-primary:hover{background:var(--up-accent-darker)}
+  .up-hud-row.is-selected .up-hud-row-path{color:rgba(255,255,255,.9)}
 }
 
 /* =========================================================================

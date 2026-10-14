@@ -8,6 +8,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 // main.css without its comments.
 const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+const toml = readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8");
 
 // Splits a selector list at its top-level commas.
 function splitList(list: string): string[] {
@@ -74,9 +75,13 @@ const rules: Rule[] = [];
   }
 }
 
+const isMore = (r: Rule): boolean => r.media.includes("prefers-contrast: more");
 const isForced = (r: Rule): boolean => r.media.includes("forced-colors: active");
-// The rules a screen draws.
-const screen = rules.filter((r) => !isForced(r) && !r.media.includes("print"));
+// The rules a screen draws without a contrast preference.
+const screen = rules.filter((r) => !isMore(r) && !isForced(r) && !r.media.includes("print"));
+// The rules a screen draws when the visitor asks for more contrast, in
+// source order, so a later rule overrides an earlier one.
+const screenMore = rules.filter((r) => !isForced(r) && !r.media.includes("print"));
 
 // WCAG relative luminance of an [r, g, b] color in 0-255.
 function luminance(rgb: number[]): number {
@@ -114,6 +119,64 @@ function whiteAlpha(color: string | undefined): number | undefined {
 const fill = (r: Rule): string | undefined =>
   r.decls.get("background") ?? r.decls.get("background-color") ?? r.decls.get("background-image");
 
+// The value of the last rule in `list` that sets `prop` on exactly this
+// selector.
+function last(list: Rule[], selector: string, prop: string): string | undefined {
+  let value: string | undefined;
+  for (const r of list) if (r.selector === selector && r.decls.has(prop)) value = r.decls.get(prop);
+  return value;
+}
+
+// A trailing state, such as ":hover" or ".is-today".
+const STATE = /(:hover|:focus-visible|:focus|:active|\.is-[\w-]+)$/;
+
+// The text colors on a fill. The first is the fill's own color, or else
+// the color of its selector without its states, such as .up-cal-cell for
+// .up-cal-cell.is-today. Each color a descendant rule sets follows.
+function textColors(list: Rule[], selector: string): { selector: string; color: string }[] {
+  let own: string | undefined;
+  for (let s = selector; own === undefined; ) {
+    own = last(list, s, "color");
+    const next = s.replace(STATE, "");
+    if (next === s) break;
+    s = next;
+  }
+  const out = own === undefined ? [] : [{ selector, color: own }];
+  const nested = new Set(list.filter((r) => r.selector.startsWith(`${selector} `)).map((r) => r.selector));
+  for (const s of nested) {
+    const color = last(list, s, "color");
+    if (color !== undefined) out.push({ selector: s, color });
+  }
+  return out;
+}
+
+interface Preset {
+  name: string;
+  dark: string | undefined;
+  darker: string | undefined;
+}
+
+// The dark shades of each accent preset, plus the internal accent
+// block's values, which paint a page whose site removes every preset.
+const presets: Preset[] = toml
+  .split(/^\s*(?=\[)/m)
+  .flatMap((section) => {
+    const name = /^\[params\.desktop\.accents\.(\w+)\]/.exec(section)?.[1];
+    const shade = (key: string): string | undefined =>
+      new RegExp(`^\\s*${key}\\s*=\\s*"(#[0-9a-f]{6})"`, "im").exec(section)?.[1];
+    return name ? [{ name, dark: shade("dark"), darker: shade("darker") }] : [];
+  });
+const fallback = rules.find((r) => r.selector === ":root" && r.decls.has("--up-accent-dark"))?.decls;
+presets.push({
+  name: "fallback",
+  dark: fallback?.get("--up-accent-dark"),
+  darker: fallback?.get("--up-accent-darker"),
+});
+
+// A fill that reads the base accent or its lighter shade, which contrast
+// less than 4.5:1 with white for some presets.
+const LIGHT_FILL = /var\(--up-accent(-light)?\)/;
+
 describe("contrast", () => {
   it("keeps every alert title at 4.5:1 on its bar", () => {
     const base = screen.find((r) => r.selector === ".up-alert");
@@ -150,5 +213,53 @@ describe("contrast", () => {
       .filter((s) => !s.includes(".is-disabled"));
     expect(dim).toEqual(expect.arrayContaining([...skip.keys()]));
     expect(dim.filter((s) => !skip.has(s))).toEqual([]);
+  });
+
+  it("fills every accent highlight under white text with a dark shade when asked", () => {
+    const filled = [
+      ...new Set(
+        screen
+          .filter((r) => !r.selector.includes("::") && LIGHT_FILL.test(fill(r) ?? ""))
+          .filter((r) => textColors(screen, r.selector).some((t) => whiteAlpha(t.color) !== undefined))
+          .map((r) => r.selector),
+      ),
+    ];
+    expect(filled).toEqual(expect.arrayContaining([
+      ".up-naut-item.is-active", ".up-post-row.is-active", ".up-hud-row.is-selected",
+      ".up-menu-item:hover", ".up-cal-cell.is-today", ".up-dropdown-btn:hover",
+    ]));
+    const bare = filled.filter((s) => {
+      const more = last(rules.filter(isMore), s, "background");
+      return more === undefined || LIGHT_FILL.test(more) || !/var\(--up-accent-dark(er)?\)/.test(more);
+    });
+    expect(bare).toEqual([]);
+  });
+
+  it("keeps white text at 4.5:1 on each dark fill when asked", () => {
+    expect(presets.map((p) => p.name)).toEqual(expect.arrayContaining(["orange", "green", "aubergine", "blue", "fallback"]));
+    const fills = rules.filter((r) => isMore(r) && /var\(--up-accent-dark(er)?\)/.test(fill(r) ?? ""));
+    expect(fills.length).toBeGreaterThan(0);
+    const low = fills.flatMap((r) => {
+      const shade = /var\(--up-accent-darker\)/.test(fill(r)!) ? "darker" : "dark";
+      return textColors(screenMore, r.selector).flatMap(({ selector, color }) => {
+        const alpha = whiteAlpha(color);
+        if (alpha === undefined) return [];
+        return presets.flatMap((p) => {
+          const hex = p[shade];
+          if (hex === undefined) return [`${p.name} has no ${shade} shade`];
+          const under = rgb(hex);
+          return contrast(over(WHITE, alpha, under), under) < 4.5 ? [`${selector} ${color} on ${p.name} ${shade}`] : [];
+        });
+      });
+    });
+    expect(low).toEqual([]);
+  });
+
+  it("puts the more-contrast block before the forced-colors block", () => {
+    // Both apply on a system that forces colors and asks for more
+    // contrast, and the Highlight fills must win.
+    const lastMore = rules.findLastIndex(isMore);
+    expect(lastMore).toBeGreaterThan(-1);
+    expect(lastMore).toBeLessThan(rules.findIndex(isForced));
   });
 });

@@ -57,6 +57,10 @@ const FEATURES: Record<string, Feature> = {
     marker: /@layer\b/,
     floor: { chrome: "99", edge: "99", firefox: "97", ios: "15.4", opera: "85", safari: "15.4" },
   },
+  "@media (prefers-contrast: more)": {
+    marker: /@media \(prefers-contrast: more\)/,
+    floor: { chrome: "96", edge: "96", firefox: "101", ios: "14.5", opera: "82", safari: "14.1" },
+  },
   "@media (scripting: none)": {
     marker: /@media \(scripting: none\)/,
     floor: { chrome: "120", edge: "120", firefox: "113", ios: "17", opera: "106", safari: "17" },
