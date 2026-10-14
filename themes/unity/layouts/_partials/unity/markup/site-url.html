@@ -4,7 +4,8 @@
   unity/menu-url.html resolves. A path that already starts with the baseURL's
   own path, such as /sub/files/x.pdf on a site at
   https://example.org/sub/, passes through, so content written for the
-  subpath keeps working.
+  subpath keeps working. With lang, such a path resolves the same way as
+  /files/x.pdf, so its language prefix lands after the base path.
 
   Args (dict): path     - an escaped path from the site root, such as
                           /files/x.pdf
@@ -13,16 +14,16 @@
                           relLangURL does
 */ -}}
 {{- $base := urls.Parse site.BaseURL -}}
+{{- $prefixed := and (ne $base.Path "") (ne $base.Path "/") (hasPrefix .path $base.Path) -}}
 {{- $out := "" -}}
-{{- if and (ne $base.Path "") (ne $base.Path "/") (hasPrefix .path $base.Path) -}}
+{{- if .lang -}}
+  {{- $p := cond $prefixed (strings.TrimPrefix $base.Path .path) (strings.TrimPrefix "/" .path) -}}
+  {{- $out = cond .absolute (absLangURL $p) (relLangURL $p) -}}
+{{- else if $prefixed -}}
   {{- $out = .path -}}
   {{- if .absolute }}{{ $out = printf "%s://%s%s" $base.Scheme $base.Host .path }}{{ end -}}
 {{- else -}}
   {{- $p := strings.TrimPrefix "/" .path -}}
-  {{- if .lang -}}
-    {{- $out = cond .absolute (absLangURL $p) (relLangURL $p) -}}
-  {{- else -}}
-    {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
-  {{- end -}}
+  {{- $out = cond .absolute (absURL $p) (relURL $p) -}}
 {{- end -}}
 {{- return $out -}}

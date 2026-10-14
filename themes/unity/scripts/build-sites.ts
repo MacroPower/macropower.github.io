@@ -151,8 +151,9 @@ const SITES: Record<string, SiteSpec> = {
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
   },
   // Addresses a site writes in its menu and data, on a site served from
-  // a subdirectory. Each resolves under baseURL once, whether or not it
-  // already starts with /sub/, and a menu url keeps its case and query.
+  // a subdirectory in two languages. Each resolves under baseURL once,
+  // whether or not it already starts with /sub/, and a menu url keeps its
+  // case and query. A menu url takes the language's prefix after /sub/.
   // A menu url with a scheme such as tel: keeps it, but a javascript:
   // url never reaches an href.
   urls: {
@@ -174,11 +175,18 @@ const SITES: Record<string, SiteSpec> = {
   name = "Phone"
   url = "tel:+15550100"
 [[menu.help]]
+  name = "Imprint"
+  url = "/sub/imprint/"
+[[menu.help]]
   name = "Text"
   url = "sms:+15550100"
 [[menu.help]]
   name = "Script"
   url = "JavaScript:alert(1)"
+[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
 `,
       "content/sponsors.md": page("Sponsors", "layout = 'sponsors'\n"),
       "data/sponsors.yaml": "- name: Ada\n  avatar: /ada.png\n- name: Grace\n  avatar: grace.png\n- name: Hopper\n  avatar: /sub/hopper.png\n",
@@ -188,23 +196,36 @@ const SITES: Record<string, SiteSpec> = {
       "static/files/index.html": "Files\n",
       "static/notes/index.html": "Notes\n",
       "static/Search/index.html": "Search\n",
+      "static/imprint/index.html": "Imprint\n",
+      "static/de/files/index.html": "Dateien\n",
+      "static/de/notes/index.html": "Notizen\n",
+      "static/de/Search/index.html": "Suche\n",
+      "static/de/imprint/index.html": "Impressum\n",
       "static/ada.png": "PNG",
       "static/hopper.png": "PNG",
     },
     check: (out) => {
       const html = read(join(out, "sponsors/index.html"));
+      const de = read(join(out, "de/index.html"));
       return [
         ...[
           'href="/sub/files/" data-launcher="files"',
           'href="/sub/notes/" data-launcher="notes"',
           'href="/sub/Search/?q=Go" data-launcher="search"',
           'href="tel:&#43;15550100" data-launcher="phone"',
+          '<a class="up-menu-item" href="/sub/imprint/"',
           '<a class="up-menu-item" href="sms:&#43;15550100"',
           'src="/sub/ada.png"',
           'src="/sub/grace.png"',
           'src="/sub/hopper.png"',
         ].map((want) => !html.includes(want) && `sponsors/index.html lacks ${want}`),
         /href="javascript:/i.test(html) && "sponsors/index.html links the javascript: menu url",
+        ...[
+          'href="/sub/de/files/" data-launcher="files"',
+          'href="/sub/de/notes/" data-launcher="notes"',
+          'href="/sub/de/Search/?q=Go" data-launcher="search"',
+          '<a class="up-menu-item" href="/sub/de/imprint/"',
+        ].map((want) => !de.includes(want) && `de/index.html lacks ${want}`),
       ];
     },
   },
