@@ -291,7 +291,7 @@ The dev tooling needs Node 22.18 or later, the first Node 22 release that runs t
 
 The theme vendors xterm.js and pdf.js under `assets/unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.ts` or `scripts/vendor-pdfjs.ts` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
-The bash-conformance suite skips itself where bash is absent.
+The bash-conformance suite skips itself where bash is absent. The suite that checks Hugo's output against the scripts' types builds the example site and a bare site. It skips itself where Hugo is absent.
 
 ## License
 

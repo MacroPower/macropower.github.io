@@ -3,6 +3,7 @@
 // Keep in lockstep with the JS objects assigned in
 // _partials/unity/ui/runtime.html (UP_SITE and UP_I18N), page-window.ts
 // (UP_PAGE_WINDOW_STATE), and dialogs.ts (uiDialog). events.ts types the custom DOM events.
+// contracts.test.ts checks UP_SITE and UP_I18N against a Hugo build.
 
 export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success" | "none";
 
