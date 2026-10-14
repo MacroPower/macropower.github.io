@@ -251,6 +251,10 @@ enableRobotsTXT = true
       "content/imprint.md": page("Imprint"),
       "content/contact.md": page("Contact"),
       "content/contact.de.md": page("Kontakt"),
+      "content/posts/one.md": page("One", "date = 2024-01-01\n"),
+      "content/posts/zwei.de.md": page("Zwei", "date = 2024-02-01\n"),
+      "content/posts/three.md": page("Three", "date = 2024-03-01\n"),
+      "content/posts/vier.de.md": page("Vier", "date = 2024-04-01\n"),
       "i18n/de.toml": '[menu_file]\nother = "Datei"\n[messages]\nother = "Nachrichten"\n',
     },
     check: (out) => [
@@ -270,6 +274,19 @@ enableRobotsTXT = true
       !read(join(out, "about/index.html")).includes('class="up-lang-badge" aria-hidden="true">En<')
         && "about/index.html lacks the default En badge",
       ...panelAriaProblems("de/about/index.html", read(join(out, "de/about/index.html"))),
+      // Each post's older and newer pathbar arrows, with # for a disabled
+      // arrow. The two languages' posts alternate by date, and each arrow
+      // must skip the other language's posts.
+      ...Object.entries({
+        "posts/one/index.html": "# /posts/three/",
+        "posts/three/index.html": "/posts/one/ #",
+        "de/posts/zwei/index.html": "# /de/posts/vier/",
+        "de/posts/vier/index.html": "/de/posts/zwei/ #",
+      }).map(([file, want]) => {
+        const got = [...read(join(out, file)).matchAll(/class="up-pathbar-arrow[^"]*"\s+href="([^"]*)"/g)]
+          .map((m) => m[1]).join(" ");
+        return got !== want && `${file}'s pathbar arrows go to "${got}", not "${want}"`;
+      }),
       // The Help menu lists menu.help by weight. A url entry gets the
       // language prefix, and a pageRef entry with no page in the language
       // stays out of that language's menu.
