@@ -1,15 +1,15 @@
 {{- /*
   The canonical registry of the desktop's site pages — the single source of
   truth for every chrome surface that presents them:
-    unity/launcher.html   — the dock tiles (launcherOrder)
-    unity/hud.html        — the focused-app icon (launcherOrder, with a
-                            fallback)
-    unity/dash.html       — the Applications category (dashOrder, kw
-                            haystacks)
-    unity/top-panel.html  — the File menu's "Open <page>" rows
-                            (launcherOrder)
-    unity/ui/runtime.html — UP_SITE.nav, the URL map behind top-panel.ts
-                            nav:<key>
+    unity/launcher/dock.html   — the dock tiles (launcherOrder)
+    unity/hud.html             — the focused-app icon (launcherOrder, with
+                                 a fallback)
+    unity/dash.html            — the Applications category (dashOrder, kw
+                                 haystacks)
+    unity/top-panel/menus.html — the File menu's "Open <page>" rows
+                                 (launcherOrder)
+    unity/ui/runtime.html      — UP_SITE.nav, the URL map behind
+                                 top-panel.ts nav:<key>
 
   The registry is driven by the site's [menu.main] configuration: one entry
   per page, ordered by weight, keyed by identifier (falling back to the

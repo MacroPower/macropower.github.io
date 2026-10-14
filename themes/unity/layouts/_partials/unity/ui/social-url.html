@@ -5,6 +5,9 @@
   unity/page/sponsors.html (github).
 
   Arg: the social name key (e.g. "github", "twitter").
+
+  The result depends only on the name, so call it through partialCached
+  with the name as the variant.
 */ -}}
 {{- $url := "" -}}
 {{- with index (where (partialCached "unity/socials.html" .) "name" .) 0 }}{{ $url = .url }}{{ end -}}

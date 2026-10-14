@@ -8,6 +8,6 @@
                cmd  — optional command rendered after the prompt.
 */ -}}
 {{- $host := site.Params.desktop.host | default "unity" -}}
-{{- $prompt := printf "%s@%s:%s$" (partial "unity/ui/author-handle.html" .) $host .path -}}
+{{- $prompt := printf "%s@%s:%s$" (partialCached "unity/ui/author-handle.html" .) $host .path -}}
 {{- with .cmd }}{{ $prompt = printf "%s %s" $prompt . }}{{ end -}}
 {{- return $prompt -}}

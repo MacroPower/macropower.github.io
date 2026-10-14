@@ -45,6 +45,9 @@ const SITES: Record<string, SiteSpec> = {
       const home = read(join(out, "index.html"));
       const bundles = readdirSync(join(out, "js"));
       const floor = /\[module\.hugoVersion\]\s+min = "([^"]+)"/.exec(read(join(theme, "hugo.toml")))?.[1];
+      const current = (file: string): string =>
+        [...read(join(out, file)).matchAll(/class="up-launcher-tile is-active"[^>]*data-launcher="([a-z]+)"/g)]
+          .map((m) => m[1]).join(" ");
       return [
         // esbuild keeps only legal comments, so each bundle that inlines a
         // vendored library must carry that library's licence notice.
@@ -66,6 +69,18 @@ const SITES: Record<string, SiteSpec> = {
         !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
         !read(join(out, "projects/index.html")).includes('href="https://github.com/jane"')
           && "the projects sidebar lacks the GitHub social link",
+        // The chrome renders once per language around the parts that follow
+        // the page: the panel's title and the launcher's current tiles.
+        ...Object.entries({ "index.html": "home", "about/index.html": "", "cv/index.html": "cv",
+          "posts/index.html": "blog", "solitaire/index.html": "solitaire" })
+          .filter(([file, keys]) => current(file) !== keys)
+          .map(([file, keys]) => `${file} marks the launcher tiles "${current(file)}" current, not "${keys}"`),
+        ...htmlFiles(out).map((file) => {
+          const html = read(file);
+          const panel = /data-panel-slot="title">\s*([^<]*?)\s*</.exec(html)?.[1];
+          const titlebar = /class="up-titlebar-text">([^<]*)</.exec(html)?.[1];
+          return panel !== titlebar && `${relative(out, file)} titles its panel "${panel}" and its window "${titlebar}"`;
+        }),
         // Nothing a Content Security Policy without 'unsafe-inline' blocks.
         ...htmlFiles(out).flatMap((file) => {
           const html = read(file);
@@ -119,8 +134,18 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
 `,
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
+      "i18n/de.toml": '[menu_file]\nother = "Datei"\n[messages]\nother = "Nachrichten"\n',
     },
     check: (out) => [
+      // The panel's menus and indicators render once per language.
+      ...["index.html", "about/index.html", "de/index.html", "de/about/index.html"].flatMap((file) => {
+        const html = read(join(out, file));
+        const [menu, indicator] = file.startsWith("de/") ? ["Datei", "Nachrichten"] : ["File", "Messages"];
+        return [
+          !html.includes(`aria-expanded="false">${menu}</button>`) && `${file} lacks the ${menu} menu`,
+          !html.includes(`<div class="up-dropdown-header">${indicator}</div>`) && `${file} lacks the ${indicator} indicator`,
+        ];
+      }),
       !read(join(out, "de/about/index.html")).includes('hreflang="x-default" href="https://example.org/about/"')
         && "de/about/index.html lacks an x-default link to the English page",
       !read(join(out, "de/about/index.html")).includes('class="up-lang-badge" aria-hidden="true">DE<')
@@ -526,11 +551,13 @@ mainSections = ["posts"]
   // and one of them a name with no partial.
   indicators: {
     files: {
-      "hugo.toml": `${BARE}[params.desktop]
+      "hugo.toml": `${BARE}title = "Forecast"
+[params.desktop]
   indicators = ["clock", "weather", "nope"]
 `,
+      "content/about.md": page("About"),
       "layouts/_partials/unity/indicators/weather.html":
-        '<div class="up-panel-item" data-indicator="weather">{{ .Kind }}</div>\n',
+        '<div class="up-panel-item" data-indicator="weather">{{ .Title }}</div>\n',
     },
     warns: [/params\.desktop\.indicators names "nope"/],
     check: (out) => {
@@ -538,7 +565,8 @@ mainSections = ["posts"]
       const keys = [...home.matchAll(/data-indicator="([a-z]+)"/g)].map((m) => m[1]).join(" ");
       return [
         keys !== "clock weather" && `index.html renders the indicators "${keys}", not "clock weather"`,
-        !home.includes('data-indicator="weather">home<') && "the site's indicator does not get the page as its context",
+        !read(join(out, "about/index.html")).includes('data-indicator="weather">Forecast<')
+          && "the site's indicator does not get the site as its context",
       ];
     },
   },

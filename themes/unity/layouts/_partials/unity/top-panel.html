@@ -1,51 +1,15 @@
+{{- /*
+  The top panel. Only the title slot and the language badge depend on the
+  page. The menus and the indicators are the same on every page, so they
+  render once per language through partialCached. Context: the page.
+*/ -}}
 {{- $playlist := partialCached "unity/playlist.html" . -}}
 <div class="up-top-panel" data-ssr{{ with $playlist }} data-vol-playlist="{{ . | jsonify }}"{{ end }}>
   <div class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot="title">
     {{ with .Title }}{{ . }}{{ else }}{{ site.Title }}{{ end }}
   </div>
 
-  {{- /* One "Open <page>" row per launcher page (minus Home), straight from
-       the site-pages registry so the File menu, dock, and Dash agree. */ -}}
-  {{- $reg := partialCached "unity/site-pages.html" . -}}
-  {{- $fileItems := slice -}}
-  {{- range $reg.launcherOrder }}{{ if ne . "home" }}
-    {{- $p := index $reg.pages . -}}
-    {{- $fileItems = $fileItems | append (dict "label" (partial "unity/ui/t" (slice "open_page" (dict "Page" $p.label))) "action" (printf "nav:%s" .)) -}}
-  {{- end }}{{ end -}}
-  {{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" (partial "unity/ui/t" "close_window") "disabled" true "shortcut" "Ctrl+W") -}}
-  {{ partial "unity/ui/panel-menu.html" (dict "menu" "file" "label" (partial "unity/ui/t" "menu_file") "items" $fileItems) }}
-
-  {{ partial "unity/ui/panel-menu.html" (dict "menu" "edit" "label" (partial "unity/ui/t" "menu_edit") "items" (slice
-    (dict "label" (partial "unity/ui/t" "undo") "disabled" true "shortcut" "Ctrl+Z")
-    (dict "label" (partial "unity/ui/t" "redo") "disabled" true "shortcut" "Ctrl+Y")
-    (dict "sep" true)
-    (dict "label" (partial "unity/ui/t" "cut") "disabled" true "shortcut" "Ctrl+X")
-    (dict "label" (partial "unity/ui/t" "copy") "disabled" true "shortcut" "Ctrl+C")
-    (dict "label" (partial "unity/ui/t" "paste") "disabled" true "shortcut" "Ctrl+V")
-    (dict "sep" true)
-    (dict "label" (partial "unity/ui/t" "preferences") "action" "dlg:prefs")
-  )) }}
-
-  {{ partial "unity/ui/panel-menu.html" (dict "menu" "view" "label" (partial "unity/ui/t" "menu_view") "items" (slice
-    (dict "label" (partial "unity/ui/t" "reload") "action" "reload" "shortcut" "Ctrl+R")
-    (dict "label" (partial "unity/ui/t" "toggle_full_window") "action" "fullscreen")
-    (dict "sep" true)
-    (dict "label" (partial "unity/ui/t" "show_launcher") "action" "dlg:launcher-info" "check" true)
-    (dict "label" (partial "unity/ui/t" "show_top_panel") "check" true)
-  )) }}
-
-  {{- $helpExtras := slice -}}
-  {{- with site.Params.repoUrl -}}
-    {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "view_source") "action" "dlg:github") -}}
-  {{- end -}}
-  {{- /* The icon vault is a hidden page; offer it only when the site
-       registers it (an "icons" menu entry, typically dash/launcher=false). */ -}}
-  {{- if index $reg.pages "icons" -}}
-    {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "icon_vault") "action" "nav:icons") -}}
-  {{- end -}}
-  {{- $helpItems := slice (dict "label" (partial "unity/ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}
-  {{- with $helpExtras }}{{ $helpItems = $helpItems | append (dict "sep" true) | append . }}{{ end -}}
-  {{ partial "unity/ui/panel-menu.html" (dict "menu" "help" "label" (partial "unity/ui/t" "menu_help") "items" $helpItems) }}
+  {{ partialCached "unity/top-panel/menus.html" site }}
 
   <div class="up-panel-spacer"></div>
 
@@ -53,13 +17,13 @@
 
   {{- /* params.desktop.indicators names the indicators after the language
         badge, in order. Each name renders
-        _partials/unity/indicators/<name>.html with the page as context, so
-        a site adds an indicator by adding that partial and naming it in the
-        list. */}}
+        _partials/unity/indicators/<name>.html once per language, with the
+        site as context. A site adds an indicator by adding that partial and
+        naming it in the list. */}}
   {{- range site.Params.desktop.indicators }}
     {{- $path := printf "unity/indicators/%s.html" . }}
     {{- if templates.Exists (printf "_partials/%s" $path) }}
-  {{ partial $path $ }}
+  {{ partialCached $path site }}
     {{- else }}
       {{- warnf "unity: params.desktop.indicators names %q, but layouts/_partials/%s does not exist" . $path }}
     {{- end }}

@@ -9,6 +9,9 @@
   DOM contracts queried by page-window.ts and trash.ts — keep them verbatim.
   This partial intentionally does NOT cover the dialog close (.up-dlg-close is
   a distinct class dialogs.ts queries separately).
+
+  The output depends only on max, so a caller that renders on every page
+  calls it through partialCached with max as the variant.
 */ -}}
 <div class="up-tl-group">
   <button class="up-tl up-tl-close" type="button" aria-label="{{ partial "unity/ui/t" "close" }}">{{ partial "unity/icon.html" "glyphs/titlebar-close" }}</button>

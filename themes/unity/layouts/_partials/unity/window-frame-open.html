@@ -10,7 +10,7 @@
 <div class="up-window-stage">
   <section class="up-window-chrome" data-page-window>
     <div class="up-titlebar" data-titlebar>
-      {{ partial "unity/ui/window-controls.html" (dict "max" true) }}
+      {{ partialCached "unity/ui/window-controls.html" (dict "max" true) true }}
       <span class="up-titlebar-text">{{ with .Title }}{{ . }}{{ else }}{{ site.Title }}{{ end }}</span>
     </div>
     <main id="up-main" class="up-window-body up-selectable">

@@ -10,7 +10,7 @@
 */ -}}
 {{- $sponsorURL := .Params.sponsorUrl -}}
 {{- if not $sponsorURL -}}
-  {{- with partial "unity/ui/social-url.html" "github" }}{{ $sponsorURL = printf "https://github.com/sponsors/%s" (path.Base .) }}{{ end -}}
+  {{- with partialCached "unity/ui/social-url.html" "github" "github" }}{{ $sponsorURL = printf "https://github.com/sponsors/%s" (path.Base .) }}{{ end -}}
 {{- end -}}
 <article class="up-sponsors-page up-selectable">
   <h1 class="up-sr-only">{{ .Title }}</h1>

@@ -93,7 +93,7 @@
 {{- with $description }}
 <meta name="twitter:description" content="{{ . }}">
 {{- end }}
-{{- with or (partial "unity/ui/social-url.html" "twitter") (partial "unity/ui/social-url.html" "x") }}
+{{- with or (partialCached "unity/ui/social-url.html" "twitter" "twitter") (partialCached "unity/ui/social-url.html" "x" "x") }}
 <meta name="twitter:site" content="@{{ path.Base . }}">
 {{- end }}
 {{- if .IsHome }}

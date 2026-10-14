@@ -20,7 +20,7 @@
 {{- $accents := slice -}}
 {{- range (partialCached "unity/accents.html" . site.Language.Name).presets }}{{ $accents = $accents | append (dict "name" .name "label" .label) }}{{ end -}}
 {{- $site := dict
-  "handle" (partial "unity/ui/author-handle.html" .)
+  "handle" (partialCached "unity/ui/author-handle.html" .)
   "repo" (site.Params.repoUrl | default "")
   "rss" $rss
   "hotspot" (site.Params.desktop.hotspot | default "personal-site")

@@ -1,4 +1,4 @@
-{{- $handle := partial "unity/ui/author-handle.html" . -}}
+{{- $handle := partialCached "unity/ui/author-handle.html" . -}}
 <div class="up-lock" data-up-lock role="dialog" aria-modal="true" aria-label="{{ partial "unity/ui/t" "lock_screen" }}" hidden>
   <div class="up-lock-backdrop" aria-hidden="true"></div>
   <div class="up-lock-inner">

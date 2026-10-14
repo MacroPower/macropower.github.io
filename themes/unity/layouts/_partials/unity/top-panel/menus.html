@@ -1,0 +1,49 @@
+{{- /*
+  The top panel's File, Edit, View, and Help menus. The HUD indexes their
+  rendered rows, so the markup is a DOM contract.
+
+  unity/top-panel.html calls this through partialCached, so it renders
+  once per language and must never read the page. Context: the site.
+*/ -}}
+{{- /* One "Open <page>" row per launcher page (minus Home), straight from
+     the site-pages registry so the File menu, dock, and Dash agree. */ -}}
+{{- $reg := partialCached "unity/site-pages.html" . -}}
+{{- $fileItems := slice -}}
+{{- range $reg.launcherOrder }}{{ if ne . "home" }}
+  {{- $p := index $reg.pages . -}}
+  {{- $fileItems = $fileItems | append (dict "label" (partial "unity/ui/t" (slice "open_page" (dict "Page" $p.label))) "action" (printf "nav:%s" .)) -}}
+{{- end }}{{ end -}}
+{{- $fileItems = $fileItems | append (dict "sep" true) (dict "label" (partial "unity/ui/t" "close_window") "disabled" true "shortcut" "Ctrl+W") -}}
+{{ partial "unity/ui/panel-menu.html" (dict "menu" "file" "label" (partial "unity/ui/t" "menu_file") "items" $fileItems) }}
+
+{{ partial "unity/ui/panel-menu.html" (dict "menu" "edit" "label" (partial "unity/ui/t" "menu_edit") "items" (slice
+  (dict "label" (partial "unity/ui/t" "undo") "disabled" true "shortcut" "Ctrl+Z")
+  (dict "label" (partial "unity/ui/t" "redo") "disabled" true "shortcut" "Ctrl+Y")
+  (dict "sep" true)
+  (dict "label" (partial "unity/ui/t" "cut") "disabled" true "shortcut" "Ctrl+X")
+  (dict "label" (partial "unity/ui/t" "copy") "disabled" true "shortcut" "Ctrl+C")
+  (dict "label" (partial "unity/ui/t" "paste") "disabled" true "shortcut" "Ctrl+V")
+  (dict "sep" true)
+  (dict "label" (partial "unity/ui/t" "preferences") "action" "dlg:prefs")
+)) }}
+
+{{ partial "unity/ui/panel-menu.html" (dict "menu" "view" "label" (partial "unity/ui/t" "menu_view") "items" (slice
+  (dict "label" (partial "unity/ui/t" "reload") "action" "reload" "shortcut" "Ctrl+R")
+  (dict "label" (partial "unity/ui/t" "toggle_full_window") "action" "fullscreen")
+  (dict "sep" true)
+  (dict "label" (partial "unity/ui/t" "show_launcher") "action" "dlg:launcher-info" "check" true)
+  (dict "label" (partial "unity/ui/t" "show_top_panel") "check" true)
+)) }}
+
+{{- $helpExtras := slice -}}
+{{- with site.Params.repoUrl -}}
+  {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "view_source") "action" "dlg:github") -}}
+{{- end -}}
+{{- /* The icon vault is a hidden page, so offer it only when the site
+     registers it with an "icons" menu entry. */ -}}
+{{- if index $reg.pages "icons" -}}
+  {{- $helpExtras = $helpExtras | append (dict "label" (partial "unity/ui/t" "icon_vault") "action" "nav:icons") -}}
+{{- end -}}
+{{- $helpItems := slice (dict "label" (partial "unity/ui/t" "keyboard_shortcuts") "action" "dlg:shortcuts") -}}
+{{- with $helpExtras }}{{ $helpItems = $helpItems | append (dict "sep" true) | append . }}{{ end -}}
+{{ partial "unity/ui/panel-menu.html" (dict "menu" "help" "label" (partial "unity/ui/t" "menu_help") "items" $helpItems) }}

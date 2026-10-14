@@ -6,6 +6,8 @@
   fiction (unity/ui/term-prompt.html) so the desktop never disagrees about
   who is logged in. The home terminal's guest login is params.terminal.user
   instead, because a visitor, not the owner, opens that session.
+
+  The result is the same on every page, so call it through partialCached.
 */ -}}
 {{- $handle := site.Params.desktop.user | default "" -}}
 {{- if not $handle -}}

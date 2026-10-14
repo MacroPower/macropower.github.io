@@ -1,0 +1,21 @@
+{{- /*
+  The desktop's corner watermark. params.desktop.label replaces the
+  default lines, and an empty list removes the watermark.
+
+  unity/launcher.html calls this through partialCached, so it renders
+  once per language and must never read the page. Context: the site.
+*/ -}}
+{{- $label := slice
+  (printf "%s/personal-site" ((partialCached "unity/author.html" .).name | lower | replaceRE " +" "-"))
+  (printf `v1.0 · "aubergine" · %d` now.Year)
+-}}
+{{- with site.Params.desktop -}}
+  {{- if isset . "label" }}{{ $label = .label }}{{ end -}}
+{{- end -}}
+{{- with $label }}
+<div class="up-desktop-label">
+  {{- range $i, $line := . }}{{ if $i }}<br>{{ end }}
+  {{ $line }}
+  {{- end }}
+</div>
+{{- end }}

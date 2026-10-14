@@ -9,8 +9,8 @@
   Every Studio surface reads this partial: unity/top-panel.html (the
   tracks the player loads), unity/indicators/sound.html (the Sound menu's
   player), unity/dash.html (the Music category and the Studio tile),
-  unity/launcher.html (the running-app tile), and baseof.html (the Studio
-  window). An empty playlist leaves the Studio out of the desktop.
+  unity/launcher/dock.html (the running-app tile), and baseof.html (the
+  Studio window). An empty playlist leaves the Studio out of the desktop.
 */ -}}
 {{- $tracks := slice -}}
 {{- with site.Params.studio.playlist -}}

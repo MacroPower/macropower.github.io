@@ -1,6 +1,6 @@
 {{- /* The Trash's contents come from params.desktop.trash, a list of
       names in which a trailing slash marks a folder. */ -}}
-{{- $handle := partial "unity/ui/author-handle.html" . -}}
+{{- $handle := partialCached "unity/ui/author-handle.html" . -}}
 {{- $files := slice -}}
 {{- range site.Params.desktop.trash -}}
   {{- if hasSuffix . "/" -}}
