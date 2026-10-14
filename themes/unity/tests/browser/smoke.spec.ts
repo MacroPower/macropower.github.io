@@ -142,6 +142,36 @@ test("a dialog opens and closes", async ({ page }) => {
   await expect(dialog).toHaveCount(0);
 });
 
+// Each toggle group marks its chosen button pressed, so a screen reader
+// names the one in effect. A click moves the mark to the clicked button.
+async function pressMoves(group: Locator, choice: Locator): Promise<void> {
+  await expect(group.getByRole("button", { pressed: true })).toHaveCount(1);
+  await expect(choice).toHaveAttribute("aria-pressed", "false");
+  await choice.click();
+  await expect(choice).toHaveAttribute("aria-pressed", "true");
+  await expect(group.getByRole("button", { pressed: true })).toHaveCount(1);
+}
+
+test("the Preferences dialog marks the chosen accent pressed", async ({ page }) => {
+  await open(page, "/about/");
+  await page.locator("#up-menu-edit").click();
+  await page.locator('#up-dropdown-edit [data-action="dlg:prefs"]').click();
+  const group = page.getByRole("dialog").getByRole("group", { name: "Accent color" });
+  const start = await page.evaluate(() => document.documentElement.dataset.upAccent);
+  await expect(group.getByRole("button", { pressed: true })).toHaveAttribute("data-up-accent", start ?? "");
+  const other = await group.getByRole("button", { pressed: false }).first().getAttribute("data-up-accent");
+  await pressMoves(group, group.locator(`[data-up-accent="${other}"]`));
+});
+
+test("the icon vault marks the chosen size and backdrop pressed", async ({ page }) => {
+  await open(page, "/icons/");
+  const section = page.locator(".up-icons-section").first();
+  for (const name of ["Size", "Background"]) {
+    const group = section.getByRole("group", { name });
+    await pressMoves(group, group.getByRole("button").last());
+  }
+});
+
 // The post list hears its keys on the document. Each of the next tests
 // gives a key to something else on the page, and the list leaves it
 // alone.

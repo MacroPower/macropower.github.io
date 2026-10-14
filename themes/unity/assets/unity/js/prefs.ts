@@ -101,11 +101,17 @@ function buildAccentRow(): HTMLElement {
 
   const swatches = document.createElement("div");
   swatches.className = "up-pref-swatches";
+  swatches.setAttribute("role", "group");
+  swatches.setAttribute("aria-label", t("js_prefs_accent_color"));
 
+  // A screen reader learns the chosen swatch from aria-pressed, and the
+  // stylesheet marks it through the class.
   const buttons = new Map<string, HTMLButtonElement>();
   const syncActive = (): void => {
     for (const [name, btn] of buttons) {
-      btn.classList.toggle("is-active", name === activeAccent());
+      const on = name === activeAccent();
+      btn.classList.toggle("is-active", on);
+      btn.setAttribute("aria-pressed", String(on));
     }
   };
   for (const accent of accents()) {

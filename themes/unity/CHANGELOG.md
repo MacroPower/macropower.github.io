@@ -97,6 +97,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Accent text in the top panel's menus, dim menu text, the Dash and HUD placeholders, and the tip alert's title contrast 4.5:1 or more with their backgrounds.
 - Each window's close, minimize, and maximize buttons take a click or tap anywhere in a 24px square, the WCAG 2.2 minimum target size.
 - Screen readers announce the File, Edit, View, and Help menus as menus and the indicators as disclosure buttons. They skip the theme's decorative icons and name each sidebar section by its label.
+- Screen readers announce which accent swatch in Edit > Preferences is selected, and which size and backdrop each section of the icon vault shows.
 - The solitaire table shows which of its toolbar buttons holds keyboard focus.
 - Keyboard focus stays in solitaire when the game hides or disables the toolbar button that holds it. Focus moves from Hint to "Finish the game" when the game can finish itself. From every other such button, such as Undo after the last undo, it moves to the table, where the game's keys keep working.
 - The post list and the projects grid leave each shortcut with Ctrl, Alt, or Meta to the browser, such as Alt+Left, Ctrl+L, and Ctrl+K. Ctrl+Enter and Shift+Enter on a post row open a new tab or window again.

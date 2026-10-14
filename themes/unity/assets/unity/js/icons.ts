@@ -20,15 +20,21 @@ import { eventElement } from "./dom";
     toastTimer = window.setTimeout(() => toast.classList.remove("is-shown"), 2000);
   }
 
-  // A segmented control: the clicked button becomes the active one and
-  // `onPick` applies its value to the section's grid.
+  // A segmented control: the clicked button becomes the pressed one and
+  // `onPick` applies its value to the section's grid. The class marks the
+  // pressed button for the stylesheet, and aria-pressed marks it for a
+  // screen reader.
   function wireGroup(group: HTMLElement | null, onPick: (btn: HTMLButtonElement) => void): void {
     if (!group) return;
     group.addEventListener("click", (e) => {
       const btn = eventElement(e)?.closest<HTMLButtonElement>("button");
       if (!btn) return;
       onPick(btn);
-      for (const b of group.querySelectorAll("button")) b.classList.toggle("is-active", b === btn);
+      for (const b of group.querySelectorAll("button")) {
+        const on = b === btn;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", String(on));
+      }
     });
   }
 

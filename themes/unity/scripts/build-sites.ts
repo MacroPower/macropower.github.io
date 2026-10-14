@@ -101,6 +101,7 @@ const SITES: Record<string, SiteSpec> = {
           ["posts/2024/02/welcome-to-the-desktop/index.html", ' title="Spotify album player"']] as const)
           .filter(([file, text]) => !read(join(out, file)).includes(text))
           .map(([file, text]) => `${file} lacks${text}`),
+        ...vaultGroupProblems("icons/index.html", read(join(out, "icons/index.html"))),
         // The chrome renders once per language around the parts that follow
         // the page: the panel's title, the launcher's current tiles, and
         // the HUD's app icon. Pages that no menu.main entry claims show a
@@ -2004,6 +2005,27 @@ function exposedSvgs(name: string, html: string): string[] {
     .filter((e) => e.tag === "svg" && !hidden(e) && !e.ancestors.some(hidden)
       && !(/\srole="?img\b/.test(e.attrs) && /\saria-label="?[^"\s>]/.test(e.attrs)))
     .map((e) => `${name} exposes an unnamed <svg${e.attrs.slice(0, 60)}>`);
+}
+
+// Each segmented control of the icon vault is a group that its label
+// names. Each of its buttons states in aria-pressed whether its is-active
+// class marks it, so a screen reader names the size and backdrop in
+// effect.
+function vaultGroupProblems(name: string, html: string): (string | false)[] {
+  const seg = (e: Element): boolean => /\sclass="?up-icons-seg["\s>]/.test(`${e.attrs}>`);
+  const all = [...elements(html)];
+  const groups = all.filter(seg);
+  return [
+    !groups.length && `${name} has no segmented control`,
+    ...groups
+      .filter((e) => !/\srole="?group\b/.test(e.attrs) || !/\saria-labelledby=/.test(e.attrs))
+      .map((e) => `${name} has a segmented control that is not a named group: <div${e.attrs}>`),
+    ...all
+      .filter((e) => e.tag === "button" && e.ancestors.some(seg))
+      .filter((e) => /\saria-pressed="?(true|false)\b/.exec(e.attrs)?.[1]
+        !== String(/\sclass="?[^">]*\bis-active\b/.test(e.attrs)))
+      .map((e) => `${name} has a segmented button whose aria-pressed differs from its class: <button${e.attrs}>`),
+  ];
 }
 
 // Markup that the Nu HTML checker rejects. HTML allows a <main> only

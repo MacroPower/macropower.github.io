@@ -10,8 +10,12 @@
   DOM contract (icons.ts): [data-icon-vault] is the root. Each section
   holds one [data-vault-grid] with a --up-icp-size custom property and a
   data-bg attribute, driven by its [data-vault-size] and [data-vault-bg]
-  buttons. Every [data-vault-cell] copies the SVG it contains and names
-  itself in data-name. [data-vault-toast] announces the copy.
+  buttons. The pressed button of each group carries the is-active class
+  and aria-pressed="true", and icons.ts moves both on a click. Each
+  group's label takes its id from the section's kind, so a page must
+  render at most one vault, or the ids repeat. Every [data-vault-cell]
+  copies the SVG it contains and names itself in data-name.
+  [data-vault-toast] announces the copy.
 */ -}}
 {{- $glyphs := slice -}}
 {{- range (resources.Match "unity/icons/glyphs/*.svg") -}}
@@ -63,18 +67,20 @@
         <span class="up-icons-note">{{ .note }}</span>
       </div>
       {{- $size := .size }}
+      {{- $sizeID := printf "up-icons-size-%s" .kind }}
+      {{- $bgID := printf "up-icons-bg-%s" .kind }}
       <div class="up-icons-controls-row">
-        <span class="up-icons-ctl-label">{{ partial "unity/ui/t" "size" }}</span>
-        <div class="up-icons-seg" data-vault-size-group>
+        <span id="{{ $sizeID }}" class="up-icons-ctl-label">{{ partial "unity/ui/t" "size" }}</span>
+        <div class="up-icons-seg" role="group" aria-labelledby="{{ $sizeID }}" data-vault-size-group>
           {{- range $s := .sizes }}
-            <button type="button" data-vault-size="{{ $s }}"{{ if eq $s $size }} class="is-active"{{ end }}>{{ $s }}</button>
+            <button type="button" data-vault-size="{{ $s }}"{{ if eq $s $size }} class="is-active"{{ end }} aria-pressed="{{ eq $s $size }}">{{ $s }}</button>
           {{- end }}
         </div>
-        <span class="up-icons-ctl-label">{{ partial "unity/ui/t" "background" }}</span>
-        <div class="up-icons-seg" data-vault-bg-group>
-          <button type="button" data-vault-bg="light" class="is-active">{{ partial "unity/ui/t" "bg_white" }}</button>
-          <button type="button" data-vault-bg="launcher">{{ partial "unity/ui/t" "bg_purple" }}</button>
-          <button type="button" data-vault-bg="dark">{{ partial "unity/ui/t" "bg_black" }}</button>
+        <span id="{{ $bgID }}" class="up-icons-ctl-label">{{ partial "unity/ui/t" "background" }}</span>
+        <div class="up-icons-seg" role="group" aria-labelledby="{{ $bgID }}" data-vault-bg-group>
+          <button type="button" data-vault-bg="light" class="is-active" aria-pressed="true">{{ partial "unity/ui/t" "bg_white" }}</button>
+          <button type="button" data-vault-bg="launcher" aria-pressed="false">{{ partial "unity/ui/t" "bg_purple" }}</button>
+          <button type="button" data-vault-bg="dark" aria-pressed="false">{{ partial "unity/ui/t" "bg_black" }}</button>
         </div>
       </div>
       <div class="up-icons-grid" data-vault-grid data-kind="{{ .kind }}" data-bg="light">
