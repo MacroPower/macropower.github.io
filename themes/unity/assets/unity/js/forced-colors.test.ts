@@ -88,6 +88,7 @@ const removesOutline = (d: Map<string, string>): boolean =>
 const COLOR_ONLY = new Set([
   "background", "background-color", "background-image", "color",
   "border-color", "border-left-color", "border-right-color", "border-top-color", "border-bottom-color",
+  "border-inline-start-color", "border-inline-end-color",
   "box-shadow", "text-shadow", "filter", "outline-color", "outline-offset",
 ]);
 
@@ -146,10 +147,10 @@ describe("forced colors", () => {
     // Forced colors paints a transparent border, so without the rule a
     // resting row shows the bar that its selected state colors.
     const barred = screen
-      .filter((r) => /\btransparent\b/.test(r.decls.get("border-left") ?? ""))
+      .filter((r) => /\btransparent\b/.test(r.decls.get("border-inline-start") ?? ""))
       .map((r) => r.selector);
     expect(barred).toEqual(expect.arrayContaining([".up-naut-item", ".up-post-row"]));
-    const shown = barred.filter((s) => !forced.some((r) => r.selector === s && r.decls.get("border-left-color") === "Canvas"));
+    const shown = barred.filter((s) => !forced.some((r) => r.selector === s && r.decls.get("border-inline-start-color") === "Canvas"));
     expect(shown).toEqual([]);
   });
 
@@ -171,7 +172,7 @@ describe("forced colors", () => {
         .map(([prop, value]) => `${r.selector} ${prop}:${value}`));
     expect(authored).toEqual([]);
     const colors = forced.flatMap((r) =>
-      ["color", "background", "border-color", "border-left-color", "outline-color"]
+      ["color", "background", "border-color", "border-inline-start-color", "outline-color"]
         .flatMap((p) => (r.decls.has(p) ? [r.decls.get(p)!] : [])));
     expect(colors.every((v) => SYSTEM.test(v) || /^(inherit|none)$/.test(v))).toBe(true);
   });

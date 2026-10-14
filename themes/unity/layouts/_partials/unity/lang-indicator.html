@@ -26,7 +26,7 @@
   <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="lang" aria-label="{{ partial "unity/ui/t" "language" }}" aria-haspopup="true" aria-expanded="false">
     <span class="up-lang-badge" aria-hidden="true">{{ site.Params.desktop.languageBadge | default (substr $current 0 2 | strings.FirstUpper) }}</span>
   </button>
-  <div class="up-dropdown" data-dropdown-for="lang" data-align="right" data-flyout-keepopen hidden>
+  <div class="up-dropdown" data-dropdown-for="lang" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "language" }}</div>
     <div class="up-dropdown-body">
       {{- range $rows }}

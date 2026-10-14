@@ -145,12 +145,14 @@ describe("titlebar bead targets", () => {
     // titlebar loses the part outside it.
     it(`fits each bead's hit area inside the titlebar ${where}`, () => {
       const h = px(value(ctx, ".up-tl", "height"), ".up-tl height");
-      const [t, , b, l] = box(value(ctx, ".up-tl::after", "inset"), ".up-tl::after inset");
+      const [t, r, b, l] = box(value(ctx, ".up-tl::after", "inset"), ".up-tl::after inset");
       const height = px(value(ctx, ".up-titlebar", "height"), ".up-titlebar height");
       const border = px(value(ctx, ".up-titlebar", "border-bottom")?.split(" ")[0], ".up-titlebar border-bottom");
       expect(h - t - b, "hit area height").toBeLessThanOrEqual(height - border);
-      const [, , , pad] = box(value(ctx, ".up-titlebar", "padding"), ".up-titlebar padding");
-      expect(-l, "hit area outset on the left").toBeLessThanOrEqual(pad);
+      // The beads sit at the titlebar's start edge, which is the right
+      // edge on a right-to-left page.
+      const pad = px(value(ctx, ".up-titlebar", "padding-inline")?.split(" ")[0], ".up-titlebar padding-inline");
+      expect(Math.max(-l, -r), "hit area outset at the start edge").toBeLessThanOrEqual(pad);
     });
 
     // resize.ts lays its zones over the window's edges, and the top and
@@ -162,13 +164,13 @@ describe("titlebar bead targets", () => {
       expect(bead, ".up-tl z-index").toBeGreaterThan(zone);
     });
 
-    // The title's right margin balances a three-bead group, so a change to
+    // The title's end margin balances a three-bead group, so a change to
     // the bead pitch must move the margin with it.
     it(`centers the title against a three-bead group ${where}`, () => {
       const w = px(value(ctx, ".up-tl", "width"), ".up-tl width");
       const gap = px(value(ctx, ".up-tl-group", "gap"), ".up-tl-group gap");
-      const margin = px(value(ctx, ".up-tl-group", "margin-right"), ".up-tl-group margin-right");
-      const title = px(value(ctx, ".up-titlebar-text", "margin-right"), ".up-titlebar-text margin-right");
+      const margin = px(value(ctx, ".up-tl-group", "margin-inline-end"), ".up-tl-group margin-inline-end");
+      const title = px(value(ctx, ".up-titlebar-text", "margin-inline-end"), ".up-titlebar-text margin-inline-end");
       expect(title).toBe(3 * w + 2 * gap + margin);
     });
   }

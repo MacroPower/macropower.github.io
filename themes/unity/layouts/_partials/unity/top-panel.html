@@ -62,7 +62,7 @@
     <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ partial "unity/ui/t" "messages" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "unity/icon.html" "glyphs/panel-inbox" }}
     </button>
-    <div class="up-dropdown" data-dropdown-for="inbox" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown" data-dropdown-for="inbox" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ partial "unity/ui/t" "messages" }}</div>
       <div class="up-dropdown-body">
         <div class="up-dropdown-empty">{{ partial "unity/ui/t" "no_new_messages" }}</div>
@@ -78,7 +78,7 @@
     <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ partial "unity/ui/t" "network" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "unity/icon.html" "glyphs/panel-net" }}
     </button>
-    <div class="up-dropdown" data-dropdown-for="net" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown" data-dropdown-for="net" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ partial "unity/ui/t" "network" }}</div>
       <div class="up-dropdown-body">
         {{- /* params.desktop.networks lists the access points, and the
@@ -101,7 +101,7 @@
       {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
       {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
     </button>
-    <div class="up-dropdown" data-dropdown-for="vol" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown" data-dropdown-for="vol" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ partial "unity/ui/t" "sound" }}</div>
       <div class="up-dropdown-body">
         <div class="up-dropdown-row-flex">
@@ -137,7 +137,7 @@
       {{ partial "unity/icon.html" "glyphs/panel-battery" }}
       {{ partial "unity/icon.html" "glyphs/panel-battery-charging" }}
     </button>
-    <div class="up-dropdown" data-dropdown-for="bat" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown" data-dropdown-for="bat" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ partial "unity/ui/t" "battery" }}</div>
       <div class="up-dropdown-body">
         <div class="up-bat-headline" data-bat-headline>{{ partial "unity/ui/t" (slice "battery_discharging" (dict "Percent" 76)) }}</div>
@@ -154,7 +154,7 @@
       <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
       <span data-clock-narrow hidden>{{ $time }}</span>
     </button>
-    <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
       <div class="up-dropdown-body">
         <div class="up-calendar" data-calendar></div>
@@ -168,7 +168,7 @@
     <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ partial "unity/ui/t" "user" }}" aria-haspopup="true" aria-expanded="false">
       {{ partial "unity/icon.html" "glyphs/panel-user" }}
     </button>
-    <div class="up-dropdown" data-dropdown-for="user" data-align="right" data-flyout-keepopen hidden>
+    <div class="up-dropdown" data-dropdown-for="user" data-align="end" data-flyout-keepopen hidden>
       <div class="up-dropdown-header">{{ $handle }}</div>
       <div class="up-dropdown-body">
         {{- $lock := ne site.Params.desktop.lock false }}

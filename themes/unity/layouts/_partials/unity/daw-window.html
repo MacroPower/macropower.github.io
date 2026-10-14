@@ -11,6 +11,10 @@
   data-daw-tracks, data-daw-synth, data-daw-fx, data-daw-groove, data-daw-roll,
   data-daw-canvas, data-daw-scroller, data-daw-spacer, data-daw-loading,
   data-daw-status.
+
+  The body carries dir="ltr", like the xterm.js terminal, because the piano
+  roll's time axis runs left to right in every language, and the transport
+  and rack must stay beside it.
 */ -}}
 <div class="up-window-stage up-daw-stage" data-up-window="daw" hidden>
   <section class="up-window-chrome up-daw-chrome" aria-label="{{ partial "unity/ui/t" "studio" }}" tabindex="-1">
@@ -18,7 +22,7 @@
       {{ partial "unity/ui/window-controls.html" (dict "max" true) }}
       <span class="up-titlebar-text" data-daw-title>{{ partial "unity/ui/t" "studio" }}</span>
     </div>
-    <div class="up-window-body up-daw-body">
+    <div class="up-window-body up-daw-body" dir="ltr">
 
       <div class="up-daw-toolbar">
         <div class="up-daw-transport">

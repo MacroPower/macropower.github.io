@@ -371,6 +371,24 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       ];
     },
   },
+  // A right-to-left default language without a translation of its own.
+  // Each page sets dir="rtl" on <html>, which the stylesheet's logical
+  // properties and [dir="rtl"] rules follow.
+  rtl: {
+    files: {
+      "hugo.toml": `${BARE}defaultContentLanguage = "ar"
+mainSections = ["posts"]
+ignoreLogs = ["unity-i18n-missing"]
+[languages.ar]
+  direction = "rtl"
+`,
+      "content/posts/one.md": page("One"),
+    },
+    check: (out) =>
+      ["index.html", "posts/index.html", "posts/one/index.html"]
+        .filter((p) => !/<html [^>]*\bdir="rtl"/.test(read(join(out, p))))
+        .map((p) => `${p} lacks dir="rtl" on <html>`),
+  },
   // Pages published as .html files, where a section's URL ends in
   // index.html.
   ugly: {

@@ -262,6 +262,18 @@ button{font-family:inherit}
 
 /* =========================================================================
    chrome: wallpaper, top panel, launcher, window chrome
+
+   baseof.html sets dir on <html> from the language. The top panel, its
+   menus, and everything inside a window use logical properties, such as
+   margin-inline-start and text-align:start, so they mirror on a
+   right-to-left page. The launcher stays on the left edge in every
+   language, so the surfaces placed against it keep physical properties:
+   the launcher, the window stages, the Dash, the HUD, the notification
+   bubbles, the desktop label, and the resize zones. A mirror that no
+   logical property expresses, such as a directional glyph or an inset
+   highlight, gets a [dir="rtl"] rule nested in its rule, because the
+   browser floor predates :dir(). direction.test.ts fails on a physical
+   left or right outside those surfaces.
    ========================================================================= */
 
 body{
@@ -292,7 +304,7 @@ body{
 .up-panel-title{
   flex:0 0 auto;
   display:flex; align-items:center;
-  padding:0 12px 0 8px;
+  padding-block:0; padding-inline:8px 12px;
   max-width:min(40vw, 280px);
   color:#fff;
   font-weight:700;
@@ -565,7 +577,7 @@ body.up-resizing *{ cursor:inherit !important; }
   flex-shrink:0;
   height:26px;
   display:flex; align-items:center;
-  padding:0 10px 0 6px;
+  padding-block:0; padding-inline:6px 10px;
   background:linear-gradient(180deg,var(--up-chrome-inactive-1) 0%,var(--up-chrome-inactive-2) 100%);
   border-bottom:1px solid rgba(0,0,0,.4);
   cursor:default;
@@ -575,7 +587,7 @@ body.up-resizing *{ cursor:inherit !important; }
    center to center and the hit areas never overlap (WCAG 2.5.8). */
 .up-tl-group{
   display:flex; align-items:center; gap:10px;
-  margin-right:10px;
+  margin-inline-end:10px;
 }
 .up-tl{
   /* recipe: bead */
@@ -617,7 +629,7 @@ body.up-resizing *{ cursor:inherit !important; }
   white-space:nowrap;
   /* The width of a three-bead group and its margin, so the title centers
      on the window. */
-  margin-right:72px;
+  margin-inline-end:72px;
 }
 .up-window-body{
   flex:1 1 auto;
@@ -682,10 +694,13 @@ body.up-resizing *{ cursor:inherit !important; }
 /* ---------- Nautilus sidebar (shared chrome) ---------- */
 .up-naut-sidebar{
   background:var(--up-sidebar-bg);
-  border-right:1px solid #C9C4BB;
+  border-inline-end:1px solid #C9C4BB;
   padding:8px 0 14px;min-width:0;overflow:auto;
   box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
   font-family:var(--up-font-sans);
+  /* The highlight inside the border has no logical form, so it moves
+     with the border here. */
+  [dir="rtl"] &{box-shadow:inset 1px 0 0 rgba(255,255,255,.45)}
 }
 .up-naut-section{padding:0}
 .up-naut-section + .up-naut-section{
@@ -702,9 +717,9 @@ body.up-resizing *{ cursor:inherit !important; }
   /* both <a> and <button> reach this rule; reset the button user-agent chrome */
   appearance:none;background:transparent;border:0;font:inherit;
   display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:9px;
-  width:100%;padding:5px 14px 5px 11px;
-  color:var(--up-content-fg);font-size:13px;text-align:left;text-decoration:none;
-  border-left:3px solid transparent;
+  width:100%;padding-block:5px;padding-inline:11px 14px;
+  color:var(--up-content-fg);font-size:13px;text-align:start;text-decoration:none;
+  border-inline-start:3px solid transparent;
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
   &:hover{background:rgba(0,0,0,.045)}
@@ -715,7 +730,7 @@ body.up-resizing *{ cursor:inherit !important; }
        --up-accent-dark for a visitor who asks for more contrast. */
     background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 95%, transparent) 0%, var(--up-accent) 100%);
     color:#fff;
-    border-left-color:color-mix(in srgb, var(--up-accent-darker) 85%, black);
+    border-inline-start-color:color-mix(in srgb, var(--up-accent-darker) 85%, black);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.18);
     text-shadow:0 1px 0 rgba(0,0,0,.25);
   }
@@ -792,9 +807,9 @@ body.up-resizing *{ cursor:inherit !important; }
   border-radius:0;
   /* recipe: linked-group */
   position:relative;
-  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
-  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
-  & + &{margin-left:-1px}
+  &:first-child{border-start-start-radius:3px;border-end-start-radius:3px}
+  &:last-child{border-start-end-radius:3px;border-end-end-radius:3px}
+  & + &{margin-inline-start:-1px}
   &:hover,&:focus-visible{z-index:1}
 }
 .up-docv-zoom-readout{
@@ -839,9 +854,10 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-docv-side{
   display:flex;flex-direction:column;min-height:0;
   background:var(--up-sidebar-bg);
-  border-right:1px solid #C9C4BB;
+  border-inline-end:1px solid #C9C4BB;
   box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
   font-family:var(--up-font-sans);
+  [dir="rtl"] &{box-shadow:inset 1px 0 0 rgba(255,255,255,.45)}
 }
 .up-docv-side-head{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -1062,9 +1078,9 @@ a.up-sponsor-card[href]:hover{
 .up-icons-seg button{
   all:unset; cursor:pointer; padding:4px 10px;
   font-family:var(--up-font-mono); font-size:11.5px; color:var(--up-content-fg);
-  border-right:1px solid var(--up-content-line);
+  border-inline-end:1px solid var(--up-content-line);
 }
-.up-icons-seg button:last-child{ border-right:0; }
+.up-icons-seg button:last-child{ border-inline-end:0; }
 .up-icons-seg button.is-active{ background:var(--up-accent); color:#fff; }
 
 .up-icons-section{ border-top:1px solid var(--up-content-line); }
@@ -1085,7 +1101,7 @@ a.up-sponsor-card[href]:hover{
   font-family:var(--up-font-mono); font-size:12px; color:var(--up-content-muted);
 }
 .up-icons-note{
-  margin-left:auto; font-family:var(--up-font-mono); font-size:11px;
+  margin-inline-start:auto; font-family:var(--up-font-mono); font-size:11px;
   color:var(--up-content-muted); opacity:.8;
 }
 .up-icons-controls-row{
@@ -1231,7 +1247,7 @@ a.up-sponsor-card[href]:hover{
       h1{margin:0 0 2px; font-size:1.5em}
       h2{margin:14px 0 4px; font-size:1.1em}
       p, ul{margin:2px 0}
-      ul{padding-left:1.2em}
+      ul{padding-inline-start:1.2em}
     }
   }
 }
@@ -1392,14 +1408,14 @@ a.up-sponsor-card[href]:hover{
 }
 .up-pathbar{
   display:flex;align-items:center;gap:6px;
-  padding:5px 10px 5px 6px;
+  padding-block:5px;padding-inline:6px 10px;
   font-size:12px;min-height:30px;
 }
 /* GtkPathBar: two linked groups (recipe: linked-group), the history pair and the crumbs. The
    current location is the GTK "checked" button — recessed, never hover-lit. */
 .up-pathbar-nav{
   display:inline-flex;align-items:stretch;align-self:stretch;
-  margin-right:2px;
+  margin-inline-end:2px;
 }
 /* history arrows and the search toggle share one geometry: padding reset
    (the toggle is a <button>), stretched to the crumb row's height so every
@@ -1427,10 +1443,12 @@ a.up-sponsor-card[href]:hover{
     background:var(--up-btn-bg-active);
     box-shadow:var(--up-btn-shadow-active);
   }
-  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
-  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
-  & + &{margin-left:-1px}
+  &:first-child{border-start-start-radius:3px;border-end-start-radius:3px}
+  &:last-child{border-start-end-radius:3px;border-end-end-radius:3px}
+  & + &{margin-inline-start:-1px}
   &:hover,&:focus-visible{z-index:1}
+  /* Back points toward the start edge, and forward toward the end. */
+  [dir="rtl"] & svg{transform:scaleX(-1)}
   &.is-disabled{
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
@@ -1458,9 +1476,9 @@ a.up-sponsor-card[href]:hover{
     background:var(--up-btn-bg-hover);
     border-color:var(--up-btn-border-hover);
   }
-  &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
-  &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
-  & + &{margin-left:-1px}
+  &:first-child{border-start-start-radius:3px;border-end-start-radius:3px}
+  &:last-child{border-start-end-radius:3px;border-end-end-radius:3px}
+  & + &{margin-inline-start:-1px}
   &:hover,&:focus-visible{z-index:1}
   svg{width:12px;height:12px;flex-shrink:0}
   &.is-current{
@@ -1505,7 +1523,7 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-search-icon{
   display:inline-flex;align-items:center;justify-content:center;
   color:#7A7570;
-  margin-left:2px;
+  margin-inline-start:2px;
 }
 .up-pathbar-search-input{
   flex:1;min-width:0;
@@ -1524,7 +1542,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-pathbar-search-count{
   font-size:11px;color:#7A7570;font-variant-numeric:tabular-nums;
-  min-width:36px;text-align:right;
+  min-width:36px;text-align:end;
 }
 .up-pathbar-search-close{
   width:22px;height:22px;line-height:1;
@@ -1545,7 +1563,7 @@ a.up-sponsor-card[href]:hover{
 
 /* ---------- Post list ---------- */
 .up-post-list{
-  border-right:1px solid #E2DFDB;background:#FBFAF9;
+  border-inline-end:1px solid #E2DFDB;background:#FBFAF9;
   overflow:auto;display:flex;flex-direction:column;
 }
 .up-post-list-header{
@@ -1558,10 +1576,10 @@ a.up-sponsor-card[href]:hover{
 .up-post-list-col{
   display:inline-flex;align-items:center;gap:6px;
   padding:6px 12px;height:24px;
-  background:transparent;border:0;border-right:1px solid #D4D0CD;
+  background:transparent;border:0;border-inline-end:1px solid #D4D0CD;
   color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;
-  font-weight:inherit;cursor:pointer;text-align:left;
-  &:last-child{border-right:0}
+  font-weight:inherit;cursor:pointer;text-align:start;
+  &:last-child{border-inline-end:0}
   &:hover{background:rgba(255,255,255,.55)}
   &:active{background:rgba(0,0,0,.05)}
   &.is-sorted{color:var(--up-content-fg)}
@@ -1575,13 +1593,13 @@ a.up-sponsor-card[href]:hover{
   display:grid;grid-template-columns:1fr auto;gap:12px;
   padding:10px 12px;border-bottom:1px solid #EBE8E5;
   color:#3A3733;text-decoration:none;
-  border-left:3px solid transparent;
+  border-inline-start:3px solid transparent;
   outline:none;
   &[hidden]{display:none}
   &:hover{background:color-mix(in srgb, var(--up-accent) 10%, transparent)}
   &.is-focused{
     background:color-mix(in srgb, var(--up-accent) 12%, transparent);
-    border-left-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
+    border-inline-start-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
     box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--up-accent) 35%, transparent);
   }
   &.is-active{
@@ -1589,7 +1607,7 @@ a.up-sponsor-card[href]:hover{
        .up-naut-item.is-active note); the meta/date keep the raised .95
        alpha from the contrast pass. */
     background:var(--up-accent-light);color:#fff;
-    border-left-color:var(--up-accent);
+    border-inline-start-color:var(--up-accent);
     .up-post-meta{color:rgba(255,255,255,.95)}
     .up-post-date{color:rgba(255,255,255,.95)}
   }
@@ -1621,6 +1639,8 @@ a.up-sponsor-card[href]:hover{
   height:2px;
   background:rgba(0,0,0,.08);
   border-bottom:1px solid #D4D0CD;
+  /* The bar grows from the start edge. */
+  [dir="rtl"] &{transform:scaleX(-1)}
 }
 .up-reader-progress-bar{
   position:absolute;inset:0;
@@ -1647,6 +1667,7 @@ a.up-sponsor-card[href]:hover{
     border-color:var(--up-btn-border-hover);
   }
   svg{color:#3A3733}
+  [dir="rtl"] & svg{transform:scaleX(-1)}
 }
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
 .up-reader-meta{
@@ -1780,6 +1801,7 @@ details.up-alert{
     border-bottom-width:0;transition:transform .12s ease;
   }
   &:not([open]) > summary::after{transform:rotate(-90deg)}
+  [dir="rtl"] &:not([open]) > summary::after{transform:rotate(90deg)}
   &[open] > summary{padding-bottom:0}
 }
 
@@ -2018,7 +2040,8 @@ details.up-alert{
   border:1px solid #D4CCBC;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
   gap:6px;
-  padding:2px 9px 2px 7px;
+  padding-block:2px;
+  padding-inline:7px 9px;
   background:rgba(255,255,255,.75);
   font-size:11.5px;color:#3A3733;
   svg{display:block}
@@ -2081,7 +2104,7 @@ details.up-alert{
   display:flex;flex-wrap:wrap;gap:5px;overflow:auto;align-content:flex-start;
 }
 .up-open-btn{
-  display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
+  display:inline-flex;align-items:center;gap:6px;padding-block:5px;padding-inline:10px 12px;
   color:var(--up-content-fg);font-size:12.5px;font-weight:500;text-decoration:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
@@ -2098,7 +2121,7 @@ details.up-alert{
   }
   svg{color:#3A3733}
 }
-/* projects preview pins the open button to the left under the stats */
+/* projects preview pins the open button to the start edge under the stats */
 .up-project-preview .up-open-btn{margin-top:auto;align-self:flex-start}
 
 /* ---------- Empty right-column pane ----------
@@ -2190,15 +2213,15 @@ details.up-alert{
     height:auto;
   }
   .up-naut-sidebar{
-    border-right:0;border-bottom:1px solid #D4D0CD;
+    border-inline-end:0;border-bottom:1px solid #D4D0CD;
     display:flex;flex-wrap:wrap;padding:6px 8px;
   }
-  .up-naut-section + .up-naut-section{margin-top:0;margin-left:10px}
+  .up-naut-section + .up-naut-section{margin-top:0;margin-inline-start:10px}
   .up-naut-section-label{padding:0 4px;display:none}
   /* width:auto: the base rail rule's width:100% would stack each chip on its
      own full-width line instead of flowing them inline. */
   .up-naut-item{padding:4px 8px;display:inline-flex;gap:4px;width:auto}
-  .up-post-list{border-right:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
+  .up-post-list{border-inline-end:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
   .up-pathbar-label{max-width:180px}
   .up-pathbar-search-input{font-size:16px}
   .up-neofetch{grid-template-columns:1fr;padding:22px 24px;gap:18px}
@@ -2206,7 +2229,7 @@ details.up-alert{
 @media (max-width:560px){
   /* Leave breathing room between the window title and the File menu. */
   .up-panel-title{max-width:32vw}
-  .up-pathbar{padding:5px 8px 5px 4px;gap:4px}
+  .up-pathbar{padding-inline:4px 8px;gap:4px}
   .up-pathbar-btn{font-size:11.5px}
   .up-pathbar-label{max-width:120px}
   /* icon-only document actions — the title attributes carry the labels */
@@ -2266,8 +2289,8 @@ details.up-alert{
   z-index:200;
   padding:0;
   &[hidden]{display:none}
-  &[data-align="left"]{left:0}
-  &[data-align="right"]{right:0}
+  &[data-align="start"]{inset-inline-start:0}
+  &[data-align="end"]{inset-inline-end:0}
   &.up-dropdown-wide{min-width:280px}
 }
 .up-dropdown-header{
@@ -2337,7 +2360,7 @@ details.up-alert{
      reset the button user-agent chrome so the two render identically */
   appearance:none;border:0;font:inherit;width:100%;text-align:inherit;
   display:flex; align-items:center; gap:10px;
-  padding:4px 14px 4px 26px;
+  padding-block:4px; padding-inline:26px 14px;
   position:relative;
   background:transparent;
   color:rgba(255,255,255,.92);
@@ -2356,7 +2379,7 @@ details.up-alert{
   }
   &.has-check::before{
     content:"\2713";
-    position:absolute; left:12px;
+    position:absolute; inset-inline-start:12px;
     color:rgba(255,255,255,.6);
   }
   &.has-shortcut .up-menu-item-shortcut{
@@ -2427,7 +2450,7 @@ details.up-alert{
   background:transparent; color:#fff; cursor:default;
 }
 .up-vol-readout{
-  width:28px; text-align:right;
+  width:28px; text-align:end;
   color:rgba(255,255,255,.7); font-size:11px;
 }
 .up-vol-play{
@@ -2440,7 +2463,7 @@ details.up-alert{
 }
 .up-vol-next{
   flex:0 0 auto;
-  margin-left:auto;
+  margin-inline-start:auto;
   display:inline-flex; align-items:center; justify-content:center;
   width:18px; height:18px; padding:0;
   border:0; background:transparent; color:rgba(255,255,255,.55); cursor:default;
@@ -2460,7 +2483,7 @@ details.up-alert{
 .up-bat-bar{
   height:8px; background:rgba(255,255,255,.12);
   border-radius:2px; margin-top:10px; margin-bottom:10px; overflow:hidden;
-  margin-left:14px; margin-right:14px;
+  margin-inline:14px;
 }
 .up-bat-bar-fill{
   /* The level the headline reads until top-panel.ts sets the real one. */
@@ -2540,7 +2563,7 @@ details.up-alert{
                               calc(-50% + var(--up-oy,0px))) scale(1)}
 }
 .up-dlg-titlebar{
-  height:26px; padding:0 10px 0 8px;
+  height:26px; padding-block:0; padding-inline:8px 10px;
   background:linear-gradient(180deg,var(--up-chrome-1) 0%,var(--up-chrome-2) 100%);
   border-bottom:1px solid rgba(0,0,0,.4);
   display:flex; align-items:center;
@@ -2571,7 +2594,7 @@ details.up-alert{
   flex:1; text-align:center;
   color:#F4F0EC;
   font-size:12px; font-weight:500;
-  margin-right:18px;
+  margin-inline-end:18px;
 }
 .up-dlg-body{
   padding:22px 22px 16px;
@@ -2708,7 +2731,7 @@ details.up-alert{
   box-shadow:inset 0 1px 2px rgba(0,0,0,.25);
   transition:background .15s ease;
   &::after{
-    content:""; position:absolute; top:2px; left:2px;
+    content:""; position:absolute; top:2px; inset-inline-start:2px;
     width:18px; height:18px; border-radius:9px;
     background:linear-gradient(180deg,#FFFFFF,#E8E5E2);
     box-shadow:0 1px 2px rgba(0,0,0,.35);
@@ -2717,6 +2740,7 @@ details.up-alert{
   &.is-on{
     background:var(--up-accent-light);
     &::after{transform:translateX(18px)}
+    [dir="rtl"] &::after{transform:translateX(-18px)}
   }
 }
 .up-pref-swatches{
@@ -2739,7 +2763,7 @@ details.up-alert{
 .up-shortcuts{
   display:flex; flex-direction:column; gap:14px;
   max-height:min(48vh,400px); overflow:auto;
-  padding-right:2px;
+  padding-inline-end:2px;
 }
 .up-shortcut-section{
   display:flex; flex-direction:column; gap:7px;
@@ -2859,7 +2883,7 @@ body.up-reduce-motion *{
   margin:14px 14px 10px;
 }
 .up-dash-search-icon{
-  position:absolute; left:13px; top:50%;
+  position:absolute; inset-inline-start:13px; top:50%;
   transform:translateY(-50%);
   display:inline-flex;
   color:rgba(255,255,255,.55);
@@ -2875,7 +2899,7 @@ body.up-reduce-motion *{
   box-shadow:inset 0 2px 5px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.05);
   outline:none;
   width:100%;
-  padding:10px 14px 10px 38px;
+  padding-block:10px; padding-inline:38px 14px;
   font:300 17px/1.3 var(--up-font-sans);
   &::placeholder{color:rgba(255,255,255,.55);font-style:italic}
   &:focus{
@@ -3117,7 +3141,7 @@ body.up-reduce-motion *{
 .up-hud-row{
   /* 14 (row padding) + 44 (app icon) + 12 (gap) + 14 (input padding) aligns
      the row text with the query text above it. */
-  padding:8px 16px 8px 84px;
+  padding-block:8px; padding-inline:84px 16px;
   font-size:15px;
   cursor:default;
   &:hover{background:rgba(255,255,255,.07)}
@@ -3982,7 +4006,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 /* The skip link baseof.html puts first in the page. It stays off screen
    until a keyboard user tabs to it, then sits above every desktop layer. */
 .up-skip-link{
-  position:fixed;top:4px;left:4px;z-index:3000;
+  position:fixed;top:4px;inset-inline-start:4px;z-index:3000;
   padding:6px 12px;border-radius:3px;
   background:var(--up-accent);color:#fff;font-weight:500;text-decoration:none;
   transform:translateY(-200%);
@@ -4181,7 +4205,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   /* Forced colors paints a transparent border, so each resting row's
      bar takes the page color and only the selected row shows one. */
   .up-naut-item,
-  .up-post-row{border-left-color:Canvas}
+  .up-post-row{border-inline-start-color:Canvas}
 
   .up-naut-item.is-active,
   .up-post-row.is-active,
@@ -4221,7 +4245,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
      drops, so it gets an edge and a solid knob. */
   .up-pref-toggle{
     border:1px solid ButtonText;
-    &::after{top:1px;left:1px;background:ButtonText}
+    &::after{top:1px;inset-inline-start:1px;background:ButtonText}
   }
   .up-pref-toggle.is-on::after{background:HighlightText}
   /* Each swatch shows the color it picks. */

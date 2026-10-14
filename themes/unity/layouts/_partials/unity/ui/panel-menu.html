@@ -1,6 +1,6 @@
 {{- /*
   Top-panel app menu (File / Edit / View / Help) — the trigger plus its
-  left-aligned dropdown of rows.
+  dropdown of rows, aligned to the trigger's start edge.
 
   Caller params:
     menu  string   the data-menu / data-dropdown-for key (required)
@@ -16,7 +16,7 @@
 {{- $menu := .menu -}}
 <div class="up-panel-item">
   <button type="button" class="up-panel-menu up-panel-trigger" data-panel-trigger data-menu="{{ $menu }}" aria-haspopup="true" aria-expanded="false">{{ .label }}</button>
-  <div class="up-dropdown" data-dropdown-for="{{ $menu }}" data-align="left" hidden>
+  <div class="up-dropdown" data-dropdown-for="{{ $menu }}" data-align="start" hidden>
     <div class="up-dropdown-body">
       {{- range .items }}
         {{- if .sep }}

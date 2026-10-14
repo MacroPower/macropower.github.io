@@ -53,6 +53,11 @@ const FEATURES: Record<string, Feature> = {
     marker: /color-mix\(/,
     floor: { chrome: "111", edge: "111", firefox: "113", ios: "16.2", opera: "97", safari: "16.2" },
   },
+  // The newest of the logical properties the stylesheet uses.
+  "logical corner radii": {
+    marker: /border-(start|end)-(start|end)-radius/,
+    floor: { chrome: "89", edge: "89", firefox: "66", ios: "15", opera: "75", safari: "15" },
+  },
   "@layer": {
     marker: /@layer\b/,
     floor: { chrome: "99", edge: "99", firefox: "97", ios: "15.4", opera: "85", safari: "15.4" },
