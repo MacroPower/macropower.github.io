@@ -8,6 +8,7 @@
   "scripts": {
     "typecheck": "npm run typecheck -w themes/unity",
     "typecheck:test": "npm run typecheck:test -w themes/unity",
+    "typecheck:node": "npm run typecheck:node -w themes/unity",
     "lint": "npm run lint -w themes/unity",
     "test": "npm test -w themes/unity",
     "test:watch": "npm run test:watch -w themes/unity",

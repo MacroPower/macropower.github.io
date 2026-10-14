@@ -41,6 +41,7 @@ jobs:
         run: |
           npm run typecheck
           npm run typecheck:test
+          npm run typecheck:node
 
       - name: Lint
         run: npm run lint

@@ -18,6 +18,7 @@ pre-commit:
       glob:
         - "themes/unity/assets/unity/js/**/*.ts"
         - "themes/unity/scripts/**"
+        - "themes/unity/vitest.config.ts"
         - "themes/unity/biome.json"
       # Biome must start in the theme directory. Started from the site root,
       # it reads themes/unity/biome.json as a second root config and exits.
@@ -27,3 +28,9 @@ pre-commit:
         - "themes/unity/assets/unity/js/**/*.ts"
         - "themes/unity/tsconfig*.json"
       run: npx --no-install tsc -p themes/unity/tsconfig.test.json --noEmit
+    typecheck-node:
+      glob:
+        - "themes/unity/scripts/**/*.ts"
+        - "themes/unity/vitest.config.ts"
+        - "themes/unity/tsconfig.node.json"
+      run: npx --no-install tsc -p themes/unity/tsconfig.node.json --noEmit

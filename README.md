@@ -16,6 +16,7 @@ hugo --minify    # production build into public/
 npm test               # Vitest suites
 npm run typecheck      # production sources
 npm run typecheck:test # test sources
+npm run typecheck:node # dev scripts and Vitest config
 npm run test:sites     # theme example and bare sites, warnings fatal
 ```
 
