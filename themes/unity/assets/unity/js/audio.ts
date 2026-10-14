@@ -298,10 +298,11 @@ let noiseBuf: AudioBuffer | null = null;
 const voices = new Set<AudioScheduledSourceNode>();
 
 // MIDI source + streaming-playback state. The playlist comes from the
-// theme's unity/playlist.html. A track without a title shows as "Track 1"
-// and so on, so what it is stays a surprise until you press play. Parsed
-// songs are cached per URL, so flipping back to a track is instant (and
-// keeps its note edits — both are session-only anyway).
+// theme's unity/playlist.html. A track without a title shows as "Track N",
+// where N counts its place in the playlist. Its song stays a surprise
+// until you press play. The cache below keeps each parsed song by URL, so flipping
+// back to a track is instant and keeps its note edits. Both last only for
+// the session.
 
 /** One Studio track: its MIDI file's URL and its title, empty for an
  *  anonymous track. */
