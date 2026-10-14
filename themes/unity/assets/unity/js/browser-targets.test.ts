@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { css } from "./testkit";
+
 const here = dirname(fileURLToPath(import.meta.url));
 const stripComments = (text: string): string => text.replace(/\/\*[\s\S]*?\*\//g, "");
 
@@ -14,7 +16,7 @@ const stripComments = (text: string): string => text.replace(/\/\*[\s\S]*?\*\//g
 const partial = stripComments(
   readFileSync(join(here, "..", "..", "..", "layouts", "_partials", "unity", "head", "css.html"), "utf8"),
 );
-const source = `${partial}\n${stripComments(readFileSync(join(here, "..", "css", "main.css"), "utf8"))}`;
+const source = `${partial}\n${css}`;
 
 // The target list as versions keyed by browser, such as firefox: "121".
 const targets = new Map<string, string>();

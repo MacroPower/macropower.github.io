@@ -4,71 +4,10 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { css, rules } from "./testkit";
+
 const here = dirname(fileURLToPath(import.meta.url));
 const layouts = join(here, "..", "..", "..", "layouts");
-
-// main.css without its comments.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
-
-// Splits a selector list at its top-level commas.
-function splitList(list: string): string[] {
-  const out: string[] = [];
-  let depth = 0;
-  let start = 0;
-  for (let i = 0; i < list.length; i++) {
-    const c = list[i];
-    if (c === "(") depth++;
-    else if (c === ")") depth--;
-    else if (c === "," && depth === 0) {
-      out.push(list.slice(start, i).trim());
-      start = i + 1;
-    }
-  }
-  out.push(list.slice(start).trim());
-  return out;
-}
-
-interface Rule {
-  selector: string;
-  decls: Map<string, string>;
-}
-
-// Every rule in source order, one entry per selector, with nesting
-// resolved, so `.up-pathbar-arrow { [dir="rtl"] & svg {} }` yields
-// '[dir="rtl"] .up-pathbar-arrow svg'.
-const rules: Rule[] = [];
-{
-  const open: string[][] = [];
-  const own: Map<string, string>[] = [];
-  let start = 0;
-  for (let i = 0; i < css.length; i++) {
-    const c = css[i];
-    if (c !== "{" && c !== ";" && c !== "}") continue;
-    const text = css.slice(start, i).trim().replace(/\s+/g, " ");
-    start = i + 1;
-    if (c === "{") {
-      const parents = open.at(-1) ?? [];
-      let selectors: string[];
-      if (text.startsWith("@")) selectors = parents;
-      else if (parents.length === 0) selectors = splitList(text);
-      else {
-        selectors = parents.flatMap((p) =>
-          splitList(text).map((s) => (s.includes("&") ? s.replaceAll("&", p) : `${p} ${s}`)));
-      }
-      const decls = new Map<string, string>();
-      open.push(selectors);
-      own.push(decls);
-      for (const selector of selectors) rules.push({ selector, decls });
-      continue;
-    }
-    const m = /^([\w-]+)\s*:([\s\S]+)$/.exec(text);
-    if (m) own.at(-1)?.set(m[1]!, m[2]!.trim());
-    if (c === "}") {
-      open.pop();
-      own.pop();
-    }
-  }
-}
 
 // The rules that keep physical left and right on a right-to-left page,
 // each with its reason.
@@ -113,7 +52,7 @@ function lopsided(value: string): boolean {
 // The declarations of a rule that differ between its left and right
 // sides. A rule that sets both sides alike, or centers itself with
 // left:50%, mirrors onto itself.
-function physical(decls: Map<string, string>): string[] {
+function physical(decls: ReadonlyMap<string, string>): string[] {
   return [...decls].flatMap(([prop, value]) => {
     const v = value.replace(/\s*!important$/, "");
     if (SIDED.test(prop)) {

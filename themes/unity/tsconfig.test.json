@@ -10,7 +10,7 @@
   "exclude": [],
   "include": [
     "assets/unity/js/**/*.test.ts",
-    "assets/unity/js/shell/testkit.ts",
+    "assets/unity/js/**/testkit.ts",
     "tests/**/*.ts"
   ]
 }

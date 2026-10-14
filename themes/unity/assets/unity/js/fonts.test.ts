@@ -1,24 +1,16 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MONO_STACK, monoFamily } from "./fonts";
+import { css as stylesheet, siteTokens } from "./testkit";
 
-const here = dirname(fileURLToPath(import.meta.url));
-
-// main.css without its comments and @font-face blocks, which name the
-// faces rather than pick a family for an element.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8")
-  .replace(/\/\*[\s\S]*?\*\//g, "")
-  .replace(/@font-face\s*\{[^}]*\}/g, "");
+// main.css without its @font-face blocks, which name the faces rather
+// than pick a family for an element.
+const css = stylesheet.replace(/@font-face\s*\{[^}]*\}/g, "");
 
 const stack = (value: string): string => value.trim().replace(/\s*,\s*/g, ",");
 
 describe("font tokens", () => {
-  const root = /^:root\s*\{([^}]*)\}/m.exec(css)?.[1] ?? "";
-  const token = (name: string): string => stack(new RegExp(`--up-font-${name}\\s*:([^;]+);`).exec(root)?.[1] ?? "");
+  const token = (name: string): string => stack(siteTokens.get(`--up-font-${name}`) ?? "");
 
   it("defines both stacks on :root", () => {
     expect(token("sans")).toMatch(/^"Ubuntu",/);

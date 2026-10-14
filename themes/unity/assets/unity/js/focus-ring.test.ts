@@ -4,67 +4,11 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { rules, siteTokens } from "./testkit";
+
 const here = dirname(fileURLToPath(import.meta.url));
 
-// main.css without its comments.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 const toml = readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8");
-
-// Splits a selector list at its top-level commas.
-function splitList(list: string): string[] {
-  const out: string[] = [];
-  let depth = 0;
-  let start = 0;
-  for (let i = 0; i < list.length; i++) {
-    const c = list[i];
-    if (c === "(") depth++;
-    else if (c === ")") depth--;
-    else if (c === "," && depth === 0) {
-      out.push(list.slice(start, i).trim());
-      start = i + 1;
-    }
-  }
-  out.push(list.slice(start).trim());
-  return out;
-}
-
-// Every rule in source order, one entry per selector, with nesting
-// resolved, so `.up-post-row { &.is-active {} }` yields
-// ".up-post-row.is-active". At-rules such as @media pass their parent's
-// selectors through.
-const rules: { selector: string; decls: Map<string, string> }[] = [];
-{
-  const open: string[][] = [];
-  const own: Map<string, string>[] = [];
-  let start = 0;
-  for (let i = 0; i < css.length; i++) {
-    const c = css[i];
-    if (c !== "{" && c !== ";" && c !== "}") continue;
-    const text = css.slice(start, i).trim().replace(/\s+/g, " ");
-    start = i + 1;
-    if (c === "{") {
-      const parents = open.at(-1) ?? [];
-      let selectors: string[];
-      if (text.startsWith("@")) selectors = parents;
-      else if (parents.length === 0) selectors = splitList(text);
-      else {
-        selectors = parents.flatMap((p) =>
-          splitList(text).map((s) => (s.includes("&") ? s.replaceAll("&", p) : `${p} ${s}`)));
-      }
-      const decls = new Map<string, string>();
-      open.push(selectors);
-      own.push(decls);
-      for (const selector of selectors) rules.push({ selector, decls });
-      continue;
-    }
-    const m = /^([\w-]+)\s*:([\s\S]+)$/.exec(text);
-    if (m) own.at(-1)?.set(m[1]!, m[2]!.trim());
-    if (c === "}") {
-      open.pop();
-      own.pop();
-    }
-  }
-}
 
 const accent = /var\(\s*--up-accent/;
 
@@ -104,11 +48,8 @@ const presets = toml
 
 // The light surfaces under the rings that paint --up-accent: each stop of
 // the sidebar gradient and the content background.
-const root = /^:root\s*\{([^}]*)\}/m.exec(css)?.[1] ?? "";
-const surfaces = ["--up-sidebar-bg", "--up-content-bg"].flatMap((name) => {
-  const value = new RegExp(`${name}\\s*:([^;]+);`).exec(root)?.[1] ?? "";
-  return value.match(/#[0-9a-f]{6}\b/gi) ?? [];
-});
+const surfaces = ["--up-sidebar-bg", "--up-content-bg"].flatMap((name) =>
+  siteTokens.get(name)?.match(/#[0-9a-f]{6}\b/gi) ?? []);
 
 describe("focus rings", () => {
   it("draws every accent ring 2px solid in a plain accent token", () => {

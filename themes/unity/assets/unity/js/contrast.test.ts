@@ -4,76 +4,11 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { rules, type Rule } from "./testkit";
+
 const here = dirname(fileURLToPath(import.meta.url));
 
-// main.css without its comments.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 const toml = readFileSync(join(here, "..", "..", "..", "hugo.toml"), "utf8");
-
-// Splits a selector list at its top-level commas.
-function splitList(list: string): string[] {
-  const out: string[] = [];
-  let depth = 0;
-  let start = 0;
-  for (let i = 0; i < list.length; i++) {
-    const c = list[i];
-    if (c === "(") depth++;
-    else if (c === ")") depth--;
-    else if (c === "," && depth === 0) {
-      out.push(list.slice(start, i).trim());
-      start = i + 1;
-    }
-  }
-  out.push(list.slice(start).trim());
-  return out;
-}
-
-interface Rule {
-  selector: string;
-  // The at-rules around the rule, joined, such as "@media print".
-  media: string;
-  decls: Map<string, string>;
-}
-
-// Every rule in source order, one entry per selector, with nesting
-// resolved, so `.up-post-row { &.is-active {} }` yields
-// ".up-post-row.is-active".
-const rules: Rule[] = [];
-{
-  const open: { selectors: string[]; media: string }[] = [];
-  const own: Map<string, string>[] = [];
-  let start = 0;
-  for (let i = 0; i < css.length; i++) {
-    const c = css[i];
-    if (c !== "{" && c !== ";" && c !== "}") continue;
-    const text = css.slice(start, i).trim().replace(/\s+/g, " ");
-    start = i + 1;
-    if (c === "{") {
-      const parents = open.at(-1)?.selectors ?? [];
-      let media = open.at(-1)?.media ?? "";
-      let selectors: string[];
-      if (text.startsWith("@")) {
-        selectors = parents;
-        media = `${media} ${text}`.trim();
-      } else if (parents.length === 0) selectors = splitList(text);
-      else {
-        selectors = parents.flatMap((p) =>
-          splitList(text).map((s) => (s.includes("&") ? s.replaceAll("&", p) : `${p} ${s}`)));
-      }
-      const decls = new Map<string, string>();
-      open.push({ selectors, media });
-      own.push(decls);
-      for (const selector of selectors) rules.push({ selector, media, decls });
-      continue;
-    }
-    const m = /^([\w-]+)\s*:([\s\S]+)$/.exec(text);
-    if (m) own.at(-1)?.set(m[1]!, m[2]!.trim());
-    if (c === "}") {
-      open.pop();
-      own.pop();
-    }
-  }
-}
 
 const isMore = (r: Rule): boolean => r.media.includes("prefers-contrast: more");
 const isForced = (r: Rule): boolean => r.media.includes("forced-colors: active");

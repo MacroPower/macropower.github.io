@@ -1,37 +1,13 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { describe, expect, it } from "vitest";
 
-const here = dirname(fileURLToPath(import.meta.url));
-
-// main.css without its comments.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+import { declarations } from "./testkit";
 
 // Each rule's own declarations, keyed by the selectors of the rules
 // around it, such as "@media (scripting: none) .up-shell".
 const rules = new Map<string, Map<string, string>>();
-{
-  const open: string[] = [];
-  let start = 0;
-  for (let i = 0; i < css.length; i++) {
-    const c = css[i];
-    if (c !== "{" && c !== ";" && c !== "}") continue;
-    const text = css.slice(start, i).trim();
-    start = i + 1;
-    if (c === "{") {
-      open.push(text.replace(/\s+/g, " "));
-      continue;
-    }
-    const m = /^([\w-]+)\s*:([\s\S]+)$/.exec(text);
-    if (m) {
-      const key = open.join(" ");
-      if (!rules.has(key)) rules.set(key, new Map());
-      rules.get(key)!.set(m[1]!, m[2]!.trim());
-    }
-    if (c === "}") open.pop();
-  }
+for (const { path, prop, value } of declarations) {
+  if (!rules.has(path)) rules.set(path, new Map());
+  rules.get(path)!.set(prop, value);
 }
 
 // The first value main.css gives each custom property.

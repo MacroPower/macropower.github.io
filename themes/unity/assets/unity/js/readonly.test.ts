@@ -19,6 +19,7 @@ import type { TEST_DATA } from "./shell/testkit";
 import type { TABLE_BUTTONS, TOOLBAR_ACTIONS } from "./solitaire/controls";
 import type { RANK_LABELS, SUITS } from "./solitaire/klondike";
 import type { ICONS, IconName, PAL } from "./solitaire/sprites";
+import type { declarations, rules, siteTokens } from "./testkit";
 
 describe("exported tables", () => {
   it("are read-only", () => {
@@ -28,6 +29,9 @@ describe("exported tables", () => {
     expectTypeOf<typeof MASK_COLORS>().toEqualTypeOf<Readonly<typeof MASK_COLORS>>();
     expectTypeOf<typeof ALL_COMMANDS>().toEqualTypeOf<Readonly<typeof ALL_COMMANDS>>();
     expectTypeOf<typeof TEST_DATA>().toEqualTypeOf<Readonly<typeof TEST_DATA>>();
+    expectTypeOf<typeof siteTokens>().toEqualTypeOf<ReadonlyMap<string, string>>();
+    expectTypeOf<typeof rules>().toEqualTypeOf<Readonly<typeof rules>>();
+    expectTypeOf<typeof declarations>().toEqualTypeOf<Readonly<typeof declarations>>();
     expectTypeOf<typeof SUITS>().toEqualTypeOf<Readonly<typeof SUITS>>();
     expectTypeOf<typeof RANK_LABELS>().toEqualTypeOf<Readonly<typeof RANK_LABELS>>();
     expectTypeOf<typeof PAL>().toEqualTypeOf<Readonly<typeof PAL>>();

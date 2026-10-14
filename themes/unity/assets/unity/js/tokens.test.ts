@@ -4,40 +4,15 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { css, declarations, siteTokens as tokens } from "./testkit";
+
 const here = dirname(fileURLToPath(import.meta.url));
 
-// main.css without its comments.
-const css = readFileSync(join(here, "..", "css", "main.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 const readme = readFileSync(join(here, "..", "..", "..", "README.md"), "utf8");
 const scripts = readdirSync(here, { encoding: "utf8", recursive: true })
   .filter((f) => f.endsWith(".ts") && !f.endsWith(".test.ts"))
   .map((f) => readFileSync(join(here, f), "utf8"))
   .join("\n");
-
-// The first :root block holds the tokens a site may set.
-const root = /^:root\s*\{([^}]*)\}/m.exec(css)?.[1] ?? "";
-const tokens = new Map([...root.matchAll(/(--up-[\w-]+)\s*:([^;]+);/g)].map((m) => [m[1]!, m[2]!.trim()]));
-
-// Every declaration in main.css, with the selectors of the rules around it.
-function declarations(text: string): { rule: string; decl: string }[] {
-  const out: { rule: string; decl: string }[] = [];
-  const rules: string[] = [];
-  let start = 0;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === "{") {
-      rules.push(text.slice(start, i).trim().replace(/\s+/g, " "));
-    } else if (c === ";" || c === "}") {
-      const decl = text.slice(start, i).trim();
-      if (decl) out.push({ rule: rules.join(" "), decl });
-      if (c === "}") rules.pop();
-    } else {
-      continue;
-    }
-    start = i + 1;
-  }
-  return out;
-}
 
 describe("tokens", () => {
   it("lists every site-facing token in README.md", () => {
@@ -62,15 +37,15 @@ describe("tokens", () => {
   it("repeats no token's value outside the token", () => {
     const patterns = [...tokens].map(([name, value]) => {
       const hex = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(value);
-      if (!hex) return [name, (decl: string) => decl.replace(/\s+/g, " ").includes(value.replace(/\s+/g, " "))] as const;
+      if (!hex) return [name, (text: string) => text.replace(/\s+/g, " ").includes(value.replace(/\s+/g, " "))] as const;
       const [r, g, b] = hex.slice(1).map((h) => parseInt(h, 16));
       const re = new RegExp(`${value}\\b|rgba?\\(\\s*${r}\\s*,\\s*${g}\\s*,\\s*${b}\\b`, "i");
-      return [name, (decl: string) => re.test(decl)] as const;
+      return [name, (text: string) => re.test(text)] as const;
     });
-    const strays = declarations(css)
+    const strays = declarations
       // The token declarations themselves.
-      .filter(({ rule }) => rule !== ":root")
-      .flatMap(({ rule, decl }) => patterns.filter(([, has]) => has(decl)).map(([name]) => `${name} in ${rule}`));
+      .filter(({ path }) => path !== ":root")
+      .flatMap(({ path, value }) => patterns.filter(([, has]) => has(value)).map(([name]) => `${name} in ${path}`));
     // Each of these paints another role in the same color, so a site that
     // sets the token leaves it alone.
     expect(strays).toEqual([
@@ -96,19 +71,13 @@ describe("tokens", () => {
     // than one word. A single color or length can paint an unrelated role,
     // but a repeated gradient or shadow is a recipe copy that skipped its
     // token.
-    const internal = declarations(css).flatMap(({ decl }) => {
-      const m = /^(--up-[\w-]+)\s*:([\s\S]+)$/.exec(decl);
-      if (!m || tokens.has(m[1]!)) return [];
-      const value = m[2]!.trim().replace(/\s+/g, " ");
-      return value.includes(" ") ? [[m[1]!, value] as const] : [];
-    });
+    const internal = declarations.flatMap(({ prop, value }) =>
+      prop.startsWith("--up-") && !tokens.has(prop) && value.includes(" ") ? [[prop, value] as const] : []);
     expect(internal.length).toBeGreaterThan(0);
-    const strays = declarations(css)
-      .filter(({ decl }) => !decl.startsWith("--"))
-      .flatMap(({ rule, decl }) => {
-        const flat = decl.replace(/\s+/g, " ");
-        return internal.filter(([, value]) => flat.includes(value)).map(([name]) => `${name} in ${rule}`);
-      });
+    const strays = declarations
+      .filter(({ prop }) => !prop.startsWith("--"))
+      .flatMap(({ path, value }) =>
+        internal.filter(([, shared]) => value.includes(shared)).map(([name]) => `${name} in ${path}`));
     expect(strays).toEqual([
       // The Dash paints the same faint top highlight outside the Studio,
       // where the token is unset.
