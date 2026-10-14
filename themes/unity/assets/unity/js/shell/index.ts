@@ -1,4 +1,5 @@
-import { XtermTerminal, FONT_PROBES } from "./terminal";
+import { XtermTerminal, fontProbes } from "./terminal";
+import { monoFamily } from "../fonts";
 import { Shell, type ShellData } from "./shell";
 import { parseShellIsland } from "./island";
 import { writeBanner } from "./banner";
@@ -48,18 +49,21 @@ function saveHistory(items: readonly string[]): void {
   const { since, ...rest } = island;
   const data: ShellData = { ...rest, uptime: formatUptime(since, new Date()) };
 
-  // Ubuntu Mono is Google-hosted with display=swap, so on a cold cache it is
-  // not yet active when this deferred bundle runs. xterm measures the cell
-  // once at open() and only re-measures on a fontFamily/fontSize change, so
-  // building the terminal before the font activates bakes in fallback-font
-  // metrics and renders garbled until reload. Actively load the faces first
-  // (fonts.load() fetches and resolves on activation, unlike fonts.ready,
-  // which can resolve before the font is even requested), then build. Race a
-  // timeout so a stalled or failed font fetch never blocks the shell; if the
-  // font lands after the timeout, terminal.ts re-measures the glyph metrics,
-  // though output already written (the banner) keeps the column layout it was
-  // sized for — an accepted residual: slow-path only, and cosmetic (wrapped or
-  // ragged banner columns, not garbled glyphs).
+  // The theme self-hosts Ubuntu Mono, the default --up-font-mono face, with
+  // font-display:swap. On a cold cache the face is not yet active when this
+  // deferred bundle runs, and a site's own web font in the token behaves the
+  // same. xterm measures the cell once at open() and re-measures only on a
+  // fontFamily or fontSize change. A terminal built before the font
+  // activates keeps fallback-font metrics and renders garbled until reload,
+  // so the bundle loads the faces before it builds the terminal.
+  // fonts.load() fetches a face and resolves when it activates, but
+  // fonts.ready can resolve before anything requests the font. A timeout
+  // races the load, so a stalled or failed font fetch never blocks the shell.
+  // When the font lands after the timeout, terminal.ts re-measures the glyph
+  // metrics. Output written before then, such as the banner, keeps the
+  // columns the fallback metrics gave it. That residual happens only on the
+  // slow path and only shifts banner columns, because every glyph still
+  // renders correctly.
   const FONT_TIMEOUT_MS = 1500;
 
   // Swap the disposed terminal for the reconnect overlay (.up-shell-reconnect
@@ -142,7 +146,7 @@ function saveHistory(items: readonly string[]): void {
   };
 
   if (document.fonts?.load) {
-    const fonts = Promise.all(FONT_PROBES.map((f) => document.fonts.load(f)));
+    const fonts = Promise.all(fontProbes(monoFamily(mount)).map((f) => document.fonts.load(f)));
     const timeout = new Promise<void>((r) => setTimeout(r, FONT_TIMEOUT_MS));
     // load() rejects on fetch failure for a known face; start either way.
     void Promise.race([fonts, timeout]).then(start, start);

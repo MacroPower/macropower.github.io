@@ -4,6 +4,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { PALETTE, PALETTE_BRIGHT } from "./ansi";
 import { WINDOW_STATE_EVENT } from "../events";
+import { monoFamily } from "../fonts";
 
 // Renderer-agnostic terminal surface. The shell core (readline, shell,
 // commands) talks only to this interface; XtermTerminal is the sole xterm
@@ -22,11 +23,27 @@ export interface TerminalIO {
   dispose(): void;
 }
 
-const FONT_FAMILY = '"Ubuntu Mono", ui-monospace, Menlo, monospace';
-// Font shorthand probes for document.fonts.load()/check(): the faces xterm
-// actually renders (regular + ANSI-bold). index.ts gates construction on
-// loading these; the constructor backstop checks them.
-export const FONT_PROBES: readonly string[] = ['16px "Ubuntu Mono"', '700 16px "Ubuntu Mono"'];
+// The 12pt .up-neofetch font size in main.css. Change the two together.
+const FONT_SIZE = 16;
+
+/** Font shorthands for document.fonts.load() and check(), one for each
+ *  face xterm renders from family: regular and ANSI bold. index.ts waits
+ *  for them to load before it builds the terminal, and the constructor's
+ *  backstop checks them. */
+export function fontProbes(family: string): string[] {
+  return [`${FONT_SIZE}px ${family}`, `700 ${FONT_SIZE}px ${family}`];
+}
+
+// Whether every web font face in family has loaded. A family list that
+// the font shorthand rejects makes check() throw, and such a list names no
+// face to wait for.
+function facesLoaded(family: string): boolean {
+  try {
+    return fontProbes(family).every((p) => document.fonts.check(p));
+  } catch {
+    return true;
+  }
+}
 
 export class XtermTerminal implements TerminalIO {
   private readonly term: Terminal;
@@ -37,10 +54,10 @@ export class XtermTerminal implements TerminalIO {
   private linkDisposable?: IDisposable;
 
   constructor(mount: HTMLElement) {
+    const family = monoFamily(mount);
     this.term = new Terminal({
-      fontFamily: FONT_FAMILY,
-      // Matches the .up-neofetch font size in main.css (12pt); keep in sync.
-      fontSize: 16,
+      fontFamily: family,
+      fontSize: FONT_SIZE,
       lineHeight: 1.2,
       cursorBlink: true,
       allowTransparency: true,
@@ -100,20 +117,20 @@ export class XtermTerminal implements TerminalIO {
     window.addEventListener(WINDOW_STATE_EVENT, this.onWindowState);
     window.addEventListener("resize", this.onWindowResize);
 
-    // index.ts builds us only after Ubuntu Mono activates (when FontFaceSet is
-    // available — without it, both its gate and this backstop no-op together),
-    // so metrics are correct. Its load gate has a timeout fallback though: if
-    // the font lands after that, we were measured with the fallback font, and
-    // xterm caches cell metrics until a fontFamily/fontSize change (it ignores
-    // no-op writes). Re-measure when the font finishes by switching fontFamily
-    // to a distinct but visually identical string — this clears the glyph
-    // width cache, resets the renderer, and re-measures; then re-fit so the
-    // column count matches the corrected cell width. (Already-written output
-    // keeps the layout it was written for — see the slow-path note in
-    // index.ts.)
-    if (document.fonts?.ready && FONT_PROBES.some((p) => !document.fonts.check(p))) {
+    // index.ts builds the terminal only after the family's web fonts
+    // activate, so the metrics start out correct. Without FontFaceSet, its
+    // gate and this backstop both skip. Its gate has a timeout, though, and a
+    // font that lands after the timeout leaves xterm measured with the
+    // fallback font. xterm caches cell metrics until a fontFamily or fontSize
+    // change and ignores a write of the same value. When the fonts finish
+    // loading, switching fontFamily to a distinct but visually identical
+    // string clears the glyph width cache, resets the renderer, and
+    // re-measures. The re-fit then matches the column count to the corrected
+    // cell width. Output written before then keeps its layout, as the
+    // slow-path note in index.ts describes.
+    if (document.fonts?.ready && !facesLoaded(family)) {
       void document.fonts.ready.then(() => {
-        this.term.options.fontFamily = `${FONT_FAMILY}, monospace`;
+        this.term.options.fontFamily = `${family}, monospace`;
         this.fit();
       });
     }

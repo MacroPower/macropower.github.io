@@ -155,6 +155,12 @@
   --up-content-muted:#6B6764;
   --up-content-line:#D8D5D2;
   --up-hud:#1F0E1A;
+  /* Font stacks. Every theme rule that names a family reads one of these,
+     except the vendored xterm block and MathML. The terminal and the
+     Studio's piano roll read --up-font-mono through fonts.ts, so a site's
+     custom.css changes a typeface everywhere by setting one token. */
+  --up-font-sans:"Ubuntu",-apple-system,system-ui,sans-serif;
+  --up-font-mono:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   /* Layout: launcher width, shared by the launcher itself and the window
      stage's left edge (so centering spans the desktop, not the viewport).
      The phone media query narrows it. */
@@ -187,7 +193,7 @@
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;overflow:hidden;
-  font-family:"Ubuntu",-apple-system,system-ui,sans-serif;
+  font-family:var(--up-font-sans);
   -webkit-font-smoothing:antialiased;color:var(--up-content-fg);
   background:#000;user-select:none;-webkit-user-select:none}
 body{font-size:13.5px;line-height:1.45}
@@ -597,7 +603,7 @@ body.up-resizing *{ cursor:inherit !important; }
   position:absolute;
   right:24px; bottom:24px;
   z-index:10;
-  font-family:"Ubuntu Mono", monospace;
+  font-family:var(--up-font-mono);
   font-size:11px;
   color:rgba(255,255,255,.18);
   text-transform:uppercase;
@@ -649,7 +655,7 @@ body.up-resizing *{ cursor:inherit !important; }
   border-right:1px solid #C9C4BB;
   padding:8px 0 14px;min-width:0;overflow:auto;
   box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
 }
 .up-naut-section{padding:0}
 .up-naut-section + .up-naut-section{
@@ -807,7 +813,7 @@ body.up-resizing *{ cursor:inherit !important; }
   background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
   border-right:1px solid #C9C4BB;
   box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
 }
 .up-docv-side-head{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -934,7 +940,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-sponsor-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .up-sponsor-monogram{
-  font-family:"Ubuntu",sans-serif;font-size:20px;font-weight:600;color:#8A8175;
+  font-family:var(--up-font-sans);font-size:20px;font-weight:600;color:#8A8175;
   line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
 .up-sponsor-name{
@@ -989,7 +995,7 @@ a.up-sponsor-card[href]:hover{
 .up-sol-noscript{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   padding:24px;text-align:center;
-  font-family:"Ubuntu Mono",monospace;font-size:13px;color:#DCE8E2;
+  font-family:var(--up-font-mono);font-size:13px;color:#DCE8E2;
 }
 
 /* ---------- Icon vault (icons layout) ---------- */
@@ -1006,7 +1012,7 @@ a.up-sponsor-card[href]:hover{
   border-bottom:1px solid var(--up-content-line);
 }
 .up-icons-kicker{
-  font-family:"Ubuntu Mono",monospace; font-size:11px;
+  font-family:var(--up-font-mono); font-size:11px;
   letter-spacing:.16em; text-transform:uppercase;
   color:var(--up-content-muted);
 }
@@ -1028,7 +1034,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-seg button{
   all:unset; cursor:pointer; padding:4px 10px;
-  font-family:"Ubuntu Mono",monospace; font-size:11.5px; color:#2E2E2E;
+  font-family:var(--up-font-mono); font-size:11.5px; color:#2E2E2E;
   border-right:1px solid var(--up-content-line);
 }
 .up-icons-seg button:last-child{ border-right:0; }
@@ -1041,7 +1047,7 @@ a.up-sponsor-card[href]:hover{
   flex-wrap:wrap;
 }
 .up-icons-no{
-  font-family:"Ubuntu Mono",monospace; font-size:11px; font-weight:700;
+  font-family:var(--up-font-mono); font-size:11px; font-weight:700;
   letter-spacing:.14em; color:var(--up-accent);
 }
 .up-icons-section-head h2{
@@ -1049,10 +1055,10 @@ a.up-sponsor-card[href]:hover{
   color:#1F1D1B;
 }
 .up-icons-count{
-  font-family:"Ubuntu Mono",monospace; font-size:12px; color:var(--up-content-muted);
+  font-family:var(--up-font-mono); font-size:12px; color:var(--up-content-muted);
 }
 .up-icons-note{
-  margin-left:auto; font-family:"Ubuntu Mono",monospace; font-size:11px;
+  margin-left:auto; font-family:var(--up-font-mono); font-size:11px;
   color:var(--up-content-muted); opacity:.8;
 }
 .up-icons-controls-row{
@@ -1106,7 +1112,7 @@ a.up-sponsor-card[href]:hover{
 .up-icons-grid[data-kind="glyph"][data-bg="dark"] .up-icons-art{ color:#FFFFFF; }
 
 .up-icons-label{
-  font-family:"Ubuntu Mono",monospace; font-size:10.5px; line-height:1.25;
+  font-family:var(--up-font-mono); font-size:10.5px; line-height:1.25;
   text-align:center; color:var(--up-content-muted); word-break:break-word;
 }
 
@@ -1131,7 +1137,7 @@ a.up-sponsor-card[href]:hover{
   opacity:0; pointer-events:none; z-index:100;
   background:rgba(31,14,26,.95); color:#fff;
   padding:10px 16px; border-radius:6px;
-  font-family:"Ubuntu Mono",monospace; font-size:12.5px;
+  font-family:var(--up-font-mono); font-size:12.5px;
   box-shadow:0 8px 24px rgba(0,0,0,.4);
   transition:opacity .2s ease, transform .2s ease;
 }
@@ -1160,7 +1166,7 @@ a.up-sponsor-card[href]:hover{
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
   color:var(--up-aod-fg);
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12pt; font-weight:400; line-height:1.2;
   overflow:auto;
 }
@@ -1181,7 +1187,7 @@ a.up-sponsor-card[href]:hover{
   flex:1; min-height:0; width:100%;
 }
 .up-shell-noscript{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12pt; line-height:1.2;
   color:var(--up-aod-red);
 }
@@ -1209,7 +1215,7 @@ a.up-sponsor-card[href]:hover{
 .up-shell-reconnect{
   height:100%; width:100%;
   display:flex; flex-direction:column; justify-content:flex-start;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12pt; line-height:1.4;
   color:var(--up-aod-fg,#ABB2BF);
   cursor:pointer; outline:none;
@@ -1620,7 +1626,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
 .up-reader-meta{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:11.5px;color:var(--up-content-muted);letter-spacing:.04em;
   display:flex;flex-wrap:wrap;gap:6px;align-items:center;
 }
@@ -1633,7 +1639,7 @@ a.up-sponsor-card[href]:hover{
 .up-reader-body{font-size:15.5px;line-height:1.7;color:#2E2B28}
 .up-reader-signoff{
   margin-top:26px;padding-top:14px;border-top:1px solid #ECE9E6;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12px;color:var(--up-content-muted);
 }
 /* ---------- Markdown prose (post reader and plain pages) ---------- */
@@ -1685,7 +1691,7 @@ a.up-sponsor-card[href]:hover{
   }
   th{background:#F2EFEC;font-weight:500}
   code{
-    font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+    font-family:var(--up-font-mono);
     font-size:.92em;background:#EFEDEB;padding:1px 5px;border-radius:2px;
   }
   pre{
@@ -1939,7 +1945,7 @@ details.up-alert{
 }
 
 .up-project-tile-label{
-  font:12.5px "Ubuntu",sans-serif;line-height:1.25;text-align:center;
+  font:12.5px var(--up-font-sans);line-height:1.25;text-align:center;
   max-width:100%;letter-spacing:.005em;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   overflow:hidden;word-break:break-word;
@@ -1951,7 +1957,7 @@ details.up-alert{
 .up-project-grid-empty{
   grid-column:1/-1;padding:28px 14px;
   color:var(--up-content-muted);font-size:13px;text-align:center;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
 }
 
 .up-project-preview{
@@ -1977,7 +1983,7 @@ details.up-alert{
 .up-project-preview-title{
   font-size:17px;font-weight:500;margin:0 0 4px;letter-spacing:-.005em;
   line-height:1.2;color:#1F1D1A;
-  word-break:break-word;font-family:"Ubuntu",sans-serif;
+  word-break:break-word;font-family:var(--up-font-sans);
 }
 .up-project-preview-lang{
   /* recipe: pill */
@@ -2091,11 +2097,11 @@ details.up-alert{
 }
 .up-empty-pane-icon{opacity:.55;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
 .up-empty-pane-hint{
-  font-family:"Ubuntu",sans-serif;font-size:13.5px;color:#6B6660;
+  font-family:var(--up-font-sans);font-size:13.5px;color:#6B6660;
   letter-spacing:.005em;
 }
 .up-empty-pane-tagline{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:11.5px;color:var(--up-content-muted);letter-spacing:.02em;
   padding:2px 8px;border-radius:2px;
   background:rgba(255,255,255,.55);border:1px solid #E0D9CB;
@@ -2270,7 +2276,7 @@ details.up-alert{
 .up-dropdown-btn{
   padding:5px 10px; border:0; border-radius:3px;
   background:var(--up-accent);
-  color:#fff; font-size:12px; font-family:"Ubuntu",sans-serif;
+  color:#fff; font-size:12px; font-family:var(--up-font-sans);
   text-decoration:none;
   cursor:default;
   &:hover{background:var(--up-accent-light)}
@@ -2350,7 +2356,7 @@ details.up-alert{
 .up-net-row{
   &.is-on .up-net-row-dot{color:var(--up-accent-light)}
   &.is-muted .up-net-row-name{color:rgba(255,255,255,.4)}
-  &.is-mono .up-net-row-name{font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace}
+  &.is-mono .up-net-row-name{font-family:var(--up-font-mono)}
   &.is-strong .up-net-row-name{font-weight:600}
 }
 .up-net-row-name{color:inherit}
@@ -2488,7 +2494,7 @@ details.up-alert{
                       calc(-50% + var(--up-oy,0px))) scale(.96);
   transition:opacity .15s ease,
     transform .18s cubic-bezier(.2,.8,.3,1);
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
   font-size:13.5px;
   overflow:hidden;
   &.is-appear{
@@ -2550,7 +2556,7 @@ details.up-alert{
   width:48px; height:48px; border-radius:24px;
   display:flex; align-items:center; justify-content:center;
   color:#fff; font-size:30px; font-weight:700; line-height:1;
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.35),
     0 1px 2px rgba(0,0,0,.25);
@@ -2593,7 +2599,7 @@ details.up-alert{
   margin-top:12px; padding:10px 12px;
   background:#FBFAF9; border:1px solid #DCD7D2;
   border-radius:3px;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12px; color:#3A3733;
   white-space:pre-wrap;
   max-height:220px; overflow:auto;
@@ -2612,7 +2618,7 @@ details.up-alert{
   border:1px solid #B5AFAA;
   border-radius:3px;
   font-size:13px; font-weight:400;
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
   cursor:default;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.6),
@@ -2732,7 +2738,7 @@ details.up-alert{
   display:flex; align-items:center; gap:4px; flex-shrink:0;
 }
 .up-kbd{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:11px; line-height:1;
   padding:3px 6px 4px;
   color:#3A3733;
@@ -2743,7 +2749,7 @@ details.up-alert{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(0,0,0,.08);
   /* Mouse gestures are not keys: flat pill, no keycap bevel. */
   &.is-gesture{
-    font-family:"Ubuntu",sans-serif;
+    font-family:var(--up-font-sans);
     background:#E8E5E2;
     border-color:#D4D0CD;
     box-shadow:none;
@@ -2844,7 +2850,7 @@ body.up-reduce-motion *{
   outline:none;
   width:100%;
   padding:10px 14px 10px 38px;
-  font:300 17px/1.3 "Ubuntu",sans-serif;
+  font:300 17px/1.3 var(--up-font-sans);
   &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
   &:focus{
     border-color:color-mix(in srgb, var(--up-accent-light) 60%, transparent);
@@ -2885,7 +2891,7 @@ body.up-reduce-motion *{
 }
 .up-dash-more{
   appearance:none;background:transparent;border:1px solid transparent;
-  font:12px "Ubuntu",sans-serif;
+  font:12px var(--up-font-sans);
   color:rgba(255,255,255,.55);
   cursor:pointer;
   padding:2px 7px;
@@ -2946,7 +2952,7 @@ body.up-reduce-motion *{
   display:flex;flex-direction:column;align-items:center;gap:12px;
   padding:46px 20px 40px;
   color:rgba(255,255,255,.55);
-  font:300 15px "Ubuntu",sans-serif;
+  font:300 15px var(--up-font-sans);
   &[hidden]{display:none}
   p{margin:0}
 }
@@ -3067,7 +3073,7 @@ body.up-reduce-motion *{
   flex:1 1 auto;
   min-width:0;
   padding:9px 14px;
-  font:300 19px/1.3 "Ubuntu",sans-serif;
+  font:300 19px/1.3 var(--up-font-sans);
   &::placeholder{color:rgba(255,255,255,.42);font-style:italic}
   &:focus{
     border-color:color-mix(in srgb, var(--up-accent-light) 60%, transparent);
@@ -3461,7 +3467,7 @@ body.up-reduce-motion *{
   color:var(--up-daw-dim);
 }
 .up-daw-lcd{
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:14px; line-height:1;
   padding:3px 7px;
   min-width:40px; text-align:right;
@@ -3540,7 +3546,7 @@ body.up-reduce-motion *{
   display:flex; align-items:center; gap:6px;
   width:100%; padding:8px 10px 6px;
   background:transparent; border:0; text-align:left;
-  font-family:"Ubuntu",sans-serif;
+  font-family:var(--up-font-sans);
   font-size:9px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--up-daw-dim);
   text-shadow:0 1px 0 rgba(0,0,0,.5);
@@ -3652,7 +3658,7 @@ body.up-reduce-motion *{
   padding:3px 10px 3px 8px;
   background:transparent; border:0; border-radius:2px;
   text-align:left;
-  font-family:"Ubuntu",sans-serif; font-size:11.5px;
+  font-family:var(--up-font-sans); font-size:11.5px;
   color:var(--up-daw-text); cursor:default;
   svg{flex-shrink:0; opacity:.75}
   &:hover{background:rgba(255,255,255,.08)}
@@ -3720,7 +3726,7 @@ body.up-reduce-motion *{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   cursor:default;
   border-radius:2px;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:10px;
   line-height:1;
   color:var(--up-daw-dim);
@@ -3788,7 +3794,7 @@ body.up-reduce-motion *{
 }
 .up-daw-knob-value{
   min-width:32px; padding:1px 4px;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:9.5px; line-height:1.3; text-align:center;
   color:var(--up-daw-lcd);
   background:var(--up-daw-lcd-bg);
@@ -3824,7 +3830,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   position:absolute; inset:0; z-index:2;
   display:flex; align-items:center; justify-content:center;
   padding:0 24px; text-align:center;
-  font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
+  font-family:var(--up-font-mono);
   font-size:12px;
   color:var(--up-daw-dim);
   background:#1B1E23;

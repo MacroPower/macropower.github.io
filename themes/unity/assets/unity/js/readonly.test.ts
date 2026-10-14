@@ -10,7 +10,6 @@ import { describe, expectTypeOf, it } from "vitest";
 import type * as audio from "./audio";
 import type { MASK_COLORS, PALETTE, PALETTE_BRIGHT } from "./shell/ansi";
 import type { ALL_COMMANDS } from "./shell/commands/all";
-import type { FONT_PROBES } from "./shell/terminal";
 import type { TEST_DATA } from "./shell/testkit";
 import type { TABLE_BUTTONS, TOOLBAR_ACTIONS } from "./solitaire/controls";
 import type { RANK_LABELS, SUITS } from "./solitaire/klondike";
@@ -24,7 +23,6 @@ describe("exported tables", () => {
     expectTypeOf<typeof PALETTE_BRIGHT>().toEqualTypeOf<Readonly<typeof PALETTE_BRIGHT>>();
     expectTypeOf<typeof MASK_COLORS>().toEqualTypeOf<Readonly<typeof MASK_COLORS>>();
     expectTypeOf<typeof ALL_COMMANDS>().toEqualTypeOf<Readonly<typeof ALL_COMMANDS>>();
-    expectTypeOf<typeof FONT_PROBES>().toEqualTypeOf<Readonly<typeof FONT_PROBES>>();
     expectTypeOf<typeof TEST_DATA>().toEqualTypeOf<Readonly<typeof TEST_DATA>>();
     expectTypeOf<typeof SUITS>().toEqualTypeOf<Readonly<typeof SUITS>>();
     expectTypeOf<typeof RANK_LABELS>().toEqualTypeOf<Readonly<typeof RANK_LABELS>>();

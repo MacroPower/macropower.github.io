@@ -203,6 +203,14 @@ The theme's render hooks extend Hugo's Markdown:
 ## Customizing
 
 - **Extra CSS.** Add `assets/css/custom.css` to your site. The theme keeps its own rules in cascade layers and builds yours in after them with no layer, so your rules beat the theme's whatever their specificity. Theme declarations marked `!important` still win. Your file goes through the same `css.Build` pass as the theme's stylesheet, so it can use native nesting and `@import` other files. A bare path such as `@import "fonts.css"` resolves beside `custom.css` in your site's `assets/css/` first, then from `assets/`. An `@import url(...)` of an external stylesheet, such as a web font's, lands at the top of the built stylesheet, where browsers load it. Every theme selector is prefixed `up-`, and every custom property is prefixed `--up-`. The palette lives in custom properties on `:root`, and `--up-accent` holds the accent preset's color.
+- **Fonts.** Two custom properties on `:root` hold the theme's font stacks: `--up-font-sans` for the desktop's text and `--up-font-mono` for the terminal, code, and other monospaced text. Set either one in `custom.css` to change that typeface everywhere, the home terminal and the Studio's piano roll included. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the tokens hold.
+
+  ```css
+  :root{
+    --up-font-sans:"Fira Sans",system-ui,sans-serif;
+    --up-font-mono:"Fira Mono",ui-monospace,monospace;
+  }
+  ```
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
 
   ```js

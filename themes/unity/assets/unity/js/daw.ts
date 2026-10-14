@@ -17,6 +17,7 @@ import { t, tn } from "./i18n";
 import type { MidiNote, MidiSong } from "./midi";
 import { installResize } from "./resize";
 import { eventElement, focusedElement, requireAll } from "./dom";
+import { monoFamily } from "./fonts";
 
 // ---- piano-roll geometry ----------------------------------------------------
 
@@ -307,6 +308,8 @@ export function initDaw(): void {
   });
   if (!rollEls) return;
   const { roll, canvas, scroller, spacer } = rollEls;
+  // The piano roll's labels use the theme's monospace stack.
+  const mono = monoFamily(roll);
 
   const defaultStatus = statusEl?.textContent ?? "";
 
@@ -1091,7 +1094,7 @@ export function initDaw(): void {
     g.fillRect(0, 0, vw, RULER_H);
     g.fillStyle = "rgba(255,255,255,.12)";
     g.fillRect(0, RULER_H - 1, vw, 1);
-    g.font = '10px "Ubuntu Mono", monospace';
+    g.font = `10px ${mono}`;
     g.textBaseline = "middle";
     const barPx = zb * 4;
     const barStep = Math.max(1, Math.ceil(34 / barPx));
@@ -1130,14 +1133,14 @@ export function initDaw(): void {
       g.fillRect(0, y + 0.5, black ? KEYS_W - 16 : KEYS_W - 8, ROW_H - 1);
       if (p % 12 === 0) {
         g.fillStyle = "#6B6F76";
-        g.font = '9px "Ubuntu Mono", monospace';
+        g.font = `9px ${mono}`;
         g.fillText(noteName(p), KEYS_W - 16, y + ROW_H / 2 + 0.5);
       }
     }
     if (hasDrums && dt < vh) {
       g.fillStyle = "#23262C";
       g.fillRect(0, dt - DRUM_GAP, KEYS_W, DRUM_GAP + DRUM_ROWS.length * ROW_H + 8);
-      g.font = '9px "Ubuntu Mono", monospace';
+      g.font = `9px ${mono}`;
       g.fillStyle = "#8E939B";
       DRUM_ROWS.forEach((row, i) => {
         g.fillText(row.label, 6, dt + i * ROW_H + ROW_H / 2 + 0.5);
