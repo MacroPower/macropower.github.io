@@ -13,8 +13,10 @@ import { stripAnsi } from "./ansi";
 
 // A TerminalIO that buffers everything written to it. writeln appends a bare
 // "\n" (never "\r\n"), matching bash's line endings so stdout compares cleanly.
+// type() stands in for the keyboard.
 export class CaptureTerminal implements TerminalIO {
   private buf = "";
+  private readonly listeners: ((data: string) => void)[] = [];
   write(s: string): void { this.buf += s; }
   writeln(s: string): void { this.buf += `${s}\n`; }
   clear(): void { this.buf = ""; }
@@ -23,8 +25,18 @@ export class CaptureTerminal implements TerminalIO {
   focus(): void { /* no-op */ }
   fit(): void { /* no-op */ }
   registerLinks(): void { /* no-op */ }
-  onData(): void { /* no-op */ }
+  onData(cb: (data: string) => void): void { this.listeners.push(cb); }
   dispose(): void { /* no-op */ }
+
+  /** Sends input to every onData listener. Each argument arrives as one
+   *  event, as one keypress or one paste does from xterm.js, so `type("ls",
+   *  "\r")` runs ls, but `type("ls\r")` is a paste that inserts "ls" without
+   *  running it. */
+  type(...keys: string[]): void {
+    for (const key of keys) {
+      for (const cb of this.listeners) cb(key);
+    }
+  }
 }
 
 // A deterministic data fixture: fixed handle/host/posts/pages so the VFS and
@@ -60,14 +72,21 @@ export interface RunResult {
 
 export interface TestShell {
   shell: Shell;
+  /** The shell's terminal. Its text() holds what the shell wrote since the
+   *  last clear(). */
+  term: CaptureTerminal;
   /** Execute one line; stdout/stderr are returned ANSI-stripped, status is the
    *  exit code. Buffers are cleared before each call. */
   run(line: string): RunResult;
+  /** Send keys to the shell's line editor through term.type(). A line that
+   *  Enter accepts runs through the read loop and enters history. */
+  type(...keys: string[]): void;
 }
 
 // Build a Shell backed by a CaptureTerminal and a capturing stderr sink, with
 // every command registered through the shared list. One persistent shell, so
-// state (X=1 then echo $X) carries across run() calls.
+// state (X=1 then echo $X) carries across run() and type() calls. The read
+// loop starts as in production, so type() edits behind a real prompt.
 export function makeShell(data: ShellData = TEST_DATA): TestShell {
   const term = new CaptureTerminal();
   let errBuf = "";
@@ -77,8 +96,11 @@ export function makeShell(data: ShellData = TEST_DATA): TestShell {
   };
   const shell = new Shell(term, data, { stderr });
   registerAll(shell);
+  shell.start();
   return {
     shell,
+    term,
+    type(...keys: string[]): void { term.type(...keys); },
     run(line: string): RunResult {
       term.clear();
       errBuf = "";
