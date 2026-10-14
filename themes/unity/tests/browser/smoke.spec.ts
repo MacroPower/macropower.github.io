@@ -326,6 +326,31 @@ test("a dark content pair keeps the text in a page and a dialog readable", async
   }
 });
 
+test("forced colors keep a menu opaque and fill the Studio's pressed buttons", async ({ page }) => {
+  await page.emulateMedia({ forcedColors: "active" });
+  await open(page, "/about/");
+  // Chromium writes an opaque color as rgb() and a translucent one as
+  // rgba().
+  await page.locator('[data-indicator="vol"]').click();
+  await expect(page.locator("#up-dropdown-vol")).toHaveCSS("background-color", /^rgb\(/);
+  // The CSSOM paints a probe, which the policy allows.
+  const highlight = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.backgroundColor = "Highlight";
+    document.body.append(probe);
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  });
+  await page.locator('[data-action="daw:open"]').click();
+  const buttons = page.locator('[data-up-window="daw"] .up-daw-ms');
+  for (const button of [buttons.nth(0), buttons.nth(1)]) {
+    await button.click();
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect(button).toHaveCSS("background-color", highlight);
+  }
+});
+
 test("the solitaire table draws", async ({ page }) => {
   await open(page, "/solitaire/");
   await expect.poll(() => painted(page.locator("[data-sol-canvas]"))).toBeGreaterThan(0);

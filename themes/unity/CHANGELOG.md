@@ -93,6 +93,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 ### Fixed
 
 - Focus rings, selected rows, and pressed toggles stay visible under Windows contrast themes and other forced colors. Each window has an edge there, and the focused window's titlebar fills with the system's highlight color.
+- Under forced colors, the top panel's menus, the context menu, the Dash, the HUD, the lock screen, and the post list's header hide the content under them. The reading progress bar shows there too, and the Studio's mute and solo buttons fill with the system's highlight color while pressed.
 - Focus rings contrast 3:1 or more with the surface under them. Selected rows, the titlebars, the launcher, the CV toolbar, the icon vault, and the copy button over a light code block each get such a ring. The CV page's document pane, the search fields of the Dash and the HUD, and the Dash's tiles and buttons get one too.
 - Accent text in the top panel's menus, dim menu text, the Dash and HUD placeholders, and the tip alert's title contrast 4.5:1 or more with their backgrounds.
 - A dark `--up-content-bg` with a light `--up-content-fg` keeps the text in windows and dialogs readable. Dialogs, cards, fields, code, table headers, quotes, alerts, and the blog and project lists take their colors from the content properties.

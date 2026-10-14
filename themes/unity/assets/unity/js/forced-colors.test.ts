@@ -22,7 +22,7 @@ const COLOR_ONLY = new Set([
 
 // The class and ARIA states that mark a row, a tile, or a control as
 // selected, current, pressed, or under the keyboard cursor.
-const STATE = /\.is-(active|on|selected|current|focused|anchor)\b|\[aria-(pressed|expanded|selected|current)/;
+const STATE = /\.is-(active|on|selected|current|focused|anchor|mute|solo)\b|\[aria-(pressed|expanded|selected|current)/;
 
 // The system colors forced colors keeps as written.
 const SYSTEM = /\b(Canvas|CanvasText|LinkText|VisitedText|ActiveText|ButtonFace|ButtonText|ButtonBorder|Field|FieldText|Highlight|HighlightText|SelectedItem|SelectedItemText|Mark|MarkText|GrayText|AccentColor|AccentColorText)\b/;
@@ -34,6 +34,16 @@ const STATE_PART = /\.is-[\w-]+|\[aria-[\w-]+(?:="[^"]*")?\]|:not\([^)]*\)/g;
 // word of the shorthand.
 const ringColor = (d: ReadonlyMap<string, string>): string | undefined =>
   d.get("outline-color") ?? d.get("outline")?.split(/\s+/).at(-1);
+
+// Whether a background paints only gradients, with no color or image
+// under them. Forced colors drops every gradient, which leaves such a
+// background transparent.
+const gradientOnly = (value: string): boolean => {
+  let names = value;
+  while (/\([^()]*\)/.test(names)) names = names.replace(/\([^()]*\)/g, "");
+  const words = names.split(/[\s,]+/).filter(Boolean);
+  return words.length > 0 && words.every((w) => /^(?:repeating-)?(?:linear|radial|conic)-gradient$/.test(w));
+};
 
 // The selectors of the rules that fill with Highlight.
 const fills = forced
@@ -90,7 +100,7 @@ describe("forced colors", () => {
       .filter((s) => !skip.some((prefix) => s.startsWith(prefix)));
     expect(states).toEqual(expect.arrayContaining([
       ".up-naut-item.is-active", ".up-dash-lens.is-active", ".up-hud-row.is-selected",
-      ".up-window-chrome.is-focused", ".up-window-chrome.is-focused .up-titlebar",
+      ".up-window-chrome.is-focused", ".up-window-chrome.is-focused .up-titlebar", ".up-daw-ms.is-mute",
     ]));
     expect(states.filter((s) => !forcedSelectors.has(s))).toEqual([]);
   });
@@ -150,6 +160,28 @@ describe("forced colors", () => {
     expect(outlined).toEqual(expect.arrayContaining([".up-window-chrome", ".up-docv-sheet"]));
     const bare = outlined.filter((s) =>
       !forced.some((r) => r.selector === s && SYSTEM.test(r.decls.get("border") ?? r.decls.get("outline") ?? "")));
+    expect(bare).toEqual([]);
+  });
+
+  it("paints a color under each floating surface that only a gradient paints", () => {
+    // A surface that floats over other content, such as a menu, shows
+    // that content through its text when its background turns
+    // transparent. The scan counts each state of such a surface too.
+    const floating = new Set(screen
+      .filter((r) => /^(absolute|fixed|sticky)$/.test(r.decls.get("position") ?? ""))
+      .map((r) => r.selector));
+    const painted = screen
+      .filter((r) => !/\s|::/.test(r.selector) && floating.has(r.selector.replace(STATE_PART, "").replace(/:[\w-]+/g, "")))
+      .filter((r) => !r.decls.has("background-color") && gradientOnly(r.decls.get("background") ?? r.decls.get("background-image") ?? ""))
+      .map((r) => r.selector);
+    expect(painted).toEqual(expect.arrayContaining([
+      ".up-dropdown", ".up-ctx-menu", ".up-dash-panel", ".up-hud-panel", ".up-post-list-header", ".up-code-copy:hover",
+    ]));
+    // The scan skips pseudo-elements and backgrounds that read a token.
+    // The lock screen's pseudo-element paints the wallpaper token, a
+    // gradient by default.
+    const bare = [...painted, ".up-lock-backdrop::before"].filter((s) =>
+      !forced.some((r) => r.selector === s && SYSTEM.test(r.decls.get("background-color") ?? "")));
     expect(bare).toEqual([]);
   });
 

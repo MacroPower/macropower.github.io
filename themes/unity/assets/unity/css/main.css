@@ -4353,7 +4353,8 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
    the browser otherwise paints a Canvas plate behind its text, so the
    fill and every rule inside it name their colors here.
    forced-colors.test.ts fails when a ring, an edge that only a shadow
-   draws, or a state that paints only colors has no rule here.
+   draws, a state that paints only colors, or a floating surface that
+   only a gradient paints has no rule here.
    ========================================================================= */
 @media (forced-colors: active){
   /* Fields and small buttons that draw no ring outside forced colors,
@@ -4412,6 +4413,23 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   /* Each window and each CV page draws its edge with a shadow. */
   .up-window-chrome{border:1px solid CanvasText}
   .up-docv-sheet{outline:1px solid CanvasText}
+  /* A gradient alone paints each of these surfaces, so without a color
+     the content under the surface shows through its text. The lock
+     screen paints the wallpaper, a gradient by default. The copy button
+     paints the button color, and the reading progress bar fills with the
+     text color. */
+  .up-top-panel,
+  .up-launcher,
+  .up-dropdown,
+  .up-ctx-menu,
+  .up-dash-panel,
+  .up-hud-panel,
+  .up-lock-backdrop::before,
+  .up-post-list-header{background-color:Canvas}
+  .up-code-copy,
+  .up-code-copy:hover,
+  .up-code-copy.is-copied{background-color:ButtonFace}
+  .up-reader-progress-bar{background-color:CanvasText}
   /* The focused window's frame and titlebar paint Highlight. So do a
      dialog's, because a dialog holds focus until it closes. */
   .up-window-chrome.is-focused,
@@ -4456,7 +4474,9 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-daw-btn.is-on,
   .up-daw-wave.is-on,
   .up-daw-time.is-on,
-  .up-daw-patchmenu-item.is-on{
+  .up-daw-patchmenu-item.is-on,
+  .up-daw-ms.is-mute,
+  .up-daw-ms.is-solo{
     forced-color-adjust:none;
     background:Highlight;color:HighlightText;border-color:Highlight;
     box-shadow:none;text-shadow:none;
