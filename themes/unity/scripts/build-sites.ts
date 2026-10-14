@@ -335,12 +335,17 @@ enableRobotsTXT = true
   weight = 2
   [languages.de.params.desktop]
     languageBadge = "DE"
+[languages.ar]
+  label = "العربية!"
+  weight = 3
+  direction = "rtl"
 `,
       "content/about.md": page("About"),
       "content/about.de.md": page("Über"),
       "content/imprint.md": page("Imprint"),
       "content/contact.md": page("Contact"),
       "content/contact.de.md": page("Kontakt"),
+      "content/contact.ar.md": page("اتصل"),
       "content/posts/one.md": page("One", "date = 2024-01-01\n"),
       "content/posts/zwei.de.md": page("Zwei", "date = 2024-02-01\n"),
       "content/posts/three.md": page("Three", "date = 2024-03-01\n"),
@@ -392,6 +397,17 @@ enableRobotsTXT = true
       // Hugo writes a sitemap index at the root that names each
       // language's sitemap, all under the site's sitemap filename.
       robotsSitemap(out, "robots.txt", "https://example.org/map.xml"),
+      // Each row of the language menu lays out in the page's direction
+      // and holds its language's name in a span with that language's
+      // lang and dir, on a left-to-right page and a right-to-left one.
+      ...["index.html", "ar/index.html"].flatMap((file) => {
+        const rows = [...read(join(out, file)).matchAll(/<a class="up-dropdown-row up-lang-row[^>]*>.*?<\/a>/g)]
+          .map((m) => m[0].replace(/^<a [^>]*?\shref="[^"]*"/, "<a").replace(/ aria-current="true"/, "")).join("");
+        const want = '<a hreflang="en"><span lang="en" dir="ltr">en</span></a>'
+          + '<a hreflang="de"><span lang="de" dir="ltr">Deutsch</span></a>'
+          + '<a hreflang="ar"><span lang="ar" dir="rtl">العربية!</span></a>';
+        return rows !== want && `${file}'s language rows read ${rows}, not ${want}`;
+      }),
     ],
   },
   // Each language on its own host. The language menu links across hosts

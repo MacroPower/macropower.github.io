@@ -9,7 +9,10 @@
   current language's host.
 
   The rows are links, which the HUD indexes and the panel's arrow-key
-  roving reaches. Context: the page.
+  roving reaches. Each row lays out in the page's direction, so its mark
+  stays on the same side as every other row's. The language's name sits
+  in a span with that language's lang and dir, so a right-to-left name
+  reads right to left on any page. Context: the page.
 */ -}}
 {{- if hugo.IsMultilingual -}}
   {{- $page := . -}}
@@ -22,6 +25,7 @@
     {{- $rows = $rows | append (dict
         "label" (or $lang.Label $lang.Name)
         "locale" $lang.Locale
+        "dir" ($lang.Direction | default "ltr")
         "url" (cond hugo.IsMultihost $target.Permalink $target.RelPermalink)
         "current" (eq $lang.Name $current)) -}}
   {{- end }}
@@ -33,7 +37,7 @@
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "language" }}</div>
     <div class="up-dropdown-body">
       {{- range $rows }}
-      <a class="up-dropdown-row up-lang-row{{ if .current }} is-on{{ end }}" href="{{ .url }}" hreflang="{{ .locale }}" lang="{{ .locale }}"{{ if .current }} aria-current="true"{{ end }}>{{ .label }}</a>
+      <a class="up-dropdown-row up-lang-row{{ if .current }} is-on{{ end }}" href="{{ .url }}" hreflang="{{ .locale }}"{{ if .current }} aria-current="true"{{ end }}><span lang="{{ .locale }}" dir="{{ .dir }}">{{ .label }}</span></a>
       {{- end }}
     </div>
   </div>
