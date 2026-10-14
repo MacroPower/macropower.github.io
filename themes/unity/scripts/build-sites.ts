@@ -1166,6 +1166,8 @@ mainSections = ["posts"]
           && "the stylesheet lacks the brand preset's rule with its light shade and a mixed dark shade",
         !teal?.includes(flat("--up-accent-light:color-mix(in srgb, #00897B 85%, white)"))
           && "the stylesheet lacks the teal preset's rule with a mixed light shade",
+        !teal?.includes(flat("--up-accent-lighter:color-mix(in srgb, #00897B 40%, white)"))
+          && "the stylesheet lacks the teal preset's rule with a mixed lighter shade",
       ];
     },
   },

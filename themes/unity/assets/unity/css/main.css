@@ -225,6 +225,8 @@
 :root{
   --up-accent:#DD4814;
   --up-accent-light:#E95420;
+  /* Accent text and marks on the dark panel and its menus. */
+  --up-accent-lighter:#FF6C3D;
   --up-accent-dark:#B23B11;
   --up-accent-darker:#922F0C;
 }
@@ -2444,7 +2446,10 @@ details.up-alert{
   color:rgba(255,255,255,.4);
 }
 .up-net-row{
-  &.is-on .up-net-row-dot{color:var(--up-accent-light)}
+  &.is-on .up-net-row-dot{color:var(--up-accent-lighter)}
+  /* The row under the pointer fills with the accent, so its dot turns
+     white like its name. */
+  &:hover .up-net-row-dot{color:inherit}
   &.is-muted .up-net-row-name{color:rgba(255,255,255,.55)}
   &.is-mono .up-net-row-name{font-family:var(--up-font-mono)}
   &.is-strong .up-net-row-name{font-weight:600}
@@ -2463,14 +2468,14 @@ details.up-alert{
 .up-lang-row{
   text-decoration:none;
   &::before{content:"\25CB";display:inline-block;width:14px;color:rgba(255,255,255,.4)}
-  &.is-on::before{content:"\25CF";color:var(--up-accent-light)}
+  &.is-on::before{content:"\25CF";color:var(--up-accent-lighter)}
   &:hover::before{color:inherit}
 }
 
 /* Net indicator while a hotspot is broadcasting: accent-tinted with a gentle
    pulse (reduce-motion neutralizes the animation via the global rule). */
 .up-indicator.is-hotspot{
-  color:var(--up-accent-light);
+  color:var(--up-accent-lighter);
   animation:upHotspotPulse 1.8s ease-in-out infinite;
 }
 @keyframes upHotspotPulse{
@@ -2478,8 +2483,9 @@ details.up-alert{
   50%{opacity:.55}
 }
 .up-dropdown-row.is-hotspot-status{
-  color:var(--up-accent-light); font-weight:600;
+  color:var(--up-accent-lighter); font-weight:600;
   cursor:default;
+  &:hover{color:#fff}
 }
 
 /* ---- volume slider ----------------------------------------------------- */
@@ -2501,7 +2507,7 @@ details.up-alert{
   width:18px; height:18px; padding:0;
   border:0; background:transparent; color:rgba(255,255,255,.7); cursor:default;
   &:hover{color:#fff}
-  &.is-playing{color:var(--up-accent-light)}
+  &.is-playing{color:var(--up-accent-lighter)}
 }
 .up-vol-next{
   flex:0 0 auto;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { accentPresets, rules, type Rule } from "./testkit";
+import { accentPresets, rules, siteTokens, type Rule } from "./testkit";
 
 const isMore = (r: Rule): boolean => r.media.includes("prefers-contrast: more");
 const isForced = (r: Rule): boolean => r.media.includes("forced-colors: active");
@@ -79,19 +79,47 @@ function textColors(list: Rule[], selector: string): { selector: string; color: 
 
 interface Preset {
   name: string;
+  lighter: string | undefined;
   dark: string | undefined;
   darker: string | undefined;
 }
 
-// The dark shades of each accent preset, plus the internal accent
-// block's values, which paint a page whose site removes every preset.
+// The shades of each accent preset that this test checks, plus the
+// internal accent block's values, which paint a page whose site removes
+// every preset.
 const presets: Preset[] = [...accentPresets];
 const fallback = rules.find((r) => r.selector === ":root" && r.decls.has("--up-accent-dark"))?.decls;
 presets.push({
   name: "fallback",
+  lighter: fallback?.get("--up-accent-lighter"),
   dark: fallback?.get("--up-accent-dark"),
   darker: fallback?.get("--up-accent-darker"),
 });
+
+// The color stops of a background, in 0-255. A translucent stop sits on
+// white, the lightest backdrop, where light text contrasts least.
+function stops(background: string): number[][] {
+  const value = background.replace(/var\((--up-[\w-]+)\)/g, (m: string, name: string) => siteTokens.get(name) ?? m);
+  const colors = /color-mix\(in srgb,\s*(#[0-9a-f]{6})\s+([\d.]+)%,\s*transparent\)|rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)|(#[0-9a-f]{6})\b/gi;
+  return [...value.matchAll(colors)].map((m) => {
+    if (m[1] !== undefined) return over(rgb(m[1]), Number(m[2]) / 100, WHITE);
+    if (m[3] !== undefined) return over([m[3], m[4], m[5]].map(Number), Number(m[6]), WHITE);
+    return rgb(m[7]!);
+  });
+}
+
+// Each rule that paints accent text or a mark on a dark surface, by
+// selector. Each names the rule that paints the surface and the contrast
+// that the shade keeps there. Text needs 4.5:1, and a mark, such as a
+// state's dot or an icon, needs 3:1. A row that fills with the accent
+// under the pointer also names the rule that repaints the text there.
+const ON_DARK = new Map<string, { surface: string; min: number; hover?: string }>([
+  [".up-dropdown-row.is-hotspot-status", { surface: ".up-dropdown", min: 4.5, hover: ".up-dropdown-row.is-hotspot-status:hover" }],
+  [".up-net-row.is-on .up-net-row-dot", { surface: ".up-dropdown", min: 3, hover: ".up-net-row:hover .up-net-row-dot" }],
+  [".up-lang-row.is-on::before", { surface: ".up-dropdown", min: 3, hover: ".up-lang-row:hover::before" }],
+  [".up-vol-play.is-playing", { surface: ".up-dropdown", min: 3 }],
+  [".up-indicator.is-hotspot", { surface: ".up-top-panel", min: 3 }],
+]);
 
 // A fill that reads the base accent or its lighter shade, which contrast
 // less than 4.5:1 with white for some presets.
@@ -173,6 +201,39 @@ describe("contrast", () => {
       });
     });
     expect(low).toEqual([]);
+  });
+
+  it("paints accent text on a dark surface with the lighter shade", () => {
+    const lighter = screen
+      .filter((r) => /var\(--up-accent-lighter\)/.test(r.decls.get("color") ?? ""))
+      .map((r) => r.selector);
+    expect(lighter).toEqual(expect.arrayContaining([...ON_DARK.keys()]));
+    expect(lighter.filter((s) => !ON_DARK.has(s))).toEqual([]);
+  });
+
+  it("keeps the lighter shade readable on each dark surface", () => {
+    const low = [...ON_DARK].flatMap(([selector, { surface, min }]) => {
+      const rule = screen.find((r) => r.selector === surface);
+      const under = rule ? stops(fill(rule) ?? "") : [];
+      if (under.length === 0) return [`${surface} has no background that this test reads`];
+      return presets.flatMap(({ name, lighter }) => {
+        if (lighter === undefined || !/^#[0-9a-f]{6}$/i.test(lighter)) return [`${name} has no #rrggbb lighter shade`];
+        return under
+          .filter((stop) => contrast(rgb(lighter), stop) < min)
+          .map((stop) => `${selector} on ${stop.map(Math.round).join(",")} for ${name}`);
+      });
+    });
+    expect(low).toEqual([]);
+  });
+
+  it("repaints accent text in a row that fills with the accent under the pointer", () => {
+    const bare = [...ON_DARK].flatMap(([selector, { hover }]) => {
+      if (hover === undefined) return [];
+      const at = screen.findLastIndex((r) => r.selector === selector && r.decls.has("color"));
+      const fix = screen.findLastIndex((r) => r.selector === hover && r.decls.has("color"));
+      return fix > at && !/--up-accent/.test(screen[fix]!.decls.get("color")!) ? [] : [selector];
+    });
+    expect(bare).toEqual([]);
   });
 
   it("puts the more-contrast block before the forced-colors block", () => {

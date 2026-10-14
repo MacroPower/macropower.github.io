@@ -101,29 +101,33 @@
   # each label comes from the accent_<name> key in i18n/en.toml. The
   # internal accent block in main.css repeats the orange shades.
   [params.desktop.accents.orange]
-    color  = "#DD4814"
-    light  = "#E95420"
-    dark   = "#B23B11"
-    darker = "#922F0C"
-    weight = 10
+    color   = "#DD4814"
+    light   = "#E95420"
+    lighter = "#FF6C3D"
+    dark    = "#B23B11"
+    darker  = "#922F0C"
+    weight  = 10
   [params.desktop.accents.green]
-    color  = "#3A7D2C"
-    light  = "#4E9E3A"
-    dark   = "#2E6322"
-    darker = "#244F1B"
-    weight = 20
+    color   = "#3A7D2C"
+    light   = "#4E9E3A"
+    lighter = "#5BAC48"
+    dark    = "#2E6322"
+    darker  = "#244F1B"
+    weight  = 20
   [params.desktop.accents.aubergine]
-    color  = "#77216F"
-    light  = "#8B2A82"
-    dark   = "#5E1A57"
-    darker = "#4A1444"
-    weight = 30
+    color   = "#77216F"
+    light   = "#8B2A82"
+    lighter = "#DA75CE"
+    dark    = "#5E1A57"
+    darker  = "#4A1444"
+    weight  = 30
   [params.desktop.accents.blue]
-    color  = "#2A5F94"
-    light  = "#3F87C9"
-    dark   = "#224E79"
-    darker = "#1A3C5E"
-    weight = 40
+    color   = "#2A5F94"
+    light   = "#3F87C9"
+    lighter = "#579EE2"
+    dark    = "#224E79"
+    darker  = "#1A3C5E"
+    weight  = 40
 
   [params.home]
     # terminal, or page for the home's content in a plain window.

@@ -94,6 +94,7 @@ describe("tokens", () => {
     const shades = [
       ["--up-accent", orange?.color],
       ["--up-accent-light", orange?.light],
+      ["--up-accent-lighter", orange?.lighter],
       ["--up-accent-dark", orange?.dark],
       ["--up-accent-darker", orange?.darker],
     ] as const;

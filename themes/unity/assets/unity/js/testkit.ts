@@ -118,6 +118,7 @@ export interface AccentPreset {
   // leaves out is undefined.
   readonly color: string | undefined;
   readonly light: string | undefined;
+  readonly lighter: string | undefined;
   readonly dark: string | undefined;
   readonly darker: string | undefined;
 }
@@ -134,7 +135,7 @@ function presets(): readonly AccentPreset[] {
   if (!isTable(table)) return [];
   // An entry that is not a table, such as false, removes a preset.
   return Object.entries(table).flatMap(([name, p]) => isTable(p)
-    ? [{ name, color: str(p.color), light: str(p.light), dark: str(p.dark), darker: str(p.darker) }]
+    ? [{ name, color: str(p.color), light: str(p.light), lighter: str(p.lighter), dark: str(p.dark), darker: str(p.darker) }]
     : []);
 }
 

@@ -25,7 +25,7 @@
   the top of the output, where browsers honor it.
 
   Each accent preset from unity/accents.html gets a rule in the
-  unity.theme layer that sets the four --up-accent tokens on <html> when
+  unity.theme layer that sets the --up-accent tokens on <html> when
   its data-up-accent names the preset, and on the preset's swatch in the
   Preferences dialog. A site's custom.css sits outside the layers, so an
   accent token it sets beats every preset.
@@ -50,7 +50,7 @@
 {{- with (partialCached "unity/accents.html" . site.Language.Name).presets -}}
   {{- $rules := slice -}}
   {{- range . -}}
-    {{- $rules = $rules | append (printf `:root[data-up-accent=%q],.up-accent-swatch[data-up-accent=%q]{--up-accent:%s;--up-accent-light:%s;--up-accent-dark:%s;--up-accent-darker:%s}` .name .name .color .light .dark .darker) -}}
+    {{- $rules = $rules | append (printf `:root[data-up-accent=%q],.up-accent-swatch[data-up-accent=%q]{--up-accent:%s;--up-accent-light:%s;--up-accent-dark:%s;--up-accent-darker:%s;--up-accent-lighter:%s}` .name .name .color .light .dark .darker .lighter) -}}
   {{- end -}}
   {{- $entry = printf "%s\n@layer unity.theme{%s}" $entry (delimit $rules "\n") -}}
 {{- end -}}

@@ -2,17 +2,19 @@
   The accent presets, resolved from params.desktop.accents. The theme's
   hugo.toml defines orange, green, aubergine, and blue, and Hugo merges a
   site's own entries into them. Each entry is a table with a required
-  color and an optional light, dark, darker, label, and weight. A site
-  sets an entry to false to remove it. An entry without a color, or one
-  whose name holds anything but lowercase letters, digits, hyphens, and
-  underscores, warns and drops out.
+  color and an optional light, lighter, dark, darker, label, and weight.
+  A site sets an entry to false to remove it. An entry without a color,
+  or one whose name holds anything but lowercase letters, digits,
+  hyphens, and underscores, warns and drops out.
 
   Returns a dict:
 
-    presets  The presets, as dicts of name, label, color, light, dark,
-             and darker, in weight order. The entries without a weight
-             follow, by name. A shade the entry omits is mixed from its
-             color with white or black. The label defaults to the
+    presets  The presets, as dicts of name, label, color, light,
+             lighter, dark, and darker, in weight order. The entries
+             without a weight follow, by name. A shade the entry omits is
+             mixed from its color with white or black. The default
+             lighter shade is 60% white, so it keeps 4.5:1 on the
+             panel's menus for every color. The label defaults to the
              accent_<name> string when the theme's i18n/en.toml has one,
              and otherwise to the name.
     current  The preset each page starts with, which is the one that
@@ -48,6 +50,7 @@
     "label" (string $label)
     "color" (string $p.color)
     "light" (string ($p.light | default (printf "color-mix(in srgb, %s 85%%, white)" $p.color)))
+    "lighter" (string ($p.lighter | default (printf "color-mix(in srgb, %s 40%%, white)" $p.color)))
     "dark" (string ($p.dark | default (printf "color-mix(in srgb, %s 80%%, black)" $p.color)))
     "darker" (string ($p.darker | default (printf "color-mix(in srgb, %s 64%%, black)" $p.color)))
     "weight" ($p.weight | default 0)
