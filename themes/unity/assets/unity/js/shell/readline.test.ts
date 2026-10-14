@@ -79,6 +79,10 @@ describe("stripControls", () => {
     expect(stripControls("a\x1b[2Jb\x07c\x00d\x7fe")).toBe("a[2Jbcde");
   });
 
+  it("removes the C1 controls, which xterm.js also reads", () => {
+    expect(stripControls("a\u009b2Jb\u0085c\u0080d\u00a0e")).toBe("a2Jbcd\u00a0e");
+  });
+
   it("removes tab, carriage return, and newline", () => {
     expect(stripControls("a\tb\r\nc")).toBe("abc");
   });
@@ -296,6 +300,13 @@ describe("Readline input sanitizing", () => {
     ed.term.type("ab\x1b[2Jc", KEY.enter);
     expect(ed.lines).toEqual(["ab[2Jc"]);
     expect(ed.term.text()).not.toContain("\x1b[2J");
+  });
+
+  it("inserts a pasted C1 sequence without its CSI", () => {
+    const ed = editor();
+    ed.term.type("ab\u009b2Jc", KEY.enter);
+    expect(ed.lines).toEqual(["ab2Jc"]);
+    expect(ed.term.text()).not.toContain("\u009b");
   });
 
   it("drops the other control characters of a paste", () => {

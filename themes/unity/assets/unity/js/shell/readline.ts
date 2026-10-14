@@ -11,11 +11,12 @@ const WORD = /[A-Za-z0-9]/;
 const isWord = (ch: string | undefined): boolean => ch !== undefined && WORD.test(ch);
 const isSpace = (ch: string | undefined): boolean => ch !== undefined && /\s/.test(ch);
 
-// Strip the C0 control characters and DEL, tab and newline included, so
-// pasted text cannot inject cursor moves, colors, or screen clears. ESC
-// (\x1b) is the main vector, but every control character goes.
+// Strip the C0 control characters, DEL, and the C1 control characters, tab
+// and newline included, so pasted text cannot inject cursor moves, colors, or
+// screen clears. ESC (\x1b) is the main vector. xterm.js also reads the C1
+// controls, so U+009B starts a CSI sequence just as ESC [ does.
 export function stripControls(s: string): string {
-  return s.replace(/[\x00-\x1f\x7f]/g, "");
+  return s.replace(/[\x00-\x1f\x7f-\x9f]/g, "");
 }
 
 export interface CompletionContext {
