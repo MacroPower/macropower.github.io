@@ -2,6 +2,7 @@ import { t } from "./i18n";
 import { eventHTMLElement } from "./dom";
 import { scrollBehavior } from "./prefs";
 import { inlineDirection, inlineStep } from "./inline-keys";
+import { filterNavKey, type FilterNavAxis, type KeyModifiers } from "./filter-nav-keys";
 
 export interface FilterNavOptions {
   root: HTMLElement;
@@ -29,7 +30,7 @@ export interface FilterNavOptions {
   // and k. "both" also accepts ←, →, h, and l for a grid. Left and Right
   // follow the grid's inline direction, so in a right-to-left grid Left
   // moves to the next item.
-  axis?: "vertical" | "both";
+  axis?: FilterNavAxis;
 
   // Fires at the end of every applyFilters() pass. Used by callers that need
   // to reconcile selection state with the post-filter visibility set.
@@ -40,8 +41,9 @@ export interface FilterNav {
   applyFilters: () => void;
 }
 
-// The vi keys stand for the arrow keys.
-const VI_ARROWS: Readonly<Record<string, string>> = { h: "ArrowLeft", j: "ArrowDown", k: "ArrowUp", l: "ArrowRight" };
+function modifiers(e: KeyboardEvent): KeyModifiers {
+  return { ctrl: e.ctrlKey, alt: e.altKey, meta: e.metaKey, shift: e.shiftKey };
+}
 
 export function installFilterNav(opts: FilterNavOptions): FilterNav {
   const {
@@ -59,18 +61,6 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     axis = "vertical",
     onAfterFilter,
   } = opts;
-
-  const NAV_KEYS = axis === "both"
-    ? new Set([
-        "ArrowDown", "ArrowRight", "j", "l",
-        "ArrowUp", "ArrowLeft", "k", "h",
-        "Home", "End", "Enter",
-      ])
-    : new Set([
-        "ArrowDown", "j",
-        "ArrowUp", "k",
-        "Home", "End", "Enter",
-      ]);
 
   let currentQuery = "";
   let searchOpen = false;
@@ -118,7 +108,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     });
     searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") { e.preventDefault(); setSearchOpen(false); }
-      if (e.key === "Enter") {
+      if (filterNavKey(e.key, modifiers(e), axis)?.kind === "activate") {
         e.preventDefault();
         const first = items.find((i) => !i.hidden);
         if (first) onActivate(first);
@@ -147,29 +137,30 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
       return;
     }
     if (typing) return;
-    if (!NAV_KEYS.has(e.key)) return;
+    const intent = filterNavKey(e.key, modifiers(e), axis);
+    if (!intent) return;
 
     const list = items.filter((i) => !i.hidden);
     if (!list.length) return;
 
-    // Real DOM focus follows the cursor only when focus is already on (or in)
-    // an item — i.e. the user tabbed into the grid/list. When focus sits
-    // elsewhere (body, the sidebar filters, the search toggle), a document-
-    // level arrow press must not yank it away, so only the visual cursor moves.
+    // DOM focus follows the cursor only when focus already sits on an item
+    // or inside one, because the visitor tabbed into the list. When focus
+    // sits elsewhere, such as on the body, a sidebar filter, or the search
+    // toggle, a key press moves only the painted cursor.
     const focusInItems =
       target instanceof HTMLElement &&
       items.some((i) => i === target || i.contains(target));
 
-    // The really-focused item wins over the painted cursor, so Tab-ing into
-    // the list rebinds Enter/arrows to where focus actually is; the class
-    // fallbacks keep the cursor model for focus-outside navigation.
+    // The focused item wins over the painted cursor, so after Tab moves
+    // focus into the list, Enter and the arrows act on the focused item.
+    // Without focus in the list, the cursor starts from the painted item.
     let idx = focusInItems
       ? list.findIndex((i) => i === target || i.contains(target))
       : -1;
     if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-focused"));
     if (idx === -1) idx = list.findIndex((i) => i.classList.contains("is-active"));
 
-    if (e.key === "Enter") {
+    if (intent.kind === "activate") {
       // A focused control outside the items owns its own Enter: hijacking it
       // would activate a tile instead and preventDefault the control's native
       // click.
@@ -185,30 +176,19 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
 
     // The items run in reading order, so Down steps to the next item and
     // Left or Right steps the way the grid lays its rows out.
-    const key = VI_ARROWS[e.key] ?? e.key;
     let nextIdx: number;
-    switch (key) {
-      case "ArrowDown":
-        nextIdx = Math.min(list.length - 1, idx + 1);
-        break;
-      case "ArrowUp":
-        nextIdx = Math.max(0, idx - 1);
-        break;
-      case "ArrowLeft":
-      case "ArrowRight": {
-        const grid = list[0]?.parentElement ?? root;
-        nextIdx = Math.min(list.length - 1, Math.max(0, idx + inlineStep(key, inlineDirection(grid))));
-        break;
+    if (intent.kind === "inline") {
+      const grid = list[0]?.parentElement ?? root;
+      nextIdx = idx + inlineStep(intent.key, inlineDirection(grid));
+    } else {
+      switch (intent.to) {
+        case "next": nextIdx = idx + 1; break;
+        case "prev": nextIdx = idx - 1; break;
+        case "first": nextIdx = 0; break;
+        case "last": nextIdx = list.length - 1; break;
       }
-      case "Home":
-        nextIdx = 0;
-        break;
-      case "End":
-        nextIdx = list.length - 1;
-        break;
-      default:
-        return;
     }
+    nextIdx = Math.min(list.length - 1, Math.max(0, nextIdx));
     e.preventDefault();
     focusItem(list[nextIdx] ?? null, focusInItems);
   });

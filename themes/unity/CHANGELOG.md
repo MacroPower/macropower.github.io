@@ -98,6 +98,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Each window's close, minimize, and maximize buttons take a click or tap anywhere in a 24px square, the WCAG 2.2 minimum target size.
 - Screen readers announce the File, Edit, View, and Help menus as menus and the indicators as disclosure buttons. They skip the theme's decorative icons and name each sidebar section by its label.
 - The solitaire table shows which of its toolbar buttons holds keyboard focus.
+- The post list and the projects grid leave each shortcut with Ctrl, Alt, or Meta to the browser, such as Alt+Left, Ctrl+L, and Ctrl+K. Ctrl+Enter and Shift+Enter on a post row open a new tab or window again.
 - Reduce motion follows a change to the system setting without a reload, and it stops the smooth scrolling of the post and project lists and the page window's spring after a drag. Solitaire follows the choice in Edit > Preferences too.
 - Dark surfaces draw their scrollbars and form controls dark, and the volume slider draws its track and fill in the theme's colors.
 - A page without `title` front matter takes its title from its date or file name. A site without a title names its home page after the host of `baseURL`, and its owner after the home page. The 404 page's title follows the page's language.
