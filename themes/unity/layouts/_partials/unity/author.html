@@ -1,11 +1,12 @@
 {{- /*
   The site owner as a dict of name, email, born, jobTitle, and focus, read
   from params.author. A site that sets params.author to a plain string gets
-  that string as the name. The name falls back to the site title, born is
-  normalized to YYYY-MM-DD, and every other missing key is "". A born
-  value that is not a date warns and becomes "". Every template that
-  names the owner reads it through here, so call it through
-  partialCached.
+  that string as the name. The name falls back to the site title, and on
+  a site without one to the home page's title from unity/page-title.html,
+  so it is never empty. born comes back as YYYY-MM-DD, and every other
+  missing key is "". A born value that is not a date warns and becomes
+  "". Every template that names the owner reads it through here, so call
+  it through partialCached.
 */ -}}
 {{- $a := dict "name" "" "email" "" "born" "" "jobTitle" "" "focus" "" -}}
 {{- with site.Params.author -}}
@@ -23,5 +24,5 @@
     {{- $a = merge $a (dict "name" (printf "%v" .)) -}}
   {{- end -}}
 {{- end -}}
-{{- if not $a.name }}{{ $a = merge $a (dict "name" site.Title) }}{{ end -}}
+{{- if not $a.name }}{{ $a = merge $a (dict "name" (or site.Title (partial "unity/page-title.html" site.Home))) }}{{ end -}}
 {{- return $a -}}

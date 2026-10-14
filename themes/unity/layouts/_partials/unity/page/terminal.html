@@ -101,7 +101,7 @@
         page's only screen-reader content: its missing <h1>, the title, and
         real links for the social URLs and launcher destinations. */ -}}
   <div class="up-sr-only">
-    <h1>{{ or $payload.name (partial "unity/page-title.html" .) }}</h1>
+    <h1>{{ $payload.name }}</h1>
     {{- with $payload.title }}
     <p>{{ . }}</p>
     {{- end }}

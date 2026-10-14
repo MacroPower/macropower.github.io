@@ -192,16 +192,18 @@ const SITES: Record<string, SiteSpec> = {
     },
   },
   // No title, params, or content. Every page still names itself, and the
-  // home page takes the host of baseURL. The terminal's window takes the
-  // default guest login.
+  // home page and the owner take the host of baseURL. The terminal's
+  // window takes the default guest login.
   bare: {
     files: { "hugo.toml": BARE },
     check: (out) => {
       const names = accentNames(out);
+      const graph = jsonld(read(join(out, "index.html")))["@graph"] ?? [];
+      const named = (type: string): unknown => graph.find((n) => n["@type"] === type)?.name;
       return [
         !read(join(out, "index.html")).includes("<title>example.org</title>") && "index.html is not titled by its host",
-        jsonld(read(join(out, "index.html")))["@graph"]?.find((n) => n["@type"] === "WebSite")?.name !== "example.org"
-          && "index.html's JSON-LD WebSite is not named by its host",
+        named("WebSite") !== "example.org" && "index.html's JSON-LD WebSite is not named by its host",
+        named("Person") !== "example.org" && "index.html's JSON-LD Person is not named by its host",
         !read(join(out, "index.html")).includes('class="up-titlebar-text">user@example.org: ~<')
           && "index.html's titlebar is not the default guest login",
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
@@ -968,7 +970,7 @@ ignoreLogs = ["unity-i18n-missing"]
       const want: [file: string, text: string][] = [
         ["index.html", '<div lang="en" dir="ltr" class="up-shell-term" data-shell-mount>'],
         ["index.html", '<span dir="auto" class="up-titlebar-text">user@example.org: ~</span>'],
-        ["index.html", '<bdi dir="ltr">/personal-site</bdi>'],
+        ["index.html", '<bdi dir="ltr">example.org/personal-site</bdi>'],
         ["posts/index.html", '<div dir="auto" class="up-post-title">Hello, world!</div>'],
         ["posts/index.html", '<span dir="auto" class="up-post-chip">#a</span>'],
         ["posts/index.html", '<span dir="auto" class="up-pathbar-label">Posts</span>'],
@@ -1310,6 +1312,31 @@ mainSections = ["posts"]
       return [
         !post.includes("dr@unity:~/posts$") && "posts/one/index.html signs off without the handle dr",
         !post.includes('<div class="up-lock-user">dr</div>') && "the lock screen does not name dr",
+      ];
+    },
+  },
+  // An owner with an email but no name, on a site without a title. The
+  // owner takes the home page's title as a name, but the handle stays
+  // user, because that title names no person.
+  nameless: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[params.author]
+  email = "jane@example.org"
+`,
+      "content/_index.md": page("Welcome"),
+      "content/posts/one.md": page("One"),
+    },
+    check: (out) => {
+      const graph = jsonld(read(join(out, "index.html")))["@graph"] ?? [];
+      const post = read(join(out, "posts/one/index.html"));
+      return [
+        graph.find((n) => n["@type"] === "Person")?.name !== "Welcome"
+          && "index.html's JSON-LD Person is not named by the home's title",
+        jsonld(post).author?.name !== "Welcome" && "posts/one/'s JSON-LD author is not named by the home's title",
+        !read(join(out, "index.xml")).includes("<managingEditor>jane@example.org (Welcome)</managingEditor>")
+          && "index.xml's managingEditor does not name the owner by the home's title",
+        !post.includes("user@unity:~/posts$") && "posts/one/index.html signs off with a handle other than user",
       ];
     },
   },

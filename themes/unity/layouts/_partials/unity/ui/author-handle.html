@@ -1,7 +1,9 @@
 {{- /*
   The owner's unix-style handle on the desktop: params.desktop.user, else
   the first word of the author's name, lowercased and stripped to letters,
-  digits, dashes, and underscores, else "user".
+  digits, dashes, and underscores, else "user". A site without a title
+  whose params.author sets no name gets "user", because the name that
+  unity/author.html falls back to there is a page title or a host name.
   Shared by unity/ui/runtime.html's UP_SITE global and the terminal-prompt
   fiction (unity/ui/term-prompt.html) so the desktop never disagrees about
   who is logged in. The home terminal's guest login is params.terminal.user
@@ -12,8 +14,10 @@
 {{- $handle := site.Params.desktop.user | default "" -}}
 {{- if not $handle -}}
   {{- with site.Params.author -}}
-    {{- $first := index (split (partialCached "unity/author.html" .).name " ") 0 -}}
-    {{- $handle = $first | lower | replaceRE `[^\p{L}\p{N}_-]` "" -}}
+    {{- if or site.Title (not (reflect.IsMap .)) .name -}}
+      {{- $first := index (split (partialCached "unity/author.html" .).name " ") 0 -}}
+      {{- $handle = $first | lower | replaceRE `[^\p{L}\p{N}_-]` "" -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- return (default "user" $handle) -}}

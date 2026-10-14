@@ -145,7 +145,7 @@ The theme does not set these, so set them in your site:
 | `imageAlt` | | Alt text for the default share image. |
 | `themeColor` | | Emitted as `<meta name="theme-color">`. |
 | `repoUrl` | | Linked from Help > View source, which shows only when this is set. |
-| `author.name`, `author.email` | site title | The banner name, JSON-LD author, and the Messages indicator's Compose target. A plain string `author = "Jane Doe"` sets the name. |
+| `author.name`, `author.email` | the site's title, or the home page's title on a site without one | The banner name, JSON-LD author, and the Messages indicator's Compose target. A plain string `author = "Jane Doe"` sets the name. |
 | `author.jobTitle`, `author.focus` | | The terminal banner's title row and the focus line under it. `jobTitle` is also the home page's JSON-LD `jobTitle`. |
 | `author.born` | | A date such as `1990-01-31` that makes the banner's uptime your age. Otherwise the uptime counts from your oldest page, and a value that is not a date warns. |
 | `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD, and `rel="me"` links on the home page, which Mastodon and IndieAuth read to verify the profiles. A `github` entry also backs the sponsors button. Every entry on GitHub, GitLab, Codeberg, Bitbucket, or sourcehut gets a link in the projects sidebar, and a `twitter` entry sets the card metadata. |
