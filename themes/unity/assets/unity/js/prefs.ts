@@ -6,29 +6,20 @@
 // updates live.
 
 import { t } from "./i18n";
+import type { UPAccent } from "./types";
 
-interface AccentDef {
-  name: string;
-  label: string;
+// The accent presets, from params.desktop.accents through UP_SITE. The
+// theme's stylesheet holds a [data-up-accent="<name>"] rule for each one,
+// and baseof.html names the page's starting preset on <html>.
+function accents(): UPAccent[] {
+  return window.UP_SITE?.accents ?? [];
 }
-
-// The accent presets. main.css holds each one's four shades under a
-// [data-up-accent="<name>"] rule, and the site's params.desktop.accent picks
-// the one <html> starts with. Keep the names in sync with main.css and the
-// list in baseof.html.
-const ACCENTS: readonly AccentDef[] = [
-  { name: "orange", label: t("js_prefs_accent_orange") },
-  { name: "green", label: t("js_prefs_accent_green") },
-  { name: "aubergine", label: t("js_prefs_accent_aubergine") },
-  { name: "blue", label: t("js_prefs_accent_blue") },
-];
 
 // The body class is the single source of truth for reduce-motion (the CSS
 // animation-kill keys off it), and the <html> attribute is the one for the
-// accent. A page without the attribute shows the :root palette, which is
-// orange unless the site's custom.css changes it.
-function activeAccent(): string {
-  return document.documentElement.dataset.upAccent ?? "orange";
+// accent.
+function activeAccent(): string | undefined {
+  return document.documentElement.dataset.upAccent;
 }
 
 export function isReduceMotion(): boolean {
@@ -40,7 +31,7 @@ export function setReduceMotion(on: boolean): void {
 }
 
 export function setAccent(name: string): void {
-  if (!ACCENTS.some((a) => a.name === name)) return;
+  if (!accents().some((a) => a.name === name)) return;
   document.documentElement.dataset.upAccent = name;
 }
 
@@ -93,12 +84,12 @@ function buildAccentRow(): HTMLElement {
       btn.classList.toggle("is-active", name === activeAccent());
     }
   };
-  for (const accent of ACCENTS) {
+  for (const accent of accents()) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "up-accent-swatch";
-    // The swatch carries the preset's attribute, so the main.css rule paints
-    // it in that preset's shades.
+    // The swatch carries the preset's attribute, so the preset's rule
+    // paints it in that preset's shades.
     btn.dataset.upAccent = accent.name;
     btn.setAttribute("aria-label", accent.label);
     btn.title = accent.label;
@@ -123,7 +114,8 @@ export function showPreferences(): Promise<string | null> {
       body: t("js_prefs_body"),
       buttons: [{ id: "close", label: t("js_close"), primary: true }],
       render(content) {
-        content.append(buildToggleRow(), buildAccentRow());
+        content.append(buildToggleRow());
+        if (accents().length) content.append(buildAccentRow());
       },
     }) ?? Promise.resolve<string | null>(null)
   );

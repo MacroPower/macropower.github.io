@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runInNewContext } from "node:vm";
 
 const theme = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const themesDir = dirname(theme);
@@ -85,7 +86,16 @@ const SITES: Record<string, SiteSpec> = {
     source: join(theme, "exampleSite"),
     flags: ["--themesDir", themesDir, "--baseURL", "https://example.org/sub/"],
   },
-  bare: { files: { "hugo.toml": BARE } },
+  bare: {
+    files: { "hugo.toml": BARE },
+    check: (out) => {
+      const names = accentNames(out);
+      return [
+        !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
+        names !== "orange green aubergine blue" && `the Preferences dialog offers ${names}, not the theme's presets`,
+      ];
+    },
+  },
   // The theme inside a checkout of a larger repository, as in README.md's
   // Git submodule route, where theme names a path under themesDir.
   submodule: {
@@ -321,6 +331,10 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
   social = "jane"
 [params.desktop]
   accent = "purple"
+[params.desktop.accents.pale]
+  label = "Pale"
+[params.desktop.accents."sea green"]
+  color = "#2E8B57"
 [params.home]
   layout = "grid"
 [params.studio]
@@ -330,7 +344,9 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       "content/cv.md": page("CV", "layout = 'cv'\n"),
     },
     warns: [
-      /params\.desktop\.accent "purple" is not /,
+      /params\.desktop\.accent "purple" names no preset /,
+      /params\.desktop\.accents\.pale has no color/,
+      /params\.desktop\.accents\.sea green has a name with characters other than /,
       /params\.home\.layout "grid" is not /,
       /params\.social should be a list /,
       /params\.studio\.playlist names "\.\.\/x\.mid", which is not under assets\//,
@@ -342,7 +358,9 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
       const cv = read(join(out, "cv/index.html"));
       const dash = readdirSync(join(out, "dash")).map((f) => read(join(out, "dash", f))).join("");
       return [
-        home.includes("data-up-accent") && "index.html sets the unknown accent",
+        !home.includes('data-up-accent="orange"') && "index.html does not fall back to the orange accent",
+        accentNames(out) !== "orange green aubergine blue"
+          && `the Preferences dialog offers ${accentNames(out)}, not the theme's presets alone`,
         !home.includes("data-shell") && "index.html does not fall back to the terminal",
         home.includes("jane") && "index.html renders the malformed params.social",
         home.includes('data-up-window="daw"') && "index.html keeps the Studio without a playable track",
@@ -444,6 +462,40 @@ mainSections = ["posts"]
     },
     check: (out) => wallpaperCheck(out, (url) =>
       url !== "/sub/img/wall.png" && `the wallpaper rule names ${url}, not /sub/img/wall.png`),
+  },
+  // Accent presets of the site's own merged into the theme's: one with a
+  // label, a weight, and a light shade, and one with only a color. The
+  // site removes a built-in preset and names its starting preset in
+  // another case.
+  accents: {
+    files: {
+      "hugo.toml": `${BARE}[params.desktop]
+  accent = "Brand"
+  accents.green = false
+[params.desktop.accents.brand]
+  color  = "#0E8420"
+  light  = "#13A52A"
+  label  = "Brand Green"
+  weight = 15
+[params.desktop.accents.teal]
+  color = "#00897B"
+`,
+    },
+    check: (out) => {
+      const labels = upSite(out).accents?.map((a) => `${a.name}=${a.label}`).join(" ");
+      const brand = accentRule(out, "brand");
+      const teal = accentRule(out, "teal");
+      return [
+        !read(join(out, "index.html")).includes('data-up-accent="brand"') && "index.html does not start with the brand accent",
+        labels !== "orange=Orange brand=Brand Green aubergine=Aubergine blue=Blue teal=teal"
+          && `the Preferences dialog offers ${labels}, not the merged presets in weight order`,
+        accentRule(out, "green") !== undefined && "the stylesheet keeps the removed green preset",
+        !brand?.includes(flat("--up-accent:#0E8420;--up-accent-light:#13A52A;--up-accent-dark:color-mix(in srgb, #0E8420 80%, black)"))
+          && "the stylesheet lacks the brand preset's rule with its light shade and a mixed dark shade",
+        !teal?.includes(flat("--up-accent-light:color-mix(in srgb, #00897B 85%, white)"))
+          && "the stylesheet lacks the teal preset's rule with a mixed light shade",
+      ];
+    },
   },
   // An owner named only by an author name that is not a unix login.
   login: {
@@ -558,6 +610,37 @@ function wallpaperCheck(out: string, expect: (url: string) => string | false): (
     ? /^url\("?([^")]+)"?\) center\/cover no-repeat$/.exec(decls[1]![1]!.trim())?.[1]
     : undefined;
   return [url === undefined ? "the stylesheet lacks the wallpaper param's rule after main.css's default in the unity.theme layer" : expect(url)];
+}
+
+// The window.UP_SITE that the runtime script index.html loads sets.
+function upSite(out: string): { accents?: { name: string; label: string }[] } {
+  const src = /<script defer src="([^"]+\/runtime\.[^"]+)"/.exec(read(join(out, "index.html")))?.[1];
+  const window: { UP_SITE?: { accents?: { name: string; label: string }[] } } = {};
+  if (src) runInNewContext(read(join(out, src)), { window });
+  return window.UP_SITE ?? {};
+}
+
+// The names of the accent presets that the Preferences dialog offers, in
+// order and separated by spaces.
+function accentNames(out: string): string {
+  return upSite(out).accents?.map((a) => a.name).join(" ") ?? "";
+}
+
+// A declaration list without whitespace and in lowercase, as minified
+// CSS might write it.
+function flat(css: string): string {
+  return css.replace(/\s+/g, "").toLowerCase();
+}
+
+// The declarations, flattened, of the unity.theme rule that sets an
+// accent preset's tokens on <html> and its swatch, in the stylesheet that
+// index.html links. undefined when the stylesheet lacks the rule.
+function accentRule(out: string, name: string): string | undefined {
+  const href = /<link rel="stylesheet" href="([^"]+)"/.exec(read(join(out, "index.html")))?.[1];
+  const css = href ? read(join(out, href)) : "";
+  const attr = `\\[data-up-accent="?${name}"?\\]`;
+  const m = new RegExp(`:root${attr},\\s*\\.up-accent-swatch${attr}\\s*\\{([^}]*)\\}`).exec(css);
+  return m && layerAt(css, m.index) === "unity.theme" ? flat(m[1]!) : undefined;
 }
 
 function htmlFiles(dir: string): string[] {

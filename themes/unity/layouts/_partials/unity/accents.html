@@ -1,0 +1,66 @@
+{{- /*
+  The accent presets, resolved from params.desktop.accents. The theme's
+  hugo.toml defines orange, green, aubergine, and blue, and Hugo merges a
+  site's own entries into them. Each entry is a table with a required
+  color and an optional light, dark, darker, label, and weight. A site
+  sets an entry to false to remove it. An entry without a color, or one
+  whose name holds anything but lowercase letters, digits, hyphens, and
+  underscores, warns and drops out.
+
+  Returns a dict:
+
+    presets  The presets, as dicts of name, label, color, light, dark,
+             and darker, in weight order. The entries without a weight
+             follow, by name. A shade the entry omits is mixed from its
+             color with white or black. The label defaults to the
+             accent_<name> string when the theme's i18n/en.toml has one,
+             and otherwise to the name.
+    current  The preset each page starts with, which is the one that
+             params.desktop.accent names, or else the first preset. An
+             unknown name warns. It is empty when no preset is left.
+
+  _partials/unity/head/css.html builds a rule for each preset,
+  _partials/unity/ui/runtime.html publishes the names and labels for
+  prefs.ts, and baseof.html puts current in data-up-accent on <html>.
+  The labels follow the language, so call it through partialCached keyed
+  on site.Language.Name.
+*/ -}}
+{{- $weighted := slice -}}
+{{- $unweighted := slice -}}
+{{- range $name, $p := site.Params.desktop.accents -}}
+  {{- if not (reflect.IsMap $p) }}{{ continue }}{{ end -}}
+  {{- if not (findRE `^[a-z0-9_-]+$` $name) -}}
+    {{- warnf "unity: params.desktop.accents.%s has a name with characters other than lowercase letters, digits, hyphens, and underscores" $name -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- if not $p.color -}}
+    {{- warnf "unity: params.desktop.accents.%s has no color" $name -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $label := $p.label -}}
+  {{- if not $label -}}
+    {{- $key := printf "accent_%s" $name -}}
+    {{- if isset (partialCached "unity/ui/i18n-en.html" $) $key }}{{ $label = partial "unity/ui/t" $key }}{{ else }}{{ $label = $name }}{{ end -}}
+  {{- end -}}
+  {{- $preset := dict
+    "name" $name
+    "label" (string $label)
+    "color" (string $p.color)
+    "light" (string ($p.light | default (printf "color-mix(in srgb, %s 85%%, white)" $p.color)))
+    "dark" (string ($p.dark | default (printf "color-mix(in srgb, %s 80%%, black)" $p.color)))
+    "darker" (string ($p.darker | default (printf "color-mix(in srgb, %s 64%%, black)" $p.color)))
+    "weight" ($p.weight | default 0)
+  -}}
+  {{- if $preset.weight }}{{ $weighted = $weighted | append $preset }}{{ else }}{{ $unweighted = $unweighted | append $preset }}{{ end -}}
+{{- end -}}
+{{- $presets := sort $weighted "weight" | append $unweighted -}}
+{{- $current := "" -}}
+{{- with $presets }}{{ $current = (index . 0).name }}{{ end -}}
+{{- with site.Params.desktop.accent -}}
+  {{- if where $presets "name" (lower .) -}}
+    {{- $current = lower . -}}
+  {{- else -}}
+    {{- warnf "unity: params.desktop.accent %q names no preset under params.desktop.accents" . -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "presets" $presets "current" $current -}}

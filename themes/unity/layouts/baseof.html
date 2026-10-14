@@ -7,16 +7,8 @@
   {{- errorf "The unity theme needs Hugo %s or later, and this is Hugo %s." $floor hugo.Version -}}
 {{- end -}}
 <!doctype html>
-{{- $accent := "" -}}
-{{- with site.Params.desktop.accent -}}
-  {{- if in (slice "orange" "green" "aubergine" "blue") . -}}
-    {{- $accent = . -}}
-  {{- else -}}
-    {{- warnf "unity: params.desktop.accent %q is not orange, green, aubergine, or blue" . -}}
-  {{- end -}}
-{{- end -}}
 <html lang="{{ site.Language.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}"
-  {{- with $accent }} data-up-accent="{{ . }}"{{ end }}>
+  {{- with (partialCached "unity/accents.html" . site.Language.Name).current }} data-up-accent="{{ . }}"{{ end }}>
 <head>{{ partial "unity/head.html" . }}</head>
 <body>
   <a class="up-skip-link" href="#up-main">{{ partial "unity/ui/t" "skip_to_content" }}</a>

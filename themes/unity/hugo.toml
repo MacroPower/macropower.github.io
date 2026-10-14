@@ -68,6 +68,35 @@
       { name = "ngrok-tunnel", mono = true },
     ]
 
+  # The accent presets that Edit > Preferences offers, in weight order.
+  # params.desktop.accent names the one each page starts with, and the
+  # first is the default. _partials/unity/accents.html resolves them, and
+  # each label comes from the accent_<name> key in i18n/en.toml.
+  [params.desktop.accents.orange]
+    color  = "#DD4814"
+    light  = "#E95420"
+    dark   = "#B23B11"
+    darker = "#922F0C"
+    weight = 10
+  [params.desktop.accents.green]
+    color  = "#3A7D2C"
+    light  = "#4E9E3A"
+    dark   = "#2E6322"
+    darker = "#244F1B"
+    weight = 20
+  [params.desktop.accents.aubergine]
+    color  = "#77216F"
+    light  = "#8B2A82"
+    dark   = "#5E1A57"
+    darker = "#4A1444"
+    weight = 30
+  [params.desktop.accents.blue]
+    color  = "#2A5F94"
+    light  = "#3F87C9"
+    dark   = "#224E79"
+    darker = "#1A3C5E"
+    weight = 40
+
   [params.home]
     # terminal, or page for the home's content in a plain window.
     layout = "terminal"

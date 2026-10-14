@@ -68,8 +68,8 @@ describe("tokens", () => {
       return [name, (decl: string) => re.test(decl)] as const;
     });
     const strays = declarations(css)
-      // The token declarations themselves, and the accent presets.
-      .filter(({ rule }) => rule !== ":root" && !rule.includes("[data-up-accent="))
+      // The token declarations themselves.
+      .filter(({ rule }) => rule !== ":root")
       .flatMap(({ rule, decl }) => patterns.filter(([, has]) => has(decl)).map(([name]) => `${name} in ${rule}`));
     // Each of these paints another role in the same color, so a site that
     // sets the token leaves it alone.
@@ -86,12 +86,8 @@ describe("tokens", () => {
       "--up-chrome-1 in .up-code-copy",
       "--up-chrome-2 in .up-code-copy",
       "--up-chrome-2 in .up-code-copy &:active",
-      // The danger rows of the top panel's menus.
-      "--up-accent in .up-dropdown-row &.is-danger:hover",
       // A pressed dialog button.
       "--up-content-line in .up-dlg-btn &:active",
-      // The Studio's mute light.
-      "--up-accent-light in .up-daw-ms &.is-mute",
     ]);
   });
 

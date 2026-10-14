@@ -139,7 +139,8 @@ Hugo merges only `params`, `menus`, `mediaTypes`, and `outputFormats` from a the
 | `author.jobTitle`, `author.focus` | | The terminal banner's title row and the focus line under it. `jobTitle` is also the home page's JSON-LD `jobTitle`. |
 | `author.born` | | Makes the banner's uptime your age. Otherwise it counts from your oldest page. |
 | `social` | | A list of `{name, url, short}`, or a table of `name = "url"` pairs. Rows in the banner, links in JSON-LD. A `github` entry also backs the sponsors button. Every entry on GitHub, GitLab, Codeberg, Bitbucket, or sourcehut gets a link in the projects sidebar, and a `twitter` entry sets the card metadata. |
-| `desktop.accent` | `orange` | The starting accent preset: `orange`, `green`, `aubergine`, or `blue`. Visitors can switch it in Edit > Preferences. |
+| `desktop.accent` | the first preset, `orange` | The accent preset each page starts with, named by its key under `desktop.accents`. Visitors can switch it in Edit > Preferences. |
+| `desktop.accents` | `orange`, `green`, `aubergine`, `blue` | The accent presets that Edit > Preferences offers. See **Accent colors** under [Customizing](#customizing). |
 | `desktop.wallpaper` | the aubergine gradient | An image that covers the desktop and the lock screen, given as a path under `assets/` or `static/` or as a URL. A `--up-wallpaper` that your `custom.css` sets beats it. |
 | `desktop.label` | your name and a version line | The lines of the desktop's corner watermark. An empty list removes it. |
 | `desktop.trash` | six joke files | The names in the Trash window. A trailing slash marks a folder. `false` removes the Trash. |
@@ -219,11 +220,10 @@ The theme's render hooks extend Hugo's Markdown:
   | `--up-link` | `#2B4E8E` | Links in posts, pages, and dialogs. |
   | `--up-sidebar-bg` | A light gray gradient | The sidebar of the blog and of the CV viewer. It takes any `background` value. |
   | `--up-terminal-bg` | `#1F0E1A` | The home terminal's translucent backdrop. |
-  | `--up-accent`, `--up-accent-light`, `--up-accent-dark`, `--up-accent-darker` | The `orange` preset | Highlights, such as selected text, menu rows under the pointer, primary buttons, progress bars, and focus rings. |
   | `--up-font-sans` | Ubuntu, then the system's sans-serif font | The desktop's text. |
   | `--up-font-mono` | Ubuntu Mono, then the system's monospace font | The terminal, code, and other monospaced text, the Studio's piano roll included. |
 
-  The accent preset sets the four accent properties. An accent property that your `custom.css` sets on a bare `:root` beats every preset, so Edit > Preferences stops changing it. To change only the accent each page starts with, leave `params.desktop.accent` unset and set the accent properties under `:root:not([data-up-accent])`. The build resolves each `url()` in `custom.css` the way it resolves an `@import` and publishes the file, so keep a wallpaper image under your site's `assets/`, such as beside `custom.css`. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the font properties hold.
+  The build resolves each `url()` in `custom.css` the way it resolves an `@import` and publishes the file, so keep a wallpaper image under your site's `assets/`, such as beside `custom.css`. Load a web font with an `@font-face` rule or an `@import url(...)` in the same file. The theme preloads its regular Ubuntu faces whatever the font properties hold.
 
   ```css
   :root{
@@ -231,13 +231,29 @@ The theme's render hooks extend Hugo's Markdown:
     --up-font-sans:"Fira Sans",system-ui,sans-serif;
     --up-font-mono:"Fira Mono",ui-monospace,monospace;
   }
-  :root:not([data-up-accent]){
-    --up-accent:#0E8420;
-    --up-accent-light:#13A52A;
-    --up-accent-dark:#0B6A1A;
-    --up-accent-darker:#085014;
-  }
   ```
+- **Accent colors.** The accent paints highlights, such as selected text, menu rows under the pointer, primary buttons, progress bars, and focus rings. Edit > Preferences offers a swatch for each preset under `params.desktop.accents`, and `params.desktop.accent` names the preset each page starts with. The theme defines `orange`, `green`, `aubergine`, and `blue`. Your site adds a preset with a table of its own and removes one by setting it to `false`:
+
+  ```toml
+  [params.desktop]
+    accent = "brand"
+    accents.green = false
+
+  [params.desktop.accents.brand]
+    color  = "#0E8420"
+    label  = "Brand"
+    weight = 5
+  ```
+
+  | Key | Default | Purpose |
+  | --- | --- | --- |
+  | `color` | | The accent. A preset without one warns and drops out. |
+  | `light` | `color` mixed with 15% white | A lighter shade, for the swatch, hover states, and the top of each highlight gradient. |
+  | `dark`, `darker` | `color` mixed with 20% and 36% black | Darker shades, for the bottom of each gradient, pressed buttons, and borders. |
+  | `label` | The translated `accent_<name>` string for the theme's presets, and the name for yours | The swatch's tooltip and its name for screen readers. |
+  | `weight` | | The swatch order, lowest first. Presets without a weight follow, by name. The theme's presets weigh 10, 20, 30, and 40. |
+
+  Hugo merges your presets into the theme's key by key, so a built-in preset whose `color` your site changes keeps the theme's other shades. Add a preset of your own instead. Do not set `--up-accent` or its shades in `custom.css`, because a value there beats every preset, and Edit > Preferences stops changing it.
 - **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that may run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
 
   ```js

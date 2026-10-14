@@ -10,7 +10,7 @@ import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
 import { eventElement, indexOfFocused } from "./dom";
 
-const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {} };
+const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [] };
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 // nav:<key> targets are SSR'd into UP_SITE.nav from the unity/site-pages.html

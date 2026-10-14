@@ -14,6 +14,12 @@
   !important declarations. css.Build moves an external @import in it to
   the top of the output, where browsers honor it.
 
+  Each accent preset from unity/accents.html gets a rule in the
+  unity.theme layer that sets the four --up-accent tokens on <html> when
+  its data-up-accent names the preset, and on the preset's swatch in the
+  Preferences dialog. A site's custom.css sits outside the layers, so an
+  accent token it sets beats every preset.
+
   params.desktop.wallpaper sets --up-wallpaper to an image in a rule that
   follows main.css in the unity.theme layer, so the rule beats main.css's
   default and custom.css beats the rule. css.Build publishes an image under
@@ -31,6 +37,13 @@
 @import "/unity/css/chroma.css" layer(unity.chroma);
 ` -}}
 {{- if resources.Get "css/custom.css" }}{{ $entry = print $entry `@import "/css/custom.css";` }}{{ end -}}
+{{- with (partialCached "unity/accents.html" . site.Language.Name).presets -}}
+  {{- $rules := slice -}}
+  {{- range . -}}
+    {{- $rules = $rules | append (printf `:root[data-up-accent=%q],.up-accent-swatch[data-up-accent=%q]{--up-accent:%s;--up-accent-light:%s;--up-accent-dark:%s;--up-accent-darker:%s}` .name .name .color .light .dark .darker) -}}
+  {{- end -}}
+  {{- $entry = printf "%s\n@layer unity.theme{%s}" $entry (delimit $rules "\n") -}}
+{{- end -}}
 {{- $externals := slice -}}
 {{- with site.Params.desktop.wallpaper -}}
   {{- $u := urls.Parse . -}}

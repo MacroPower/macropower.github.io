@@ -165,11 +165,6 @@
   /* The home terminal draws this at 82% opacity, so the wallpaper shows
      through. */
   --up-terminal-bg:#1F0E1A;
-  /* The orange preset, for a page without data-up-accent. */
-  --up-accent:#DD4814;
-  --up-accent-light:#E95420;
-  --up-accent-dark:#B23B11;
-  --up-accent-darker:#922F0C;
   /* Font stacks. Every theme rule that names a family reads one of these,
      except the vendored xterm block and MathML. The terminal and the
      Studio's piano roll read --up-font-mono through fonts.ts, so a site's
@@ -221,25 +216,16 @@
   --up-bead-minmax-inactive:radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%);
 }
 
-/* Accent presets. The Preferences dialog (prefs.ts) sets data-up-accent on
-   <html>, and params.desktop.accent picks the starting preset. Each swatch
-   carries the same attribute, so it paints in its own preset. A site's
-   custom.css sits outside the theme's layers, so an accent token it sets on
-   a bare :root beats every preset. Under :root:not([data-up-accent]), the
-   site's tokens set only the starting accent, and a preset still replaces
-   them. Keep the names in sync with ACCENTS in prefs.ts and the list in
-   baseof.html. */
-:root[data-up-accent="orange"], .up-accent-swatch[data-up-accent="orange"]{
-  --up-accent:#DD4814; --up-accent-light:#E95420; --up-accent-dark:#B23B11; --up-accent-darker:#922F0C;
-}
-:root[data-up-accent="green"], .up-accent-swatch[data-up-accent="green"]{
-  --up-accent:#3A7D2C; --up-accent-light:#4E9E3A; --up-accent-dark:#2E6322; --up-accent-darker:#244F1B;
-}
-:root[data-up-accent="aubergine"], .up-accent-swatch[data-up-accent="aubergine"]{
-  --up-accent:#77216F; --up-accent-light:#8B2A82; --up-accent-dark:#5E1A57; --up-accent-darker:#4A1444;
-}
-:root[data-up-accent="blue"], .up-accent-swatch[data-up-accent="blue"]{
-  --up-accent:#2A5F94; --up-accent-light:#3F87C9; --up-accent-dark:#224E79; --up-accent-darker:#1A3C5E;
+/* Accent tokens, internal to the theme. A site picks its accent through
+   the presets in params.desktop.accents, and head/css.html builds a rule
+   in this layer for each preset. Each rule sets these tokens on <html>
+   and on the preset's swatch. These orange values paint a page whose
+   site removes every preset. */
+:root{
+  --up-accent:#DD4814;
+  --up-accent-light:#E95420;
+  --up-accent-dark:#B23B11;
+  --up-accent-darker:#922F0C;
 }
 
 *{box-sizing:border-box}

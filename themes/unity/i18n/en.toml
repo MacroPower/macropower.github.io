@@ -479,6 +479,17 @@ other = "Black"
 [copy_svg]
 other = "Copy SVG markup"
 
+# Accent presets, the swatch names in Edit > Preferences. Each key is
+# accent_ and a preset's name under params.desktop.accents.
+[accent_orange]
+other = "Orange"
+[accent_green]
+other = "Green"
+[accent_aubergine]
+other = "Aubergine"
+[accent_blue]
+other = "Blue"
+
 # ---------------------------------------------------------------------------
 # Runtime strings. The scripts write these after the page loads, through
 # t() and tn() in assets/unity/js/i18n.ts. Their keys start with js_, and they
@@ -1052,14 +1063,6 @@ other = "or"
 other = "Keyboard shortcuts"
 
 # Preferences
-[js_prefs_accent_orange]
-other = "Orange"
-[js_prefs_accent_green]
-other = "Green"
-[js_prefs_accent_aubergine]
-other = "Aubergine"
-[js_prefs_accent_blue]
-other = "Blue"
 [js_prefs_reduce_motion]
 other = "Reduce motion"
 [js_prefs_reduce_motion_hint]

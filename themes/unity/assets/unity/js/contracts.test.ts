@@ -16,7 +16,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { parseShellIsland, type ShellIsland } from "./shell/island";
 import { makeShell, type TestShell } from "./shell/testkit";
-import type { UPI18n, UPSite } from "./types";
+import type { UPAccent, UPI18n, UPSite } from "./types";
 
 const theme = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const example = join(theme, "exampleSite");
@@ -25,8 +25,9 @@ const hugo = spawnSync("hugo", ["version"]).status === 0;
 // The typeof of each field. `satisfies` fails to compile when UPSite or
 // UPI18n gains or loses a field that its table lacks.
 const SITE_FIELDS = {
-  handle: "string", repo: "string", rss: "string", hotspot: "string", nav: "object",
+  handle: "string", repo: "string", rss: "string", hotspot: "string", nav: "object", accents: "object",
 } as const satisfies Record<keyof UPSite, "string" | "object">;
+const ACCENT_FIELDS = { name: "string", label: "string" } as const satisfies Record<keyof UPAccent, "string">;
 const I18N_FIELDS = { strings: "object", plurals: "object" } as const satisfies Record<keyof UPI18n, "object">;
 const PLURAL_FIELDS = { forms: "object", index: "string" } as const satisfies Record<keyof UPI18n["plurals"][string], "string" | "object">;
 
@@ -111,6 +112,11 @@ describe.skipIf(!hugo)("the data Hugo hands the scripts", () => {
       const nav = isRecord(site) ? site.nav : undefined;
       expect(valuesOf(nav).length).toBeGreaterThan(0);
       expect(valuesOf(nav).filter((url) => typeof url !== "string")).toEqual([]);
+      const accents: unknown = isRecord(site) ? site.accents : undefined;
+      expect(Array.isArray(accents)).toBe(true);
+      const presets: unknown[] = Array.isArray(accents) ? accents : [];
+      expect(presets.length).toBeGreaterThan(0);
+      for (const preset of presets) expect(typesOf(preset)).toEqual(ACCENT_FIELDS);
     });
 
     it("sets UP_I18N with the fields of UPI18n", () => {

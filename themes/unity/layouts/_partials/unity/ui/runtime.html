@@ -15,12 +15,17 @@
       Dash never disagree about where a page lives. */ -}}
 {{- $nav := dict -}}
 {{- range $k, $p := (partialCached "unity/site-pages.html" .).pages }}{{ $nav = merge $nav (dict $k $p.url) }}{{ end -}}
+{{- /* accents backs the swatches in prefs.ts's Preferences dialog, in
+      the order unity/accents.html sorts them. */ -}}
+{{- $accents := slice -}}
+{{- range (partialCached "unity/accents.html" . site.Language.Name).presets }}{{ $accents = $accents | append (dict "name" .name "label" .label) }}{{ end -}}
 {{- $site := dict
   "handle" (partial "unity/ui/author-handle.html" .)
   "repo" (site.Params.repoUrl | default "")
   "rss" $rss
   "hotspot" (site.Params.desktop.hotspot | default "personal-site")
   "nav" $nav
+  "accents" $accents
 -}}
 {{- $js := printf "window.UP_SITE=%s;window.UP_I18N=%s;" ($site | jsonify) (partial "unity/ui/i18n.html" . | jsonify) -}}
 {{- $res := resources.FromString (printf "js/runtime.%s.js" site.Language.Name) $js | minify | fingerprint -}}

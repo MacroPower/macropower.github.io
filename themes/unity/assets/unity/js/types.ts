@@ -37,6 +37,14 @@ export interface UPDialogOptions<Id extends string = string> {
   render?(content: HTMLElement): void;
 }
 
+/** An accent preset from params.desktop.accents. */
+export interface UPAccent {
+  /** The preset's key, which data-up-accent on <html> names. */
+  name: string;
+  /** The swatch's accessible name, in the page's language. */
+  label: string;
+}
+
 export interface UPSite {
   handle: string;
   repo: string;
@@ -46,6 +54,8 @@ export interface UPSite {
   /** nav:<key> action targets, from the theme's unity/site-pages.html
    *  registry. */
   nav: Record<string, string>;
+  /** The accent presets the Preferences dialog offers, in swatch order. */
+  accents: UPAccent[];
 }
 
 /** Runtime UI strings from the theme's _partials/unity/ui/i18n.html; read

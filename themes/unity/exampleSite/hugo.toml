@@ -79,10 +79,16 @@ mainSections = ["posts"]
     # born = "1990-01-31"
 
   [params.desktop]
-    # The accent preset the desktop starts with: orange (the default),
-    # green, aubergine, or blue. Visitors can switch it in Edit >
-    # Preferences.
-    # accent = "aubergine"
+    # The accent preset the desktop starts with, by its key under
+    # accents. The first preset is the default. Visitors can switch it in
+    # Edit > Preferences.
+    # accent = "brand"
+    # Accent presets beside the theme's orange, green, aubergine, and
+    # blue. color is required. light, dark, and darker default to shades
+    # mixed from it, label to the key, and weight orders the swatches.
+    # false removes a preset.
+    # accents.brand = { color = "#0E8420", label = "Brand", weight = 5 }
+    # accents.green = false
     # An image that covers the desktop and the lock screen in place of
     # the aubergine gradient. Give a path under assets/ or static/, or a
     # URL.
