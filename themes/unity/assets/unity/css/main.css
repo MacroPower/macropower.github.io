@@ -1757,6 +1757,10 @@ a.up-sponsor-card[href]:hover{
   .katex-display{display:block;margin:0 0 14px;overflow-x:auto}
 }
 
+/* The spotify shortcode's player fills its column unless the shortcode
+   sets a width, because a width attribute takes only pixels. */
+.up-spotify:not([width]){width:100%}
+
 /* The post reader's table of contents, a GtkExpander over Hugo's
    TableOfContents nav. */
 .up-toc{

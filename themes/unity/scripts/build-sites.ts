@@ -909,13 +909,18 @@ function exposedSvgs(name: string, html: string): string[] {
 
 // Markup that the Nu HTML checker rejects. HTML allows a <main> only
 // inside <html>, <body>, <div>, and <form> elements and custom
-// elements.
+// elements. An iframe's width and height take a whole number of pixels.
 function nonconforming(name: string, html: string): string[] {
   return [...elements(html)].flatMap((e): string[] => {
-    if (e.tag !== "main") return [];
-    return e.ancestors
-      .filter((a) => !["html", "body", "div", "form"].includes(a.tag) && !a.tag.includes("-"))
-      .map((a) => `${name} renders its <main> inside a <${a.tag}>`);
+    if (e.tag === "main") {
+      return e.ancestors
+        .filter((a) => !["html", "body", "div", "form"].includes(a.tag) && !a.tag.includes("-"))
+        .map((a) => `${name} renders its <main> inside a <${a.tag}>`);
+    }
+    if (e.tag !== "iframe") return [];
+    return [...e.attrs.matchAll(/\s(width|height)=(?:"([^"]*)"|([^\s"']*))/g)]
+      .filter((m) => !/^[0-9]+$/.test(m[2] ?? m[3]!))
+      .map((m) => `${name} gives an <iframe> the ${m[1]} "${m[2] ?? m[3]}"`);
   });
 }
 
