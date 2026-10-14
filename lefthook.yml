@@ -28,6 +28,7 @@ pre-commit:
       glob:
         - "themes/unity/assets/unity/js/**/*.ts"
         - "themes/unity/tests/**/*.ts"
+        - "themes/unity/scripts/i18n-types.ts"
         - "themes/unity/tsconfig*.json"
       run: npx --no-install tsc -p themes/unity/tsconfig.test.json --noEmit
     typecheck-node:
