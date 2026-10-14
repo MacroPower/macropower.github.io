@@ -94,6 +94,16 @@ const SITES: Record<string, SiteSpec> = {
       ),
   },
   bare: { files: { "hugo.toml": BARE } },
+  // The theme inside a checkout of a larger repository, as in README.md's
+  // Git submodule route, where theme names a path under themesDir.
+  submodule: {
+    files: {
+      "hugo.toml": `baseURL = "https://example.org/"
+theme = ${JSON.stringify(relative(dirname(themesDir), theme))}
+themesDir = ${JSON.stringify(dirname(themesDir))}
+`,
+    },
+  },
   multilingual: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "en"

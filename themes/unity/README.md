@@ -25,7 +25,7 @@ Hugo partials server-render everything, and Hugo's built-in esbuild bundles the 
 ## Requirements
 
 - Hugo 0.165.0 or later. The standard edition works.
-- Go, if you install the theme as a Hugo module.
+- Git and Go 1.18 or later, if you install the theme as a Hugo module.
 
 ## Installation
 
@@ -52,6 +52,17 @@ Run `hugo mod get -u` again to update. The theme has no release tags yet, so Hug
 
 The theme does not add Node packages to `hugo mod npm pack`, so a site that runs it to install another module's packages, such as Tailwind CSS, installs nothing for the theme.
 
+### Git submodule
+
+Git cannot add one directory of a repository as a submodule, so add the whole repository and point `theme` at the theme inside it:
+
+```bash
+git submodule add https://github.com/MacroPower/macropower.github.io themes/macropower
+echo 'theme = "macropower/themes/unity"' >> hugo.toml
+```
+
+The submodule checks out the whole site repository, including its posts and images, not only the theme. Run `git submodule update --remote` to update, then commit `themes/macropower` to record the new revision. A plain `git clone` of your site leaves `themes/macropower` empty. Clone it with `--recurse-submodules`, and set your CI's checkout to fetch submodules.
+
 ### Copy
 
 A sparse clone fetches only the theme's files, not the rest of the site around it:
@@ -62,6 +73,8 @@ git -C /tmp/mp sparse-checkout set themes/unity
 cp -r /tmp/mp/themes/unity themes/unity
 echo 'theme = "unity"' >> hugo.toml
 ```
+
+To update a copy, delete `themes/unity` and copy the theme again from a fresh sparse clone.
 
 ## Configuration
 
