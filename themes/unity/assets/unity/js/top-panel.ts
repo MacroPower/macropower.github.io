@@ -8,6 +8,7 @@ import { showLock } from "./lock";
 import { openStudio } from "./daw";
 import * as audio from "./audio";
 import type { UPDialogOptions, UPSite } from "./types";
+import { isNavAction, isVolumeControl, parseAction, type NamedAction, type PanelAction, type VolumeControl } from "./actions";
 import { eventElement, indexOfFocused } from "./dom";
 
 const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [] };
@@ -32,38 +33,33 @@ function dlg<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise
 // sentence stays one string and the anchor lands wherever the language puts it.
 const LINK_SLOT = "\u0000";
 
-const DLG_PRESETS: Record<string, (site: UPSite) => UPDialogOptions> = {
-  "dlg:launcher-info": () => ({ icon: "info", title: t("js_panel_launcher_title"),
-    body: t("js_panel_launcher_body") }),
-  "dlg:github": (site) => {
-    const url = site.repo;
-    if (!url) {
-      return {
-        icon: "info", title: t("js_panel_source_title"),
-        body: t("js_panel_source_body"),
-        buttons: [{ id: "ok", label: t("js_panel_ok"), primary: true }],
-      };
-    }
+// The View source dialog, which links the site's repoUrl when it has one.
+function sourceDialog(site: UPSite): UPDialogOptions {
+  const url = site.repo;
+  if (!url) {
     return {
       icon: "info", title: t("js_panel_source_title"),
-      render: (content) => {
-        const p = document.createElement("p");
-        p.className = "up-dlg-content-body";
-        const a = document.createElement("a");
-        a.href = url;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = url.replace(/^https?:\/\//, "");
-        const [before = "", after = ""] = t("js_panel_source_body_link", { link: LINK_SLOT }).split(LINK_SLOT);
-        p.append(before, a, after);
-        content.appendChild(p);
-      },
+      body: t("js_panel_source_body"),
       buttons: [{ id: "ok", label: t("js_panel_ok"), primary: true }],
     };
-  },
-  "dlg:cal": () => ({ icon: "info", title: t("js_panel_cal_title"),
-    body: t("js_panel_cal_body") }),
-};
+  }
+  return {
+    icon: "info", title: t("js_panel_source_title"),
+    render: (content) => {
+      const p = document.createElement("p");
+      p.className = "up-dlg-content-body";
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = url.replace(/^https?:\/\//, "");
+      const [before = "", after = ""] = t("js_panel_source_body_link", { link: LINK_SLOT }).split(LINK_SLOT);
+      p.append(before, a, after);
+      content.appendChild(p);
+    },
+    buttons: [{ id: "ok", label: t("js_panel_ok"), primary: true }],
+  };
+}
 
 function fmtDuration(mins: number): string {
   const total = Math.round(mins);
@@ -364,49 +360,17 @@ async function handleHotspot(): Promise<void> {
     body: t("js_panel_hotspot_active_body", { name: ssid }) });
 }
 
-// Exported for dash.ts: the Dash's app tiles reuse the panel's action
-// vocabulary (dlg:prefs, dlg:lock, dlg:logout, ...) so both surfaces always
-// run the identical flow. Module-level by design — no initTopPanel state.
-export async function dispatchAction(action: string): Promise<void> {
-  if (action.startsWith("nav:")) { navigate(action.slice(4)); return; }
-  if (action === "reload") { window.location.reload(); return; }
-  if (action === "fullscreen") {
-    void document.documentElement.requestFullscreen?.().catch(() => {});
-    return;
-  }
-  const site = getSite();
-  const preset = DLG_PRESETS[action];
-  if (preset) { await dlg(preset(site)); return; }
-  if (action === "daw:open") {
-    if (UP_STUDIO) openStudio();
-    return;
-  }
-  if (action === "dlg:lock") {
-    showLock();
-    return;
-  }
-  if (action === "dlg:prefs") {
-    await showPreferences();
-    return;
-  }
-  if (action === "dlg:shortcuts") {
-    await showShortcuts();
-    return;
-  }
-  if (action === "dlg:power-saver") {
-    setReduceMotion(true);
-    await dlg({
-      icon: "success", title: t("js_panel_power_saver_title"),
-      body: t("js_panel_power_saver_body"),
-    });
-    return;
-  }
-  if (action === "dlg:time") { await showTime(); return; }
-  if (action === "dlg:power") { await showPower(); return; }
-  if (action === "dlg:wired") { await showWired(); return; }
-  if (action === "dlg:subscribe") { await showSubscribe(site); return; }
-  if (action === "dlg:hotspot") { await handleHotspot(); return; }
-  if (action === "dlg:logout") {
+// The handler behind each named action. dispatchAction awaits whatever a
+// handler returns. The Record type makes tsc fail when actions.ts names an
+// action that this table lacks, or this table handles a name it does not.
+const ACTIONS: Record<NamedAction, (site: UPSite) => unknown> = {
+  reload: () => { window.location.reload(); },
+  fullscreen: () => { void document.documentElement.requestFullscreen?.().catch(() => {}); },
+  "daw:open": () => { if (UP_STUDIO) openStudio(); },
+  "dlg:prefs": () => showPreferences(),
+  "dlg:shortcuts": () => showShortcuts(),
+  "dlg:lock": () => { showLock(); },
+  "dlg:logout": async (site) => {
     const r = await dlg({
       icon: "question",
       title: t("js_panel_logout_title", { name: site.handle || t("js_panel_default_user") }),
@@ -416,11 +380,34 @@ export async function dispatchAction(action: string): Promise<void> {
         { id: "out", label: t("js_panel_logout"), primary: true, danger: true },
       ],
     });
-    // Drop to the greeter; "signing in" reloads a fresh session.
+    // Drop to the greeter. "Signing in" reloads a fresh session.
     if (r === "out") showLock({ onUnlock: () => { window.location.reload(); } });
-    return;
-  }
-  console.warn("unity: unknown action", action);
+  },
+  "dlg:time": () => showTime(),
+  "dlg:power": () => showPower(),
+  "dlg:power-saver": async () => {
+    setReduceMotion(true);
+    await dlg({
+      icon: "success", title: t("js_panel_power_saver_title"),
+      body: t("js_panel_power_saver_body"),
+    });
+  },
+  "dlg:wired": () => showWired(),
+  "dlg:subscribe": (site) => showSubscribe(site),
+  "dlg:hotspot": () => handleHotspot(),
+  "dlg:cal": () => dlg({ icon: "info", title: t("js_panel_cal_title"), body: t("js_panel_cal_body") }),
+  "dlg:github": (site) => dlg(sourceDialog(site)),
+  "dlg:launcher-info": () => dlg({ icon: "info", title: t("js_panel_launcher_title"),
+    body: t("js_panel_launcher_body") }),
+};
+
+// Exported for dash.ts and hud.ts, which parse their own data attributes
+// with actions.ts and then run the same flows as the panel's rows. It
+// lives at module level and does not read initTopPanel's state, so both
+// can call it.
+export async function dispatchAction(action: PanelAction): Promise<void> {
+  if (isNavAction(action)) { navigate(action.slice("nav:".length)); return; }
+  await ACTIONS[action](getSite());
 }
 
 async function netClick(row: HTMLElement): Promise<void> {
@@ -791,6 +778,19 @@ export function initTopPanel(): void {
     }
   }, { passive: false });
 
+  // The buttons in the sound menu act without closing it, so you can flip
+  // through the playlist. The now-playing label follows through
+  // audio.onChange.
+  const volumeControls: Record<VolumeControl, () => void> = {
+    "vol-toggle": () => {
+      vol.muted = !vol.muted;
+      syncVolAudio();
+      syncVolUI();
+    },
+    "vol-play": () => { if (UP_STUDIO) void audio.toggle(); },
+    "vol-next": () => { if (UP_STUDIO) void audio.selectTrack(audio.trackIndex() + 1); },
+  };
+
   panel.addEventListener("click", (e) => {
     const target = eventElement(e);
     if (!target) return;
@@ -803,24 +803,11 @@ export function initTopPanel(): void {
     const actionEl = target.closest<HTMLElement>("[data-action]");
     if (!actionEl || !panel.contains(actionEl)) return;
     if (actionEl.classList.contains("is-disabled")) return;
-    const action = actionEl.dataset.action;
-    if (!action) return;
-    if (action === "vol-toggle") {
-      vol.muted = !vol.muted;
-      syncVolAudio();
-      syncVolUI();
-      return;
-    }
-    if (action === "vol-play") {
-      if (UP_STUDIO) void audio.toggle();
-      return;
-    }
-    if (action === "vol-next") {
-      // Like vol-play, handled without closing the dropdown so you can flip
-      // through the playlist; the label updates via audio.onChange.
-      if (UP_STUDIO) void audio.selectTrack(audio.trackIndex() + 1);
-      return;
-    }
+    const raw = actionEl.dataset.action;
+    if (!raw) return;
+    if (isVolumeControl(raw)) { volumeControls[raw](); return; }
+    const action = parseAction(raw);
+    if (!action) { console.warn("unity: unknown action", raw); return; }
     closeOpen();
     void dispatchAction(action);
   });

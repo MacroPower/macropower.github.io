@@ -10,7 +10,9 @@
   Categories:
     apps     — site pages plus the desktop "applications" (Studio, Trash,
                Appearance, ...). Page tiles are real <a>; app tiles are
-               <button data-dash-action> dispatched by dash.ts.
+               <button data-dash-action> dispatched by dash.ts. An app
+               tile's action is a top-panel action or "trash", as
+               assets/unity/js/actions.ts defines them.
     files    — blog posts (newest first), real <a>.
     projects — unity/projects-data.html's projects, real <a> to GitHub
                (new tab, like the projects grid's open behavior).
@@ -42,7 +44,7 @@
 {{- end -}}
 {{- $playlist := partialCached "unity/playlist.html" . -}}
 {{- with $playlist -}}
-  {{- $apps = $apps | append (dict "label" (partial "unity/ui/t" "studio") "icon" "launcher/piano" "action" "studio"
+  {{- $apps = $apps | append (dict "label" (partial "unity/ui/t" "studio") "icon" "launcher/piano" "action" "daw:open"
         "kw" (partial "unity/ui/t" "kw_studio")) -}}
 {{- end -}}
 {{- if ne site.Params.desktop.trash false -}}
@@ -50,16 +52,16 @@
         "kw" (partial "unity/ui/t" "kw_trash")) -}}
 {{- end -}}
 {{- $apps = $apps | append (slice
-  (dict "label" (partial "unity/ui/t" "appearance") "icon" "launcher/paint" "action" "prefs"
+  (dict "label" (partial "unity/ui/t" "appearance") "icon" "launcher/paint" "action" "dlg:prefs"
         "kw" (partial "unity/ui/t" "kw_appearance"))
-  (dict "label" (partial "unity/ui/t" "shortcuts") "icon" "launcher/typewriter-key" "action" "shortcuts"
+  (dict "label" (partial "unity/ui/t" "shortcuts") "icon" "launcher/typewriter-key" "action" "dlg:shortcuts"
         "kw" (partial "unity/ui/t" "kw_shortcuts"))
 ) -}}
 {{- if ne site.Params.desktop.lock false -}}
   {{- $apps = $apps | append (slice
-    (dict "label" (partial "unity/ui/t" "lock_screen_app") "icon" "launcher/padlock" "action" "lock"
+    (dict "label" (partial "unity/ui/t" "lock_screen_app") "icon" "launcher/padlock" "action" "dlg:lock"
           "kw" (partial "unity/ui/t" "kw_lock"))
-    (dict "label" (partial "unity/ui/t" "log_out_app") "icon" "launcher/doorway" "action" "logout"
+    (dict "label" (partial "unity/ui/t" "log_out_app") "icon" "launcher/doorway" "action" "dlg:logout"
           "kw" (partial "unity/ui/t" "kw_logout"))
   ) -}}
 {{- end -}}

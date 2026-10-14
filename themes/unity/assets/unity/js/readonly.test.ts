@@ -7,6 +7,7 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 
+import type { NAMED_ACTIONS, VOLUME_CONTROLS } from "./actions";
 import type * as audio from "./audio";
 import type { MASK_COLORS, PALETTE, PALETTE_BRIGHT } from "./shell/ansi";
 import type { ALL_COMMANDS } from "./shell/commands/all";
@@ -30,6 +31,8 @@ describe("exported tables", () => {
     expectTypeOf<typeof ICONS>().toEqualTypeOf<Readonly<typeof ICONS>>();
     expectTypeOf<typeof TABLE_BUTTONS>().toEqualTypeOf<Readonly<typeof TABLE_BUTTONS>>();
     expectTypeOf<typeof TOOLBAR_ACTIONS>().toEqualTypeOf<Readonly<typeof TOOLBAR_ACTIONS>>();
+    expectTypeOf<typeof NAMED_ACTIONS>().toEqualTypeOf<Readonly<typeof NAMED_ACTIONS>>();
+    expectTypeOf<typeof VOLUME_CONTROLS>().toEqualTypeOf<Readonly<typeof VOLUME_CONTROLS>>();
   });
 
   it("hold read-only icon rows", () => {

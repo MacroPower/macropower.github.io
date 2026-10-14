@@ -15,6 +15,7 @@
 
 import { t, tn } from "./i18n";
 import { dispatchAction } from "./top-panel";
+import { parseAction } from "./actions";
 import { isReduceMotion } from "./prefs";
 import { eventElement } from "./dom";
 
@@ -106,8 +107,10 @@ export function initHud(): void {
         ),
       )) {
         if (el.hasAttribute("disabled")) continue;
-        const action = el.dataset.action;
-        // Icon-only controls (mute toggle, transport) have no text to type.
+        // Link rows and the sound menu's controls carry no panel action, so
+        // the HUD clicks them instead. Icon-only controls (mute toggle,
+        // transport) have no text to type.
+        const action = parseAction(el.dataset.action ?? "");
         push(menu, rowLabel(el), action ? () => { void dispatchAction(action); } : () => el.click());
       }
       // Wi-Fi rows have no data-action — connecting is a click on the row

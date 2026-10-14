@@ -18,6 +18,7 @@ import { openStudio } from "./daw";
 import { t, tn } from "./i18n";
 import { openTrash } from "./trash";
 import { dispatchAction } from "./top-panel";
+import { isMusicAction, parseDashAction } from "./actions";
 import { isReduceMotion } from "./prefs";
 import * as audio from "./audio";
 import { eventElement, focusedElement, indexOfFocused } from "./dom";
@@ -230,22 +231,23 @@ export function initDash(): void {
 
   // ---- activation --------------------------------------------------------
 
-  const runAction = (action: string): void => {
-    if (action === "studio") { if (UP_STUDIO) openStudio(); return; }
+  const runAction = (raw: string): void => {
+    const action = parseDashAction(raw);
+    if (!action) { console.warn("unity: unknown action", raw); return; }
     if (action === "trash") { openTrash(); return; }
-    if (action.startsWith("music:")) {
+    if (isMusicAction(action)) {
       if (UP_STUDIO) {
         // Switch first (synchronous selection, async load), then start the
         // transport inside the same user gesture. A playing player restarts
         // on the new song by itself.
-        void audio.selectTrack(Number(action.slice(6)));
+        void audio.selectTrack(Number(action.slice("music:".length)));
         if (!audio.isPlaying()) void audio.toggle();
         openStudio();
       }
       return;
     }
-    // The rest reuse the top panel's action vocabulary (identical flows).
-    void dispatchAction(`dlg:${action}`);
+    // The rest are the top panel's actions, so both surfaces run one flow.
+    void dispatchAction(action);
   };
 
   results.addEventListener("click", (e) => {
