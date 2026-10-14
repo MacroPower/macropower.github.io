@@ -26,6 +26,13 @@ export function isReduceMotion(): boolean {
   return document.body.classList.contains("up-reduce-motion");
 }
 
+// The behavior for every scroll a script starts. The CSS animation-kill
+// cannot stop a smooth scroll that a script asks for, so scripts take the
+// behavior from here instead of naming "smooth".
+export function scrollBehavior(): ScrollBehavior {
+  return isReduceMotion() ? "instant" : "smooth";
+}
+
 export function setReduceMotion(on: boolean): void {
   document.body.classList.toggle("up-reduce-motion", on);
 }

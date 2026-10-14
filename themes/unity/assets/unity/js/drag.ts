@@ -1,3 +1,5 @@
+import { isReduceMotion } from "./prefs";
+
 export interface InstallTitlebarDragOptions {
   yMin?: number;
   spring?: boolean;
@@ -124,6 +126,14 @@ export function installTitlebarDrag(
       if (!spring) {
         baseX = cur.dx;
         baseY = cur.dy;
+        return;
+      }
+      // The visitor drives the drag, but not the spring home after it, so
+      // under reduce motion the window jumps home instead.
+      if (isReduceMotion()) {
+        apply(0, 0);
+        baseX = 0;
+        baseY = 0;
         return;
       }
       let x = cur.dx;

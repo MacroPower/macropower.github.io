@@ -1,5 +1,6 @@
 import { t } from "./i18n";
 import { eventHTMLElement } from "./dom";
+import { scrollBehavior } from "./prefs";
 
 export interface FilterNavOptions {
   root: HTMLElement;
@@ -124,7 +125,7 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     if (!item) return;
     item.classList.add("is-focused");
     if (moveFocus) item.focus({ preventScroll: true });
-    item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    item.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
   }
 
   document.addEventListener("keydown", (e) => {

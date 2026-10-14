@@ -11,6 +11,7 @@
 import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { t } from "./i18n";
+import { scrollBehavior } from "./prefs";
 
 ((): void => {
   const root = document.querySelector<HTMLElement>("[data-cv-viewer]");
@@ -66,10 +67,6 @@ import { t } from "./i18n";
   let scale = PT_TO_CSS; // CSS px per PDF point, as laid out
   let lastFitPx = 0; // fit-width target of the last layout, for resize dedupe
   let generation = 0; // invalidates in-flight page renders on relayout
-
-  function reduceMotion(): boolean {
-    return document.body.classList.contains("up-reduce-motion");
-  }
 
   function availWidth(): number {
     const cs = getComputedStyle(pagesEl);
@@ -160,7 +157,7 @@ import { t } from "./i18n";
     if (!sheet) return;
     // A little breathing room above the sheet, mirroring the well's padding.
     const top = Math.max(0, sheet.el.offsetTop - 14);
-    view.scrollTo({ top, behavior: reduceMotion() ? "auto" : "smooth" });
+    view.scrollTo({ top, behavior: scrollBehavior() });
     setCurrent(target);
   }
 
