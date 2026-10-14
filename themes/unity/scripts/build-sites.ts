@@ -184,6 +184,8 @@ const SITES: Record<string, SiteSpec> = {
       const names = accentNames(out);
       return [
         !read(join(out, "index.html")).includes("<title>example.org</title>") && "index.html is not titled by its host",
+        jsonld(read(join(out, "index.html")))["@graph"]?.find((n) => n["@type"] === "WebSite")?.name !== "example.org"
+          && "index.html's JSON-LD WebSite is not named by its host",
         !read(join(out, "index.html")).includes('class="up-titlebar-text">user@example.org: ~<')
           && "index.html's titlebar is not the default guest login",
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
@@ -433,8 +435,9 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
     },
   },
   // A blog with a post dated in another zone and an undated post. Each
-  // post's JSON-LD must keep its date's time and zone and omit the dates
-  // a post lacks.
+  // post's JSON-LD must link to the WebSite and Person that the home
+  // page's graph defines. It must also keep its date's time and zone and
+  // omit the dates a post lacks.
   jsonld: {
     files: {
       "hugo.toml": `${BARE}title = "Jane Doe"\nmainSections = ["posts"]\n`,
@@ -443,8 +446,17 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
     },
     check: (out) => {
       const ld = (path: string): LdNode => jsonld(read(join(out, path)));
+      const graph = ld("index.html")["@graph"] ?? [];
+      const website = graph.find((n) => n["@type"] === "WebSite");
+      const owner = graph.find((n) => n["@type"] === "Person")?.["@id"];
       const posts = { dated: ld("posts/dated/index.html"), undated: ld("posts/undated/index.html") };
       return [
+        website?.name !== "Jane Doe" && "index.html lacks a WebSite named after the site title",
+        (!owner || website?.publisher?.["@id"] !== owner) && "the home's WebSite does not name the home's Person as publisher",
+        ...Object.entries(posts).flatMap(([name, post]) => [
+          (!website?.["@id"] || post.isPartOf?.["@id"] !== website["@id"]) && `posts/${name}/ is not part of the home's WebSite`,
+          (!owner || post.author?.["@id"] !== owner) && `posts/${name}/ has an author other than the home's Person`,
+        ]),
         posts.dated.datePublished !== "2024-01-02T03:04:05-05:00" && "posts/dated/ drops its date's time or zone",
         ("datePublished" in posts.undated || "dateModified" in posts.undated) && "posts/undated/ carries a date it lacks",
       ];
@@ -1546,8 +1558,16 @@ function unescapeHTML(value: string): string {
     : named[name?.toLowerCase() ?? ""] ?? all);
 }
 
-// A JSON-LD node. JSON.parse does not check its fields.
-type LdNode = { [field: string]: unknown };
+// The JSON-LD fields the checks read. JSON.parse does not check them.
+type LdNode = {
+  "@id"?: string;
+  "@type"?: string;
+  "@graph"?: LdNode[];
+  author?: LdNode;
+  isPartOf?: LdNode;
+  publisher?: LdNode;
+  [field: string]: unknown;
+};
 
 // A built page's JSON-LD block, or an empty node when it has none.
 function jsonld(html: string): LdNode {

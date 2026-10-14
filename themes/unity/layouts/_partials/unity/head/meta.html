@@ -5,6 +5,12 @@
   body is the terminal's README. Other pages use their description front
   matter, then their summary, then params.description.
 
+  The home page's JSON-LD is a graph of the site as a WebSite and its
+  owner as a Person. The WebSite takes the name that titles the home
+  page in unity/head.html. Each post's BlogPosting names both by the @id
+  that the home page gives them, so search engines read one site and one
+  person.
+
   Front matter: description, images (see unity/page-images.html), noindex, and
   canonicalURL, which points the canonical link at the original of a
   syndicated post.
@@ -21,6 +27,9 @@
 {{- $isPost := and .IsPage (partial "unity/in-blog.html" .) -}}
 {{- $title := partial "unity/page-title.html" . -}}
 {{- $iso := "2006-01-02T15:04:05-07:00" -}}
+{{- $home := site.Home.Permalink -}}
+{{- $websiteRef := dict "@id" (printf "%s#website" $home) -}}
+{{- $personRef := dict "@id" (printf "%s#person" $home) -}}
 {{- /* The locale as a BCP 47 tag for JSON-LD, and as Open Graph's
       language_TERRITORY, which takes a region but no script subtag:
       zh-Hant-TW becomes zh_TW and de becomes de. */ -}}
@@ -102,15 +111,23 @@
 {{- if .IsHome }}
 {{- $sameAs := slice }}
 {{- range partialCached "unity/socials.html" . }}{{ $sameAs = $sameAs | append .url }}{{ end }}
-{{- $person := dict
-  "@context" "https://schema.org"
+{{- $website := merge $websiteRef (dict
+  "@type" "WebSite"
+  "name" (or site.Title $title)
+  "url" $home
+  "inLanguage" $locale
+  "publisher" $personRef
+) }}
+{{- with $description }}{{ $website = merge $website (dict "description" .) }}{{ end }}
+{{- $person := merge $personRef (dict
   "@type" "Person"
   "name" $author.name
-  "url" site.Home.Permalink
-  "sameAs" $sameAs
-}}
+  "url" $home
+) }}
+{{- with $sameAs }}{{ $person = merge $person (dict "sameAs" .) }}{{ end }}
 {{- with $author.jobTitle }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
-<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
+{{- $graph := dict "@context" "https://schema.org" "@graph" (slice $website $person) }}
+<script type="application/ld+json">{{ $graph | jsonify | safeJS }}</script>
 {{- else if $isPost }}
 {{- $ld := dict
   "@context" "https://schema.org"
@@ -118,9 +135,10 @@
   "headline" $title
   "url" .Permalink
   "mainEntityOfPage" .Permalink
+  "isPartOf" $websiteRef
   "inLanguage" $locale
   "description" $description
-  "author" (dict "@type" "Person" "name" $author.name "url" site.Home.Permalink)
+  "author" (merge $personRef (dict "@type" "Person" "name" $author.name "url" $home))
 }}
 {{- with .PublishDate }}{{ $ld = merge $ld (dict "datePublished" (.Format $iso)) }}{{ end }}
 {{- with .Lastmod }}{{ $ld = merge $ld (dict "dateModified" (.Format $iso)) }}{{ end }}
