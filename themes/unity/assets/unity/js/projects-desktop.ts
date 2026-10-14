@@ -19,7 +19,7 @@
 // gesture state lives in installDesktop's closure, and every document-level
 // listener guards on it. Never add module-level mutable state here.
 
-import { t } from "./i18n";
+import { isolate, t } from "./i18n";
 import { eventElement, indexOfFocused } from "./dom";
 import { isReduceMotion } from "./prefs";
 
@@ -45,7 +45,7 @@ export function forgeName(url: string): string {
 /** The label of a project's open action, naming the site it opens. */
 export function openLabel(url: string): string {
   const host = forgeName(url);
-  return host ? t("js_projects_open_on", { host }) : t("js_projects_open");
+  return host ? t("js_projects_open_on", { host: isolate(host) }) : t("js_projects_open");
 }
 
 export interface DesktopMenuItem {

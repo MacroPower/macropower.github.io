@@ -1,6 +1,6 @@
 import { createSelection } from "./desktop-select";
 import { installFilterNav } from "./filter-nav";
-import { locale, t, tn } from "./i18n";
+import { isolate, locale, t, tn } from "./i18n";
 import { forgeName, installDesktop, openLabel } from "./projects-desktop";
 
 ((): void => {
@@ -168,7 +168,7 @@ import { forgeName, installDesktop, openLabel } from "./projects-desktop";
     stats.className = "up-project-preview-stats";
     if (stars) stats.appendChild(buildStat("star", fmtNum(stars), (value) => t("js_projects_stars", { value })));
     if (forks) stats.appendChild(buildStat("fork", fmtNum(forks), (value) => t("js_projects_forks", { value })));
-    if (license) stats.appendChild(buildStat("license", license, (value) => t("js_projects_license", { value }), true));
+    if (license) stats.appendChild(buildStat("license", license, (value) => t("js_projects_license", { value: isolate(value) }), true));
     if (updated) stats.appendChild(buildStat("clock", updated, (value) => t("js_projects_updated", { value }), true));
     if (stats.childElementCount) body.appendChild(stats);
 

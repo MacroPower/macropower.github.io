@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, expectTypeOf, it } from "vitest";
 
 import { EN_TOML, KEYS_TS, readCatalog, renderKeys } from "../../../scripts/i18n-types";
-import { t, tn } from "./i18n";
+import { isolate, t, tn } from "./i18n";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const catalog = readCatalog(readFileSync(EN_TOML, "utf8"));
@@ -39,6 +39,48 @@ function calls(): { keys: Set<string>; dynamic: string[] } {
   }
   return { keys, dynamic };
 }
+
+// The argument text of each call to `key`, with the file it sits in.
+function argsOf(key: string): string[] {
+  const found: string[] = [];
+  for (const file of sources(here)) {
+    const text = readFileSync(file, "utf8");
+    for (const m of text.matchAll(new RegExp(`(?<![\\w$.])tn?\\(\\s*"${key}"`, "g"))) {
+      const start = m.index + m[0].length;
+      let depth = 1;
+      let end = start;
+      while (end < text.length && depth > 0) {
+        if (text[end] === "(") depth++;
+        else if (text[end] === ")") depth--;
+        end++;
+      }
+      found.push(`${file.slice(here.length + 1)}: ${text.slice(start, end - 1).replace(/\s+/g, " ").replace(/^ ?, /, "")}`);
+    }
+  }
+  return found;
+}
+
+// Each key with a placeholder that a site's config, data, or content
+// fills, mapped to that placeholder.
+const SITE_NAMES: Readonly<Record<string, string>> = {
+  js_panel_feed_copied: "url",
+  js_panel_feed_url: "url",
+  js_panel_hotspot_status: "name",
+  js_panel_hotspot_active_body: "name",
+  js_panel_logout_title: "name",
+  js_panel_net_already_body: "name",
+  js_panel_net_connect_title: "name",
+  js_panel_net_disconnect_body: "name",
+  js_panel_net_failed_body: "name",
+  js_panel_net_established_body: "name",
+  js_panel_paused_named: "name",
+  js_panel_muted_named: "name",
+  js_trash_open_title: "name",
+  js_trash_delete_title: "name",
+  js_studio_title_named: "name",
+  js_projects_license: "value",
+  js_projects_open_on: "host",
+};
 
 // tsc checks each key and its placeholders against i18n-keys.ts, so these
 // checks cover only what the types cannot see.
@@ -84,6 +126,19 @@ describe("runtime strings", () => {
     }
   });
 
+  it("isolates every name that a site fills into a sentence", () => {
+    const bare: string[] = [];
+    for (const [key, slot] of Object.entries(SITE_NAMES)) {
+      const forms = Object.values(english.get(key) ?? {});
+      expect(forms.join(" "), key).toContain(`{${slot}}`);
+      const found = argsOf(key);
+      expect(found, key).not.toEqual([]);
+      const isolated = new RegExp(`\\b${slot}\\s*:[^,}]*\\bisolate\\(`);
+      bare.push(...found.filter((call) => !isolated.test(call)));
+    }
+    expect(bare).toEqual([]);
+  });
+
   it("puts {n} in every plural form", () => {
     for (const [key, forms] of english) {
       if (!("one" in forms)) continue;
@@ -104,6 +159,14 @@ describe("t and tn", () => {
   it("fills placeholders and leaves unknown ones alone", () => {
     install({ js_panel_source_body_link: "Hello, {link}. {missing}" }, {});
     expect(t("js_panel_source_body_link", { link: "Jane" })).toBe("Hello, Jane. {missing}");
+  });
+
+  it("isolates a name the way <bdi dir=\"auto\"> does", () => {
+    expect(isolate("שלום")).toBe("\u2068שלום\u2069");
+    install({ js_panel_net_connect_title: "Connect to {name}?" }, {});
+    const title = t("js_panel_net_connect_title", { name: isolate("Free WiFi!") });
+    expect(title).toBe("Connect to \u2068Free WiFi!\u2069?");
+    expect(title.replace(/[\u2068\u2069]/g, "")).toBe("Connect to Free WiFi!?");
   });
 
   it("falls back to the key", () => {

@@ -47,6 +47,20 @@ export function locale(): string | undefined {
   }
 }
 
+/**
+ * `s` between U+2068 FIRST STRONG ISOLATE and U+2069 POP DIRECTIONAL
+ * ISOLATE, the plain-text form of `<bdi dir="auto">`. The name then takes
+ * the direction of its first letter and leaves the sentence's punctuation
+ * in place, so a right-to-left name reads the same in a left-to-right
+ * sentence as in its own row. Pass each value that a site's config, data,
+ * or content fills into a translated sentence through it, such as a
+ * network or page name. Numbers and translated words take the sentence's
+ * direction and stay bare.
+ */
+export function isolate(s: string): string {
+  return `⁨${s}⁩`;
+}
+
 /** The translated string for `key`, with `{name}` placeholders filled from `vars`. */
 export function t<K extends keyof Messages>(key: K, ...vars: Fill<Messages, K>): string;
 export function t(key: string, vars?: Vars): string {

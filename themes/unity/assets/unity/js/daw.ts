@@ -13,7 +13,7 @@
 import * as audio from "./audio";
 import { installTitlebarDrag } from "./drag";
 import { setStudioFocused, getStudioFocused, subscribe } from "./focus";
-import { t, tn } from "./i18n";
+import { isolate, t, tn } from "./i18n";
 import type { MidiNote, MidiSong } from "./midi";
 import { installResize } from "./resize";
 import { eventElement, focusedElement, requireAll } from "./dom";
@@ -493,7 +493,7 @@ export function initDaw(): void {
     if (idx === surfaceIdx) return;
     surfaceIdx = idx;
     const name = audio.trackName();
-    if (titleEl) titleEl.textContent = name ? t("js_studio_title_named", { name }) : t("js_studio_title");
+    if (titleEl) titleEl.textContent = name ? t("js_studio_title_named", { name: isolate(name) }) : t("js_studio_title");
     song = null; // park the renderer while the surface swaps
     tracks = [];
     showLoading(t("js_studio_loading"));

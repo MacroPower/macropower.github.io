@@ -1,7 +1,7 @@
 import { createSelection } from "./desktop-select";
 import { installTitlebarDrag } from "./drag";
 import { setTrashFocused, subscribe, getTrashFocused } from "./focus";
-import { t, tn } from "./i18n";
+import { isolate, t, tn } from "./i18n";
 import { isReduceMotion } from "./prefs";
 import { installDesktop } from "./projects-desktop";
 import { installResize } from "./resize";
@@ -102,10 +102,10 @@ export function initTrash(): void {
   };
 
   const cannotOpen = async (tile: HTMLElement): Promise<void> => {
-    const name = tile.dataset.name ?? t("js_trash_this_item");
+    const name = tile.dataset.name;
     const r = await window.uiDialog?.({
       icon: "warning",
-      title: t("js_trash_open_title", { name }),
+      title: t("js_trash_open_title", { name: name === undefined ? t("js_trash_this_item") : isolate(name) }),
       body: t("js_trash_open_body"),
       buttons: [
         { id: "cancel", label: t("js_cancel") },
@@ -120,7 +120,7 @@ export function initTrash(): void {
     const name = targets[0]?.dataset.name ?? "";
     const r = await window.uiDialog?.({
       icon: "warning",
-      title: n > 1 ? tn("js_trash_delete_items_title", n) : t("js_trash_delete_title", { name }),
+      title: n > 1 ? tn("js_trash_delete_items_title", n) : t("js_trash_delete_title", { name: isolate(name) }),
       body: t("js_trash_delete_body"),
       buttons: [
         { id: "cancel", label: t("js_cancel") },

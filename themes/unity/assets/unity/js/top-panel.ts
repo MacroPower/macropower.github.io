@@ -1,5 +1,5 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
-import { locale, t, tn } from "./i18n";
+import { isolate, locale, t, tn } from "./i18n";
 import { WINDOW_STATE_EVENT, WINDOW_TITLE_EVENT } from "./events";
 import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
@@ -305,8 +305,8 @@ async function showSubscribe(site: UPSite): Promise<void> {
     icon: copied ? "success" : "info",
     title: t("js_panel_subscribe_title"),
     body: copied
-      ? t("js_panel_feed_copied", { url })
-      : t("js_panel_feed_url", { url }),
+      ? t("js_panel_feed_copied", { url: isolate(url) })
+      : t("js_panel_feed_url", { url: isolate(url) }),
     buttons: [
       { id: "close", label: t("js_close") },
       { id: "open", label: t("js_panel_open_feed"), primary: true },
@@ -357,11 +357,11 @@ async function handleHotspot(): Promise<void> {
     const status = document.createElement("div");
     status.className = "up-dropdown-row is-hotspot-status";
     status.setAttribute("data-hotspot-status", "");
-    status.textContent = tn("js_panel_hotspot_status", HOTSPOT_DEVICES, { name: ssid });
+    status.textContent = tn("js_panel_hotspot_status", HOTSPOT_DEVICES, { name: isolate(ssid) });
     body.insertBefore(status, body.firstChild);
   }
   notify({ icon: "network", title: t("js_panel_hotspot_active_title"),
-    body: t("js_panel_hotspot_active_body", { name: ssid }) });
+    body: t("js_panel_hotspot_active_body", { name: isolate(ssid) }) });
 }
 
 // The handler behind each named action. dispatchAction awaits whatever a
@@ -377,7 +377,7 @@ const ACTIONS: Readonly<Record<NamedAction, (site: UPSite) => unknown>> = {
   "dlg:logout": async (site) => {
     const r = await dlg({
       icon: "question",
-      title: t("js_panel_logout_title", { name: site.handle || t("js_panel_default_user") }),
+      title: t("js_panel_logout_title", { name: site.handle ? isolate(site.handle) : t("js_panel_default_user") }),
       body: t("js_panel_logout_body"),
       buttons: [
         { id: "cancel", label: t("js_cancel") },
@@ -419,14 +419,14 @@ async function netClick(row: HTMLElement): Promise<void> {
   const on = row.hasAttribute("data-net-on");
   if (on) {
     await dlg({ icon: "info", title: t("js_panel_net_already_title"),
-      body: t("js_panel_net_already_body", { name }) });
+      body: t("js_panel_net_already_body", { name: isolate(name) }) });
     return;
   }
   const current = document.querySelector<HTMLElement>(".up-net-row[data-net-on]")?.dataset.netName;
   const r = await dlg({
-    icon: "question", title: t("js_panel_net_connect_title", { name }),
+    icon: "question", title: t("js_panel_net_connect_title", { name: isolate(name) }),
     body: current
-      ? t("js_panel_net_disconnect_body", { name: current })
+      ? t("js_panel_net_disconnect_body", { name: isolate(current) })
       : t("js_panel_continue"),
     buttons: [
       { id: "cancel", label: t("js_cancel") },
@@ -439,7 +439,7 @@ async function netClick(row: HTMLElement): Promise<void> {
     // becoming connectable.
     await dlg({
       icon: "warning", title: t("js_panel_net_failed_title"),
-      body: t("js_panel_net_failed_body", { name }),
+      body: t("js_panel_net_failed_body", { name: isolate(name) }),
     });
     return;
   }
@@ -458,7 +458,7 @@ async function netClick(row: HTMLElement): Promise<void> {
   if (dot) dot.textContent = "●";
   // nm-applet's classic toast, verbatim phrasing.
   notify({ icon: "network", title: t("js_panel_net_established_title"),
-    body: t("js_panel_net_established_body", { name }) });
+    body: t("js_panel_net_established_body", { name: isolate(name) }) });
 }
 
 // The panel's data-vol-playlist JSON, which unity/top-panel.html writes from
@@ -750,10 +750,10 @@ export function initTopPanel(): void {
       const name = audio.trackName();
       if (!audio.isPlaying()) {
         nowPlaying.textContent = name
-          ? t("js_panel_paused_named", { name })
+          ? t("js_panel_paused_named", { name: isolate(name) })
           : t("js_panel_paused");
       } else {
-        nowPlaying.textContent = vol.muted ? t("js_panel_muted_named", { name }) : name;
+        nowPlaying.textContent = vol.muted ? t("js_panel_muted_named", { name: isolate(name) }) : name;
       }
     }
   };
