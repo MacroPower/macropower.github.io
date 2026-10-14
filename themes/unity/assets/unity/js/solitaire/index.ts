@@ -28,6 +28,7 @@ import {
 } from "./cursor";
 import { locate, solve, type SolverMove } from "./solver";
 import { eventElement, focusedElement } from "../dom";
+import { isReduceMotion } from "../prefs";
 
 const GAP = 4;
 const TABLEAU_W = 7 * CARD_W + 6 * GAP;
@@ -150,11 +151,6 @@ function easeOutBack(t: number): number {
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
-}
-
-function reduceMotion(): boolean {
-  return document.body.classList.contains("up-reduce-motion")
-    || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function formatTime(ms: number): string {
@@ -360,7 +356,7 @@ function cardNames(cards: readonly Card[]): string {
   function startTween(card: Card, x1: number, y1: number, opts: { delay?: number; dur?: number; onStart?: () => void; onDone?: () => void } = {}): void {
     const v = viewOf(card);
     tweens = tweens.filter((t) => t.id !== card.id);
-    if (reduceMotion()) {
+    if (isReduceMotion()) {
       v.x = x1;
       v.y = y1;
       opts.onStart?.();
@@ -381,7 +377,7 @@ function cardNames(cards: readonly Card[]): string {
     const v = viewOf(card);
     flips = flips.filter((f) => f.id !== card.id);
     if (v.faceUp === to) return;
-    if (reduceMotion()) {
+    if (isReduceMotion()) {
       v.faceUp = to;
       return;
     }
@@ -525,7 +521,7 @@ function cardNames(cards: readonly Card[]): string {
     }
     dealing = true;
     computeLayout();
-    const dealStep = reduceMotion() ? 0 : 28;
+    const dealStep = isReduceMotion() ? 0 : 28;
     for (const p of placements) {
       if (p.loc.kind !== "tableau") continue;
       const k = order.get(p.card.id) ?? 0;
@@ -542,7 +538,7 @@ function cardNames(cards: readonly Card[]): string {
         },
       });
     }
-    if (reduceMotion()) dealing = false;
+    if (isReduceMotion()) dealing = false;
     sfx.play("shuffle");
     announce(t("js_solitaire_new_game_dealt", { mode: drawMode }));
     syncControls();
@@ -578,7 +574,7 @@ function cardNames(cards: readonly Card[]): string {
   }
 
   function burst(x: number, y: number, suit: Suit, n: number): void {
-    if (reduceMotion()) return;
+    if (isReduceMotion()) return;
     const color = suit < 2 ? PAL.red : PAL.blackLite;
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2;
@@ -630,7 +626,7 @@ function cardNames(cards: readonly Card[]): string {
   }
 
   function bumpScore(): void {
-    scoreShake = reduceMotion() ? 0 : 1;
+    scoreShake = isReduceMotion() ? 0 : 1;
     requestFrame();
   }
 
@@ -717,7 +713,7 @@ function cardNames(cards: readonly Card[]): string {
       if (tween) tween.onDone = landed;
       else landed();
       bumpScore();
-      autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 110);
+      autoTimer = window.setTimeout(step, isReduceMotion() ? 0 : 110);
     };
     step();
   }
@@ -750,7 +746,7 @@ function cardNames(cards: readonly Card[]): string {
 
   /** A quick shake for a card that has nowhere to go. */
   function wobble(p: Placement): void {
-    if (reduceMotion()) return;
+    if (isReduceMotion()) return;
     const run = game.runAt(p.loc, p.index) ?? [p.card];
     const t0 = performance.now();
     for (const card of run) {
@@ -881,7 +877,7 @@ function cardNames(cards: readonly Card[]): string {
       points: tn("js_solitaire_points", game.score),
     }));
     winT0 = performance.now();
-    if (reduceMotion()) {
+    if (isReduceMotion()) {
       banner = true;
     } else {
       // Kings first, cycling across the four foundations.
@@ -937,12 +933,12 @@ function cardNames(cards: readonly Card[]): string {
           syncControls();
           return;
         }
-        autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 90);
+        autoTimer = window.setTimeout(step, isReduceMotion() ? 0 : 90);
         return;
       }
       applyMove(at.from, at.index, move.to, "auto");
       next++;
-      autoTimer = window.setTimeout(step, reduceMotion() ? 0 : 260);
+      autoTimer = window.setTimeout(step, isReduceMotion() ? 0 : 260);
     };
     step();
   }
@@ -1000,7 +996,7 @@ function cardNames(cards: readonly Card[]): string {
     let dy = 0;
     if (pressed) dy = 2;
     else if (hovered) dy = -1;
-    if (b.pulse && !reduceMotion()) dy += Math.round(Math.sin(now / 160) * 1);
+    if (b.pulse && !isReduceMotion()) dy += Math.round(Math.sin(now / 160) * 1);
     const color = b.enabled ? b.color : PAL.grey;
     const dark = b.enabled ? b.dark : PAL.greyDark;
     pxRoundRect(loCtx, b.x, b.y + 2, b.w, b.h, 2, PAL.ink);
@@ -1181,7 +1177,7 @@ function cardNames(cards: readonly Card[]): string {
 
   function drawHints(now: number): void {
     if (!hint) return;
-    const phase = reduceMotion() ? 1 : (Math.sin((now - hintT0) / 140) + 1) / 2;
+    const phase = isReduceMotion() ? 1 : (Math.sin((now - hintT0) / 140) + 1) / 2;
     const color = phase > 0.5 ? PAL.gold : PAL.amber;
     if (hint.type === "draw") {
       const s = slotPos(STOCK);
@@ -1270,7 +1266,7 @@ function cardNames(cards: readonly Card[]): string {
     pxRoundRect(loCtx, px + 1, py + 3, pw, ph, 3, PAL.ink);
     pxRoundRect(loCtx, px, py, pw, ph, 3, PAL.gold);
     pxRoundRect(loCtx, px + 2, py + 2, pw - 4, ph - 4, 2, PAL.slate);
-    drawBigText(t("js_solitaire_banner_win"), W / 2, py + 12, PAL.gold, PAL.ink, now, !reduceMotion());
+    drawBigText(t("js_solitaire_banner_win"), W / 2, py + 12, PAL.gold, PAL.ink, now, !isReduceMotion());
     let ly = py + 36;
     for (const line of lines) {
       drawText(loCtx, line, Math.round(W / 2 - textWidth(line) / 2), ly, PAL.white, PAL.ink);
@@ -1373,7 +1369,7 @@ function cardNames(cards: readonly Card[]): string {
       drawParticles(dt);
       drawBanner(now, focus);
       hi.drawImage(lo, 0, 0, canvas.width, canvas.height);
-      if (!reduceMotion() || particles.length) requestFrame();
+      if (!isReduceMotion() || particles.length) requestFrame();
       return;
     }
 

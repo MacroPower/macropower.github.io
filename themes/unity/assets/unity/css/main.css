@@ -2835,8 +2835,9 @@ details.up-alert{
   font-size:11px; color:var(--up-content-muted);
 }
 
-/* Reduce-motion: toggled live from Preferences / Power saver, and seeded
-   from the OS prefers-reduced-motion setting at startup (app.ts). Kills
+/* Reduce-motion: toggled live from Preferences / Power saver, and set from
+   the OS prefers-reduced-motion setting at startup and on each change
+   (followSystemMotion() in prefs.ts). Kills
    animations and transitions site-wide so the desktop snaps between states
    instead of easing. The media query mirrors the body class so even a
    no-JS or pre-init paint honors the OS preference. */

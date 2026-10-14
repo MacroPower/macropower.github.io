@@ -8,16 +8,8 @@ import { initHud } from "./hud";
 import { installPageWindow } from "./page-window";
 import { initDesktopMarquee } from "./desktop-marquee";
 import { initLock } from "./lock";
-import { setReduceMotion } from "./prefs";
+import { followSystemMotion } from "./prefs";
 import { emitDocument, READY_CLASS, READY_EVENT } from "./events";
-
-// Seed reduce-motion from the OS preference so JS-timed animations
-// (window fly-out, tile removal, lock fade) skip their waits too; the
-// CSS media query already covers pure style animations. The Preferences
-// switch reads the body class, so it reflects the seeded state.
-if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  setReduceMotion(true);
-}
 
 // Runs one module's init. A module that throws, on markup a site
 // customized for example, logs and leaves the rest of the desktop working.
@@ -29,6 +21,9 @@ function run(name: string, init: () => void): void {
   }
 }
 
+// First, so the body class holds the visitor's system setting before any
+// module, or any page bundle that loads after this one, checks it.
+run("reduce motion", followSystemMotion);
 run("dialogs", initDialogs);
 // Before initTopPanel so its bubbles are available the moment the volume
 // slider (or any other panel control) first fires one.

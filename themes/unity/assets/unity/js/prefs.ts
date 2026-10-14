@@ -37,12 +37,25 @@ export function setReduceMotion(on: boolean): void {
   document.body.classList.toggle("up-reduce-motion", on);
 }
 
+// Sets reduce-motion from the visitor's system setting, then sets it again
+// each time the setting changes, so the visitor does not have to reload.
+// A choice in Preferences holds until the system setting next changes.
+export function followSystemMotion(): void {
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  setReduceMotion(query.matches);
+  query.addEventListener("change", () => {
+    setReduceMotion(query.matches);
+  });
+}
+
 export function setAccent(name: string): void {
   if (!accents().some((a) => a.name === name)) return;
   document.documentElement.dataset.upAccent = name;
 }
 
-function buildToggleRow(): HTMLElement {
+// The reduce-motion row, and a function that stops its switch following
+// the body class.
+function buildToggleRow(): [HTMLElement, () => void] {
   const row = document.createElement("div");
   row.className = "up-pref-row";
 
@@ -65,13 +78,17 @@ function buildToggleRow(): HTMLElement {
     toggle.setAttribute("aria-checked", String(on));
   };
   sync();
+  // A change to the system setting can flip the class while the dialog is
+  // open, so the switch follows the class until the dialog closes.
+  const watch = new MutationObserver(sync);
+  watch.observe(document.body, { attributeFilter: ["class"] });
   toggle.addEventListener("click", () => {
     setReduceMotion(!isReduceMotion());
     sync();
   });
 
   row.append(label, toggle);
-  return row;
+  return [row, () => { watch.disconnect(); }];
 }
 
 function buildAccentRow(): HTMLElement {
@@ -114,16 +131,16 @@ function buildAccentRow(): HTMLElement {
 }
 
 export function showPreferences(): Promise<string | null> {
-  return (
-    window.uiDialog?.({
-      icon: "none",
-      title: t("js_prefs_title"),
-      body: t("js_prefs_body"),
-      buttons: [{ id: "close", label: t("js_close"), primary: true }],
-      render(content) {
-        content.append(buildToggleRow());
-        if (accents().length) content.append(buildAccentRow());
-      },
-    }) ?? Promise.resolve<string | null>(null)
-  );
+  const [motionRow, stopMotionRow] = buildToggleRow();
+  const shown = window.uiDialog?.({
+    icon: "none",
+    title: t("js_prefs_title"),
+    body: t("js_prefs_body"),
+    buttons: [{ id: "close", label: t("js_close"), primary: true }],
+    render(content) {
+      content.append(motionRow);
+      if (accents().length) content.append(buildAccentRow());
+    },
+  }) ?? Promise.resolve<string | null>(null);
+  return shown.finally(stopMotionRow);
 }

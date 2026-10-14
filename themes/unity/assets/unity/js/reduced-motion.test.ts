@@ -5,13 +5,16 @@ import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { installTitlebarDrag } from "./drag";
-import { scrollBehavior, setReduceMotion } from "./prefs";
+import { followSystemMotion, isReduceMotion, scrollBehavior, setReduceMotion } from "./prefs";
 
 const here = dirname(fileURLToPath(import.meta.url));
+const scripts = readdirSync(here, { recursive: true, encoding: "utf8" })
+  .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"));
 
 // The CSS animation-kill stops animations and transitions, but it cannot
 // reach a scroll or an animation frame that a script starts. These tests
-// cover the script motion that reduce-motion must stop.
+// cover the script motion that reduce-motion must stop, and the body class
+// that tells each script to stop it.
 
 const classes = new Set<string>();
 
@@ -36,9 +39,6 @@ afterEach(() => {
 });
 
 describe("scroll behavior", () => {
-  const scripts = readdirSync(here, { recursive: true, encoding: "utf8" })
-    .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"));
-
   it("smooth scrolls only while motion is on", () => {
     expect(scrollBehavior()).toBe("smooth");
     setReduceMotion(true);
@@ -49,6 +49,77 @@ describe("scroll behavior", () => {
     const strays = scripts
       .filter((file) => file !== "prefs.ts")
       .filter((file) => /(["'`])smooth\1/.test(readFileSync(join(here, file), "utf8")));
+    expect(strays).toEqual([]);
+  });
+});
+
+// A stand-in for the media query list that matchMedia returns. Setting
+// `matches` through `change()` fires a change event, as the browser does
+// when the visitor changes the system setting.
+class SystemSetting extends EventTarget {
+  matches: boolean;
+  constructor(matches: boolean) {
+    super();
+    this.matches = matches;
+  }
+  change(matches: boolean): void {
+    this.matches = matches;
+    this.dispatchEvent(new Event("change"));
+  }
+}
+
+describe("system setting", () => {
+  let queries: string[];
+
+  function follow(matches: boolean): SystemSetting {
+    const setting = new SystemSetting(matches);
+    vi.stubGlobal("window", {
+      matchMedia: (query: string): SystemSetting => {
+        queries.push(query);
+        return setting;
+      },
+    });
+    followSystemMotion();
+    return setting;
+  }
+
+  beforeEach(() => {
+    queries = [];
+  });
+
+  it("reads the reduced-motion media query", () => {
+    follow(false);
+    expect(queries).toEqual(["(prefers-reduced-motion: reduce)"]);
+  });
+
+  it("starts from the system setting", () => {
+    follow(true);
+    expect(isReduceMotion()).toBe(true);
+    expect(scrollBehavior()).toBe("instant");
+  });
+
+  it("follows a change to the system setting without a reload", () => {
+    const setting = follow(false);
+    expect(isReduceMotion()).toBe(false);
+    setting.change(true);
+    expect(isReduceMotion()).toBe(true);
+    setting.change(false);
+    expect(isReduceMotion()).toBe(false);
+  });
+
+  it("keeps a choice from Preferences until the system setting changes", () => {
+    const setting = follow(true);
+    setReduceMotion(false);
+    expect(isReduceMotion()).toBe(false);
+    setting.change(false);
+    setting.change(true);
+    expect(isReduceMotion()).toBe(true);
+  });
+
+  it("names the media query only in prefs.ts", () => {
+    const strays = scripts
+      .filter((file) => file !== "prefs.ts")
+      .filter((file) => /(["'`])[^"'`\n]*prefers-reduced-motion/.test(readFileSync(join(here, file), "utf8")));
     expect(strays).toEqual([]);
   });
 });
