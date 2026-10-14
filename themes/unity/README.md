@@ -221,12 +221,15 @@ The example site uses every layout, shortcode, and render hook, so `hugo --print
 npm install
 npm run typecheck        # production sources
 npm run typecheck:test   # test sources
+npm run typecheck:node   # dev scripts and Vitest config
 npm run lint             # biome lint over the scripts and tooling
 npm test                 # vitest: shell core, bash conformance, MIDI, solitaire
 npm run test:sites       # hugo: the example site and bare sites, warnings fatal
 ```
 
-The theme vendors xterm.js and pdf.js under `assets/unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.mjs` or `scripts/vendor-pdfjs.mjs` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
+The dev tooling needs Node 22.18 or later, the first Node 22 release that runs the TypeScript under `scripts/` without a flag.
+
+The theme vendors xterm.js and pdf.js under `assets/unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.ts` or `scripts/vendor-pdfjs.ts` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
 The bash-conformance suite skips itself where bash is absent.
 

@@ -8,7 +8,9 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const PACKAGES = {
+type VendoredPackage = { version: string; lib: string; typings: string };
+
+const PACKAGES: Record<string, VendoredPackage> = {
   "@xterm/xterm": { version: "6.0.0", lib: "xterm.mjs", typings: "xterm.d.ts" },
   "@xterm/addon-fit": { version: "0.11.0", lib: "addon-fit.mjs", typings: "addon-fit.d.ts" },
   "@xterm/addon-web-links": { version: "0.12.0", lib: "addon-web-links.mjs", typings: "addon-web-links.d.ts" },
@@ -18,11 +20,9 @@ const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "unit
 const work = mkdtempSync(join(tmpdir(), "vendor-xterm-"));
 
 try {
-  const licenses = [];
+  const licenses: string[] = [];
   for (const [name, pkg] of Object.entries(PACKAGES)) {
-    const tarball = execFileSync("npm", ["pack", `${name}@${pkg.version}`, "--silent"], { cwd: work })
-      .toString()
-      .trim();
+    const tarball = execFileSync("npm", ["pack", `${name}@${pkg.version}`, "--silent"], { cwd: work, encoding: "utf8" }).trim();
     const unpacked = join(work, name.replace("/", "__"));
     execFileSync("mkdir", ["-p", unpacked]);
     execFileSync("tar", ["-xzf", join(work, tarball), "-C", unpacked, "--strip-components=1"]);

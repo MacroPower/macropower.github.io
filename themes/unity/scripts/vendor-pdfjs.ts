@@ -18,9 +18,7 @@ const dest = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "unit
 const work = mkdtempSync(join(tmpdir(), "vendor-pdfjs-"));
 
 try {
-  const tarball = execFileSync("npm", ["pack", `pdfjs-dist@${VERSION}`, "--silent"], { cwd: work })
-    .toString()
-    .trim();
+  const tarball = execFileSync("npm", ["pack", `pdfjs-dist@${VERSION}`, "--silent"], { cwd: work, encoding: "utf8" }).trim();
   execFileSync("tar", ["-xzf", join(work, tarball), "-C", work]);
   for (const file of FILES) {
     copyFileSync(join(work, "package", "legacy", "build", file), join(dest, file));

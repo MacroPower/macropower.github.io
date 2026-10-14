@@ -14,18 +14,24 @@ const theme = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const themesDir = dirname(theme);
 const work = mkdtempSync(join(tmpdir(), "unity-sites-"));
 
-const config = (baseURL = "https://example.org/") => `baseURL = "${baseURL}"
+const config = (baseURL = "https://example.org/"): string => `baseURL = "${baseURL}"
 theme = "unity"
 themesDir = ${JSON.stringify(themesDir)}
 `;
 const BARE = config();
-const page = (title, front = "") => `+++\ntitle = '${title}'\n${front}+++\nBody of ${title}.\n`;
+const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${front}+++\nBody of ${title}.\n`;
 
-// Each site is a Hugo source directory, or the files to write into a fresh
-// one. check(out) reads the built site and returns a list of failures. A
-// site with warns builds with warnings allowed and must print a warning
-// matching that pattern.
-const SITES = {
+// Each site is a Hugo source directory built with extra flags, or the
+// files to write into a fresh one. check(out) reads the built site and
+// returns a failure message for each failed check and false for each
+// passed one. A site with warns builds with warnings allowed and must
+// print a warning matching that pattern.
+type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string> }) & {
+  check?: (out: string) => (string | false)[];
+  warns?: RegExp;
+};
+
+const SITES: Record<string, SiteSpec> = {
   example: {
     source: join(theme, "exampleSite"),
     flags: ["--printUnusedTemplates", "--themesDir", themesDir],
@@ -50,7 +56,7 @@ const SITES = {
             /<script(?![^>]*\ssrc=)(?![^>]*\stype="application\/(?:ld\+)?json")[^>]*>/.test(html) && `${name} has an inline script`,
           ];
         }),
-      ].filter(Boolean);
+      ];
     },
   },
   // The example site served from a subdirectory, as on a GitHub project page.
@@ -62,7 +68,11 @@ const SITES = {
     check: (out) =>
       htmlFiles(out).flatMap((file) =>
         [...read(file).matchAll(/\s(href|src|srcset|action|data-[a-z-]+)=(?:"([^"]*)"|([^\s">]+))/g)]
-          .flatMap((m) => (m[1] === "srcset" ? (m[2] ?? m[3]).split(",").map((c) => c.trim().split(" ")[0]) : [m[2] ?? m[3]]))
+          .flatMap((m) => {
+            // One of the two value groups always matches.
+            const value = m[2] ?? m[3]!;
+            return m[1] === "srcset" ? value.split(",").map((c) => c.trim().split(" ")[0]!) : [value];
+          })
           .filter((url) => url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/sub/"))
           .map((url) => `${relative(out, file)} links ${url} outside /sub/`),
       ),
@@ -89,7 +99,7 @@ const SITES = {
         && "de/about/index.html ignores the language's badge",
       !read(join(out, "about/index.html")).includes('class="up-lang-badge" aria-hidden="true">En<')
         && "about/index.html lacks the default En badge",
-    ].filter(Boolean),
+    ],
   },
   // A section outside mainSections renders as a plain list of its pages.
   notes: {
@@ -104,7 +114,7 @@ const SITES = {
       return [
         list.includes("data-blog-kind") && "notes/index.html renders as the blog",
         !list.includes("A short note.") && "notes/index.html omits a page's description",
-      ].filter(Boolean);
+      ];
     },
   },
   // A site whose own assets and partials use common names. The theme keeps
@@ -123,7 +133,7 @@ const SITES = {
       "layouts/_partials/head.html": '<meta name="generator" content="PARTIAL-HEAD">\n',
     },
     check: (out) => {
-      const text = (dir) => readdirSync(join(out, dir)).map((f) => read(join(out, dir, f))).join("");
+      const text = (dir: string): string => readdirSync(join(out, dir)).map((f) => read(join(out, dir, f))).join("");
       const css = text("css");
       const pages = read(join(out, "index.html")) + read(join(out, "about/index.html"));
       return [
@@ -136,7 +146,7 @@ const SITES = {
           .map((name) => `the site's _partials/${name}.html replaced the theme's partial`),
         !pages.includes('class="up-top-panel"') && "the pages lack the theme's top panel",
         !pages.includes('"name":"Jane Doe"') && "index.html does not name the author",
-      ].filter(Boolean);
+      ];
     },
   },
   // Root pages only. Hugo then sets mainSections to [""], which must not
@@ -149,7 +159,7 @@ const SITES = {
         about.includes("data-blog-kind") && "about/index.html renders as a blog post",
         about.includes("BlogPosting") && "about/index.html carries BlogPosting JSON-LD",
         read(join(out, "index.xml")).includes("<item>") && "index.xml lists root pages as posts",
-      ].filter(Boolean);
+      ];
     },
   },
   // Posts in a nested section.
@@ -168,7 +178,7 @@ const SITES = {
         !list.includes("Deep post") && "posts/index.html omits the nested post",
         !deep.includes('class="up-pathbar-btn" href="/posts/"') && "the nested post's pathbar omits the blog section",
         !deep.includes('href="/posts/top/"') && "the nested post has no arrow to the newer post outside its section",
-      ].filter(Boolean);
+      ];
     },
   },
   // A non-English default language whose translation covers one key. The
@@ -188,7 +198,7 @@ const SITES = {
         !home.includes(">Skip to content</a>") && "index.html lacks the English skip link",
         !home.includes("data-trash-count>6 items<") && "the Trash count lacks its English plural",
         (!js || !read(join(out, "js", js)).includes('js_cancel:"Cancel"')) && "the script strings lack their English fallback",
-      ].filter(Boolean);
+      ];
     },
   },
   // Pages published as .html files, where a section's URL ends in
@@ -207,7 +217,7 @@ mainSections = ["posts"]
     check: (out) => [
       !/class="up-launcher-tile is-active"[^>]*data-launcher="blog"/.test(read(join(out, "posts/first.html")))
         && "posts/first.html leaves the Blog launcher tile inactive",
-    ].filter(Boolean),
+    ],
   },
   // A home page in a plain window instead of the terminal.
   homepage: {
@@ -221,7 +231,7 @@ mainSections = ["posts"]
         !home.includes("Body of Welcome.") && "index.html omits the home's content",
         home.includes("data-shell") && "index.html still renders the terminal",
         home.includes("/js/shell.") && "index.html still loads the shell bundle",
-      ].filter(Boolean);
+      ];
     },
   },
   // A Studio playlist that names one track and leaves the other anonymous.
@@ -238,7 +248,7 @@ mainSections = ["posts"]
       return [
         !dash.includes(">Opening Theme</span>") && "the Dash does not name the titled track",
         !dash.includes(">Track 2</span>") && "the Dash does not number the anonymous track",
-      ].filter(Boolean);
+      ];
     },
   },
   // A desktop with its optional parts switched off.
@@ -259,7 +269,7 @@ mainSections = ["posts"]
         home.includes('data-up-window="trash"') && "index.html keeps the Trash window",
         home.includes("data-launcher-trash") && "index.html keeps the Trash launcher tile",
         home.includes('"dlg:github"') && "index.html offers View source without a repoUrl",
-      ].filter(Boolean);
+      ];
     },
   },
   // An owner named only by an author name that is not a unix login.
@@ -276,7 +286,7 @@ mainSections = ["posts"]
       return [
         !post.includes("dr@unity:~/posts$") && "posts/one/index.html signs off without the handle dr",
         !post.includes('<div class="up-lock-user">dr</div>') && "the lock screen does not name dr",
-      ].filter(Boolean);
+      ];
     },
   },
   // Config, front matter, and data in the looser shapes Hugo accepts.
@@ -294,16 +304,16 @@ mainSections = ["posts"]
     },
     check: (out) => [
       !read(join(out, "index.html")).includes("github.com/jane") && "the home page drops a map-form params.social",
-    ].filter(Boolean),
+    ],
   },
 };
 
-function read(file) {
+function read(file: string): string {
   return readFileSync(file, "utf8");
 }
 
-function htmlFiles(dir) {
-  return readdirSync(dir, { recursive: true })
+function htmlFiles(dir: string): string[] {
+  return readdirSync(dir, { encoding: "utf8", recursive: true })
     .filter((f) => f.endsWith(".html"))
     .map((f) => join(dir, f));
 }
@@ -311,8 +321,12 @@ function htmlFiles(dir) {
 let failed = false;
 try {
   for (const [name, site] of Object.entries(SITES)) {
-    let source = site.source;
-    if (!source) {
+    let source: string;
+    let flags: string[] = [];
+    if ("source" in site) {
+      source = site.source;
+      flags = site.flags ?? [];
+    } else {
       source = join(work, name);
       for (const [path, body] of Object.entries(site.files)) {
         mkdirSync(dirname(join(source, path)), { recursive: true });
@@ -321,7 +335,7 @@ try {
     }
     const out = join(work, `${name}-public`);
     const args = ["--source", source, "--destination", out,
-      "--printPathWarnings", ...(site.warns ? [] : ["--quiet", "--panicOnWarning"]), ...(site.flags ?? [])];
+      "--printPathWarnings", ...(site.warns ? [] : ["--quiet", "--panicOnWarning"]), ...flags];
     // Hugo prints warnings and errors on stderr.
     const run = spawnSync("hugo", args, { encoding: "utf8" });
     const log = `${run.stdout ?? ""}${run.stderr ?? ""}`;
@@ -331,7 +345,7 @@ try {
       failed = true;
       continue;
     }
-    const problems = site.check?.(out) ?? [];
+    const problems = (site.check?.(out) ?? []).filter((p) => p !== false);
     if (site.warns && !site.warns.test(log)) problems.push(`no warning matches ${site.warns}`);
     for (const p of problems) console.error(`     ${name}: ${p}`);
     console.log(`${problems.length ? "FAIL" : "ok  "} ${name}`);

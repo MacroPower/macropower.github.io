@@ -7,12 +7,16 @@
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
     "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "lint": "biome lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:sites": "node scripts/build-sites.mjs",
-    "vendor:xterm": "node scripts/vendor-xterm.mjs",
-    "vendor:pdfjs": "node scripts/vendor-pdfjs.mjs"
+    "test:sites": "node scripts/build-sites.ts",
+    "vendor:xterm": "node scripts/vendor-xterm.ts",
+    "vendor:pdfjs": "node scripts/vendor-pdfjs.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
