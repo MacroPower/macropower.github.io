@@ -105,8 +105,11 @@ export function initHud(): void {
 
   // ---- Menu indexing -------------------------------------------------------
 
+  // A row's label is its text, or its aria-label when it shows only an
+  // icon, as the sound menu's mute and transport buttons do.
   const rowLabel = (el: HTMLElement): string =>
-    (el.querySelector(".up-menu-item-label")?.textContent ?? el.textContent ?? "").trim();
+    (el.querySelector(".up-menu-item-label")?.textContent ?? el.textContent ?? "").trim()
+    || (el.getAttribute("aria-label") ?? "").trim();
 
   const buildIndex = (): HudItem[] => {
     const out: HudItem[] = [];
@@ -139,8 +142,7 @@ export function initHud(): void {
       )) {
         if (el.hasAttribute("disabled")) continue;
         // Link rows and the sound menu's controls carry no panel action, so
-        // the HUD clicks them instead. Icon-only controls (mute toggle,
-        // transport) have no text to type.
+        // the HUD clicks them instead.
         const action = parseAction(el.dataset.action ?? "");
         const label = rowLabel(el);
         const src = el.querySelector<HTMLElement>(".up-menu-item-label");

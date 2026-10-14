@@ -132,6 +132,20 @@ test("the Dash finds a post", async ({ page }) => {
   await expect(dash).toBeHidden();
 });
 
+// The sound menu's mute button shows only an icon, so the HUD finds it by
+// its aria-label.
+test("the HUD finds and runs an icon-only control", async ({ page }) => {
+  await open(page, "/about/");
+  const hud = page.locator("[data-up-hud]");
+  await page.keyboard.press("Alt");
+  await expect(hud.locator("[data-hud-input]")).toBeFocused();
+  await page.keyboard.type("mute");
+  await expect(hud.getByRole("option").first()).toContainText("Toggle mute");
+  await page.keyboard.press("Enter");
+  await expect(hud).toBeHidden();
+  await expect(page.locator("[data-vol-readout]")).toHaveText("—");
+});
+
 test("a dialog opens and closes", async ({ page }) => {
   await open(page, "/about/");
   await page.locator("#up-menu-help").click();
