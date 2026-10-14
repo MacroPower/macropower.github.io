@@ -105,6 +105,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - Reduce motion follows a change to the system setting without a reload, and it stops the smooth scrolling of the post and project lists and the page window's spring after a drag. Solitaire follows the choice in Edit > Preferences too.
 - Reduce motion stops the tile glides on the projects page and in the Trash. After Clean Up Icons, and while a drag reorders the tiles, each tile appears in its new place at once.
 - The HUD finds the sound menu's Toggle mute, Play/Pause, and Next track buttons by their names.
+- On a right-to-left page, each HUD result starts at the right with its menu's name, and the arrow after the name points left, at the command.
 - Dark surfaces draw their scrollbars and form controls dark, and the volume slider draws its track and fill in the theme's colors.
 - A page without `title` front matter takes its title from its date or file name. A site without a title names its home page after the host of `baseURL`, and its owner after the home page. The 404 page's title follows the page's language.
 - Each post's JSON-LD dates carry a time and a time zone, and an undated post leaves them out.

@@ -146,6 +146,26 @@ test("the HUD finds and runs an icon-only control", async ({ page }) => {
   await expect(page.locator("[data-vol-readout]")).toHaveText("—");
 });
 
+// The example site reads left to right, so the test sets dir="rtl" the
+// way a right-to-left language does. The menu's name then starts the row
+// at the right, and the arrow after it points left, at the English label.
+test("the HUD mirrors its rows on a right-to-left page", async ({ page }) => {
+  await open(page, "/about/");
+  await page.evaluate(() => { document.documentElement.dir = "rtl"; });
+  const hud = page.locator("[data-up-hud]");
+  await page.keyboard.press("Alt");
+  await expect(hud.locator("[data-hud-input]")).toBeFocused();
+  await page.keyboard.type("preferences");
+  const path = hud.getByRole("option").first().locator(".up-hud-row-path");
+  const label = hud.getByRole("option").first().locator(".up-hud-row-label");
+  await expect(path).toHaveText("Edit ◂");
+  const end = async (el: Locator): Promise<number> => {
+    const box = await el.boundingBox();
+    return box ? box.x + box.width : 0;
+  };
+  expect(await end(path)).toBeGreaterThan(await end(label));
+});
+
 test("a dialog opens and closes", async ({ page }) => {
   await open(page, "/about/");
   await page.locator("#up-menu-help").click();

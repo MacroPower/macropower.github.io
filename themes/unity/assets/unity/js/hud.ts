@@ -18,6 +18,7 @@ import { dispatchAction } from "./top-panel";
 import { parseAction } from "./actions";
 import { isReduceMotion } from "./prefs";
 import { eventElement } from "./dom";
+import { inlineDirection } from "./inline-keys";
 
 const MAX_RESULTS = 5;
 
@@ -187,6 +188,11 @@ export function initHud(): void {
         .map((r) => r.item);
     }
     selected = 0;
+    // The arrow after the menu's name points along the reading direction.
+    // The name sits in a <bdi>, so the arrow takes the row's direction even
+    // when the name and the label both read the other way, as English
+    // labels do on a right-to-left page.
+    const arrow = inlineDirection(list) === "rtl" ? "◂" : "▸";
     list.replaceChildren(
       ...shown.map((item, i) => {
         const li = document.createElement("li");
@@ -195,7 +201,10 @@ export function initHud(): void {
         li.setAttribute("role", "option");
         const path = document.createElement("span");
         path.className = "up-hud-row-path";
-        path.textContent = `${item.menu} ▸ `;
+        const menu = document.createElement("bdi");
+        menu.dir = "auto";
+        menu.textContent = item.menu;
+        path.append(menu, ` ${arrow} `);
         const label = document.createElement("span");
         label.className = "up-hud-row-label";
         item.fill(label);
