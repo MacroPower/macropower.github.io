@@ -2,9 +2,10 @@
 // _partials/unity/page/terminal.html writes into its data-shell-data
 // script. A site can override that partial, so the parser checks every
 // field instead of trusting the template. A wrong-typed list reads as
-// empty and a wrong-typed string as "", so the terminal still starts. A
-// list entry or an optional field with a wrong-typed value drops out. The
-// module is DOM-free, so tests run it under Node.
+// empty, a wrong-typed string as "", and a wrong-typed flag as false, so
+// the terminal still starts. A list entry or an optional field with a
+// wrong-typed value drops out. The module is DOM-free, so tests run it
+// under Node.
 
 import type { BlogMeta, PageMeta, PostMeta, ShellData, SocialLink } from "./shell";
 
@@ -95,6 +96,7 @@ export function parseShellIsland(text: string): ShellIsland | null {
     ...(blogMeta && { blog: blogMeta }),
     ...(typeof f.readme === "string" && { readme: f.readme }),
     ...(typeof f.solitaire === "string" && { solitaire: f.solitaire }),
+    cwdTitle: f.cwdTitle === true,
     ascii: str(f.ascii),
     colors: str(f.colors),
   };

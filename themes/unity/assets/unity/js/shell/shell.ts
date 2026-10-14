@@ -1,6 +1,6 @@
 import type { TerminalIO } from "./terminal";
 import { Readline, type CompletionContext } from "./readline";
-import { color, PALETTE, stripAnsi } from "./ansi";
+import { color, PALETTE, stripAnsi, windowTitle } from "./ansi";
 import { buildFs, globToRegExp, globToRegExpBody, splitLines, type Vfs } from "./vfs";
 import { Env } from "./env";
 import { evalArith } from "./arith";
@@ -69,6 +69,11 @@ export interface ShellData {
   /** The site's solitaire table, the first page with `layout = "solitaire"`.
    *  Absent when the site has none. */
   solitaire?: string;
+  /** Whether each prompt sets the window title to the login and the
+   *  working directory, such as `user@host: ~/posts`. terminal.html sets
+   *  it when the window shows the login's title, so a home with a title
+   *  of its own keeps that title. */
+  cwdTitle: boolean;
   ascii: string;
   colors: string;
 }
@@ -431,6 +436,12 @@ export class Shell {
   }
 
   private prompt(): void {
+    // Like PS1 in Ubuntu's .bashrc, which titles an xterm window
+    // user@host: dir before each prompt.
+    if (this.data.cwdTitle) {
+      const { handle, host } = this.data;
+      this.term.write(windowTitle(`${handle}@${host}: ${this.vfs.displayPath(this.cwdPath)}`));
+    }
     this.readline.setPrompt(this.buildPrompt());
     this.readline.prompt();
   }

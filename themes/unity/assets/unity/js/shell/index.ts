@@ -7,6 +7,7 @@ import { formatUptime } from "./uptime";
 import { color, PALETTE } from "./ansi";
 import { registerAll } from "./commands/all";
 import { t } from "../i18n";
+import { emitWindow, WINDOW_TITLE_EVENT } from "../events";
 
 // Keyed by the home page's path, which is the site's root, so two sites
 // on one origin (user.github.io/a/ and /b/) keep separate histories.
@@ -110,6 +111,9 @@ function saveHistory(items: readonly string[]): void {
   // each reconnect; `exit` tears the pair down via the shell's onExit hook.
   const boot = (): XtermTerminal => {
     const term = new XtermTerminal(mount);
+    // The prompt titles the terminal, and the desktop's bundle carries the
+    // title to the titlebar and the top panel.
+    term.onTitleChange((title) => { emitWindow(WINDOW_TITLE_EVENT, { title }); });
     const shell = new Shell(term, data, {
       history: loadHistory(),
       persist: saveHistory,

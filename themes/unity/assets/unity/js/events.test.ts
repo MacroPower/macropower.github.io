@@ -13,7 +13,9 @@ import {
   NOTIFY_EVENT,
   READY_EVENT,
   type UPNotifyDetail,
+  type UPWindowTitleDetail,
   WINDOW_STATE_EVENT,
+  type WINDOW_TITLE_EVENT,
 } from "./events";
 import type { UPPageWindowState } from "./types";
 
@@ -74,5 +76,6 @@ describe("the DOM event maps", () => {
     expectTypeOf<DocumentEventMap[typeof READY_EVENT]>().toEqualTypeOf<CustomEvent<null>>();
     expectTypeOf<WindowEventMap[typeof NOTIFY_EVENT]>().toEqualTypeOf<CustomEvent<UPNotifyDetail>>();
     expectTypeOf<WindowEventMap[typeof WINDOW_STATE_EVENT]>().toEqualTypeOf<CustomEvent<UPPageWindowState>>();
+    expectTypeOf<WindowEventMap[typeof WINDOW_TITLE_EVENT]>().toEqualTypeOf<CustomEvent<UPWindowTitleDetail>>();
   });
 });

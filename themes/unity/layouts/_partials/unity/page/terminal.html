@@ -62,9 +62,15 @@
       "content" .RawContent
   ) -}}
 {{- end -}}
+{{- /* cwdTitle: whether the shell's prompt keeps the window title in step
+      with the working directory. It is true when the window shows the
+      login's title, so a home that sets a title, or a site's own
+      window-title.html, keeps its title. */ -}}
+{{- $cwdTitle := eq (partial "unity/window-title.html" .) (printf "%s@%s: ~" $login.user $login.host) -}}
 {{- $payload := dict
     "handle" $login.user
     "host" $login.host
+    "cwdTitle" $cwdTitle
     "name" $author.name
     "title" $author.jobTitle
     "focus" $author.focus

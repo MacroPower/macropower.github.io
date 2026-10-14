@@ -20,6 +20,9 @@ export interface TerminalIO {
    *  appears in the buffer; replaces any previously registered set. */
   registerLinks(links: { text: string; url: string }[]): void;
   onData(cb: (data: string) => void): void;
+  /** Call `cb` with each window title that the output sets through an
+   *  OSC 0 or OSC 2 sequence, as the shell's prompt does. */
+  onTitleChange(cb: (title: string) => void): void;
   dispose(): void;
 }
 
@@ -196,6 +199,10 @@ export class XtermTerminal implements TerminalIO {
 
   onData(cb: (data: string) => void): void {
     this.disposables.push(this.term.onData(cb));
+  }
+
+  onTitleChange(cb: (title: string) => void): void {
+    this.disposables.push(this.term.onTitleChange(cb));
   }
 
   dispose(): void {

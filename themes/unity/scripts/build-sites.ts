@@ -1023,7 +1023,7 @@ mainSections = ["posts"]
   // A home terminal with its own guest login and a site title. The
   // login titles the terminal's window, and the share title stays the
   // site's. The title in the German home's front matter replaces the
-  // login.
+  // login, so only the English prompt retitles its window after a cd.
   terminal: {
     files: {
       "hugo.toml": `${BARE}title = "Jane Doe"
@@ -1045,6 +1045,8 @@ mainSections = ["posts"]
         !home.includes('og:title" content="Jane Doe"') && "index.html's share title is not the site's title",
         !read(join(out, "de/index.html")).includes('class="up-titlebar-text">Lobby<')
           && "de/index.html's titlebar ignores the home's title",
+        cwdTitle(home) !== true && "index.html's prompt does not retitle its window",
+        cwdTitle(read(join(out, "de/index.html"))) !== false && "de/index.html's prompt replaces the home's title",
         !homeTile(home).includes('class="up-dash-tile-label">Terminal<') && "the Dash does not label the home terminal Terminal",
         !/terminal:(?:!0|true)\b/.test(runtime(out, "en")) && "UP_SITE does not say the site has the terminal",
       ];
@@ -1633,6 +1635,13 @@ function runtime(out: string, lang: string): string {
 // The home page's tile in the Dash's Applications category.
 function homeTile(html: string): string {
   return /<a class="up-dash-tile" data-dash-tile href="\/"[\s\S]*?<\/a>/.exec(html)?.[0] ?? "";
+}
+
+// The cwdTitle flag in the home terminal's data island, which says
+// whether the prompt retitles the window, or undefined without an island.
+function cwdTitle(html: string): unknown {
+  const island = /data-shell-data>([^<]*)<\/script>/.exec(html)?.[1];
+  return island === undefined ? undefined : (JSON.parse(island) as { cwdTitle?: unknown }).cwdTitle;
 }
 
 // Each pattern matches a place that names a page but holds no text.

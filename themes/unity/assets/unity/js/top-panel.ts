@@ -1,6 +1,6 @@
 import { subscribe, getTrashFocused, getStudioFocused } from "./focus";
 import { locale, t, tn } from "./i18n";
-import { WINDOW_STATE_EVENT } from "./events";
+import { WINDOW_STATE_EVENT, WINDOW_TITLE_EVENT } from "./events";
 import { notify, notifyValue } from "./notify";
 import { showPreferences, setReduceMotion } from "./prefs";
 import { showShortcuts } from "./shortcuts";
@@ -489,7 +489,7 @@ export function initTopPanel(): void {
   const clockLongDate = panel.querySelector<HTMLElement>("[data-clock-longdate]");
   const calendarHost = panel.querySelector<HTMLElement>("[data-calendar]");
 
-  const pageTitle = (titleSlot?.textContent ?? "").trim();
+  let pageTitle = (titleSlot?.textContent ?? "").trim();
   let winVisible = window.UP_PAGE_WINDOW_STATE?.visible !== false;
   let lastTitleText = titleSlot?.textContent ?? "";
 
@@ -507,6 +507,10 @@ export function initTopPanel(): void {
 
   window.addEventListener(WINDOW_STATE_EVENT, (e) => {
     winVisible = e.detail.visible;
+    syncTitle();
+  });
+  window.addEventListener(WINDOW_TITLE_EVENT, (e) => {
+    pageTitle = e.detail.title;
     syncTitle();
   });
   subscribe(syncTitle);

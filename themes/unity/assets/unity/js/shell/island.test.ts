@@ -16,6 +16,7 @@ const BARE: ShellIsland = {
   socials: [],
   posts: [],
   pages: [],
+  cwdTitle: true,
   ascii: "ART",
   colors: "YYY",
 };
@@ -55,13 +56,13 @@ describe("parseShellIsland", () => {
     }
   });
 
-  it("reads a missing or wrong-typed field as empty, except the handle", () => {
+  it("reads a missing or wrong-typed field as empty or false, except the handle", () => {
     expect(parse({})).toEqual({
       handle: "user", host: "", name: "", title: "", focus: "", since: "",
-      socials: [], posts: [], pages: [], ascii: "", colors: "",
+      socials: [], posts: [], pages: [], cwdTitle: false, ascii: "", colors: "",
     });
-    expect(parse({ ...BARE, handle: "", name: 7, socials: "github", posts: null, pages: {} }))
-      .toEqual({ ...BARE, name: "" });
+    expect(parse({ ...BARE, handle: "", name: 7, socials: "github", posts: null, pages: {}, cwdTitle: "yes" }))
+      .toEqual({ ...BARE, name: "", cwdTitle: false });
   });
 
   it("drops list entries and optional fields with wrong-typed values", () => {

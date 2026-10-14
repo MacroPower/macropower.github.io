@@ -11,21 +11,37 @@ import { Shell, type ShellData, type Sink } from "./shell";
 import { registerAll } from "./commands/all";
 import { stripAnsi } from "./ansi";
 
+// The OSC 0 and OSC 2 sequences that set the window title, as xterm.js
+// parses them.
+const TITLE_RE = /\x1b\][02];([^\x07\x1b]*)(?:\x07|\x1b\\)/g;
+
 // A TerminalIO that buffers everything written to it. writeln appends a bare
 // "\n" (never "\r\n"), matching bash's line endings so stdout compares cleanly.
 // type() stands in for the keyboard.
 export class CaptureTerminal implements TerminalIO {
   private buf = "";
   private readonly listeners: ((data: string) => void)[] = [];
-  write(s: string): void { this.buf += s; }
-  writeln(s: string): void { this.buf += `${s}\n`; }
+  private readonly titleListeners: ((title: string) => void)[] = [];
+  private lastTitle = "";
+  write(s: string): void {
+    this.buf += s;
+    for (const [, title = ""] of s.matchAll(TITLE_RE)) {
+      this.lastTitle = title;
+      for (const cb of this.titleListeners) cb(title);
+    }
+  }
+  writeln(s: string): void { this.write(`${s}\n`); }
   clear(): void { this.buf = ""; }
   text(): string { return this.buf; }
+  /** The window title the output set last, or "" before any. clear()
+   *  keeps it, as clearing a terminal keeps its title. */
+  title(): string { return this.lastTitle; }
   cols(): number { return 80; }
   focus(): void { /* no-op */ }
   fit(): void { /* no-op */ }
   registerLinks(): void { /* no-op */ }
   onData(cb: (data: string) => void): void { this.listeners.push(cb); }
+  onTitleChange(cb: (title: string) => void): void { this.titleListeners.push(cb); }
   dispose(): void { /* no-op */ }
 
   /** Sends input to every onData listener. Each argument arrives as one
@@ -60,6 +76,7 @@ export const TEST_DATA: Readonly<ShellData> = {
     { slug: "cv", date: "2024-02-02", url: "/cv/", content: "# CV\n\nA short resume.\n" },
   ],
   blog: { dir: "posts", url: "/posts/" },
+  cwdTitle: true,
   ascii: "ME",
   colors: "",
 };

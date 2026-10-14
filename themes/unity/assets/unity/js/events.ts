@@ -16,6 +16,14 @@ export const READY_CLASS = "up-ready";
  *  maximizes, or gains or loses focus. */
 export const WINDOW_STATE_EVENT = "up:page-window-state";
 
+/** Fires on window when the page's content retitles the page window, as
+ *  the home terminal does when its working directory changes. */
+export const WINDOW_TITLE_EVENT = "up:page-window-title";
+
+export interface UPWindowTitleDetail {
+  title: string;
+}
+
 /** Raises a NotifyOSD bubble when dispatched on window. */
 export const NOTIFY_EVENT = "up:notify";
 
@@ -37,6 +45,7 @@ export interface UPDocumentEvents {
 /** The detail of each event that fires on window, by event name. */
 export interface UPWindowEvents {
   [WINDOW_STATE_EVENT]: UPPageWindowState;
+  [WINDOW_TITLE_EVENT]: UPWindowTitleDetail;
   [NOTIFY_EVENT]: UPNotifyDetail;
 }
 

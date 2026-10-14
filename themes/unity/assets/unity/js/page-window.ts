@@ -1,6 +1,6 @@
 import { clearOverlayFocus, subscribe, getOverlayFocused } from "./focus";
 import { installTitlebarDrag } from "./drag";
-import { emitWindow, WINDOW_STATE_EVENT } from "./events";
+import { emitWindow, WINDOW_STATE_EVENT, WINDOW_TITLE_EVENT } from "./events";
 import type { UPPageWindowState } from "./types";
 import { eventElement } from "./dom";
 
@@ -28,6 +28,12 @@ export function installPageWindow(): void {
   const minBtn   = page.querySelector<HTMLElement>(".up-tl-min");
   const maxBtn   = page.querySelector<HTMLElement>(".up-tl-max");
   const titlebar = page.querySelector<HTMLElement>("[data-titlebar]");
+  const titleText = titlebar?.querySelector<HTMLElement>(".up-titlebar-text");
+  if (titleText) {
+    window.addEventListener(WINDOW_TITLE_EVENT, (e) => {
+      if (titleText.textContent !== e.detail.title) titleText.textContent = e.detail.title;
+    });
+  }
 
   const pageTile = getPageTile();
 

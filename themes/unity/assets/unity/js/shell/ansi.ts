@@ -49,9 +49,18 @@ export const cursorLeft = (n = 1): string => (n > 0 ? `${ESC}${n}D` : "");
 export const cursorRight = (n = 1): string => (n > 0 ? `${ESC}${n}C` : "");
 export const eraseLine = `${ESC}2K`;
 
-// Strip CSI/SGR escape sequences so captured command output can be matched and
-// counted as plain text when piped into another command (grep, wc, ...).
-const ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]/g;
+/** The OSC 0 sequence that sets the terminal window's title, which
+ *  Ubuntu's default .bashrc writes before each prompt. A control
+ *  character in `title`, such as a BEL in a directory name, ends the
+ *  sequence early, so windowTitle() drops each one. */
+export function windowTitle(title: string): string {
+  return `\x1b]0;${title.replace(/[\x00-\x1f\x7f-\x9f]/g, "")}\x07`;
+}
+
+// Strip CSI escape sequences, such as SGR colors, and OSC sequences. The
+// commands that read a pipe, such as grep and wc, then match and count
+// captured output as plain text. An OSC sequence ends at BEL or at ESC \.
+const ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g;
 export function stripAnsi(s: string): string {
   return s.replace(ANSI_RE, "");
 }

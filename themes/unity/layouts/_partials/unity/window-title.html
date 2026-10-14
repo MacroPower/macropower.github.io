@@ -1,10 +1,13 @@
 {{- /*
   The text of the page window's titlebar and of the top panel's title.
   The home terminal reads like a terminal window's title, such as
-  "user@example.org: ~", from unity/terminal-login.html. A title in the
-  home's front matter replaces it. The test reads .Params.title, because
-  Hugo fills an untitled home's .Title from the site's title. Every other
-  page shows its name from unity/page-title.html.
+  "user@example.org: ~", from unity/terminal-login.html. The shell's
+  prompt then retitles the window with each change of directory, such as
+  "user@example.org: ~/posts". A title in the home's front matter
+  replaces the login's title, and the prompt leaves it in place. The test
+  reads .Params.title, because Hugo fills an untitled home's .Title from
+  the site's title. Every other page shows its name from
+  unity/page-title.html.
 
   Context: the page.
 */ -}}
