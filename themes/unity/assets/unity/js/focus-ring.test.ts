@@ -89,6 +89,21 @@ describe("focus rings", () => {
     expect(hidden).toEqual([]);
   });
 
+  it("bands the copy button's ring in dark on any code block", () => {
+    // The site's highlight style might paint the code block light, where
+    // --up-accent-lighter contrasts less than 3:1, so a shadow paints a
+    // dark band under the ring and past its outer edge.
+    const ring = screen.filter((r) => r.selector === ".up-code-copy:focus-visible" && r.decls.has("outline")).at(-1);
+    const offset = Number.parseFloat(ring?.decls.get("outline-offset") ?? "0");
+    const band = /(?:^|,)\s*0 0 0 ([\d.]+)px (#[0-9a-f]{6})\s*(?:,|$)/i.exec(ring?.decls.get("box-shadow") ?? "");
+    expect(band?.[2]).toMatch(HEX);
+    expect(Number(band![1])).toBeGreaterThan(offset + 2);
+    const low = presets
+      .filter(({ lighter }) => lighter !== undefined && HEX.test(lighter) && contrast(lighter, band![2]!) < 3)
+      .map(({ name }) => name);
+    expect(low).toEqual([]);
+  });
+
   it("keeps each preset's ring shades at 3:1 or more", () => {
     // These rings sit on the light surfaces, where --up-accent-light
     // contrasts less than 3:1 for some presets.

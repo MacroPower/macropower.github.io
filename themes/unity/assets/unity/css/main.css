@@ -4142,10 +4142,13 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline:2px solid var(--up-accent);
   outline-offset:1px;
 }
-/* The copy button sits on the dark code block. */
+/* The copy button sits on the code block, which a light highlight style
+   paints light. A dark band on each side of the ring keeps it at 3:1 or
+   more on any block. The inset line repeats the button's own. */
 .up-code-copy:focus-visible{
   outline:2px solid var(--up-accent-lighter);
   outline-offset:1px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 4px #1F1D1A;
 }
 
 /* =========================================================================
