@@ -44,18 +44,16 @@ other = "Forward"
 other = "Previous: {{ .Title }}"
 [pathbar_next]
 other = "Next: {{ .Title }}"
-[search_noun_title]
-other = "Search {{ .Noun }} (Ctrl+F)"
-[search_noun]
-other = "Search {{ .Noun }}"
-[filter_noun]
-other = "Filter {{ .Noun }}"
 [close_search_title]
 other = "Close search (Esc)"
 [close_search]
 other = "Close search"
-[posts_noun]
-other = "posts"
+[search_posts_title]
+other = "Search posts (Ctrl+F)"
+[search_posts]
+other = "Search posts"
+[filter_posts]
+other = "Filter posts"
 [filter_posts_placeholder]
 other = "Filter posts by name or tag…"
 
@@ -228,8 +226,12 @@ other = "No sponsors yet"
 other = "Become a sponsor"
 
 # Projects
-[projects_noun]
-other = "projects"
+[search_projects_title]
+other = "Search projects (Ctrl+F)"
+[search_projects]
+other = "Search projects"
+[filter_projects]
+other = "Filter projects"
 [filter_projects_placeholder]
 other = "Filter projects by name or topic…"
 [project_preview]
@@ -441,8 +443,20 @@ other = "Loading…"
 other = "Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets"
 
 # Shortcodes
-[spotify_player]
-other = "Spotify {{ .Type }} player"
+# Each spotify_player_ key names the player for one type that the
+# spotify shortcode takes.
+[spotify_player_album]
+other = "Spotify album player"
+[spotify_player_track]
+other = "Spotify track player"
+[spotify_player_playlist]
+other = "Spotify playlist player"
+[spotify_player_artist]
+other = "Spotify artist player"
+[spotify_player_episode]
+other = "Spotify episode player"
+[spotify_player_show]
+other = "Spotify show player"
 [youtube_video]
 other = "YouTube video"
 

@@ -23,9 +23,11 @@
   {{ partial "unity/page/nav-pathbar.html" (dict
       "segments" (slice
         (dict "label" $title "url" .RelPermalink))
-      "search" true
-      "searchNoun" (partial "unity/ui/t" "projects_noun")
-      "searchPlaceholder" (partial "unity/ui/t" "filter_projects_placeholder")) }}
+      "search" (dict
+        "title" (partial "unity/ui/t" "search_projects_title")
+        "label" (partial "unity/ui/t" "search_projects")
+        "filter" (partial "unity/ui/t" "filter_projects")
+        "placeholder" (partial "unity/ui/t" "filter_projects_placeholder"))) }}
   <div class="up-projects-grid">
     {{ partial "unity/page/projects-sidebar.html" (dict "projects" $projects) }}
     {{ partial "unity/page/projects-grid.html" (dict "projects" $projects) }}

@@ -30,7 +30,7 @@
   {{- end -}}
 {{- end -}}
 <iframe class="up-spotify" src="https://open.spotify.com/embed/{{ $type }}/{{ $id | urlquery }}"
-    title="{{ partial "unity/ui/t" (slice "spotify_player" (dict "Type" $type)) }}"
+    title="{{ partial "unity/ui/t" (printf "spotify_player_%s" $type) }}"
     {{ with $width }}width="{{ . }}" {{ end }}height="{{ $height }}"
     loading="lazy"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>

@@ -8,7 +8,11 @@
   <h1 class="up-sr-only">{{ $title }}</h1>
   {{ partial "unity/page/nav-pathbar.html" (dict
       "segments" (partial "unity/page/crumbs.html" .)
-      "search" true) }}
+      "search" (dict
+        "title" (partial "unity/ui/t" "search_posts_title")
+        "label" (partial "unity/ui/t" "search_posts")
+        "filter" (partial "unity/ui/t" "filter_posts")
+        "placeholder" (partial "unity/ui/t" "filter_posts_placeholder"))) }}
   <div class="up-blog-grid">
     {{ partial "unity/page/post-sidebar.html" . }}
     {{ partial "unity/page/post-list.html" (dict
