@@ -1689,15 +1689,24 @@ mainSections = ["posts"]
   },
   // Pages without a date on a site without a birth date, which leave the
   // banner's uptime no date to count from. The island's since stays
-  // empty, so the banner shows 0 days.
+  // empty, so the banner shows 0 days. Hugo dates each undated page year
+  // 1. The island gives the post and the page an empty date instead, and
+  // the banner's post list shows no date.
   undated: {
     files: {
       "hugo.toml": BARE,
       "content/about.md": page("About"),
+      "content/posts/undated.md": page("Undated"),
     },
-    check: (out) => [
-      !read(join(out, "index.html")).includes('"since":""') && "the banner's uptime counts from an undated page",
-    ],
+    check: (out) => {
+      const home = read(join(out, "index.html"));
+      return [
+        !home.includes('"since":""') && "the banner's uptime counts from an undated page",
+        home.includes("0001-01-01") && "index.html dates an undated page year 1",
+        (home.match(/"date":""/g) ?? []).length !== 2 && "the island does not give the undated post and page an empty date",
+        !home.includes('<a href="/posts/undated/">Undated</a></li>') && "the banner does not list the undated post without a date",
+      ];
+    },
   },
   // The curation params narrow the projects without regard to case, and
   // a single string stands for a list of one. A string exclude matches

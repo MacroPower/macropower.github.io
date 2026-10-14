@@ -17,12 +17,13 @@ export interface SocialLink {
 }
 
 // A blog post, emitted by Hugo from the site's blog section so the VFS need
-// not hardcode the list. `url` is the real permalink; `date` is "YYYY-MM-DD".
+// not hardcode the list. `url` is the real permalink.
 // Posts carry only metadata (rendered as a card) -- their bodies would bloat
 // the inline data island.
 export interface PostMeta {
   slug: string;
   title: string;
+  /** The post's date as YYYY-MM-DD, or "" when the post has none. */
   date: string;
   categories: string[];
   url: string;
@@ -34,6 +35,7 @@ export interface PostMeta {
 // markdown body so `cat` prints the source. `slug` is the on-disk basename.
 export interface PageMeta {
   slug: string;
+  /** The page's date as YYYY-MM-DD, or "" when the page has none. */
   date: string;
   url: string;
   content: string;

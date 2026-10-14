@@ -45,14 +45,16 @@
       only metadata (the VFS renders a card) -- their full bodies would bloat
       this inline island -- while top-level pages carry RawContent so `cat`
       prints the markdown. The blog section itself (see
-      _partials/unity/blog-section.html) names the directory the posts live in. */ -}}
+      _partials/unity/blog-section.html) names the directory the posts live in.
+      Hugo dates an undated page year 1, so its date is "" here, and the
+      shell and the banner leave it out. */ -}}
 {{- $blogSection := partialCached "unity/blog-section.html" . -}}
 {{- $posts := slice -}}
 {{- range partialCached "unity/blog-posts.html" . -}}
   {{- $posts = $posts | append (dict
       "slug" (partial "unity/ui/file-name.html" .)
       "title" (partial "unity/page-title.html" .)
-      "date" (.Date.Format "2006-01-02")
+      "date" (cond .Date.IsZero "" (.Date.Format "2006-01-02"))
       "categories" (partial "unity/post-categories.html" .)
       "url" .RelPermalink
       "permalink" .Permalink
@@ -62,7 +64,7 @@
 {{- range where site.RegularPages "Section" "" -}}
   {{- $pages = $pages | append (dict
       "slug" (partial "unity/ui/file-name.html" .)
-      "date" (.Date.Format "2006-01-02")
+      "date" (cond .Date.IsZero "" (.Date.Format "2006-01-02"))
       "url" .RelPermalink
       "content" .RawContent
   ) -}}
@@ -138,7 +140,7 @@
     <h2>{{ partial "unity/ui/t" "posts" }}</h2>
     <ul>
       {{- range . }}
-      <li><a href="{{ .url }}">{{ .title }}</a> ({{ .date }})</li>
+      <li><a href="{{ .url }}">{{ .title }}</a>{{ with .date }} ({{ . }}){{ end }}</li>
       {{- end }}
     </ul>
     {{- end }}

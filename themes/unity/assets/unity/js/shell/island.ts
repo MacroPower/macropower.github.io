@@ -11,7 +11,7 @@ import type { BlogMeta, PageMeta, PostMeta, ShellData, SocialLink } from "./shel
 
 /** The island's fields. It carries `since`, the YYYY-MM-DD date the
  *  uptime counts from, in place of `uptime`, which the entrypoint
- *  computes on page load. */
+ *  computes on page load. The date of an undated post or page is "". */
 export type ShellIsland = Omit<ShellData, "uptime"> & { since: string };
 
 // The fields of a `T`, each of unknown type until checked.

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildFs, formatDate, formatMode, globToRegExp, splitLines, SESSION_MTIME, type FsNode } from "./vfs";
-import { TEST_DATA } from "./testkit";
+import type { ShellData } from "./shell";
+import { makeShell, TEST_DATA } from "./testkit";
 
 const vfs = buildFs(TEST_DATA);
 
@@ -184,5 +185,38 @@ describe("post cards", () => {
   it("link to the post's permalink, not the terminal's login host", () => {
     const card = content(vfs.lookup("/home/me/posts/hello-world.md")).join("\n");
     expect(card).toContain("https://example.org/posts/2024/01/hello-world/");
+  });
+});
+
+// terminal.html writes the date of an undated post or page as "".
+describe("undated posts and pages", () => {
+  const post = TEST_DATA.posts[0]!;
+  const data: ShellData = {
+    ...TEST_DATA,
+    posts: [
+      { ...post, slug: "filed", date: "", categories: ["meta", "notes"] },
+      { ...post, slug: "loose", date: "", categories: [] },
+    ],
+    pages: [{ slug: "about", date: "", url: "/about/", content: "Hi.\n" }],
+  };
+  const sh = makeShell(data);
+
+  it("list with SESSION_MTIME", () => {
+    const stamp = formatDate(SESSION_MTIME);
+    expect(sh.run("ls -l about.md posts").stdout).toBe([
+      `-rw-r--r-- 1 me me 4  ${stamp}  about.md`,
+      "",
+      "posts:",
+      "total 8",
+      `-rw-r--r-- 1 me me 1235  ${stamp}  filed.md`,
+      `-rw-r--r-- 1 me me 1235  ${stamp}  loose.md`,
+      "",
+    ].join("\n"));
+  });
+
+  it("leave the date out of each post's card", () => {
+    const card = (slug: string): string[] => sh.run(`cat posts/${slug}.md`).stdout.split("\n").slice(0, 2);
+    expect(card("filed")).toEqual(["Hello World", "meta, notes"]);
+    expect(card("loose")).toEqual(["Hello World", `Read: ${post.permalink}`]);
   });
 });

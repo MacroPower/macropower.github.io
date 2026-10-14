@@ -50,6 +50,15 @@ describe("parseShellIsland", () => {
     expect(parse(FULL)).toEqual(FULL);
   });
 
+  it("keeps the empty date of an undated post and page", () => {
+    const undated: ShellIsland = {
+      ...FULL,
+      posts: [{ ...FULL.posts[0]!, date: "" }],
+      pages: [{ ...FULL.pages[0]!, date: "" }],
+    };
+    expect(parse(undated)).toEqual(undated);
+  });
+
   it("returns null for text that is not a JSON object", () => {
     for (const text of ["", "{", "null", "42", '"island"', "[]", "true"]) {
       expect(parseShellIsland(text), text).toBeNull();

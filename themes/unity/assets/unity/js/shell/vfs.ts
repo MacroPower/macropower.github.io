@@ -484,27 +484,28 @@ export function buildFs(data: ShellData): Vfs {
   const host = data.host;
   const blogDir = data.blog?.dir ?? "posts";
 
-  const postNodes = data.posts.map((post) =>
-    file(`${post.slug}.md`, {
-      mtime: post.date,
+  // An undated post or page has the date "". Its node takes SESSION_MTIME,
+  // and a post's card leaves out the date.
+  const postNodes = data.posts.map((post) => {
+    const posted = [post.date && `Posted ${post.date}`, post.categories.join(", ")]
+      .filter(Boolean).join(" - ");
+    return file(`${post.slug}.md`, {
+      mtime: post.date || SESSION_MTIME,
       size: 1200 + post.slug.length * 7,
       url: post.url,
       content: () => [
         color(PALETTE.fg, post.title),
-        color(
-          PALETTE.muted,
-          `Posted ${post.date} - ${post.categories.join(", ")}`,
-        ),
+        ...(posted ? [color(PALETTE.muted, posted)] : []),
         `${color(PALETTE.red, "Read: ")}${color(PALETTE.blue, post.permalink)}`,
         color(PALETTE.muted, `(run \`open ${blogDir}/${post.slug}.md\` to read it)`),
       ],
-    }),
-  );
+    });
+  });
 
   // Top-level pages cat their raw markdown; `open` follows the real permalink.
   const pageNodes = data.pages.map((page) =>
     file(`${page.slug}.md`, {
-      mtime: page.date,
+      mtime: page.date || SESSION_MTIME,
       size: page.content.length,
       url: page.url,
       content: () => {
