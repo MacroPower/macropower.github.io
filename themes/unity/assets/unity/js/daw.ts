@@ -16,7 +16,7 @@ import { setStudioFocused, getStudioFocused, subscribe } from "./focus";
 import { t, tn } from "./i18n";
 import type { MidiNote, MidiSong } from "./midi";
 import { installResize } from "./resize";
-import { eventElement, focusedElement } from "./dom";
+import { eventElement, focusedElement, requireAll } from "./dom";
 
 // ---- piano-roll geometry ----------------------------------------------------
 
@@ -295,13 +295,18 @@ export function initDaw(): void {
   const synthHost = q("[data-daw-synth]");
   const fxHost = q("[data-daw-fx]");
   const grooveHost = q("[data-daw-groove]");
-  const roll = q("[data-daw-roll]");
-  const canvas = q<HTMLCanvasElement>("[data-daw-canvas]");
-  const scroller = q("[data-daw-scroller]");
-  const spacer = q("[data-daw-spacer]");
   const loadingEl = q("[data-daw-loading]");
   const statusEl = q("[data-daw-status]");
-  if (!roll || !canvas || !scroller || !spacer) return;
+  // The Studio needs every piano-roll node. The consts that hold them keep
+  // their non-null types inside the function declarations below.
+  const rollEls = requireAll({
+    roll: q("[data-daw-roll]"),
+    canvas: q<HTMLCanvasElement>("[data-daw-canvas]"),
+    scroller: q("[data-daw-scroller]"),
+    spacer: q("[data-daw-spacer]"),
+  });
+  if (!rollEls) return;
+  const { roll, canvas, scroller, spacer } = rollEls;
 
   const defaultStatus = statusEl?.textContent ?? "";
 
@@ -491,7 +496,7 @@ export function initDaw(): void {
     sizeContent();
     sizeCanvas();
     setScrollLeft(0);
-    scroller!.scrollTop = 0;
+    scroller.scrollTop = 0;
     dirty = true;
   }
 
@@ -898,17 +903,17 @@ export function initDaw(): void {
   // (a no-op set fires no event, which would leave the flag stuck).
   function setScrollLeft(px: number): void {
     const target = Math.max(0, Math.round(px));
-    if (target === scroller!.scrollLeft) return;
+    if (target === scroller.scrollLeft) return;
     programmaticScroll = true;
-    scroller!.scrollLeft = target;
+    scroller.scrollLeft = target;
   }
 
   function setZoom(next: number): void {
     const idx = Math.min(Math.max(next, 0), ZOOMS.length - 1);
     if (idx === zoomIdx || !song) return;
     // Keep the beat at the viewport's center stable across the zoom.
-    const vw = roll!.clientWidth;
-    const center = (scroller!.scrollLeft + (vw - KEYS_W) / 2) / pxb();
+    const vw = roll.clientWidth;
+    const center = (scroller.scrollLeft + (vw - KEYS_W) / 2) / pxb();
     zoomIdx = idx;
     sizeContent();
     setScrollLeft(center * pxb() - (vw - KEYS_W) / 2);
@@ -927,18 +932,18 @@ export function initDaw(): void {
   // ---- canvas plumbing ---------------------------------------------------------
 
   function sizeContent(): void {
-    spacer!.style.width = `${contentW()}px`;
-    spacer!.style.height = `${contentH()}px`;
+    spacer.style.width = `${contentW()}px`;
+    spacer.style.height = `${contentH()}px`;
   }
 
   function sizeCanvas(): void {
-    const w = roll!.clientWidth;
-    const h = roll!.clientHeight;
+    const w = roll.clientWidth;
+    const h = roll.clientHeight;
     if (!w || !h) return;
     dpr = window.devicePixelRatio || 1;
-    if (canvas!.width !== Math.round(w * dpr) || canvas!.height !== Math.round(h * dpr)) {
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
     }
     dirty = true;
   }
@@ -973,15 +978,15 @@ export function initDaw(): void {
   }
 
   function draw(): void {
-    const g = canvas!.getContext("2d");
+    const g = canvas.getContext("2d");
     if (!g || !song) return;
-    const vw = roll!.clientWidth;
-    const vh = roll!.clientHeight;
+    const vw = roll.clientWidth;
+    const vh = roll.clientHeight;
     if (!vw || !vh) return;
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const sx = scroller!.scrollLeft;
-    const sy = scroller!.scrollTop;
+    const sx = scroller.scrollLeft;
+    const sy = scroller.scrollTop;
     const zb = pxb();
     const beat0 = Math.max(0, (sx - 4) / zb);
     const beat1 = (sx + vw) / zb;
@@ -1196,10 +1201,10 @@ export function initDaw(): void {
   // which the canvas paints screen-sticky). Testing the sticky chrome against
   // content coords silently breaks once the roll is scrolled.
   function pointInfo(e: MouseEvent): { cx: number; cy: number; vx: number; vy: number } {
-    const r = scroller!.getBoundingClientRect();
+    const r = scroller.getBoundingClientRect();
     const vx = e.clientX - r.left;
     const vy = e.clientY - r.top;
-    return { cx: vx + scroller!.scrollLeft, cy: vy + scroller!.scrollTop, vx, vy };
+    return { cx: vx + scroller.scrollLeft, cy: vy + scroller.scrollTop, vx, vy };
   }
 
   function setStatus(text: string): void {
@@ -1246,8 +1251,8 @@ export function initDaw(): void {
     rollGesture = true;
     const id = e.pointerId;
     const beatAt = (clientX: number): number => {
-      const r = scroller!.getBoundingClientRect();
-      return (clientX - r.left + scroller!.scrollLeft - KEYS_W) / pxb();
+      const r = scroller.getBoundingClientRect();
+      return (clientX - r.left + scroller.scrollLeft - KEYS_W) / pxb();
     };
     let last = -1;
     const scrub = (clientX: number): void => {
@@ -1280,10 +1285,10 @@ export function initDaw(): void {
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
       window.removeEventListener("touchmove", blockPan);
-      try { scroller!.releasePointerCapture(id); } catch { /* not captured */ }
+      try { scroller.releasePointerCapture(id); } catch { /* not captured */ }
       setStatus(defaultStatus);
     };
-    try { scroller!.setPointerCapture(id); } catch { /* unsupported */ }
+    try { scroller.setPointerCapture(id); } catch { /* unsupported */ }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", finish);
     window.addEventListener("pointercancel", finish);
@@ -1327,10 +1332,10 @@ export function initDaw(): void {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
-      try { scroller!.releasePointerCapture(id); } catch { /* not captured */ }
+      try { scroller.releasePointerCapture(id); } catch { /* not captured */ }
       setStatus(defaultStatus);
     };
-    try { scroller!.setPointerCapture(id); } catch { /* unsupported */ }
+    try { scroller.setPointerCapture(id); } catch { /* unsupported */ }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", finish);
     window.addEventListener("pointercancel", finish);
@@ -1390,18 +1395,18 @@ export function initDaw(): void {
     if (!song || e.buttons) return;
     const { cx, cy, vx, vy } = pointInfo(e);
     if (vy < RULER_H && vx >= KEYS_W) {
-      scroller!.style.cursor = "pointer";
+      scroller.style.cursor = "pointer";
       setStatus(t("js_studio_timeline_hint"));
       return;
     }
     if (vx < KEYS_W || vy < RULER_H) {
-      scroller!.style.cursor = "";
+      scroller.style.cursor = "";
       setStatus(defaultStatus);
       return;
     }
     const hit = noteAt(cx, cy);
     const isDrumHit = hit !== null && hit.note.channel === 9;
-    scroller!.style.cursor = hit && !isDrumHit ? "ns-resize" : "";
+    scroller.style.cursor = hit && !isDrumHit ? "ns-resize" : "";
     if (hit) {
       const dead = hit.note.dead === true;
       const vars = {
@@ -1452,8 +1457,8 @@ export function initDaw(): void {
       const pos = audio.positionBeats();
       if (posLcd) posLcd.textContent = fmtPos(pos);
       if (follow) {
-        const vw = roll!.clientWidth;
-        const x = KEYS_W + pos * pxb() - scroller!.scrollLeft;
+        const vw = roll.clientWidth;
+        const x = KEYS_W + pos * pxb() - scroller.scrollLeft;
         if (x > vw * 0.78 || x < KEYS_W) {
           // Jump-scroll so the playhead re-enters at the first third — one
           // discrete reposition per page, not a per-frame creep.

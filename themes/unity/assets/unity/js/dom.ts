@@ -23,3 +23,15 @@ export function indexOfFocused(items: readonly HTMLElement[]): number {
   const cur = focusedElement();
   return cur ? items.indexOf(cur) : -1;
 }
+
+/** The lookups when none is null or undefined, or null when any is.
+ *  Destructure the result into consts after the null check. A guard's
+ *  narrowing stops at a function declaration, but each const's own type
+ *  is non-null, so the functions that read it do not need `!`. */
+export function requireAll<T extends Record<string, unknown>>(
+  lookups: T,
+): { [K in keyof T]: NonNullable<T[K]> } | null {
+  if (Object.values(lookups).some((v) => v == null)) return null;
+  // The check above proves every value non-null.
+  return lookups as { [K in keyof T]: NonNullable<T[K]> };
+}
