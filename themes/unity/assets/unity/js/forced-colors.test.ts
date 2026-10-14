@@ -175,6 +175,20 @@ describe("forced colors", () => {
     expect(plated).toEqual([]);
   });
 
+  it("names a system color in each token of a control that opts out", () => {
+    // A control that opts out of forced colors keeps every color it
+    // reads, so each custom property that its own rule declares must name
+    // a system color here.
+    const kept = forced
+      .filter((r) => r.decls.get("forced-color-adjust") === "none")
+      .flatMap((r) => screen
+        .filter((s) => s.selector === r.selector)
+        .flatMap((s) => [...s.decls.keys()].filter((p) => p.startsWith("--") && !SYSTEM.test(r.decls.get(p) ?? "")))
+        .map((p) => `${r.selector} ${p}`));
+    expect(forced.some((r) => r.selector === ".up-vol-slider")).toBe(true);
+    expect(kept).toEqual([]);
+  });
+
   it("names only system colors in the forced-colors block", () => {
     const authored = forced.flatMap((r) =>
       [...r.decls]

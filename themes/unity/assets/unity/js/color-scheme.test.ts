@@ -1,6 +1,12 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import { declarations } from "./testkit";
+
+const layouts = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "layouts");
 
 // Each rule's own declarations, keyed by the selectors of the rules
 // around it, such as "@media (scripting: none) .up-shell".
@@ -78,6 +84,27 @@ describe("color-scheme", () => {
       })
       .map(([rule]) => rule);
     expect(wrong).toEqual([]);
+  });
+
+  it("draws the parts of every range slider itself", () => {
+    // Chrome picks a native range's trough color from accent-color, not
+    // from color-scheme, so a native slider can draw a light trough on a
+    // dark surface. Each engine draws the parts that main.css styles only
+    // after the slider drops its native appearance.
+    const sliders = readdirSync(layouts, { encoding: "utf8", recursive: true })
+      .filter((f) => f.endsWith(".html"))
+      .flatMap((f) => [...readFileSync(join(layouts, f), "utf8").matchAll(/<input\b[^>]*\btype="range"[^>]*>/g)]
+        .map((m) => /\bclass="([\w-]+)/.exec(m[0])?.[1] ?? `a range without a class in ${f}`));
+    expect(sliders).toContain("up-vol-slider");
+    const parts = [
+      "::-webkit-slider-runnable-track", "::-webkit-slider-thumb",
+      "::-moz-range-track", "::-moz-range-progress", "::-moz-range-thumb",
+    ];
+    const native = sliders.flatMap((name) => [
+      ...(rules.get(`.${name}`)?.get("appearance") === "none" ? [] : [`.${name} keeps its native appearance`]),
+      ...parts.filter((part) => !rules.has(`.${name} &${part}`)).map((part) => `.${name}${part} has no rule`),
+    ]);
+    expect(native).toEqual([]);
   });
 
   it("leaves the colors of highlighted code to the highlight style", () => {

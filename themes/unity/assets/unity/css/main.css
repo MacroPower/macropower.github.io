@@ -2496,8 +2496,66 @@ details.up-alert{
 
 /* ---- volume slider ----------------------------------------------------- */
 
+/* The slider draws its own trough, fill, and knob. Chrome picks a native
+   range's trough color from its accent-color, not from color-scheme, so
+   a native slider can draw a light trough on the dark menu. Each part
+   reads its color from a token in this rule, and the forced-colors block
+   swaps each token for a system color.
+
+   Only Firefox draws the fill as a part of its own. top-panel.ts sets
+   --up-vol-level to the volume as a percentage, and the WebKit trough
+   paints its fill up to that level. A browser drops a whole selector
+   list that names another engine's part, so each engine gets its own
+   rules. */
 .up-vol-slider{
-  flex:1; accent-color:var(--up-accent);
+  --up-vol-trough:rgba(255,255,255,.12);
+  --up-vol-edge:rgba(0,0,0,.5);
+  --up-vol-fill:var(--up-accent-lighter);
+  --up-vol-knob:var(--up-btn-bg);
+  --up-vol-knob-edge:var(--up-btn-border);
+  flex:1;
+  height:16px;
+  appearance:none;
+  background:transparent;
+  &::-webkit-slider-runnable-track{
+    box-sizing:border-box;
+    height:6px;
+    border:1px solid var(--up-vol-edge);
+    border-radius:3px;
+    background:linear-gradient(to right, var(--up-vol-fill) var(--up-vol-level), var(--up-vol-trough) 0) padding-box;
+  }
+  /* On a right-to-left page the range runs from right to left, so its
+     fill starts at the right. */
+  [dir="rtl"] &::-webkit-slider-runnable-track{
+    background-image:linear-gradient(to left, var(--up-vol-fill) var(--up-vol-level), var(--up-vol-trough) 0);
+  }
+  &::-webkit-slider-thumb{
+    appearance:none;
+    width:14px; height:14px;
+    margin-top:-5px;
+    border:1px solid var(--up-vol-knob-edge);
+    border-radius:50%;
+    background:var(--up-vol-knob);
+  }
+  &::-moz-range-track{
+    box-sizing:border-box;
+    height:6px;
+    border:1px solid var(--up-vol-edge);
+    border-radius:3px;
+    background:var(--up-vol-trough) padding-box;
+  }
+  &::-moz-range-progress{
+    height:4px;
+    border-radius:2px;
+    background:var(--up-vol-fill);
+  }
+  &::-moz-range-thumb{
+    box-sizing:border-box;
+    width:14px; height:14px;
+    border:1px solid var(--up-vol-knob-edge);
+    border-radius:50%;
+    background:var(--up-vol-knob);
+  }
 }
 .up-vol-toggle{
   width:24px; height:24px; padding:0; border:0;
@@ -4257,6 +4315,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
      own ring keeps its usual color. */
   .up-pref-toggle:focus-visible,
   .up-accent-swatch:focus-visible,
+  .up-vol-slider:focus-visible,
   .up-daw-btn:focus-visible{outline:2px solid Highlight;outline-offset:1px}
   /* Tiles, menu rows, and panes, ringed inside their edge. */
   .up-dash-tile:focus,
@@ -4369,6 +4428,17 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
     &::after{top:1px;inset-inline-start:1px;background:ButtonText}
   }
   .up-pref-toggle.is-on::after{background:HighlightText}
+  /* The volume slider's fill is a gradient, which forced colors drops,
+     so the slider keeps its own colors and each token names a system
+     color. */
+  .up-vol-slider{
+    forced-color-adjust:none;
+    --up-vol-trough:Canvas;
+    --up-vol-edge:CanvasText;
+    --up-vol-fill:Highlight;
+    --up-vol-knob:CanvasText;
+    --up-vol-knob-edge:Canvas;
+  }
   /* Each swatch shows the color it picks. */
   .up-accent-swatch{forced-color-adjust:none}
   .up-accent-swatch.is-active{border-color:CanvasText}

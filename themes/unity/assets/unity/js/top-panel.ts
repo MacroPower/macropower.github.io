@@ -777,7 +777,13 @@ export function initTopPanel(): void {
   // the pairing (the mute/volume readout and the label both reflect `vol`).
   const syncVolUI = (): void => {
     toggleGlyphPair(volGlyphs, "data-vol-glyph-mute", vol.muted);
-    if (slider) slider.value = String(vol.muted ? 0 : vol.level);
+    if (slider) {
+      const level = vol.muted ? 0 : vol.level;
+      slider.value = String(level);
+      // The slider runs from 0 to 100, and main.css paints its WebKit
+      // trough's fill up to this percentage.
+      slider.style.setProperty("--up-vol-level", `${level}%`);
+    }
     if (readout) readout.textContent = vol.muted ? "—" : String(vol.level);
     syncNowPlaying();
   };

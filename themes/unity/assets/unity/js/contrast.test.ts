@@ -118,6 +118,7 @@ const ON_DARK = new Map<string, { surface: string; min: number; hover?: string }
   [".up-net-row.is-on .up-net-row-dot", { surface: ".up-dropdown", min: 3, hover: ".up-net-row:hover .up-net-row-dot" }],
   [".up-lang-row.is-on::before", { surface: ".up-dropdown", min: 3, hover: ".up-lang-row:hover::before" }],
   [".up-vol-play.is-playing", { surface: ".up-dropdown", min: 3 }],
+  [".up-vol-slider", { surface: ".up-dropdown", min: 3 }],
   [".up-indicator.is-hotspot", { surface: ".up-top-panel", min: 3 }],
 ]);
 
@@ -203,9 +204,12 @@ describe("contrast", () => {
     expect(low).toEqual([]);
   });
 
-  it("paints accent text on a dark surface with the lighter shade", () => {
+  it("paints accent text and marks on a dark surface with the lighter shade", () => {
+    // A control that draws its parts from tokens, such as the volume
+    // slider, paints the shade through a custom property.
     const lighter = screen
-      .filter((r) => /var\(--up-accent-lighter\)/.test(r.decls.get("color") ?? ""))
+      .filter((r) => [...r.decls].some(([prop, value]) =>
+        (prop === "color" || prop.startsWith("--")) && /var\(--up-accent-lighter\)/.test(value)))
       .map((r) => r.selector);
     expect(lighter).toEqual(expect.arrayContaining([...ON_DARK.keys()]));
     expect(lighter.filter((s) => !ON_DARK.has(s))).toEqual([]);
