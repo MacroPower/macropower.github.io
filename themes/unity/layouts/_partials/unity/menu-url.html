@@ -11,6 +11,13 @@
   a Markdown link, with the language prefix. An entry whose pageRef names
   no page in the current language, and that sets no url, returns "", and
   every caller leaves it out.
+
+  html/template keeps only the http, https, and mailto schemes in an href
+  and replaces any other with #ZgotmplZ. The site's own config names the
+  url, so a url with another scheme, such as tel: or sms:, comes back
+  marked safe. A javascript:, vbscript:, or data: url stays a plain
+  string, because each one runs or embeds content in the page, and
+  html/template still replaces it.
 */ -}}
 {{- $u := "" -}}
 {{- with .Page -}}
@@ -20,6 +27,8 @@
   {{- $parsed := urls.Parse . -}}
   {{- if not (or $parsed.IsAbs $parsed.Host) -}}
     {{- $u = partial "unity/markup/site-url.html" (dict "path" . "lang" true) -}}
+  {{- else if and $parsed.Scheme (not (in (slice "javascript" "vbscript" "data") $parsed.Scheme)) -}}
+    {{- $u = safeURL . -}}
   {{- end -}}
 {{- end -}}
 {{- return $u -}}

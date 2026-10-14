@@ -153,6 +153,8 @@ const SITES: Record<string, SiteSpec> = {
   // Addresses a site writes in its menu and data, on a site served from
   // a subdirectory. Each resolves under baseURL once, whether or not it
   // already starts with /sub/, and a menu url keeps its case and query.
+  // A menu url with a scheme such as tel: keeps it, but a javascript:
+  // url never reaches an href.
   urls: {
     files: {
       "hugo.toml": `${config("https://example.org/sub/")}[[menu.main]]
@@ -167,6 +169,16 @@ const SITES: Record<string, SiteSpec> = {
   identifier = "search"
   name = "Search"
   url = "/Search/?q=Go"
+[[menu.main]]
+  identifier = "phone"
+  name = "Phone"
+  url = "tel:+15550100"
+[[menu.help]]
+  name = "Text"
+  url = "sms:+15550100"
+[[menu.help]]
+  name = "Script"
+  url = "JavaScript:alert(1)"
 `,
       "content/sponsors.md": page("Sponsors", "layout = 'sponsors'\n"),
       "data/sponsors.yaml": "- name: Ada\n  avatar: /ada.png\n- name: Grace\n  avatar: grace.png\n- name: Hopper\n  avatar: /sub/hopper.png\n",
@@ -182,13 +194,18 @@ const SITES: Record<string, SiteSpec> = {
     check: (out) => {
       const html = read(join(out, "sponsors/index.html"));
       return [
-        'href="/sub/files/" data-launcher="files"',
-        'href="/sub/notes/" data-launcher="notes"',
-        'href="/sub/Search/?q=Go" data-launcher="search"',
-        'src="/sub/ada.png"',
-        'src="/sub/grace.png"',
-        'src="/sub/hopper.png"',
-      ].map((want) => !html.includes(want) && `sponsors/index.html lacks ${want}`);
+        ...[
+          'href="/sub/files/" data-launcher="files"',
+          'href="/sub/notes/" data-launcher="notes"',
+          'href="/sub/Search/?q=Go" data-launcher="search"',
+          'href="tel:&#43;15550100" data-launcher="phone"',
+          '<a class="up-menu-item" href="sms:&#43;15550100"',
+          'src="/sub/ada.png"',
+          'src="/sub/grace.png"',
+          'src="/sub/hopper.png"',
+        ].map((want) => !html.includes(want) && `sponsors/index.html lacks ${want}`),
+        /href="javascript:/i.test(html) && "sponsors/index.html links the javascript: menu url",
+      ];
     },
   },
   // No title, params, or content. Every page still names itself, and the
