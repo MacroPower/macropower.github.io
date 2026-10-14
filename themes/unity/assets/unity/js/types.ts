@@ -76,7 +76,5 @@ declare global {
      *  id fails to compile. A dialog without `buttons` shows one button
      *  whose id is "ok". */
     uiDialog?: <const Id extends string = "ok">(opts: UPDialogOptions<Id>) => Promise<Id | null>;
-    /** Safari before 14.1 names AudioContext this way. */
-    webkitAudioContext?: typeof AudioContext;
   }
 }

@@ -127,15 +127,15 @@ export function getParams(): Readonly<SynthParams> {
 
 export function setParam<K extends keyof SynthParams>(key: K, value: SynthParams[K]): void {
   params[key] = value;
-  if (ctx) {
-    const now = ctx.currentTime;
-    if (key === "cutoff" && filter) filter.frequency.setTargetAtTime(params.cutoff, now, 0.03);
-    if (key === "echo" && echoSend) echoSend.gain.setTargetAtTime(params.echo * 0.55, now, 0.03);
-    if (key === "verb" && verbSend) verbSend.gain.setTargetAtTime(params.verb * 0.5, now, 0.03);
-    if (key === "vib" && vibDepth) vibDepth.gain.setTargetAtTime(params.vib, now, 0.03);
-    if (key === "drive" && driveShaper) driveShaper.curve = driveCurve(params.drive);
-    if (key === "crush" && crushShaper) crushShaper.curve = crushCurve(params.crush);
-    if (key === "echoDiv") syncDelayTime();
+  if (graph) {
+    const now = graph.ctx.currentTime;
+    if (key === "cutoff") graph.filter.frequency.setTargetAtTime(params.cutoff, now, 0.03);
+    if (key === "echo") graph.echoSend.gain.setTargetAtTime(params.echo * 0.55, now, 0.03);
+    if (key === "verb") graph.verbSend.gain.setTargetAtTime(params.verb * 0.5, now, 0.03);
+    if (key === "vib") graph.vibDepth.gain.setTargetAtTime(params.vib, now, 0.03);
+    if (key === "drive") graph.driveShaper.curve = driveCurve(params.drive);
+    if (key === "crush") graph.crushShaper.curve = crushCurve(params.crush);
+    if (key === "echoDiv") syncDelayTime(graph);
   }
   emit();
 }
@@ -280,15 +280,22 @@ function emit(): void {
 
 // ---- module state ----------------------------------------------------------
 
-let ctx: AudioContext | null = null;
-let master: GainNode | null = null;
-let filter: BiquadFilterNode | null = null;
-let echoSend: GainNode | null = null;
-let delayNode: DelayNode | null = null;
-let verbSend: GainNode | null = null;
-let driveShaper: WaveShaperNode | null = null;
-let crushShaper: WaveShaperNode | null = null;
-let vibDepth: GainNode | null = null; // LFO → this → every oscillator's detune
+// The context and the mix-chain nodes that the live params drive.
+// ensureChain() builds every node at once, so the module holds either the
+// whole graph or none of it.
+interface AudioGraph {
+  readonly ctx: AudioContext;
+  readonly master: GainNode;
+  readonly filter: BiquadFilterNode;
+  readonly echoSend: GainNode;
+  readonly delayNode: DelayNode;
+  readonly verbSend: GainNode;
+  readonly driveShaper: WaveShaperNode;
+  readonly crushShaper: WaveShaperNode;
+  readonly vibDepth: GainNode; // LFO → this → every oscillator's detune
+}
+
+let graph: AudioGraph | null = null;
 let playing = false;
 let starting = false; // guards the async gap in toggle() so two fast clicks can't double-start
 let level = 62; // 0..100, mirrors the slider's initial value
@@ -405,7 +412,7 @@ function masterGain(): number {
 }
 
 function applyGain(): void {
-  if (master && ctx) master.gain.setTargetAtTime(masterGain(), ctx.currentTime, 0.02);
+  if (graph) graph.master.gain.setTargetAtTime(masterGain(), graph.ctx.currentTime, 0.02);
 }
 
 function noiseBuffer(audio: AudioContext): AudioBuffer {
@@ -430,7 +437,7 @@ function addOsc(audio: AudioContext, hz: number, gainVal: number, dest: AudioNod
   if (cents !== 0) osc.detune.value = cents;
   // The shared vibrato LFO sums into every oscillator's detune; its depth
   // gain is live, so the VIB knob shapes already-ringing notes too.
-  vibDepth?.connect(osc.detune);
+  graph?.vibDepth.connect(osc.detune);
   const g = audio.createGain();
   g.gain.value = gainVal;
   osc.connect(g);
@@ -537,7 +544,7 @@ function schedulePulse(audio: AudioContext, out: AudioNode, t: number, freq: num
     osc.setPeriodicWave(pulseWave(audio));
     osc.frequency.value = freq;
     if (cents !== 0) osc.detune.value = cents;
-    vibDepth?.connect(osc.detune);
+    graph?.vibDepth.connect(osc.detune);
     const og = audio.createGain();
     og.gain.value = g;
     osc.connect(og);
@@ -569,7 +576,7 @@ function scheduleFM(
   const car = audio.createOscillator();
   car.type = "sine";
   car.frequency.value = freq;
-  vibDepth?.connect(car.detune);
+  graph?.vibDepth.connect(car.detune);
   const mod = audio.createOscillator();
   mod.type = "sine";
   mod.frequency.value = freq * ratio;
@@ -747,16 +754,16 @@ function noteIndexAt(beat: number): number {
   return i === -1 ? song.notes.length : i;
 }
 
-function startPlayer(audio: AudioContext, out: AudioNode): void {
+function startPlayer(g: AudioGraph): void {
   secPerBeat = 60 / bpm();
   loopDurSec = song!.durationBeats * secPerBeat;
   // Resume from wherever pause/seek left the transport (0 after a hard stop).
   const startBeat = clamp(pausedAt, 0, song!.durationBeats);
-  loopBase = audio.currentTime + 0.1 - startBeat * secPerBeat;
+  loopBase = g.ctx.currentTime + 0.1 - startBeat * secPerBeat;
   noteIdx = noteIndexAt(startBeat);
-  syncDelayTime();
-  pump(audio, out);
-  lookahead = setInterval(() => pump(audio, out), 40);
+  syncDelayTime(g);
+  pump(g.ctx, g.master);
+  lookahead = setInterval(() => pump(g.ctx, g.master), 40);
 }
 
 function stopVoices(): void {
@@ -796,22 +803,22 @@ function impulseBuffer(audio: AudioContext): AudioBuffer {
 // master gain → lowpass → drive → crush, then dry into the compressor plus
 // two post-everything sends (tempo-synced feedback delay, convolver reverb)
 // so echoes and tails inherit the cutoff and the dirt. A null WaveShaper
-// curve is a pass-through, so the off positions cost nothing.
-function ensureChain(): AudioContext | null {
-  if (ctx) return ctx;
-  const AC = window.AudioContext
-    ?? window.webkitAudioContext;
-  if (!AC) return null;
-  ctx = new AC();
-  master = ctx.createGain();
-  filter = ctx.createBiquadFilter();
+// curve is a pass-through, so the off positions cost nothing. Returns null
+// when the browser has no Web Audio, such as Firefox with
+// media.webaudio.enabled off.
+function ensureChain(): AudioGraph | null {
+  if (graph) return graph;
+  if (typeof AudioContext === "undefined") return null;
+  const ctx = new AudioContext();
+  const master = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
   filter.type = "lowpass";
   filter.frequency.value = params.cutoff;
   filter.Q.value = 0.9;
-  driveShaper = ctx.createWaveShaper();
+  const driveShaper = ctx.createWaveShaper();
   driveShaper.oversample = "2x";
   driveShaper.curve = driveCurve(params.drive);
-  crushShaper = ctx.createWaveShaper();
+  const crushShaper = ctx.createWaveShaper();
   crushShaper.oversample = "2x";
   crushShaper.curve = crushCurve(params.crush);
   const comp = ctx.createDynamicsCompressor(); // safety limiter on the mix
@@ -820,9 +827,9 @@ function ensureChain(): AudioContext | null {
   driveShaper.connect(crushShaper);
   const post = crushShaper;
   post.connect(comp);
-  echoSend = ctx.createGain();
+  const echoSend = ctx.createGain();
   echoSend.gain.value = params.echo * 0.55;
-  delayNode = ctx.createDelay(2);
+  const delayNode = ctx.createDelay(2);
   delayNode.delayTime.value = params.echoDiv * secPerBeat;
   const fb = ctx.createGain();
   fb.gain.value = 0.42;
@@ -831,7 +838,7 @@ function ensureChain(): AudioContext | null {
   delayNode.connect(fb);
   fb.connect(delayNode);
   delayNode.connect(comp);
-  verbSend = ctx.createGain();
+  const verbSend = ctx.createGain();
   verbSend.gain.value = params.verb * 0.5;
   const conv = ctx.createConvolver();
   conv.buffer = impulseBuffer(ctx);
@@ -842,18 +849,19 @@ function ensureChain(): AudioContext | null {
   const lfo = ctx.createOscillator();
   lfo.type = "sine";
   lfo.frequency.value = 5.5;
-  vibDepth = ctx.createGain();
+  const vibDepth = ctx.createGain();
   vibDepth.gain.value = params.vib;
   lfo.connect(vibDepth);
   lfo.start();
   comp.connect(ctx.destination);
-  return ctx;
+  graph = { ctx, master, filter, echoSend, delayNode, verbSend, driveShaper, crushShaper, vibDepth };
+  return graph;
 }
 
 // Tempo-synced echo tap (1/8, dotted 1/8, or 1/4 by the TIME selector).
 // Re-synced on BPM and division changes.
-function syncDelayTime(): void {
-  if (delayNode && ctx) delayNode.delayTime.setTargetAtTime(params.echoDiv * secPerBeat, ctx.currentTime, 0.05);
+function syncDelayTime(g: AudioGraph): void {
+  g.delayNode.delayTime.setTargetAtTime(params.echoDiv * secPerBeat, g.ctx.currentTime, 0.05);
 }
 
 // Start/stop playback. Resolves to the new playing state. The context is created
@@ -869,10 +877,11 @@ export async function toggle(): Promise<boolean> {
   if (starting) return false; // an earlier click is already mid-start; ignore this one
   starting = true;
   try {
-    if (!ensureChain()) return false;
-    master!.gain.value = masterGain();
-    await ctx!.resume();
-    if (ctx!.state !== "running") return false;
+    const g = ensureChain();
+    if (!g) return false;
+    g.master.gain.value = masterGain();
+    await g.ctx.resume();
+    if (g.ctx.state !== "running") return false;
     const loaded = await loadSong();
     if (!loaded) return false; // MIDI failed to load
     // selectTrack() may have switched the playlist entry while the fetch was
@@ -881,7 +890,7 @@ export async function toggle(): Promise<boolean> {
     // paused instead; the switch already emitted the consistent state.
     if (loaded !== song) return false;
     playing = true;
-    startPlayer(ctx!, master!);
+    startPlayer(g);
     emit();
     return true;
   } finally {
@@ -922,13 +931,13 @@ export function songBpm(): number {
 // Notes already scheduled (≤0.2s ahead) ride out at the old timing.
 export function setBpm(value: number): void {
   bpmOverride = clamp(Math.round(value), 40, 240);
-  if (ctx && playing && song) {
-    const now = ctx.currentTime;
+  if (graph && playing && song) {
+    const now = graph.ctx.currentTime;
     const beat = (now - loopBase) / secPerBeat;
     secPerBeat = 60 / bpmOverride;
     loopBase = now - beat * secPerBeat;
     loopDurSec = song.durationBeats * secPerBeat;
-    syncDelayTime();
+    syncDelayTime(graph);
   }
   emit();
 }
@@ -936,8 +945,8 @@ export function setBpm(value: number): void {
 // Playhead position in beats into the current loop. While paused/stopped this
 // is the resume point (pause position, seek target, or 0 after a hard stop).
 export function positionBeats(): number {
-  if (!ctx || !playing || !song) return pausedAt;
-  return clamp((ctx.currentTime - loopBase) / secPerBeat, 0, song.durationBeats);
+  if (!graph || !playing || !song) return pausedAt;
+  return clamp((graph.ctx.currentTime - loopBase) / secPerBeat, 0, song.durationBeats);
 }
 
 // Jump the transport to an absolute beat. Mid-playback this cuts every voice
@@ -948,7 +957,7 @@ export function seek(beats: number): void {
   if (!song) return;
   const b = clamp(beats, 0, song.durationBeats);
   pausedAt = b;
-  if (ctx && playing) {
+  if (graph && playing) {
     for (const v of voices) {
       try {
         v.stop();
@@ -957,7 +966,7 @@ export function seek(beats: number): void {
       }
     }
     voices.clear();
-    loopBase = ctx.currentTime + 0.06 - b * secPerBeat;
+    loopBase = graph.ctx.currentTime + 0.06 - b * secPerBeat;
     noteIdx = noteIndexAt(b);
   }
   emit();
@@ -966,16 +975,15 @@ export function seek(beats: number): void {
 // One-shot note preview through the live chain (piano-roll clicks and
 // transpose drags). Creates/resumes the context — callers are user gestures.
 export function auditionNote(pitch: number, channel = 0): void {
-  const audio = ensureChain();
-  if (!audio || !master) return;
-  const out = master;
-  master.gain.value = masterGain();
-  void audio.resume().then(() => {
-    if (audio.state !== "running") return;
-    const t = audio.currentTime + 0.02;
+  const g = ensureChain();
+  if (!g) return;
+  g.master.gain.value = masterGain();
+  void g.ctx.resume().then(() => {
+    if (g.ctx.state !== "running") return;
+    const t = g.ctx.currentTime + 0.02;
     const n: MidiNote = { channel, pitch, start: 0, dur: 0, vel: 0.9 };
     // Full gain regardless of the mixer: a preview should always be audible.
-    renderNote(audio, out, n, t, 0.35, 1);
+    renderNote(g.ctx, g.master, n, t, 0.35, 1);
   });
 }
 

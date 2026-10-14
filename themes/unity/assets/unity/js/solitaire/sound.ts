@@ -16,9 +16,15 @@ export type SfxName =
 
 const NOISE_SECONDS = 1.5;
 
+/** The context and the gain that every effect feeds. unlock() creates
+ *  both at once. */
+interface SfxGraph {
+  readonly ctx: AudioContext;
+  readonly master: GainNode;
+}
+
 export class Sfx {
-  private ctx: AudioContext | null = null;
-  private master: GainNode | null = null;
+  private graph: SfxGraph | null = null;
   private noise: AudioBuffer | null = null;
   private lastBounce = 0;
   muted = false;
@@ -26,10 +32,10 @@ export class Sfx {
   /** Create the context, or nudge a suspended one awake. Call from any
    *  gesture handler; repeated calls are cheap. */
   unlock(): void {
-    if (!this.ctx) {
-      const Ctor = window.AudioContext ?? window.webkitAudioContext;
-      if (!Ctor) return;
-      const ctx = new Ctor();
+    if (!this.graph) {
+      // Firefox with media.webaudio.enabled off has no Web Audio.
+      if (typeof AudioContext === "undefined") return;
+      const ctx = new AudioContext();
       const master = ctx.createGain();
       // Scheduled rather than assigned: the mute toggle goes through the
       // automation timeline, and this keeps the startup level on the same
@@ -39,11 +45,10 @@ export class Sfx {
       comp.threshold.value = -18;
       comp.ratio.value = 6;
       master.connect(comp).connect(ctx.destination);
-      this.ctx = ctx;
-      this.master = master;
+      this.graph = { ctx, master };
     }
-    if (this.ctx.state === "running") return;
-    this.wake(this.ctx);
+    if (this.graph.ctx.state === "running") return;
+    this.wake(this.graph.ctx);
   }
 
   /** resume() plus a one-frame silent source started inside the gesture,
@@ -62,15 +67,14 @@ export class Sfx {
 
   setMuted(muted: boolean): void {
     this.muted = muted;
-    if (this.master && this.ctx) {
-      this.master.gain.setTargetAtTime(muted ? 0 : 0.6, this.ctx.currentTime, 0.02);
-    }
+    const g = this.graph;
+    if (g) g.master.gain.setTargetAtTime(muted ? 0 : 0.6, g.ctx.currentTime, 0.02);
   }
 
   play(name: SfxName, arg = 0): void {
-    const ctx = this.ctx;
-    const out = this.master;
-    if (!ctx || !out || this.muted) return;
+    const g = this.graph;
+    if (!g || this.muted) return;
+    const ctx = g.ctx;
     if (ctx.state !== "running") {
       // Still locked: the page has been interacted with by now, so a fresh
       // resume() usually succeeds and the next effect plays.
@@ -82,25 +86,25 @@ export class Sfx {
     const drift = 1 + (Math.random() - 0.5) * 0.08;
     switch (name) {
       case "pickup":
-        this.burst(t, 0.05, "bandpass", 900 * drift, 2600, 0.35, 3);
+        this.burst(g, t, 0.05, "bandpass", 900 * drift, 2600, 0.35, 3);
         break;
       case "place":
-        this.tone(t, 170 * drift, 55, 0.07, "sine", 0.5);
-        this.burst(t, 0.04, "lowpass", 900, 300, 0.4, 1);
+        this.tone(g, t, 170 * drift, 55, 0.07, "sine", 0.5);
+        this.burst(g, t, 0.04, "lowpass", 900, 300, 0.4, 1);
         break;
       case "flip":
-        this.burst(t, 0.09, "bandpass", 500 * drift, 3800, 0.22, 2);
+        this.burst(g, t, 0.09, "bandpass", 500 * drift, 3800, 0.22, 2);
         break;
       case "shuffle":
-        for (let i = 0; i < 6; i++) this.burst(t + i * 0.035, 0.03, "bandpass", 1400 + i * 200, 2200, 0.16, 3);
+        for (let i = 0; i < 6; i++) this.burst(g, t + i * 0.035, 0.03, "bandpass", 1400 + i * 200, 2200, 0.16, 3);
         break;
       case "invalid":
-        this.tone(t, 160, 150, 0.09, "square", 0.12);
-        this.tone(t + 0.1, 115, 105, 0.12, "square", 0.12);
+        this.tone(g, t, 160, 150, 0.09, "square", 0.12);
+        this.tone(g, t + 0.1, 115, 105, 0.12, "square", 0.12);
         break;
       case "draw":
-        this.burst(t, 0.06, "bandpass", 700 * drift, 2400, 0.25, 3);
-        this.tone(t + 0.03, 240 * drift, 120, 0.05, "sine", 0.25);
+        this.burst(g, t, 0.06, "bandpass", 700 * drift, 2400, 0.25, 3);
+        this.tone(g, t + 0.03, 240 * drift, 120, 0.05, "sine", 0.25);
         break;
       case "foundation": {
         // A pentatonic step that climbs with every card sent up, so filling
@@ -108,29 +112,29 @@ export class Sfx {
         const scale = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28];
         const semis = scale[Math.max(0, Math.min(scale.length - 1, arg))]!;
         const f = 523.25 * 2 ** (semis / 12);
-        this.chime(t, f, 0.32);
-        this.chime(t + 0.02, f * 2, 0.16, 0.5);
-        this.burst(t, 0.04, "highpass", 3000, 1, 0.12, 1);
+        this.chime(g, t, f, 0.32);
+        this.chime(g, t + 0.02, f * 2, 0.16, 0.5);
+        this.burst(g, t, 0.04, "highpass", 3000, 1, 0.12, 1);
         break;
       }
       case "deal":
-        this.burst(t, 0.03, "bandpass", 1600 + arg * 25, 2400, 0.18, 3);
+        this.burst(g, t, 0.03, "bandpass", 1600 + arg * 25, 2400, 0.18, 3);
         break;
       case "undo":
-        this.sweep(t, 900, 260, 0.14, 0.14);
+        this.sweep(g, t, 900, 260, 0.14, 0.14);
         break;
       case "button":
-        this.tone(t, 420 * drift, 300, 0.04, "square", 0.08);
-        this.burst(t, 0.03, "highpass", 2500, 1, 0.14, 1);
+        this.tone(g, t, 420 * drift, 300, 0.04, "square", 0.08);
+        this.burst(g, t, 0.03, "highpass", 2500, 1, 0.14, 1);
         break;
       case "hint":
-        this.chime(t, 880, 0.12, 0.35);
-        this.chime(t + 0.11, 1174.7, 0.18, 0.35);
+        this.chime(g, t, 880, 0.12, 0.35);
+        this.chime(g, t + 0.11, 1174.7, 0.18, 0.35);
         break;
       case "win": {
         const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98, 2093];
-        for (const [i, f] of notes.entries()) this.chime(t + i * 0.09, f, 0.5, 0.45);
-        for (const f of notes.slice(0, 4)) this.chime(t + 0.75, f, 1.6, 0.25);
+        for (const [i, f] of notes.entries()) this.chime(g, t + i * 0.09, f, 0.5, 0.45);
+        for (const f of notes.slice(0, 4)) this.chime(g, t + 0.75, f, 1.6, 0.25);
         break;
       }
       case "bounce": {
@@ -138,7 +142,7 @@ export class Sfx {
         const now = performance.now();
         if (now - this.lastBounce < 70) return;
         this.lastBounce = now;
-        this.tone(t, 300 + Math.random() * 500, 120, 0.05, "triangle", 0.18);
+        this.tone(g, t, 300 + Math.random() * 500, 120, 0.05, "triangle", 0.18);
         break;
       }
     }
@@ -155,8 +159,8 @@ export class Sfx {
   }
 
   /** A filtered noise burst with a fast decay; `sweepTo` glides the filter. */
-  private burst(t: number, dur: number, type: BiquadFilterType, freq: number, sweepTo: number, peak: number, q: number): void {
-    const ctx = this.ctx!;
+  private burst(g: SfxGraph, t: number, dur: number, type: BiquadFilterType, freq: number, sweepTo: number, peak: number, q: number): void {
+    const ctx = g.ctx;
     const src = ctx.createBufferSource();
     src.buffer = this.noiseBuffer(ctx);
     src.loop = true;
@@ -171,14 +175,14 @@ export class Sfx {
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(peak, t + 0.004);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    src.connect(filter).connect(gain).connect(this.master!);
+    src.connect(filter).connect(gain).connect(g.master);
     src.start(t, src.loopStart);
     src.stop(t + dur + 0.02);
   }
 
   /** A pitched blip that slides from `from` to `to`. */
-  private tone(t: number, from: number, to: number, dur: number, type: OscillatorType, peak: number): void {
-    const ctx = this.ctx!;
+  private tone(g: SfxGraph, t: number, from: number, to: number, dur: number, type: OscillatorType, peak: number): void {
+    const ctx = g.ctx;
     const osc = ctx.createOscillator();
     osc.type = type;
     osc.frequency.setValueAtTime(from, t);
@@ -187,19 +191,19 @@ export class Sfx {
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(peak, t + 0.005);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc.connect(gain).connect(this.master!);
+    osc.connect(gain).connect(g.master);
     osc.start(t);
     osc.stop(t + dur + 0.02);
   }
 
-  private sweep(t: number, from: number, to: number, dur: number, peak: number): void {
-    this.tone(t, from, to, dur, "sine", peak);
-    this.burst(t, dur, "bandpass", from, to, peak * 0.8, 4);
+  private sweep(g: SfxGraph, t: number, from: number, to: number, dur: number, peak: number): void {
+    this.tone(g, t, from, to, dur, "sine", peak);
+    this.burst(g, t, dur, "bandpass", from, to, peak * 0.8, 4);
   }
 
   /** A bell-ish note: sine plus a quieter second partial, long decay. */
-  private chime(t: number, freq: number, dur: number, peak = 0.4): void {
-    const ctx = this.ctx!;
+  private chime(g: SfxGraph, t: number, freq: number, dur: number, peak = 0.4): void {
+    const ctx = g.ctx;
     const partials: [number, number][] = [[1, 1], [2.01, 0.35], [3, 0.12]];
     for (const [ratio, amp] of partials) {
       const osc = ctx.createOscillator();
@@ -209,7 +213,7 @@ export class Sfx {
       gain.gain.setValueAtTime(0.0001, t);
       gain.gain.exponentialRampToValueAtTime(peak * amp, t + 0.008);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      osc.connect(gain).connect(this.master!);
+      osc.connect(gain).connect(g.master);
       osc.start(t);
       osc.stop(t + dur + 0.05);
     }
