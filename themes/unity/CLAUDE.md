@@ -112,4 +112,5 @@ The app bundle and each page bundle that `baseof.html` ships from the `unity-bun
 
 1. In `CHANGELOG.md`, move the entries under `[Unreleased]` to a new `## [X.Y.Z] - YYYY-MM-DD` heading below it, and leave `[Unreleased]` empty. Update the link references at the end of the file to match.
 2. Set `"version"` in `package.json` to `X.Y.Z`, then run `npm install` at the root of the site that hosts the theme, so `package-lock.json` records the version.
-3. Commit both changes. Do not create or push the tag. The owner creates the annotated `themes/unity/vX.Y.Z` tag and pushes it. Hugo modules find a version of a theme in a subdirectory only by a tag with that directory's prefix.
+3. Run `npm run gallery` to capture `images/screenshot.png` and `images/tn.png` again from the home page of the example site. The gallery at themes.gohugo.io shows both images, and README.md shows the screenshot. Look at each image before you commit it.
+4. Commit the changes. Do not create or push the tag. The owner creates the annotated `themes/unity/vX.Y.Z` tag and pushes it. Hugo modules find a version of a theme in a subdirectory only by a tag with that directory's prefix.
