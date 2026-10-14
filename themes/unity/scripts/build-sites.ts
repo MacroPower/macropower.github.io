@@ -69,7 +69,7 @@ const SITES: Record<string, SiteSpec> = {
         !/<div class="up-page-body">[\s\S]*<\/div>/.test(home) && "index.html omits the home's content",
         !read(join(out, "projects/index.html")).includes('href="https://github.com/jane"')
           && "the projects sidebar lacks the GitHub social link",
-        !read(join(out, "about/index.html")).includes('<a class="up-menu-item" href="/privacy/">')
+        !read(join(out, "about/index.html")).includes('<a class="up-menu-item" href="/privacy/"')
           && "the Help menu lacks the menu.help link to the privacy page",
         // The chrome renders once per language around the parts that follow
         // the page: the panel's title and the launcher's current tiles.
@@ -83,6 +83,7 @@ const SITES: Record<string, SiteSpec> = {
           const titlebar = /class="up-titlebar-text">([^<]*)</.exec(html)?.[1];
           return panel !== titlebar && `${relative(out, file)} titles its panel "${panel}" and its window "${titlebar}"`;
         }),
+        ...htmlFiles(out).flatMap((file) => panelAriaProblems(relative(out, file), read(file))),
         // Nothing a Content Security Policy without 'unsafe-inline' blocks.
         ...htmlFiles(out).flatMap((file) => {
           const html = read(file);
@@ -165,6 +166,7 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
         && "de/about/index.html ignores the language's badge",
       !read(join(out, "about/index.html")).includes('class="up-lang-badge" aria-hidden="true">En<')
         && "about/index.html lacks the default En badge",
+      ...panelAriaProblems("de/about/index.html", read(join(out, "de/about/index.html"))),
       // The Help menu lists menu.help by weight. A url entry gets the
       // language prefix, and a pageRef entry with no page in the language
       // stays out of that language's menu.
@@ -736,6 +738,47 @@ function accentRule(out: string, name: string): string | undefined {
   const attr = `\\[data-up-accent="?${name}"?\\]`;
   const m = new RegExp(`:root${attr},\\s*\\.up-accent-swatch${attr}\\s*\\{([^}]*)\\}`).exec(css);
   return m && layerAt(css, m.index) === "unity.theme" ? flat(m[1]!) : undefined;
+}
+
+// The panel's File, Edit, View, and Help menus follow the ARIA menu button
+// pattern, and its indicators follow the disclosure pattern. Each trigger
+// names its dropdown through aria-controls. Only a menu trigger announces
+// a popup, and its dropdown has role="menu". Every menu row carries a menu
+// item role that states its checked and disabled flags.
+function panelAriaProblems(name: string, html: string): string[] {
+  const tags = [...html.matchAll(/<[a-z][^>]*>/g)].map((m) => m[0]);
+  const attr = (tag: string, key: string): string | undefined =>
+    new RegExp(`\\s${key}="([^"]*)"`).exec(tag)?.[1];
+  const byId = new Map(tags.flatMap((tag) => {
+    const id = attr(tag, "id");
+    return id ? [[id, tag] as const] : [];
+  }));
+  return tags.flatMap((tag): string[] => {
+    const menu = attr(tag, "data-menu");
+    const key = menu ?? attr(tag, "data-indicator");
+    if (key !== undefined && tag.includes(" data-panel-trigger")) {
+      const controls = attr(tag, "aria-controls");
+      const target = controls === undefined ? undefined : byId.get(controls);
+      const popup = attr(tag, "aria-haspopup");
+      if (!target) return [`${name}: the ${key} trigger controls no element on the page`];
+      if (menu === undefined) {
+        return popup === undefined ? [] : [`${name}: the ${key} indicator announces a ${popup} popup`];
+      }
+      return [
+        popup !== "menu" && `${name}: the ${key} menu announces a ${popup} popup, not a menu`,
+        attr(target, "role") !== "menu" && `${name}: the ${key} menu's dropdown lacks role="menu"`,
+        attr(target, "aria-labelledby") !== attr(tag, "id") && `${name}: the ${key} menu is not labelled by its trigger`,
+      ].filter((p) => p !== false);
+    }
+    const cls = attr(tag, "class")?.split(" ") ?? [];
+    if (!cls.includes("up-menu-item")) return [];
+    const label = `${name}: the menu row ${tag}`;
+    return [
+      attr(tag, "role") !== (cls.includes("has-check") ? "menuitemcheckbox" : "menuitem") && `${label} has the wrong role`,
+      cls.includes("has-check") && attr(tag, "aria-checked") !== "true" && `${label} is not aria-checked`,
+      cls.includes("is-disabled") && attr(tag, "aria-disabled") !== "true" && `${label} is not aria-disabled`,
+    ].filter((p) => p !== false);
+  });
 }
 
 function htmlFiles(dir: string): string[] {

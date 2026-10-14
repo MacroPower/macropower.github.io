@@ -5,10 +5,10 @@
   both whether or not this indicator renders. Context: the site.
 */ -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ partial "unity/ui/t" "user" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="user" aria-label="{{ partial "unity/ui/t" "user" }}" aria-controls="up-dropdown-user" aria-expanded="false">
     {{ partial "unity/icon.html" "glyphs/panel-user" }}
   </button>
-  <div class="up-dropdown" data-dropdown-for="user" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown" id="up-dropdown-user" data-dropdown-for="user" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partialCached "unity/ui/author-handle.html" . }}</div>
     <div class="up-dropdown-body">
       {{- $lock := ne site.Params.desktop.lock false }}

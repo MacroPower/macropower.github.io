@@ -635,12 +635,14 @@ export function initTopPanel(): void {
     }
   };
 
-  // Every natively-focusable control inside a dropdown, in DOM order: the
-  // action rows are <button>s, plus the inbox Compose link and the volume
-  // dropdown's slider — all of them participate in the arrow-key roving.
+  // Every control inside a dropdown takes part in the arrow-key roving, in
+  // DOM order. The indicators' action rows are <button>s, and the inbox
+  // Compose link and the volume slider join them. The selector also
+  // matches every app menu row by its menu item role, because the APG
+  // menu pattern lets the arrow keys reach the disabled and static rows.
   const dropdownItems = (drop: HTMLElement): HTMLElement[] =>
     Array.from(drop.querySelectorAll<HTMLElement>(
-      "button:not([disabled]), a[href], input:not([disabled])",
+      "button:not([disabled]), a[href], input:not([disabled]), [role=menuitem], [role=menuitemcheckbox]",
     ));
 
   const moveDropdownFocus = (drop: HTMLElement, dir: 1 | -1): void => {

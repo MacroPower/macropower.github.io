@@ -2379,7 +2379,11 @@ details.up-alert{
     color:rgba(255,255,255,.35);
   }
   &.has-check::before{
+    /* aria-checked states the check, so the glyph's empty alt text keeps
+       it out of the row's name. A browser without the alt syntax drops
+       the second declaration and keeps the first. */
     content:"\2713";
+    content:"\2713" / "";
     position:absolute; inset-inline-start:12px;
     color:rgba(255,255,255,.6);
   }

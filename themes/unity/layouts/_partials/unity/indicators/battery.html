@@ -5,11 +5,11 @@
   through the data-bat-* hooks. Context: the site.
 */ -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="{{ partial "unity/ui/t" "battery" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="bat" aria-label="{{ partial "unity/ui/t" "battery" }}" aria-controls="up-dropdown-bat" aria-expanded="false">
     {{ partial "unity/icon.html" "glyphs/panel-battery" }}
     {{ partial "unity/icon.html" "glyphs/panel-battery-charging" }}
   </button>
-  <div class="up-dropdown" data-dropdown-for="bat" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown" id="up-dropdown-bat" data-dropdown-for="bat" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "battery" }}</div>
     <div class="up-dropdown-body">
       <div class="up-bat-headline" data-bat-headline>{{ partial "unity/ui/t" (slice "battery_discharging" (dict "Percent" 76)) }}</div>

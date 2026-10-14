@@ -5,10 +5,10 @@
   copies the feed's address. Context: the site.
 */ -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ partial "unity/ui/t" "messages" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="inbox" aria-label="{{ partial "unity/ui/t" "messages" }}" aria-controls="up-dropdown-inbox" aria-expanded="false">
     {{ partial "unity/icon.html" "glyphs/panel-inbox" }}
   </button>
-  <div class="up-dropdown" data-dropdown-for="inbox" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown" id="up-dropdown-inbox" data-dropdown-for="inbox" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "messages" }}</div>
     <div class="up-dropdown-body">
       <div class="up-dropdown-empty">{{ partial "unity/ui/t" "no_new_messages" }}</div>

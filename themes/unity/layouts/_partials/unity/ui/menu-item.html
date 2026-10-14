@@ -6,18 +6,24 @@
     url      string  link target; renders the row as an <a> (optional)
     action   string  data-action dispatch key (optional)
     shortcut string  keyboard hint; adds has-shortcut + the shortcut span
-    disabled bool    adds is-disabled
-    check    bool    adds has-check (the ✓ gutter at the row's start)
+    disabled bool    adds is-disabled and aria-disabled, and drops url and action
+    check    bool    adds has-check (the ✓ gutter at the row's start) and aria-checked
 
   Modifier order matches the hand-written markup: is-disabled, has-check,
   has-shortcut. data-action is emitted through safeHTMLAttr — Go's
   html/template otherwise rewrites scheme-like values (nav:* / dlg:*) to the
   #ZgotmplZ sentinel, which would break top-panel.ts dispatch.
 
-  Rows carrying a url render as links, and rows carrying an action render as
-  real <button>s, so Enter activates both natively. Static rows (disabled
-  placeholders, checked toggles with no action) stay non-focusable <div>s.
-  The HUD indexes the link and button rows.
+  Every row is a menuitem, or a menuitemcheckbox when it carries check,
+  inside panel-menu.html's role="menu" body. Rows carrying a url render as
+  links, and rows carrying an action render as real <button>s, so Enter
+  activates both natively. Disabled rows and rows with neither stay <div>s
+  with tabindex="-1", so the arrow keys reach them but Tab and Enter do
+  not. The HUD indexes the link and button rows.
+
+  The shortcut text is part of the row's name and gets no
+  aria-keyshortcuts, because most shortcuts here label disabled
+  placeholders that the theme does not implement.
 
   This partial covers .up-menu-item only; the .up-dropdown-row indicator rows
   (network / battery / clock / user) keep their own bespoke markup.
@@ -26,10 +32,13 @@
 {{- if .disabled }}{{ $cls = printf "%s is-disabled" $cls }}{{ end -}}
 {{- if .check }}{{ $cls = printf "%s has-check" $cls }}{{ end -}}
 {{- if .shortcut }}{{ $cls = printf "%s has-shortcut" $cls }}{{ end -}}
-{{- if .url -}}
-<a class="{{ $cls }}" href="{{ .url }}"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
+{{- $role := cond (not .check) "menuitem" "menuitemcheckbox" -}}
+{{- if .disabled -}}
+<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} aria-disabled="true" tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+{{- else if .url -}}
+<a class="{{ $cls }}" href="{{ .url }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</a>
 {{- else if .action -}}
-<button type="button" class="{{ $cls }}" {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
+<button type="button" class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} {{ printf `data-action="%s"` (htmlEscape .action) | safeHTMLAttr }}><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</button>
 {{- else -}}
-<div class="{{ $cls }}"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
+<div class="{{ $cls }}" role="{{ $role }}"{{ if .check }} aria-checked="true"{{ end }} tabindex="-1"><span class="up-menu-item-label">{{ .label }}</span>{{ with .shortcut }}<span class="up-menu-item-shortcut">{{ . }}</span>{{ end }}</div>
 {{- end -}}

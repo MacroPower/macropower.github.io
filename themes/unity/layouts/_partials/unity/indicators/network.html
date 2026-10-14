@@ -6,10 +6,10 @@
   the hotspot's status row to the menu body. Context: the site.
 */ -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ partial "unity/ui/t" "network" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="net" aria-label="{{ partial "unity/ui/t" "network" }}" aria-controls="up-dropdown-net" aria-expanded="false">
     {{ partial "unity/icon.html" "glyphs/panel-net" }}
   </button>
-  <div class="up-dropdown" data-dropdown-for="net" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown" id="up-dropdown-net" data-dropdown-for="net" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "network" }}</div>
     <div class="up-dropdown-body">
       {{- /* params.desktop.networks lists the access points, and the

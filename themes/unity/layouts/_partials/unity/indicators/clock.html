@@ -11,11 +11,11 @@
 {{- $time := time.Format "15:04" now -}}
 {{- $shortDate := time.Format "Mon, Jan 2" now -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="{{ partial "unity/ui/t" "clock" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator="clock" aria-label="{{ partial "unity/ui/t" "clock" }}" aria-controls="up-dropdown-clock" aria-expanded="false">
     <span data-clock-wide>{{ $shortDate }}  {{ $time }}</span>
     <span data-clock-narrow hidden>{{ $time }}</span>
   </button>
-  <div class="up-dropdown up-dropdown-wide" data-dropdown-for="clock" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown up-dropdown-wide" id="up-dropdown-clock" data-dropdown-for="clock" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header" data-clock-longdate>{{ $longDate }}</div>
     <div class="up-dropdown-body">
       <div class="up-calendar" data-calendar></div>

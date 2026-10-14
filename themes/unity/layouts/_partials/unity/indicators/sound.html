@@ -8,11 +8,11 @@
 */ -}}
 {{- $playlist := partialCached "unity/playlist.html" . -}}
 <div class="up-panel-item">
-  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="{{ partial "unity/ui/t" "volume" }}" aria-haspopup="true" aria-expanded="false">
+  <button type="button" class="up-indicator up-panel-trigger" data-panel-trigger data-indicator="vol" aria-label="{{ partial "unity/ui/t" "volume" }}" aria-controls="up-dropdown-vol" aria-expanded="false">
     {{ partial "unity/icon.html" "glyphs/panel-volume-on" }}
     {{ partial "unity/icon.html" "glyphs/panel-volume-mute" }}
   </button>
-  <div class="up-dropdown" data-dropdown-for="vol" data-align="end" data-flyout-keepopen hidden>
+  <div class="up-dropdown" id="up-dropdown-vol" data-dropdown-for="vol" data-align="end" data-flyout-keepopen hidden>
     <div class="up-dropdown-header">{{ partial "unity/ui/t" "sound" }}</div>
     <div class="up-dropdown-body">
       <div class="up-dropdown-row-flex">
