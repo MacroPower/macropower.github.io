@@ -1,0 +1,26 @@
+{{- /*
+  The HUD's overlay (hud.ts; DOM contract in CLAUDE.md). It renders with
+  no result rows. hud.ts builds them at open time by indexing the top
+  panel's rendered menus, so the HUD also finds the rows that a script
+  changes, such as the hotspot row's Enable or Disable label.
+
+  unity/hud.html calls this through partialCached, keyed on the icon, so
+  it renders once per language and icon and must never read the page.
+  Context: the focused app's icon name, such as "launcher/blog".
+*/ -}}
+<div class="up-hud" data-up-hud hidden>
+  <div class="up-hud-backdrop" data-hud-backdrop aria-hidden="true"></div>
+  <section class="up-hud-panel" role="dialog" aria-modal="true" aria-label="{{ partial "unity/ui/t" "hud_search" }}">
+    <div class="up-hud-searchrow">
+      <span class="up-hud-appicon" aria-hidden="true">{{ partial "unity/icon-img.html" . }}</span>
+      <input class="up-hud-input" data-hud-input type="text"
+             placeholder="{{ partial "unity/ui/t" "type_your_command" }}" aria-label="{{ partial "unity/ui/t" "type_your_command" }}"
+             autocomplete="off" autocapitalize="off" spellcheck="false"
+             role="combobox" aria-expanded="false" aria-autocomplete="list"
+             aria-controls="up-hud-list">
+    </div>
+    <ul class="up-hud-results" data-hud-results id="up-hud-list" role="listbox"
+        aria-label="{{ partial "unity/ui/t" "matching_menu_entries" }}"></ul>
+    <div class="up-sr-only" data-hud-status role="status"></div>
+  </section>
+</div>

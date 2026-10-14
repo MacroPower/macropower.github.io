@@ -20,7 +20,8 @@
     {{ partial "unity/window-frame-close.html" . }}
     {{- /* The partials from here down never read the page, so each renders
           once per language. One that starts reading the page must switch
-          to partial. */}}
+          to partial. The HUD reads only the page's app icon, and it
+          renders its overlay once per icon. */}}
     {{ partialCached "unity/dialog-host.html" . }}
     {{ if ne site.Params.desktop.trash false }}{{ partialCached "unity/trash-window.html" . }}{{ end }}
     {{ if partialCached "unity/playlist.html" . }}{{ partialCached "unity/daw-window.html" . }}{{ end }}

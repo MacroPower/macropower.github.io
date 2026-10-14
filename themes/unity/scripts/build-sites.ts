@@ -57,6 +57,9 @@ const SITES: Record<string, SiteSpec> = {
       const current = (file: string): string =>
         [...read(join(out, file)).matchAll(/class="up-launcher-tile is-active"[^>]*data-launcher="([a-z]+)"/g)]
           .map((m) => m[1]).join(" ");
+      const hudIcon = (file: string): string | undefined =>
+        /class="up-hud-appicon" aria-hidden="true"><img src="\/unity\/icons\/launcher\/([a-z-]+)\./
+          .exec(read(join(out, file)))?.[1];
       const welcome = read(join(out, "posts/2024/02/welcome-to-the-desktop/index.html"));
       return [
         // esbuild keeps only legal comments, so each bundle that inlines a
@@ -98,11 +101,19 @@ const SITES: Record<string, SiteSpec> = {
           .filter(([file, text]) => !read(join(out, file)).includes(text))
           .map(([file, text]) => `${file} lacks${text}`),
         // The chrome renders once per language around the parts that follow
-        // the page: the panel's title and the launcher's current tiles.
+        // the page: the panel's title, the launcher's current tiles, and
+        // the HUD's app icon. Pages that no menu.main entry claims show a
+        // browser window. The icon vault stays off the dock, but the HUD
+        // still shows its icon.
         ...Object.entries({ "index.html": "home", "about/index.html": "", "cv/index.html": "cv",
           "posts/index.html": "blog", "solitaire/index.html": "solitaire" })
           .filter(([file, keys]) => current(file) !== keys)
           .map(([file, keys]) => `${file} marks the launcher tiles "${current(file)}" current, not "${keys}"`),
+        ...Object.entries({ "index.html": "home", "about/index.html": "browser-window", "cv/index.html": "cv",
+          "posts/index.html": "blog", "posts/2024/02/welcome-to-the-desktop/index.html": "blog",
+          "solitaire/index.html": "games", "icons/index.html": "image-viewer" })
+          .filter(([file, icon]) => hudIcon(file) !== icon)
+          .map(([file, icon]) => `${file} shows the HUD icon "${hudIcon(file)}", not "${icon}"`),
         ...htmlFiles(out).map((file) => {
           const html = read(file);
           const panel = /data-panel-slot="title">\s*([^<]*?)\s*</.exec(html)?.[1];
@@ -293,16 +304,19 @@ enableRobotsTXT = true
       "content/posts/zwei.de.md": page("Zwei", "date = 2024-02-01\n"),
       "content/posts/three.md": page("Three", "date = 2024-03-01\n"),
       "content/posts/vier.de.md": page("Vier", "date = 2024-04-01\n"),
-      "i18n/de.toml": '[menu_file]\nother = "Datei"\n[messages]\nother = "Nachrichten"\n',
+      "i18n/de.toml": '[menu_file]\nother = "Datei"\n[messages]\nother = "Nachrichten"\n[hud_search]\nother = "HUD-Suche"\n',
     },
     check: (out) => [
-      // The panel's menus and indicators render once per language.
+      // The panel's menus and indicators and the HUD's overlay render
+      // once per language.
       ...["index.html", "about/index.html", "de/index.html", "de/about/index.html"].flatMap((file) => {
         const html = read(join(out, file));
-        const [menu, indicator] = file.startsWith("de/") ? ["Datei", "Nachrichten"] : ["File", "Messages"];
+        const [menu, indicator, hud] = file.startsWith("de/")
+          ? ["Datei", "Nachrichten", "HUD-Suche"] : ["File", "Messages", "HUD menu search"];
         return [
           !html.includes(`aria-expanded="false">${menu}</button>`) && `${file} lacks the ${menu} menu`,
           !html.includes(`<div class="up-dropdown-header">${indicator}</div>`) && `${file} lacks the ${indicator} indicator`,
+          !html.includes(`aria-modal="true" aria-label="${hud}"`) && `${file} lacks the HUD labeled ${hud}`,
         ];
       }),
       !read(join(out, "de/about/index.html")).includes('hreflang="x-default" href="https://example.org/about/"')
