@@ -127,8 +127,9 @@ mainSections = ["posts"]
     # Open each post with a table of contents. A post's toc front matter
     # overrides this either way; the welcome post sets it.
     # toc = true
-    # The taxonomies behind the blog's lenses and post chips. These are
-    # the defaults; a site that tags its posts sets category = "tags".
+    # The taxonomies behind the blog's lenses and post chips. Without
+    # category, the blog reads categories, or tags on a site that has tags
+    # and no categories.
     # [params.blog.taxonomies]
     #   category = "categories"
     #   series   = "series"

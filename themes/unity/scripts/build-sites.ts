@@ -340,8 +340,9 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
-  // A blog that tags its posts, as README.md suggests. The tags take the
-  // place of the categories in the Places lenses and the post chips.
+  // A blog that sets params.blog.taxonomies.category to tags and has no
+  // categories taxonomy. The tags take the place of the categories in the
+  // Places lenses and the post chips.
   tags: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
@@ -376,6 +377,20 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
 `,
       "content/posts/one.md": page("One", "categories = ['meta']\nseries = ['intro']\n"),
     },
+  },
+  // Posts that carry only tags, under Hugo's default taxonomies and no
+  // params. The blog's Places lenses and chips must show the tags.
+  tagged: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/posts/one.md": page("One", "tags = ['intro', 'meta']\n"),
+    },
+    check: (out) => [
+      !read(join(out, "posts/index.html")).includes('href="/tags/intro/"')
+        && "posts/index.html does not link the intro tag",
+      !read(join(out, "posts/one/index.html")).includes('class="up-reader-chip">#intro<')
+        && "posts/one/index.html lacks the #intro chip",
+    ],
   },
   // A non-English default language whose translation covers one key. The
   // build must say so, and the other strings, in templates and scripts
