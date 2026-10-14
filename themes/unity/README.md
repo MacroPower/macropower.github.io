@@ -140,7 +140,7 @@ The theme does not set these, so set them in your site:
 
 | Param | Default | Purpose |
 | --- | --- | --- |
-| `description` | | `<meta name="description">` and the RSS channel description. |
+| `description` | | `<meta name="description">` and the RSS channel description. Without it, a feed's description reads "Recent posts on" and the site's title, or the home page's title on a site without one. |
 | `images` | | Default share image for Open Graph and Twitter cards. |
 | `themeColor` | | Emitted as `<meta name="theme-color">`. |
 | `repoUrl` | | Linked from Help > View source, which shows only when this is set. |

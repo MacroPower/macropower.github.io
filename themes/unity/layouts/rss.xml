@@ -25,7 +25,10 @@
   <channel>
     <title>{{ $title }}</title>
     <link>{{ .Permalink }}</link>
-    <description>{{ or (cond .IsHome "" .Description) site.Params.description }}</description>
+    {{- /* RSS requires a channel description, so fall back to a generic one
+          that names the site the way the home feed's title does. */}}
+    {{- $site := or site.Title (partial "unity/page-title.html" site.Home) }}
+    <description>{{ or (cond .IsHome "" .Description) site.Params.description (partial "unity/ui/t" (slice "feed_description" (dict "Site" $site))) }}</description>
     <generator>Hugo</generator>
     <language>{{ site.Language.Locale }}</language>
     {{- with $contact }}
@@ -35,8 +38,12 @@
     {{- with site.Copyright }}
     <copyright>{{ . }}</copyright>
     {{- end }}
-    {{- with index $pages 0 }}
-    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
+    {{- /* The latest lastmod among the listed posts, so editing a post updates
+          the lastBuildDate. */}}
+    {{- with $pages }}
+    {{- with (index .ByLastmod.Reverse 0).Lastmod }}
+    <lastBuildDate>{{ .Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
+    {{- end }}
     {{- end }}
     {{- with .OutputFormats.Get "RSS" }}
     <atom:link href="{{ .Permalink }}" rel="self" type="application/rss+xml" />

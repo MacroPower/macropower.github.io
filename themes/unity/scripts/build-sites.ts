@@ -406,6 +406,25 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
+  // A blog without a title or params.description whose older post was
+  // edited last. RSS requires a channel description, which names the site
+  // by its host, and the lastBuildDate must follow the latest edit rather
+  // than the latest post.
+  feed: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]\n`,
+      "content/posts/old.md": page("Old", "date = 2024-01-01\nlastmod = 2024-06-01\n"),
+      "content/posts/new.md": page("New", "date = 2024-03-01\n"),
+    },
+    check: (out) => {
+      const channel = read(join(out, "index.xml")).split("<item>")[0]!;
+      return [
+        !channel.includes("<description>Recent posts on example.org</description>")
+          && "index.xml's channel description does not name the untitled site by its host",
+        !channel.includes("<lastBuildDate>Sat, 01 Jun 2024 ") && "index.xml's lastBuildDate ignores the latest lastmod",
+      ];
+    },
+  },
   // Posts in a nested section.
   nested: {
     files: {

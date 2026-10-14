@@ -97,6 +97,8 @@ other = "Series"
 other = "Feeds"
 [rss]
 other = "RSS"
+[feed_description]
+other = "Recent posts on {{ .Site }}"
 
 # Dash search keywords. Each is a space-separated list of words that
 # find a tile when typed into the Dash; a translation can mix languages.
