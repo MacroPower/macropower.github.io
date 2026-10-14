@@ -4,6 +4,16 @@
   browsers and publishes the fonts main.css references with hashed names,
   so the preloads read their URLs from the build's artifacts.
 
+  The target list names the oldest version of each browser that the
+  theme supports, and the Requirements in README.md repeat it. css.Build
+  lowers the nesting for those versions but leaves features such as
+  :has() and color-mix() as written, so every target must support them.
+  Firefox 121 is the first Firefox with :has(). The @media (scripting:
+  none) blocks need Chrome 120 and Safari 17. Older versions skip those
+  blocks, so only a visitor with JavaScript turned off loses the
+  fallback styles there. browser-targets.test.ts under assets/unity/js
+  checks the list against the features the stylesheet uses.
+
   The entry puts assets/unity/css/main.css in the unity.theme cascade
   layer, and the syntax highlighter's classes for the site's
   markup.highlight.style in the later unity.chroma layer. A site that sets
@@ -64,7 +74,7 @@
   "importContext" (slice (css.ChromaStyles (dict "targetPath" "unity/css/chroma.css")))
   "minify" hugo.IsProduction
   "sourceMap" (cond hugo.IsDevelopment "inline" "none")
-  "target" (slice "chrome115" "edge115" "firefox116" "ios16.4" "opera101" "safari16.4")
+  "target" (slice "chrome115" "edge115" "firefox121" "ios16.4" "opera101" "safari16.4")
   "targetPath" "css/main.css"
 ) -}}
 {{- /* Ubuntu 400 paints nearly every view; Ubuntu Mono 400 paints the home

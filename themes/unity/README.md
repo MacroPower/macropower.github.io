@@ -26,6 +26,7 @@ Hugo partials server-render everything, and Hugo's built-in esbuild bundles the 
 
 - Hugo 0.165.0 or later. The standard edition works.
 - Git and Go 1.18 or later, if you install the theme as a Hugo module.
+- A visitor's browser must be at least Chrome 115, Edge 115, Firefox 121, Opera 101, or Safari 16.4 on macOS or iOS.
 
 ## Installation
 
