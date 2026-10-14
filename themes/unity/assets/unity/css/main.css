@@ -801,6 +801,7 @@ body.up-resizing *{ cursor:inherit !important; }
   }
   svg{flex-shrink:0}
   &:disabled{
+    /* recipe: raised-button-disabled */
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
   }
@@ -1453,6 +1454,7 @@ a.up-sponsor-card[href]:hover{
   /* Back points toward the start edge, and forward toward the end. */
   [dir="rtl"] & svg{transform:scaleX(-1)}
   &.is-disabled{
+    /* recipe: raised-button-disabled */
     color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
     border-color:#D4D0CD;cursor:default;pointer-events:none;
   }
