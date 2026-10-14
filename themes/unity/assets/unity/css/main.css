@@ -1086,6 +1086,12 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-seg button:last-child{ border-inline-end:0; }
 .up-icons-seg button.is-active{ background:var(--up-accent); color:#fff; }
+/* all:unset also drops the browser's focus ring, so each button draws its
+   own. The group clips its overflow, so the ring sits inside the button.
+   The active button fills with the accent, so its ring turns white and
+   moves 2px in, where the fill frames it on both sides. */
+.up-icons-seg button:focus-visible{ outline:2px solid var(--up-accent); outline-offset:-2px; }
+.up-icons-seg button.is-active:focus-visible{ outline-color:#fff; outline-offset:-4px; }
 
 .up-icons-section{ border-top:1px solid var(--up-content-line); }
 .up-icons-section:first-of-type{ border-top:0; }
@@ -1130,7 +1136,13 @@ a.up-sponsor-card[href]:hover{
   transition:border-color .12s ease, box-shadow .12s ease;
 }
 .up-icons-cell:hover{ border-color:var(--up-accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
-.up-icons-cell:focus-visible{ border-color:var(--up-accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--up-accent) 35%, transparent); }
+/* all:unset also drops the browser's focus ring. This ring sits outside
+   the tile, on the page's light background, whatever backdrop the tile
+   takes. */
+.up-icons-cell:focus-visible{
+  border-color:var(--up-accent);
+  outline:2px solid var(--up-accent); outline-offset:1px;
+}
 .up-icons-cell.is-copied{ border-color:var(--up-accent); }
 
 .up-icons-art{
@@ -4229,9 +4241,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   /* Tiles, menu rows, and panes, ringed inside their edge. */
   .up-dash-tile:focus,
   .up-ctx-item:focus-visible,
-  .up-docv-view:focus-visible,
-  .up-icons-cell:focus-visible,
-  .up-icons-seg button:focus-visible{outline:2px solid CanvasText;outline-offset:-2px}
+  .up-docv-view:focus-visible{outline:2px solid CanvasText;outline-offset:-2px}
 
   /* Forced colors paints a transparent border, so each resting row's
      bar takes the page color and only the selected row shows one. */
@@ -4270,6 +4280,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   .up-project-tile.is-active .up-project-tile-label,
   .up-trash-tile.is-active .up-trash-tile-label{color:inherit;background:none;text-shadow:none}
   .up-docv-thumb.is-active .up-docv-thumb-frame{outline:2px solid Highlight}
+  .up-icons-seg button.is-active:focus-visible{outline-color:HighlightText}
   .up-daw-led.is-on::before{background:Highlight}
 
   /* The switch draws its track and knob with fills that forced colors

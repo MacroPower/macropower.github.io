@@ -4,10 +4,14 @@ import { accentPresets as presets, rules, siteTokens } from "./testkit";
 
 const accent = /var\(\s*--up-accent/;
 
-// The color of the last outline rule that names exactly this selector.
+// The rules a screen draws without forced colors.
+const screen = rules.filter((r) => !/forced-colors|print/.test(r.media));
+
+// The color of the last outline rule on a screen that names exactly this
+// selector.
 function ringColor(selector: string): string | undefined {
   let color: string | undefined;
-  for (const r of rules) {
+  for (const r of screen) {
     if (r.selector !== selector) continue;
     color = r.decls.get("outline-color") ?? r.decls.get("outline") ?? color;
   }
@@ -48,13 +52,25 @@ describe("focus rings", () => {
     expect(weak).toEqual([]);
   });
 
+  it("rings every control that all:unset strips of the browser's ring", () => {
+    // all:unset also unsets the outline that the browser draws on focus,
+    // so each such control must draw a ring of its own.
+    const unset = screen.filter((r) => r.decls.get("all") === "unset").map((r) => r.selector);
+    expect(unset).toEqual(expect.arrayContaining([".up-icons-seg button", ".up-icons-cell"]));
+    const bare = unset.filter((base) => !screen.some((r) => {
+      const outline = r.decls.get("outline");
+      return [`${base}:focus-visible`, `${base}:focus`].includes(r.selector) && outline !== undefined && !/^(none|0)$/.test(outline);
+    }));
+    expect(bare).toEqual([]);
+  });
+
   it("paints no accent ring over a selected row's accent fill", () => {
     // Each element whose .is-active rule fills its background with the accent.
     const filled = rules
-      .filter((r) => /^\.up-[\w-]+\.is-active$/.test(r.selector))
+      .filter((r) => /^\.up-[\w-]+(?: [\w-]+)?\.is-active$/.test(r.selector))
       .filter((r) => accent.test(r.decls.get("background") ?? r.decls.get("background-color") ?? ""))
       .map((r) => r.selector.replace(/\.is-active$/, ""));
-    expect(filled).toEqual(expect.arrayContaining([".up-naut-item", ".up-post-row", ".up-project-tile", ".up-trash-tile"]));
+    expect(filled).toEqual(expect.arrayContaining([".up-naut-item", ".up-post-row", ".up-project-tile", ".up-trash-tile", ".up-icons-seg button"]));
     const hidden = filled.filter((base) => {
       const ring = ringColor(`${base}:focus-visible`);
       if (!ring || !accent.test(ring)) return false;
@@ -70,6 +86,7 @@ describe("focus rings", () => {
     const onLight = [
       ".up-naut-item", ".up-post-row", ".up-project-tile", ".up-trash-tile",
       ".up-docv-thumb", ".up-docv-btn", ".up-pathbar-btn", ".up-dlg-btn",
+      ".up-icons-cell", ".up-icons-seg button",
     ].filter((base) => !/var\(--up-accent\)/.test(ringColor(`${base}:focus-visible`) ?? ""));
     expect(onLight).toEqual([]);
     expect(presets.map((p) => p.name)).toEqual(expect.arrayContaining(["orange", "green", "aubergine", "blue"]));
