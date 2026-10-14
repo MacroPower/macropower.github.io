@@ -39,8 +39,9 @@
   {{- end -}}
   {{- $label := $p.label -}}
   {{- if not $label -}}
-    {{- $key := printf "accent_%s" $name -}}
-    {{- if isset (partialCached "unity/ui/i18n-en.html" $) $key }}{{ $label = partial "unity/ui/t" $key }}{{ else }}{{ $label = $name }}{{ end -}}
+    {{- if isset (partialCached "unity/ui/i18n-en.html" $) (printf "accent_%s" $name) -}}
+      {{- $label = partial "unity/ui/t" (printf "accent_%s" $name) -}}
+    {{- else }}{{ $label = $name }}{{ end -}}
   {{- end -}}
   {{- $preset := dict
     "name" $name

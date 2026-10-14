@@ -170,11 +170,38 @@ describe("template strings", () => {
     expect(direct).toEqual([]);
   });
 
+  // Every key the templates pass to unity/ui/t. The alert render hooks
+  // build theirs with printf "alert_%s", so a printf format stands for
+  // every key that starts with its literal text. The check cannot follow
+  // any other key that is not a string literal, so it reports such calls
+  // as dynamic.
+  const used = new Set<string>();
+  const prefixes = new Set<string>();
+  const dynamic: string[] = [];
+  for (const f of files) {
+    const re = /partial "unity\/ui\/t" (?:\(slice )?(?:"([a-z0-9_]+)"|\(printf "([a-z0-9_]+)%s"|(\S+))/g;
+    for (const m of f.text.matchAll(re)) {
+      if (m[1]) used.add(m[1]);
+      else if (m[2]) prefixes.add(m[2]);
+      else dynamic.push(`${f.name}: ${m[0]}`);
+    }
+  }
+  const keys = [...english.keys()];
+
+  it("pass every key as a string literal or a printf prefix", () => {
+    expect(dynamic).toEqual([]);
+  });
+
   it("name only keys en.toml defines", () => {
-    const keys = files.flatMap((f) =>
-      [...f.text.matchAll(/partial "unity\/ui\/t" (?:\(slice )?"([a-z0-9_]+)"/g)].map((m) => m[1]!));
-    expect(keys.length).toBeGreaterThan(0);
-    expect(keys.filter((k) => !english.has(k))).toEqual([]);
+    expect(used.size).toBeGreaterThan(0);
+    expect([...used].filter((k) => !english.has(k))).toEqual([]);
+    expect([...prefixes].filter((p) => !keys.some((k) => k.startsWith(p)))).toEqual([]);
+  });
+
+  it("use every key en.toml defines outside js_", () => {
+    const unused = keys.filter((k) =>
+      !k.startsWith("js_") && !used.has(k) && ![...prefixes].some((p) => k.startsWith(p)));
+    expect(unused).toEqual([]);
   });
 
   it("use only {{ .Name }} placeholders, which unity/ui/t can fill", () => {
