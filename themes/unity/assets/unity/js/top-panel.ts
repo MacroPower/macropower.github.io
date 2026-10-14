@@ -12,6 +12,7 @@ import { isNavAction, isVolumeControl, parseAction, type NamedAction, type Panel
 import { eventElement, eventHTMLElement, indexOfFocused } from "./dom";
 import { inlineDirection } from "./inline-keys";
 import { panelKey, rowIndex, type Row } from "./panel-keys";
+import { safeNavUrl, webUrl } from "./url";
 
 const EMPTY_SITE: Readonly<UPSite> = {
   handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [], terminal: true, blog: false, projects: false, solitaire: false,
@@ -26,7 +27,8 @@ function navigate(key: string): void {
     console.warn("unity: no launcher URL for", key);
     return;
   }
-  window.location.href = url;
+  const safe = safeNavUrl(url, window.location.href);
+  if (safe) window.location.href = safe;
 }
 
 function dlg<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise<Id | null> {
@@ -37,9 +39,10 @@ function dlg<const Id extends string = "ok">(opts: UPDialogOptions<Id>): Promise
 // sentence stays one string and the anchor lands wherever the language puts it.
 const LINK_SLOT = "\u0000";
 
-// The View source dialog, which links the site's repoUrl when it has one.
+// The View source dialog, which links the site's repoUrl when it is a web
+// page.
 function sourceDialog(site: UPSite): UPDialogOptions {
-  const url = site.repo;
+  const url = site.repo ? webUrl(site.repo, window.location.href) : null;
   if (!url) {
     return {
       icon: "info", title: t("js_panel_source_title"),

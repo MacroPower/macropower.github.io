@@ -5,6 +5,7 @@ import { WebLinksAddon } from "@xterm/addon-web-links";
 import { PALETTE, PALETTE_BRIGHT } from "./ansi";
 import { WINDOW_STATE_EVENT } from "../events";
 import { monoFamily } from "../fonts";
+import { safeNavUrl } from "../url";
 
 // Renderer-agnostic terminal surface. The shell core (readline, shell,
 // commands) talks only to this interface; XtermTerminal is the sole xterm
@@ -179,7 +180,10 @@ export class XtermTerminal implements TerminalIO {
             found.push({
               range: { start: { x: idx + 1, y }, end: { x: idx + t.length, y } },
               text: t,
-              activate: () => { window.open(url, "_blank", "noopener"); },
+              activate: () => {
+                const safe = safeNavUrl(url, window.location.href);
+                if (safe) window.open(safe, "_blank", "noopener");
+              },
             });
           }
         }

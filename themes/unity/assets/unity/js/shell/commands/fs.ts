@@ -191,9 +191,8 @@ export const open: Command = {
   run(ctx) {
     const target = ctx.args[0] ?? "";
     const social = ctx.data.socials.find((s) => s.label === target);
-    if (social) { navigate(social.url); return 0; }
-    const node = ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), target));
-    if (node?.url) { navigate(node.url); return 0; }
+    const url = social ? social.url : ctx.vfs.lookup(ctx.vfs.resolvePath(ctx.cwd(), target))?.url;
+    if (url && navigate(url)) return 0;
     ctx.errln(color(PALETTE.red, `open: cannot open '${target}'`));
     return 1;
   },

@@ -1,7 +1,7 @@
 // Command behavior that is JS-only (not bash-diffable): VFS-backed file output,
 // our column/number formatting, stderr routing, and bash-format diagnostics.
 
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import { makeShell, TEST_DATA } from "./testkit";
 
 describe("cat / file reads", () => {
@@ -520,5 +520,45 @@ describe("notify-send", () => {
     const sh = makeShell();
     expect(sh.run("which notify-send").stdout).toBe("/usr/bin/notify-send\n");
     expect(sh.run("type notify-send").stdout).toBe("notify-send is /usr/bin/notify-send\n");
+  });
+});
+
+describe("open", () => {
+  // nav.ts navigates through window.location, which Node lacks, so each
+  // test records the URLs that open hands to it.
+  const assign = vi.fn<(url: string) => void>();
+  beforeEach(() => {
+    vi.stubGlobal("window", { location: { href: "https://example.org/", assign } });
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    assign.mockReset();
+  });
+
+  it("opens a social link and a post's page", () => {
+    const sh = makeShell({
+      ...TEST_DATA,
+      socials: [{ label: "site", url: "https://example.net/", display: "example.net" }],
+    });
+    expect(sh.run("open site").status).toBe(0);
+    expect(sh.run("open posts/hello-world.md").status).toBe(0);
+    expect(assign.mock.calls).toEqual([["https://example.net/"], ["/posts/2024/01/hello-world/"]]);
+  });
+  it("refuses a social link that runs script", () => {
+    const sh = makeShell({
+      ...TEST_DATA,
+      socials: [
+        { label: "evil", url: "javascript:alert(1)", display: "evil" },
+        { label: "page", url: "data:text/html,<script>alert(1)</script>", display: "page" },
+      ],
+    });
+    for (const label of ["evil", "page"]) {
+      const r = sh.run(`open ${label}`);
+      expect(r.stderr).toBe(`open: cannot open '${label}'\n`);
+      expect(r.status).toBe(1);
+    }
+    expect(assign).not.toHaveBeenCalled();
   });
 });

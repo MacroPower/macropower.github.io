@@ -118,7 +118,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - A `%` that starts no escape in a Markdown link or image, such as `[sale](/50%off)`, renders as `%25`, the way Hugo renders it without the theme's render hooks, instead of failing the build.
 - Markdown links to `tel:` and `sms:` keep their scheme, where they used to lead to `#ZgotmplZ`.
 - On a site at `https://example.org/sub/`, a menu url or Markdown link to `/sub` leads to the home page, where it used to lead to `/sub/sub`.
-- A `javascript:`, `vbscript:`, or `data:` url in `menu.main`, `menu.help`, or `params.social` drops its entry, and the build warns. The File menu, the HUD, and the home terminal used to follow such a url. A `params.repoUrl` that is not an `http` or `https` address makes the build warn, and the Help menu leaves out View source.
+- A `javascript:`, `vbscript:`, or `data:` url in `menu.main`, `menu.help`, or `params.social` drops its entry, and the build warns. The File menu, the HUD, and the home terminal used to follow such a url. They also refuse one at run time, when your copy of a theme template passes it to them. A `params.repoUrl` that is not an `http` or `https` address makes the build warn, and the Help menu leaves out View source.
 - A `menu.main` entry with the identifier `home` keeps the Home tile's icon, search words, and exact match for each param that it leaves out. The Home tile then shows as current only on the home page.
 - With `params.home.layout = "page"`, the Dash lists the home page as Home, and the keyboard shortcuts dialog leaves out the terminal's keys.
 - On a site that gives each language its own `baseURL`, the language menu leads to each language's host.
