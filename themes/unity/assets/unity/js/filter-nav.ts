@@ -1,5 +1,5 @@
 import { t } from "./i18n";
-import { eventHTMLElement } from "./dom";
+import { eventElement, eventHTMLElement, overlayOpen } from "./dom";
 import { scrollBehavior } from "./prefs";
 import { inlineDirection, inlineStep } from "./inline-keys";
 import { filterNavKey, type FilterNavAxis, type KeyModifiers } from "./filter-nav-keys";
@@ -124,10 +124,25 @@ export function installFilterNav(opts: FilterNavOptions): FilterNav {
     item.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
   }
 
+  // Whether a key belongs to the list. The listener sits on the document,
+  // so it also hears the keys that a dialog, the Dash, another window, or
+  // the top panel takes. The list takes no key while its window stays
+  // closed or minimized, or while an overlay covers the page. Otherwise it
+  // takes a key from inside its root, or from the body while the page
+  // window holds focus.
+  function ownsKey(target: Element | null): boolean {
+    const win = window.UP_PAGE_WINDOW_STATE;
+    if (win?.visible === false) return false;
+    if (overlayOpen()) return false;
+    if (!target || target === document.body) return win?.focused !== false;
+    return root.contains(target);
+  }
+
   document.addEventListener("keydown", (e) => {
     if (!root.isConnected) return;
     if (e.defaultPrevented) return;
     const target = eventHTMLElement(e);
+    if (!ownsKey(eventElement(e))) return;
     const tag = target?.tagName ?? "";
     const typing = tag === "INPUT" || tag === "TEXTAREA" || Boolean(target?.isContentEditable);
 

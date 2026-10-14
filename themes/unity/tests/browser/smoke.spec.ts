@@ -142,6 +142,49 @@ test("a dialog opens and closes", async ({ page }) => {
   await expect(dialog).toHaveCount(0);
 });
 
+// The post list hears its keys on the document. Each of the next tests
+// gives a key to something else on the page, and the list leaves it
+// alone.
+test("the post list leaves its search key to an open dialog", async ({ page }) => {
+  await open(page, "/posts/");
+  await page.locator("#up-menu-help").click();
+  await page.locator('#up-dropdown-help [data-action="dlg:shortcuts"]').click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  const inDialog = (): Promise<boolean> =>
+    page.evaluate(() => document.activeElement?.closest("#up-dialog-host") != null);
+  await expect.poll(inDialog).toBe(true);
+  await page.keyboard.press("/");
+  await expect(page.locator("[data-up-search-bar]")).toBeHidden();
+  await expect.poll(inDialog).toBe(true);
+});
+
+test("the post list leaves the keys typed on a Dash tile to the Dash", async ({ page }) => {
+  await open(page, "/posts/");
+  const dash = page.locator("[data-up-dash]");
+  await page.locator("[data-dash-open]").click();
+  await expect(dash.locator("[data-dash-search]")).toBeFocused();
+  await expect(dash.locator("[data-dash-tile]").first()).toBeVisible();
+  await page.keyboard.press("ArrowDown");
+  await expect.poll(() => page.evaluate(() => document.activeElement?.hasAttribute("data-dash-tile"))).toBe(true);
+  await page.keyboard.type("jk");
+  await expect(dash.locator("[data-dash-search]")).toHaveValue("jk");
+  await expect(page.locator("[data-up-post-row].is-focused")).toHaveCount(0);
+});
+
+test("the post list ignores its keys after the page window closes", async ({ page }) => {
+  await open(page, "/posts/");
+  const url = page.url();
+  await page.locator("[data-page-window] .up-tl-close").click();
+  await expect.poll(() => page.evaluate(() => window.UP_PAGE_WINDOW_STATE?.closed)).toBe(true);
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.keyboard.press("j");
+  await expect(page.locator("[data-up-post-row].is-focused")).toHaveCount(0);
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(url);
+});
+
 test("the solitaire table draws", async ({ page }) => {
   await open(page, "/solitaire/");
   await expect.poll(() => painted(page.locator("[data-sol-canvas]"))).toBeGreaterThan(0);

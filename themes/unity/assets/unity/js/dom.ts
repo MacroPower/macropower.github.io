@@ -25,6 +25,16 @@ export function indexOfFocused(items: readonly HTMLElement[]): number {
   return cur ? items.indexOf(cur) : -1;
 }
 
+/** Whether a desktop overlay covers the page: a dialog, the lock screen,
+ *  the Dash, or the HUD. It reads the DOM, so a page bundle gets the same
+ *  answer as the app bundle, which opens the overlays. */
+export function overlayOpen(): boolean {
+  const host = document.getElementById("up-dialog-host");
+  if (host && host.childElementCount > 0) return true;
+  return Array.from(document.querySelectorAll<HTMLElement>("[data-up-lock], [data-up-dash], [data-up-hud]"))
+    .some((el) => !el.hidden);
+}
+
 /** The lookups when none is null or undefined, or null when any is.
  *  Destructure the result into consts after the null check. A guard's
  *  narrowing stops at a function declaration, but each const's own type
