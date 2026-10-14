@@ -6,7 +6,7 @@
     "lefthook@latest",
     "gh@latest",
     "jq@latest",
-    "yq@latest"
+    "yq-go@latest"
   ],
   "shell": {
     "init_hook": [
