@@ -1,8 +1,8 @@
 // Session-only preferences: reduce-motion and accent color. Nothing is
 // persisted, so both reset on reload. The apply functions mutate the
-// document directly (a `body` class for reduce-motion, a `data-up-accent`
-// attribute on `<html>` for the accent) so every selector reading
-// `var(--up-accent)` / `var(--up-accent-light)` or gated on `body.up-reduce-motion`
+// document directly, with a `body` class for reduce-motion and a
+// `data-up-accent` attribute on `<html>` for the accent. Every rule that
+// reads an `--up-accent` token or keys off `body.up-reduce-motion` then
 // updates live.
 
 import { t } from "./i18n";

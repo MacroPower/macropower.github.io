@@ -459,8 +459,9 @@ async function netClick(row: HTMLElement): Promise<void> {
     body: t("js_panel_net_established_body", { name }) });
 }
 
-// The panel's data-vol-playlist JSON, which unity/playlist.html writes as
-// {url, title} objects. Entries without a string url drop out.
+// The panel's data-vol-playlist JSON, which unity/top-panel.html writes from
+// unity/playlist.html as {url, title} objects. Entries without a string url
+// drop out.
 function parsePlaylist(raw: unknown): audio.PlaylistEntry[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((entry: unknown) => {

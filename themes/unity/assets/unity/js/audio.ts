@@ -4,19 +4,20 @@
 // AudioContext is created lazily on the first play/audition click, so the user
 // gesture satisfies the browser's autoplay policy and nothing autoplays.
 //
-// `configure(url, name)` points it at a bundled .mid; on first play the file is
-// fetched and parsed (midi.ts), then streamed: a setInterval lookahead schedules
-// notes a fraction of a second ahead of the audio clock and loops at the end.
-// Every pitched note is voiced additively from plain "sine" oscillators (built-in
-// "square"/"triangle" types are silent in some Firefox builds); the GM drum
-// channel (9) is rendered with a synthesized kick/snare/hat.
+// `configure(entries)` points the player at the site's MIDI playlist. On the
+// first play, the player fetches the active track's file, parses it with
+// midi.ts, and streams it. A setInterval lookahead schedules notes a
+// fraction of a second ahead of the audio clock and loops at the song's end.
+// The pitched voices build on "sine" oscillators and one custom periodic
+// wave. They never use the built-in "square" or "triangle" types, which
+// some Firefox builds play as silence. The GM drum channel (9) plays a
+// synthesized kick, snare, and hat.
 //
-// Everything musical is live-tweakable (the Studio window drives it): a synth
-// param block (waveform, attack, release, filter cutoff, echo send, swing),
-// per-channel mute/solo/gain, and a BPM override. Params are read at schedule
-// time and the lookahead is short (~0.2s), so a knob turn lands within a beat.
-// The mix runs master gain → lowpass filter → (dry + tempo-synced echo) →
-// compressor, the compressor taming peaks as before.
+// The Studio window changes the music live through SynthParams, the
+// channel strips, and a BPM override. The scheduler reads them when it
+// schedules a note and looks about 0.2s ahead, so a knob turn lands within
+// a beat. The mix runs master gain, lowpass, drive, and crush into a
+// compressor, both dry and through the echo and reverb sends.
 
 import { t } from "./i18n";
 import { parseMidi, type MidiNote, type MidiSong } from "./midi";

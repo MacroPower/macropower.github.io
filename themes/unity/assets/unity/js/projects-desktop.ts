@@ -14,10 +14,10 @@
 // place (the array the consumer and filter-nav share) alongside the DOM. "Clean
 // Up Icons" restores the original order. No persistence.
 //
-// Imported by both the app.ts and projects.ts bundles — esbuild duplicates the
-// module into each, so two instances coexist on /projects/. All gesture state
-// lives in installDesktop's closure and every document-level listener guards on
-// it; never add module-level mutable state here.
+// Both the app.ts and projects.ts bundles import this module. esbuild
+// copies it into each, so two instances coexist on the projects page. All
+// gesture state lives in installDesktop's closure, and every document-level
+// listener guards on it. Never add module-level mutable state here.
 
 import { t } from "./i18n";
 import { eventElement, indexOfFocused } from "./dom";
@@ -72,14 +72,13 @@ export interface DesktopDeps {
   /** Double-click handler. Default: open tile.dataset.url in a new tab. */
   onOpen?(tile: HTMLElement): void;
   /** Right-click on a tile -> menu items, given the selection snapshot (taken
-   *  after right-click retargets to an unselected tile). Default: Open on
-   *  GitHub / Copy link. */
+   *  after right-click retargets to an unselected tile). Default: the
+   *  openLabel() action, then Copy link. */
   tileMenu?(tile: HTMLElement, selected: HTMLElement[]): DesktopMenuItem[];
   /** Right-click on empty space -> menu items. Default: Select All / Clean Up
    *  Icons (the passed callback). */
   emptyMenu?(cleanUpIcons: () => void): DesktopMenuItem[];
-  /** Skip removeTiles animation when true. Injected (rather than importing
-   *  prefs.ts) so the engine stays free of cross-module imports. */
+  /** Skip removeTiles animation when true. Default: never skip. */
   reduceMotion?(): boolean;
 }
 

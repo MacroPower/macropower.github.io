@@ -1,7 +1,8 @@
-// Typed access to the nodes that DOM events and focus report as the wider
-// EventTarget or Element. Each helper checks the node's type at run time
-// instead of asserting it, so a node of another kind yields null rather
-// than a mistyped value.
+// Typed access to DOM nodes without type assertions. DOM events and focus
+// report a node as the wider EventTarget or Element. The event and focus
+// helpers check the node's type at run time, so a node of another kind
+// yields null rather than a mistyped value. requireAll() narrows a
+// module's lookups to non-null types together.
 
 /** The event's target when it is an Element, which includes SVG icons. */
 export function eventElement(e: Event): Element | null {

@@ -1,12 +1,9 @@
-// The Help menu's "Keyboard shortcuts" dialog: a reference of the shortcuts
-// the desktop actually implements, rendered as native rows of keycap chips
-// (GNOME-shortcuts-window style) through the dialog `render` hook. Purely
-// presentational — every row documents a handler that lives elsewhere
-// (dialogs.ts, drag.ts, hud.ts for the Alt tap, top-panel.ts for the sound
-// indicator's scroll wheel, page-window.ts, filter-nav.ts,
-// projects-desktop.ts, shell/readline.ts, shell/terminal.ts for the Shift+Tab
-// focus escape screenReaderMode enables); keep the table in sync when
-// bindings change.
+// The Help menu's "Keyboard shortcuts" dialog. It lists the shortcuts the
+// desktop implements as rows of keycap chips, in the style of GNOME's
+// shortcuts window, through the dialog `render` hook. Every row documents a
+// handler in another module, such as dash.ts for the Super tap or
+// solitaire/index.ts for the table's keys. Update the table when a binding
+// changes.
 
 import { locale, t } from "./i18n";
 

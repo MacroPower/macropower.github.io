@@ -1,6 +1,6 @@
-// ANSI escape helpers and the One Dark palette shared by readline, banner,
-// and commands. Hex values mirror the swatches enumerated in layouts/home.html
-// and the --up-aod-* custom properties in main.css; keep them in sync.
+// ANSI escape helpers and the One Dark palette that readline, the banner,
+// and the commands share. The --up-aod-* custom properties in main.css
+// repeat some of the palette's hex values, so change both together.
 
 const ESC = "\x1b[";
 
