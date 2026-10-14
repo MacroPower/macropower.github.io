@@ -94,4 +94,30 @@ describe("tokens", () => {
       "--up-accent-light in .up-daw-ms &.is-mute",
     ]);
   });
+
+  it("repeats no internal token's gradient or shadow outside the token", () => {
+    // The internal tokens, such as the recipe tokens, whose value has more
+    // than one word. A single color or length can paint an unrelated role,
+    // but a repeated gradient or shadow is a recipe copy that skipped its
+    // token.
+    const internal = declarations(css).flatMap(({ decl }) => {
+      const m = /^(--up-[\w-]+)\s*:([\s\S]+)$/.exec(decl);
+      if (!m || tokens.has(m[1]!)) return [];
+      const value = m[2]!.trim().replace(/\s+/g, " ");
+      return value.includes(" ") ? [[m[1]!, value] as const] : [];
+    });
+    expect(internal.length).toBeGreaterThan(0);
+    const strays = declarations(css)
+      .filter(({ decl }) => !decl.startsWith("--"))
+      .flatMap(({ rule, decl }) => {
+        const flat = decl.replace(/\s+/g, " ");
+        return internal.filter(([, value]) => flat.includes(value)).map(([name]) => `${name} in ${rule}`);
+      });
+    expect(strays).toEqual([
+      // The Dash paints the same faint top highlight outside the Studio,
+      // where the token is unset.
+      "--up-daw-btn-shadow in .up-dash-tile &:focus",
+      "--up-daw-btn-shadow in .up-dash-lens &.is-active",
+    ]);
+  });
 });

@@ -191,6 +191,36 @@
   --up-dock-h:0px;
 }
 
+/* Recipe tokens, internal to the theme. Each recipe with more than two
+   copies reads its colors, gradients, and shadows from here, so its
+   copies repeat only structure, such as radii and padding. The
+   daw-raised recipe's tokens sit with the other --up-daw-* tokens on
+   .up-daw-body. */
+:root{
+  /* The raised-button recipe's values, for the GTK push button. The
+     raised-button-checked recipe paints a toggle that is on with the
+     pressed background. */
+  --up-btn-bg:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
+  --up-btn-bg-hover:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
+  --up-btn-bg-active:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
+  --up-btn-border:#B9B5B0;
+  --up-btn-border-hover:#A8A39E;
+  --up-btn-border-checked:#9A958F;
+  --up-btn-fg-checked:#1F1D1A;
+  --up-btn-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  --up-btn-shadow-active:inset 0 1px 2px rgba(0,0,0,.18);
+  --up-btn-shadow-checked:inset 0 1px 2px rgba(0,0,0,.15);
+  /* The bead-face recipe's values, for the titlebar's window controls.
+     The focused window and every dialog paint the plain faces, and an
+     unfocused window paints the -inactive ones. */
+  --up-bead-close:radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%);
+  --up-bead-close-hover:radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%);
+  --up-bead-close-inactive:radial-gradient(circle at 38% 32%, #6E4842 0%, #4A2820 70%, #2C140F 100%);
+  --up-bead-minmax:radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%);
+  --up-bead-minmax-hover:radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%);
+  --up-bead-minmax-inactive:radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%);
+}
+
 /* Accent presets. The Preferences dialog (prefs.ts) sets data-up-accent on
    <html>, and params.desktop.accent picks the starting preset. Each swatch
    carries the same attribute, so it paints in its own preset. A site's
@@ -489,21 +519,21 @@ svg[hidden]{ display:none; }
     }
     .up-tl-close{
       /* recipe: bead-face */
-      background:radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%);
+      background:var(--up-bead-close);
     }
     .up-tl-close:hover{
       /* recipe: bead-face */
-      background:radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%);
+      background:var(--up-bead-close-hover);
     }
     .up-tl-min,
     .up-tl-max{
       /* recipe: bead-face */
-      background:radial-gradient(circle at 38% 32%, #6E6963 0%, #4A4540 70%, #2A2622 100%);
+      background:var(--up-bead-minmax);
     }
     .up-tl-min:hover,
     .up-tl-max:hover{
       /* recipe: bead-face */
-      background:radial-gradient(circle at 38% 32%, #88837C 0%, #5C5750 70%, #34302C 100%);
+      background:var(--up-bead-minmax-hover);
     }
     .up-tl svg{ opacity:1; }
     .up-titlebar-text{
@@ -572,12 +602,12 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 .up-tl-close{
   /* recipe: bead-face */
-  background:radial-gradient(circle at 38% 32%, #6E4842 0%, #4A2820 70%, #2C140F 100%);
+  background:var(--up-bead-close-inactive);
 }
 .up-tl-min,
 .up-tl-max{
   /* recipe: bead-face */
-  background:radial-gradient(circle at 38% 32%, #514D48 0%, #38342F 70%, #1F1C18 100%);
+  background:var(--up-bead-minmax-inactive);
 }
 .up-titlebar-text{
   flex:1;
@@ -744,17 +774,17 @@ body.up-resizing *{ cursor:inherit !important; }
   font:inherit;font-size:12px;color:#3A3733;line-height:1;
   cursor:pointer;text-decoration:none;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:active{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-active);
   }
   svg{flex-shrink:0}
   &:focus-visible{outline:1px dotted color-mix(in srgb, var(--up-accent) 70%, transparent);outline-offset:-3px}
@@ -778,9 +808,9 @@ body.up-resizing *{ cursor:inherit !important; }
   /* the fit toggle holds the GTK checked look while fit-width is active */
   &[aria-pressed="true"]:not(:disabled){
     /* recipe: raised-button-checked */
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-    border-color:#9A958F;color:#1F1D1A;
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-checked);
+    border-color:var(--up-btn-border-checked);color:var(--up-btn-fg-checked);
   }
 }
 .up-docv-pageentry{display:inline-flex;align-items:center;gap:6px;margin:0 2px}
@@ -898,13 +928,13 @@ body.up-resizing *{ cursor:inherit !important; }
   padding:5px 12px;
   font-size:12.5px;color:#3A3733;text-decoration:none;text-shadow:none;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:hover{color:#1F1D1A}
   svg{flex-shrink:0;color:#A02B12}
@@ -1388,19 +1418,19 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-arrow{
   text-decoration:none;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   /* recipe: linked-group */
   position:relative;
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:active{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-active);
   }
   &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
   &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
@@ -1423,15 +1453,15 @@ a.up-sponsor-card[href]:hover{
   text-decoration:none;
   line-height:1.6;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   /* recipe: linked-group */
   position:relative;
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:first-child{border-top-left-radius:3px;border-bottom-left-radius:3px}
   &:last-child{border-top-right-radius:3px;border-bottom-right-radius:3px}
@@ -1440,9 +1470,9 @@ a.up-sponsor-card[href]:hover{
   svg{width:12px;height:12px;flex-shrink:0}
   &.is-current{
     /* recipe: raised-button-checked */
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-    border-color:#9A958F;color:#1F1D1A;
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-checked);
+    border-color:var(--up-btn-border-checked);color:var(--up-btn-fg-checked);
     font-weight:500;
   }
 }
@@ -1450,21 +1480,21 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-icon-btn{
   cursor:pointer;flex-shrink:0;align-self:stretch;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &.is-active,
   &[aria-expanded="true"],
   &[aria-pressed="true"]{
     /* recipe: raised-button-checked */
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-    border-color:#9A958F;color:#1F1D1A;
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-checked);
+    border-color:var(--up-btn-border-checked);color:var(--up-btn-fg-checked);
   }
 }
 
@@ -1613,13 +1643,13 @@ a.up-sponsor-card[href]:hover{
   margin:14px 16px 0;padding-block:3px;padding-inline:6px 8px;width:fit-content;
   font-size:12px;color:#3A3733;text-decoration:none;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   svg{color:#3A3733}
 }
@@ -2058,17 +2088,17 @@ details.up-alert{
   display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 10px;
   color:var(--up-content-fg);font-size:12.5px;font-weight:500;text-decoration:none;
   /* recipe: raised-button */
-  background:linear-gradient(180deg,#FBFAF8 0%,#E5E2DE 100%);
-  border:1px solid #B9B5B0;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-btn-border);
   border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
+  box-shadow:var(--up-btn-shadow);
   &:hover{
-    background:linear-gradient(180deg,#FFFEFC 0%,#EFEDE9 100%);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:active{
-    background:linear-gradient(180deg,#D7D4D0 0%,#E5E2DE 100%);
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.18);
+    background:var(--up-btn-bg-active);
+    box-shadow:var(--up-btn-shadow-active);
   }
   svg{color:#3A3733}
 }
@@ -2531,14 +2561,14 @@ details.up-alert{
   cursor:default;
   display:flex;
   /* recipe: bead-face */
-  background:radial-gradient(circle at 38% 32%, #F0664A 0%, #C7391E 70%, #8C2410 100%);
+  background:var(--up-bead-close);
   box-shadow:
     inset 0 .5px 0 rgba(255,255,255,.35),
     inset 0 -.5px 0 rgba(0,0,0,.55),
     0 1px 1px rgba(0,0,0,.4);
   &:hover{
     /* recipe: bead-face */
-    background:radial-gradient(circle at 38% 32%, #FF8060 0%, #DC4824 70%, #A02B12 100%);
+    background:var(--up-bead-close-hover);
   }
 }
 .up-dlg-title{
@@ -3418,6 +3448,12 @@ body.up-reduce-motion *{
   --up-daw-lcd-bg:#0D1206;
   --up-daw-lcd:#A8E22E;
   --up-daw-lcd-glow:rgba(168,226,46,.5);
+  /* The daw-raised recipe's values. A pressed button sinks to
+     --up-daw-bg. */
+  --up-daw-btn-bg:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  --up-daw-btn-bg-hover:linear-gradient(180deg,#454B53 0%,#33383F 100%);
+  --up-daw-btn-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  --up-daw-btn-shadow-active:inset 0 1px 2px rgba(0,0,0,.4);
   background:var(--up-daw-bg);
   color:var(--up-daw-text);
   user-select:none;
@@ -3439,16 +3475,16 @@ body.up-reduce-motion *{
   display:inline-flex; align-items:center; justify-content:center;
   width:28px; height:24px; padding:0;
   /* recipe: daw-raised */
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  background:var(--up-daw-btn-bg);
   border:1px solid var(--up-daw-edge);
   border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:var(--up-daw-btn-shadow);
   color:var(--up-daw-text);
   cursor:default;
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:hover{background:var(--up-daw-btn-bg-hover)}
   &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+    background:var(--up-daw-bg);
+    box-shadow:var(--up-daw-btn-shadow-active);
   }
   svg{width:13px; height:13px; display:block}
   span{display:inline-flex}
@@ -3595,16 +3631,16 @@ body.up-reduce-motion *{
   font-weight:700;
   line-height:1;
   /* recipe: daw-raised */
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  background:var(--up-daw-btn-bg);
   border:1px solid var(--up-daw-edge);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:var(--up-daw-btn-shadow);
   cursor:default;
   border-radius:2px;
   color:var(--up-daw-dim);
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:hover{background:var(--up-daw-btn-bg-hover)}
   &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+    background:var(--up-daw-bg);
+    box-shadow:var(--up-daw-btn-shadow-active);
   }
   &:hover{color:var(--up-daw-text)}
   &.is-mute{
@@ -3627,16 +3663,16 @@ body.up-reduce-motion *{
   height:16px;
   padding:0;
   /* recipe: daw-raised */
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  background:var(--up-daw-btn-bg);
   border:1px solid var(--up-daw-edge);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:var(--up-daw-btn-shadow);
   cursor:default;
   border-radius:2px;
   color:var(--up-daw-dim);
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:hover{background:var(--up-daw-btn-bg-hover)}
   &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+    background:var(--up-daw-bg);
+    box-shadow:var(--up-daw-btn-shadow-active);
   }
   svg{display:block}
   &:hover{color:var(--up-daw-text)}
@@ -3686,16 +3722,16 @@ body.up-reduce-motion *{
   height:24px;
   padding:0;
   /* recipe: daw-raised */
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  background:var(--up-daw-btn-bg);
   border:1px solid var(--up-daw-edge);
   border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:var(--up-daw-btn-shadow);
   cursor:default;
   color:var(--up-daw-dim);
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:hover{background:var(--up-daw-btn-bg-hover)}
   &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+    background:var(--up-daw-bg);
+    box-shadow:var(--up-daw-btn-shadow-active);
   }
   svg{display:block}
   &:hover{color:var(--up-daw-text)}
@@ -3725,19 +3761,19 @@ body.up-reduce-motion *{
   height:20px;
   padding:0 7px;
   /* recipe: daw-raised */
-  background:linear-gradient(180deg,#3C4148 0%,#2C3036 100%);
+  background:var(--up-daw-btn-bg);
   border:1px solid var(--up-daw-edge);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  box-shadow:var(--up-daw-btn-shadow);
   cursor:default;
   border-radius:2px;
   font-family:var(--up-font-mono);
   font-size:10px;
   line-height:1;
   color:var(--up-daw-dim);
-  &:hover{background:linear-gradient(180deg,#454B53 0%,#33383F 100%)}
+  &:hover{background:var(--up-daw-btn-bg-hover)}
   &:active{
-    background:#23262B;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.4);
+    background:var(--up-daw-bg);
+    box-shadow:var(--up-daw-btn-shadow-active);
   }
   &:hover{color:var(--up-daw-text)}
   &.is-on{
