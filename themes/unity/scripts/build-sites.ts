@@ -25,9 +25,11 @@ const page = (title: string, front = ""): string => `+++\ntitle = '${title}'\n${
 // files to write into a fresh one. check(out) reads the built site and
 // returns a failure message for each failed check and false for each
 // passed one. A site with warns builds with warnings allowed and must
-// print a warning matching that pattern.
-type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string> }) & {
-  check?: (out: string) => (string | false)[];
+// print a warning matching that pattern. A files site with prepare runs
+// Hugo with those arguments against its fresh source before the build,
+// and its check reads what that run wrote from the source.
+type SiteSpec = ({ source: string; flags?: string[] } | { files: Record<string, string>; prepare?: string[] }) & {
+  check?: (out: string, source: string) => (string | false)[];
   warns?: RegExp;
 };
 
@@ -306,10 +308,31 @@ mainSections = ["posts"]
       !read(join(out, "index.html")).includes("github.com/jane") && "the home page drops a map-form params.social",
     ],
   },
+  // A site that collects its modules' Node packages. The theme's
+  // package.hugo.json declares none, so the dev tooling in its
+  // package.json stays out of the site's npm workspace.
+  npmpack: {
+    files: { "hugo.toml": BARE },
+    prepare: ["mod", "npm", "pack"],
+    check: (_out, source) => {
+      const pkg: Record<string, Record<string, string> | undefined> =
+        JSON.parse(read(join(source, "packages/hugoautogen/package.json")));
+      return ["dependencies", "devDependencies"].flatMap((key) =>
+        Object.keys(pkg[key] ?? {}).map((name) => `hugo mod npm pack adds ${name} to the site's ${key}`),
+      );
+    },
+  },
 };
 
 function read(file: string): string {
   return readFileSync(file, "utf8");
+}
+
+// Runs Hugo and returns whether it succeeded and everything it printed.
+// Hugo prints warnings and errors on stderr.
+function hugo(args: string[]): { ok: boolean; log: string } {
+  const run = spawnSync("hugo", args, { encoding: "utf8" });
+  return { ok: run.status === 0, log: `${run.stdout ?? ""}${run.stderr ?? ""}` };
 }
 
 function htmlFiles(dir: string): string[] {
@@ -323,11 +346,13 @@ try {
   for (const [name, site] of Object.entries(SITES)) {
     let source: string;
     let flags: string[] = [];
+    let prepare: string[] | undefined;
     if ("source" in site) {
       source = site.source;
       flags = site.flags ?? [];
     } else {
       source = join(work, name);
+      prepare = site.prepare;
       for (const [path, body] of Object.entries(site.files)) {
         mkdirSync(dirname(join(source, path)), { recursive: true });
         writeFileSync(join(source, path), body);
@@ -336,17 +361,16 @@ try {
     const out = join(work, `${name}-public`);
     const args = ["--source", source, "--destination", out,
       "--printPathWarnings", ...(site.warns ? [] : ["--quiet", "--panicOnWarning"]), ...flags];
-    // Hugo prints warnings and errors on stderr.
-    const run = spawnSync("hugo", args, { encoding: "utf8" });
-    const log = `${run.stdout ?? ""}${run.stderr ?? ""}`;
-    if (run.status !== 0) {
-      process.stderr.write(log);
+    const prep = prepare ? hugo([...prepare, "--source", source]) : undefined;
+    const run = prep?.ok === false ? prep : hugo(args);
+    if (!run.ok) {
+      process.stderr.write(run.log);
       console.error(`FAIL ${name}`);
       failed = true;
       continue;
     }
-    const problems = (site.check?.(out) ?? []).filter((p) => p !== false);
-    if (site.warns && !site.warns.test(log)) problems.push(`no warning matches ${site.warns}`);
+    const problems = (site.check?.(out, source) ?? []).filter((p) => p !== false);
+    if (site.warns && !site.warns.test(run.log)) problems.push(`no warning matches ${site.warns}`);
     for (const p of problems) console.error(`     ${name}: ${p}`);
     console.log(`${problems.length ? "FAIL" : "ok  "} ${name}`);
     failed ||= problems.length > 0;

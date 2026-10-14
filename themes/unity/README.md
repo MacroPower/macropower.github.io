@@ -50,6 +50,8 @@ hugo mod get -u
 
 Run `hugo mod get -u` again to update. The theme has no release tags yet, so Hugo pins the latest commit on `main`.
 
+The theme does not add Node packages to `hugo mod npm pack`, so a site that runs it to install another module's packages, such as Tailwind CSS, installs nothing for the theme.
+
 ### Copy
 
 A sparse clone fetches only the theme's files, not the rest of the site around it:

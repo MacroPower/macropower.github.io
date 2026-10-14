@@ -1,0 +1,3 @@
+{
+  "description": "hugo mod npm pack reads this file in place of package.json. The theme does not need Node packages to build a site, so this file does not list any, and the dev tooling in package.json stays out of the site's npm workspace."
+}
