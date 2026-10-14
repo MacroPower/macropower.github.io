@@ -1,9 +1,10 @@
 {{- /* Hugo only warns when it is older than the theme's module.hugoVersion
       floor, and the older build then fails somewhere less obvious. Fail
-      here with the reason instead. Keep the version in sync with
-      hugo.toml and theme.toml. */ -}}
-{{- if lt hugo.Version "0.165.0" -}}
-  {{- errorf "The unity theme needs Hugo 0.165.0 or later, and this is Hugo %s." hugo.Version -}}
+      here with the reason instead. $floor must match the floor in
+      hugo.toml, and scripts/build-sites.ts checks that it does. */ -}}
+{{- $floor := "0.165.0" -}}
+{{- if lt hugo.Version $floor -}}
+  {{- errorf "The unity theme needs Hugo %s or later, and this is Hugo %s." $floor hugo.Version -}}
 {{- end -}}
 <!doctype html>
 {{- $accent := "" -}}

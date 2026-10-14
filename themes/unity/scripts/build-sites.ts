@@ -41,6 +41,7 @@ const SITES: Record<string, SiteSpec> = {
       const sitemap = read(join(out, "sitemap.xml"));
       const home = read(join(out, "index.html"));
       const bundles = readdirSync(join(out, "js"));
+      const floor = /\[module\.hugoVersion\]\s+min = "([^"]+)"/.exec(read(join(theme, "hugo.toml")))?.[1];
       return [
         // esbuild keeps only legal comments, so each bundle that inlines a
         // vendored library must carry that library's licence notice.
@@ -48,6 +49,12 @@ const SITES: Record<string, SiteSpec> = {
           .filter(([name, notice]) =>
             !bundles.some((f) => f.startsWith(`${name}.`) && read(join(out, "js", f)).includes(notice)))
           .map(([name]) => `js/${name}.*.js lacks the licence notice of the library it inlines`),
+        // Hugo reads the version floor from hugo.toml. The guard at the top
+        // of baseof.html and README.md's requirements repeat it.
+        !floor && "hugo.toml lacks module.hugoVersion.min",
+        ...([["layouts/baseof.html", /\$floor := "([^"]+)"/], ["README.md", /^- Hugo (\S+) or later/m]] as const)
+          .filter(([file, pattern]) => pattern.exec(read(join(theme, file)))?.[1] !== floor)
+          .map(([file]) => `${file} states a Hugo floor other than ${floor}, the one in hugo.toml`),
         // The solitaire and icon pages set noindex.
         ...["solitaire", "icons"]
           .filter((p) => sitemap.includes(`/${p}/</loc>`))

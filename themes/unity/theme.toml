@@ -6,7 +6,6 @@ homepage = "https://github.com/MacroPower/macropower.github.io/tree/main/themes/
 demosite = "https://jacobcolvin.com"
 tags = ["blog", "personal", "portfolio", "ubuntu", "unity", "retro", "playful", "terminal", "dark"]
 features = ["blog", "rss", "shortcode", "syntax highlighting", "projects", "cv", "search", "terminal", "multilingual", "math", "alerts", "responsive images"]
-min_version = "0.165.0"
 
 [author]
   name = "Jacob Colvin"

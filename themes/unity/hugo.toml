@@ -1,9 +1,10 @@
-# Theme configuration. The version floor matches theme.toml: css.Build
-# exposes the font artifacts _partials/unity/head/css.html preloads from
-# 0.165.0.
+# Theme configuration. module.hugoVersion.min is the Hugo version floor.
+# css.Build exposes the font artifacts that _partials/unity/head/css.html
+# preloads from 0.165.0. The guard at the top of baseof.html and
+# README.md repeat the floor, and scripts/build-sites.ts checks that they
+# match.
 [module]
   [module.hugoVersion]
-    extended = false
     min = "0.165.0"
 
   # The standard mounts, plus i18n/ under assets/ so

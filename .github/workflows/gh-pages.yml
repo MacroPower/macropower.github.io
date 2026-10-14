@@ -69,8 +69,8 @@ jobs:
           path: public/
 
   # The theme promises its module.hugoVersion floor, so its test sites
-  # also build on that release. Keep it in sync with the theme's
-  # hugo.toml, theme.toml, and baseof.html.
+  # also build on that release. Keep it in sync with
+  # module.hugoVersion.min in the theme's hugo.toml.
   theme-floor:
     runs-on: ubuntu-latest
     steps:
