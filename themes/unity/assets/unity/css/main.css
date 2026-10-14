@@ -872,6 +872,11 @@ body.up-resizing *{ cursor:inherit !important; }
   text-shadow:0 1px 2px rgba(0,0,0,.4);
   &[hidden]{display:none}
 }
+/* Without JavaScript the viewer never loads, so the noscript notice takes
+   the loading status's place. */
+@media (scripting: none){
+  .up-docv-status[data-docv-loading]{display:none}
+}
 .up-docv-spinner{
   width:28px;height:28px;border-radius:50%;
   border:3px solid rgba(255,255,255,.25);
@@ -1179,6 +1184,26 @@ a.up-sponsor-card[href]:hover{
   font-family:"Ubuntu Mono",ui-monospace,Menlo,monospace;
   font-size:12pt; line-height:1.2;
   color:var(--up-aod-red);
+}
+/* Without JavaScript the terminal never mounts, so the visually hidden
+   banner becomes the page. It shows the owner's name, links, and posts
+   above the .up-shell-noscript line. position needs !important to beat
+   the one on .up-sr-only. */
+@media (scripting: none){
+  .up-shell{
+    overflow:auto;
+    .up-sr-only{
+      position:static !important; width:auto; height:auto;
+      margin:0; padding:6px 2px; border:0;
+      overflow:visible; clip-path:none; white-space:normal;
+      a{color:var(--up-aod-blue); text-decoration:none}
+      a:hover{color:var(--up-aod-cyan); text-decoration:underline}
+      h1{margin:0 0 2px; font-size:1.5em}
+      h2{margin:14px 0 4px; font-size:1.1em}
+      p, ul{margin:2px 0}
+      ul{padding-left:1.2em}
+    }
+  }
 }
 /* Reconnect overlay shown after `exit` disposes the terminal. */
 .up-shell-reconnect{
@@ -2086,6 +2111,15 @@ details.up-alert{
   li{padding:5px 0;border-bottom:1px dashed var(--up-content-line)}
   a{color:#2B4E8E;text-decoration:none}
   a:hover{color:var(--up-accent-light);text-decoration:underline}
+}
+/* The grid's sidebar and preview pane do nothing without JavaScript, and
+   their collapsed height overlaps the list, so this block hides the grid.
+   display:contents lifts the list out of the noscript box and into the
+   article's flex layout, so the list's flex and overflow rules size and
+   scroll it. */
+@media (scripting: none){
+  .up-projects-grid{display:none}
+  .up-projects noscript{display:contents}
 }
 
 /* ---------- 404 ---------- */

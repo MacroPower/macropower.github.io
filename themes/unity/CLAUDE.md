@@ -40,7 +40,9 @@ TypeScript types the JavaScript surface but not the DOM. Each module selects its
 
 A module that needs several nodes passes their lookups to `requireAll()` in `dom.ts` and returns when it yields null. It destructures the result into consts, which keep their non-null types inside function declarations, so the module never asserts a lookup with `!`.
 
-`_partials/unity/ui/runtime.html` publishes `window.UP_SITE` and `window.UP_I18N` in a per-language script that loads before the bundles. The theme renders no inline script, so it runs under a Content Security Policy without `'unsafe-inline'`. Keep it that way, and pass page data in a `<script type="application/json">` block like the home terminal's. Read such a block through a parser that checks each field, like `parseShellIsland()` in `shell/island.ts` for the home terminal's island, never through a cast. The `Window` augmentation in `assets/unity/js/types.ts` must match those globals. `contracts.test.ts` builds the example site and a bare site with Hugo, then checks the island and both globals against their types. It skips when Hugo is not on PATH.
+`_partials/unity/ui/runtime.html` publishes `window.UP_SITE` and `window.UP_I18N` in a per-language script that loads before the bundles. The theme renders no inline script, event handler, style element, or style attribute, so it runs under a Content Security Policy without `'unsafe-inline'`. Keep it that way. The example site's checks in `scripts/build-sites.ts` fail on any inline script, event handler, or style. Put the styles of a no-JavaScript fallback in `main.css` under `@media (scripting: none)`.
+
+Pass page data in a `<script type="application/json">` block like the home terminal's. Read such a block through a parser that checks each field, like `parseShellIsland()` in `shell/island.ts` for the home terminal's island, never through a cast. The `Window` augmentation in `assets/unity/js/types.ts` must match `UP_SITE` and `UP_I18N`. `contracts.test.ts` builds the example site and a bare site with Hugo, then checks the island and both globals against their types. It skips when Hugo is not on PATH.
 
 ## Cross-bundle contracts
 

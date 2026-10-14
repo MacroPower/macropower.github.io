@@ -71,6 +71,8 @@ const SITES: Record<string, SiteSpec> = {
           const name = relative(out, file);
           return [
             /<[a-z][^>]*\sstyle="/.test(html) && `${name} has a style attribute`,
+            /<style[\s>]/.test(html) && `${name} has a style element`,
+            /<[a-z][^>]*\son[a-z]+=/.test(html) && `${name} has an inline event handler`,
             /<script(?![^>]*\ssrc=)(?![^>]*\stype="application\/(?:ld\+)?json")[^>]*>/.test(html) && `${name} has an inline script`,
           ];
         }),
