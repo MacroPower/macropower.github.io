@@ -37,6 +37,37 @@ export interface ShortcutSurfaces {
   volume: boolean;
   /** The home terminal, which params.home.layout = "page" replaces. */
   terminal: boolean;
+  /** The blog's post lists, which a site without a blog section lacks. */
+  blog: boolean;
+  /** The projects grid, which a site without a page that sets
+   *  layout = "projects" lacks. */
+  projects: boolean;
+  /** The solitaire table, which a site without a page that sets
+   *  layout = "solitaire" lacks. */
+  solitaire: boolean;
+}
+
+/** The section for the blog's post lists and the projects grid, which
+ *  share their search and keyboard selection. Only the grid moves
+ *  sideways and opens a context menu. Empty on a site with neither. */
+function postAndProjectSections(has: ShortcutSurfaces): ShortcutSection[] {
+  if (!has.blog && !has.projects) return [];
+  let title = t("js_shortcuts_blog_projects");
+  if (!has.projects) title = t("js_shortcuts_blog");
+  else if (!has.blog) title = t("js_shortcuts_projects");
+  return [{
+    title,
+    rows: [
+      { combos: [["/"], ["Ctrl", "F"]], desc: t("js_shortcuts_search") },
+      {
+        combos: [[t("js_shortcuts_arrows")], has.projects ? ["H", "J", "K", "L"] : ["J", "K"]],
+        desc: t("js_shortcuts_move_selection"),
+        loose: true,
+      },
+      { combos: [["Enter"]], desc: t("js_shortcuts_open_selected") },
+      ...(has.projects ? [{ combos: [["Shift", "F10"]], desc: t("js_shortcuts_context_menu") }] : []),
+    ],
+  }];
 }
 
 /** The dialog's sections for a desktop with the given surfaces. */
@@ -63,16 +94,8 @@ export function shortcutSections(has: ShortcutSurfaces): ShortcutSection[] {
         { combos: [["Tab"]], desc: t("js_shortcuts_jump_lens") },
       ],
     },
-    {
-      title: t("js_shortcuts_blog_projects"),
-      rows: [
-        { combos: [["/"], ["Ctrl", "F"]], desc: t("js_shortcuts_search") },
-        { combos: [[t("js_shortcuts_arrows")], ["H", "J", "K", "L"]], desc: t("js_shortcuts_move_selection"), loose: true },
-        { combos: [["Enter"]], desc: t("js_shortcuts_open_selected") },
-        { combos: [["Shift", "F10"]], desc: t("js_shortcuts_context_menu") },
-      ],
-    },
-    {
+    ...postAndProjectSections(has),
+    ...(has.solitaire ? [{
       title: t("js_shortcuts_solitaire"),
       hint: t("js_shortcuts_solitaire_hint"),
       rows: [
@@ -89,7 +112,7 @@ export function shortcutSections(has: ShortcutSurfaces): ShortcutSection[] {
         { combos: [["M"]], desc: t("js_shortcuts_toggle_sound") },
         { combos: [["Esc"]], desc: t("js_shortcuts_drop_run") },
       ],
-    },
+    }] : []),
     ...(has.terminal ? [{
       title: t("js_shortcuts_terminal"),
       hint: t("js_shortcuts_terminal_hint"),
@@ -182,10 +205,14 @@ export function showShortcuts(): Promise<string | null> {
       render(content) {
         const list = document.createElement("div");
         list.className = "up-shortcuts";
+        const site = window.UP_SITE;
         const sections = shortcutSections({
           hud: document.querySelector("[data-up-hud]") !== null,
           volume: document.querySelector('[data-indicator="vol"]') !== null,
-          terminal: window.UP_SITE?.terminal !== false,
+          terminal: site?.terminal !== false,
+          blog: site?.blog !== false,
+          projects: site?.projects !== false,
+          solitaire: site?.solitaire !== false,
         });
         list.append(...sections.map(buildSection));
         content.appendChild(list);

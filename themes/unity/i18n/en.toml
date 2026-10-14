@@ -1028,6 +1028,10 @@ other = "Open the best match"
 other = "Jump to the expanders and lens bar (Dash)"
 [js_shortcuts_blog_projects]
 other = "Blog & Projects"
+[js_shortcuts_blog]
+other = "Blog"
+[js_shortcuts_projects]
+other = "Projects"
 [js_shortcuts_search]
 other = "Search"
 [js_shortcuts_move_selection]

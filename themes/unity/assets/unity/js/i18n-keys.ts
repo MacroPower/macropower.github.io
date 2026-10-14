@@ -128,6 +128,7 @@ export interface Messages {
   js_shell_reconnect: never;
   js_shortcuts_arrows: never;
   js_shortcuts_auto_finish: never;
+  js_shortcuts_blog: never;
   js_shortcuts_blog_projects: never;
   js_shortcuts_clear_screen: never;
   js_shortcuts_complete: never;
@@ -162,6 +163,7 @@ export interface Messages {
   js_shortcuts_open_selected: never;
   js_shortcuts_paste_cut: never;
   js_shortcuts_play_hint: never;
+  js_shortcuts_projects: never;
   js_shortcuts_scroll: never;
   js_shortcuts_search: never;
   js_shortcuts_search_history: never;

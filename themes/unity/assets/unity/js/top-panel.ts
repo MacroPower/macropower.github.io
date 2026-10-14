@@ -11,7 +11,9 @@ import type { UPDialogOptions, UPSite } from "./types";
 import { isNavAction, isVolumeControl, parseAction, type NamedAction, type PanelAction, type VolumeControl } from "./actions";
 import { eventElement, indexOfFocused } from "./dom";
 
-const EMPTY_SITE: UPSite = { handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [], terminal: true };
+const EMPTY_SITE: UPSite = {
+  handle: "", repo: "", rss: "", hotspot: "", nav: {}, accents: [], terminal: true, blog: false, projects: false, solitaire: false,
+};
 const getSite = (): UPSite => window.UP_SITE ?? EMPTY_SITE;
 
 // nav:<key> targets are SSR'd into UP_SITE.nav from the unity/site-pages.html

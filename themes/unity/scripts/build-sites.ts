@@ -86,6 +86,9 @@ const SITES: Record<string, SiteSpec> = {
           && "the projects sidebar lacks the GitHub social link",
         !read(join(out, "about/index.html")).includes('<a class="up-menu-item" href="/privacy/"')
           && "the Help menu lacks the menu.help link to the privacy page",
+        // The shortcuts dialog lists the keys of the blog, the projects
+        // grid, and the solitaire table.
+        ...surfaceFlagProblems(out, true),
         // Each list's search names its own list, the post list's sorted
         // column names its order, and the Spotify player names its type.
         ...([["posts/index.html", ' aria-label="Search posts"'], ["projects/index.html", ' aria-label="Filter projects"'],
@@ -203,6 +206,8 @@ const SITES: Record<string, SiteSpec> = {
         !read(join(out, "index.html")).includes('data-up-accent="orange"') && "index.html does not start with the orange accent",
         names !== "orange green aubergine blue" && `the Preferences dialog offers ${names}, not the theme's presets`,
         ...studioProblems(out, "index.html", false),
+        // The shortcuts dialog leaves out the keys of the pages the site lacks.
+        ...surfaceFlagProblems(out, false),
       ];
     },
   },
@@ -1404,12 +1409,30 @@ function wallpaperCheck(out: string, expect: (url: string) => string | false): (
   return [url === undefined ? "the stylesheet lacks the wallpaper param's rule after main.css's default in the unity.theme layer" : expect(url)];
 }
 
+// The fields of window.UP_SITE that the checks read.
+interface UpSite {
+  accents?: { name: string; label: string }[];
+  blog?: unknown;
+  projects?: unknown;
+  solitaire?: unknown;
+}
+
 // The window.UP_SITE that the runtime script index.html loads sets.
-function upSite(out: string): { accents?: { name: string; label: string }[] } {
+function upSite(out: string): UpSite {
   const src = /<script defer src="([^"]+\/runtime\.[^"]+)"/.exec(read(join(out, "index.html")))?.[1];
-  const window: { UP_SITE?: { accents?: { name: string; label: string }[] } } = {};
+  const window: { UP_SITE?: UpSite } = {};
   if (src) runInNewContext(read(join(out, src)), { window });
   return window.UP_SITE ?? {};
+}
+
+// A failure for each UP_SITE field that tells the shortcuts dialog
+// whether the site has the blog, the projects grid, or the solitaire
+// table, when the field does not hold want.
+function surfaceFlagProblems(out: string, want: boolean): string[] {
+  const site = upSite(out);
+  return (["blog", "projects", "solitaire"] as const)
+    .filter((key) => site[key] !== want)
+    .map((key) => `UP_SITE.${key} is ${String(site[key])}, not ${want}`);
 }
 
 // The names of the accent presets that the Preferences dialog offers, in

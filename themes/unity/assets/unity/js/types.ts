@@ -59,6 +59,12 @@ export interface UPSite {
   accents: UPAccent[];
   /** Whether the home page is the terminal, from params.home.layout. */
   terminal: boolean;
+  /** Whether the site has a blog section, from Hugo's mainSections. */
+  blog: boolean;
+  /** Whether a page in the language sets layout = "projects". */
+  projects: boolean;
+  /** Whether a page in the language sets layout = "solitaire". */
+  solitaire: boolean;
 }
 
 /** Runtime UI strings from the theme's _partials/unity/ui/i18n.html; read
