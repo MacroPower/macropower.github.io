@@ -1,5 +1,6 @@
 import { XtermTerminal, FONT_PROBES } from "./terminal";
 import { Shell, type ShellData } from "./shell";
+import { parseShellIsland } from "./island";
 import { writeBanner } from "./banner";
 import { formatUptime } from "./uptime";
 import { color, PALETTE } from "./ansi";
@@ -9,9 +10,6 @@ import { t } from "../i18n";
 // Keyed by the home page's path, which is the site's root, so two sites
 // on one origin (user.github.io/a/ and /b/) keep separate histories.
 const HISTORY_KEY = `up:shell-history:${location.pathname}`;
-
-// The JSON data island as home.html emits it.
-type ShellIsland = Omit<ShellData, "uptime"> & { since?: string };
 
 function loadHistory(): string[] {
   try {
@@ -40,15 +38,15 @@ function saveHistory(items: readonly string[]): void {
   const mount = root.querySelector<HTMLElement>("[data-shell-mount]");
   if (!dataEl || !mount) return;
 
-  let data: ShellData;
-  try {
-    // The island carries the date the uptime counts from. Computing the
-    // uptime here keeps it current on a page built days ago.
-    const { since, ...rest } = JSON.parse(dataEl.textContent ?? "") as ShellIsland;
-    data = { ...rest, uptime: formatUptime(since ?? "", new Date()) };
-  } catch {
+  const island = parseShellIsland(dataEl.textContent ?? "");
+  if (!island) {
+    console.error("unity: the terminal's data island is not a JSON object");
     return;
   }
+  // The island carries the date the uptime counts from. Computing the
+  // uptime here keeps it current on a page built days ago.
+  const { since, ...rest } = island;
+  const data: ShellData = { ...rest, uptime: formatUptime(since, new Date()) };
 
   // Ubuntu Mono is Google-hosted with display=swap, so on a cold cache it is
   // not yet active when this deferred bundle runs. xterm measures the cell

@@ -47,9 +47,11 @@ export interface BlogMeta {
   url: string;
 }
 
-// Single source of truth parsed from the JSON data island in index.html.
-// The island carries a `since` date in place of `uptime`, and the entrypoint
-// computes `uptime` from it on page load.
+// The terminal's data. parseShellIsland() in island.ts reads it from the
+// JSON data island that _partials/unity/page/terminal.html writes. The
+// island carries a `since` date in place of `uptime`, and the entrypoint
+// computes `uptime` from it on page load. Add a new field here, in
+// parseShellIsland(), and in terminal.html.
 export interface ShellData {
   handle: string;
   host: string;
