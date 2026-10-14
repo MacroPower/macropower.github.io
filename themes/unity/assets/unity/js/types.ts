@@ -9,17 +9,25 @@ export type UPDialogIcon = "info" | "question" | "warning" | "error" | "success"
 /** `Id` narrows the button's id to a literal, so uiDialog's result names
  *  only the ids a call passes. */
 export interface UPDialogButton<Id extends string = string> {
+  /** The value the dialog resolves to when this button closes it. */
   id: Id;
   label: string;
+  /** Draws the button in the accent color. */
   primary?: boolean;
+  /** Marks the button destructive. When the last button carries it,
+   *  focus starts on the first button that does not. */
   danger?: boolean;
 }
 
 export interface UPDialogOptions<Id extends string = string> {
+  /** The titlebar text and the heading over the body. */
   title?: string;
   body?: string;
+  /** Monospace text in a box under the body, such as an error's output. */
   details?: string | null;
+  /** The glyph beside the text, info when absent. */
   icon?: UPDialogIcon;
+  /** The buttons from left to right. Focus starts on the last one. */
   buttons?: readonly UPDialogButton<Id>[];
   /** Optional rich-content hook: receives a `.up-dlg-custom` container slotted
    *  after the body/details and before the footer. Lets a caller build live

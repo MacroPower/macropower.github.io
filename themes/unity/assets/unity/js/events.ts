@@ -8,6 +8,10 @@ import type { UPPageWindowState } from "./types";
 /** Fires on document once the desktop has started. */
 export const READY_EVENT = "up:ready";
 
+/** The class body carries after the desktop has started. app.ts adds it
+ *  just before READY_EVENT fires, so a script that runs later reads it. */
+export const READY_CLASS = "up-ready";
+
 /** Fires on window whenever the page window opens, closes, minimizes,
  *  maximizes, or gains or loses focus. */
 export const WINDOW_STATE_EVENT = "up:page-window-state";

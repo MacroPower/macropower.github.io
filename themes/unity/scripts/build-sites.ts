@@ -413,6 +413,31 @@ mainSections = ["posts"]
       );
     },
   },
+  // A site script that imports the theme's script API, built the way
+  // README.md shows. The build fails when the import does not resolve.
+  api: {
+    files: {
+      "hugo.toml": BARE,
+      "assets/js/site.ts": `import { dialog, notify } from "unity/js/api";
+notify({ summary: "SITE-NOTIFY" });
+void dialog({ title: "SITE-DIALOG" });
+`,
+      "layouts/_partials/extend-footer.html": `{{ with resources.Get "js/site.ts" | js.Build (dict "minify" hugo.IsProduction) | fingerprint }}
+  <script defer src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}"></script>
+{{ end }}
+`,
+    },
+    check: (out) => {
+      const src = /<script defer src="(\/js\/site\.[0-9a-f]+\.js)"/.exec(read(join(out, "index.html")))?.[1];
+      const js = src ? read(join(out, src)) : "";
+      return [
+        !src && "index.html does not load the site's script",
+        ...["up:ready", "up:notify", "SITE-NOTIFY", "SITE-DIALOG"]
+          .filter((s) => !js.includes(s))
+          .map((s) => `the site's script lacks ${s}`),
+      ];
+    },
+  },
 };
 
 function read(file: string): string {

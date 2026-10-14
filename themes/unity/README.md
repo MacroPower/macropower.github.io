@@ -210,6 +210,51 @@ The theme's render hooks extend Hugo's Markdown:
     detail: { summary: "Saved", body: "Your draft is safe.", icon: "info" },
   }));
   ```
+- **Script API.** Your site's TypeScript can import the theme's script API from `unity/js/api`, and Hugo's `js.Build` resolves the import from the theme's assets. The other modules under `unity/js/` are internal, so import only `unity/js/api`.
+
+  `notify()` raises a notification bubble. `dialog()` opens a dialog with the options of `window.uiDialog`, which the exported `UPDialogOptions` type lists. It resolves to the id of the button that closed the dialog, or to `null` when Escape or the close button closed it. tsc narrows that result to the ids in the call's `buttons`. Both functions wait for the desktop to start, so a script can call them at any time. `whenReady()` returns a promise that resolves when the desktop has started.
+
+  ```ts
+  // assets/js/site.ts
+  import { dialog, notify } from "unity/js/api";
+
+  notify({ summary: "Welcome back", icon: "info" });
+
+  document.querySelector("#clear-draft")?.addEventListener("click", async () => {
+    const choice = await dialog({
+      title: "Clear the draft?",
+      icon: "question",
+      buttons: [
+        { id: "keep", label: "Keep" },
+        { id: "clear", label: "Clear", primary: true, danger: true },
+      ],
+    });
+    if (choice === "clear") localStorage.removeItem("draft");
+  });
+  ```
+
+  ```go-html-template
+  {{/* layouts/_partials/extend-footer.html */}}
+  {{ with resources.Get "js/site.ts" | js.Build (dict "minify" hugo.IsProduction) | fingerprint }}
+    <script defer src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}"></script>
+  {{ end }}
+  ```
+
+  Hugo writes `assets/jsconfig.json` on each build, and it maps imports to the theme's assets wherever the theme lives, whether under `themes/`, in Hugo's module cache, or under `_vendor/`. To type-check your scripts with TypeScript 5.4 or later, extend that file from your site's `tsconfig.json` and run `tsc` after a build:
+
+  ```json
+  {
+    "extends": "./assets/jsconfig.json",
+    "compilerOptions": {
+      "lib": ["es2023", "dom"],
+      "module": "preserve",
+      "moduleResolution": "bundler",
+      "strict": true,
+      "noEmit": true
+    },
+    "include": ["assets/js"]
+  }
+  ```
 - **Comments.** Add `layouts/_partials/extend-post.html` to your site. The post reader renders it after each post's body, with the post as its context.
 - **Content Security Policy.** The theme renders no inline script, event handler, or style attribute, so its pages work under `script-src 'self'`. The home terminal needs `style-src 'unsafe-inline'`, because xterm.js adds style elements at runtime. Hugo's Google Analytics tag is an inline script. Hugo's default syntax highlighting writes style attributes, so set `markup.highlight.noClasses = false`, and the theme's stylesheet carries the classes for your `markup.highlight.style`.
 - **Analytics.** Set `services.googleAnalytics.id` and production builds include Hugo's Google Analytics tag. For any other provider, use `extend-head.html`.
