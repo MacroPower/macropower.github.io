@@ -42,7 +42,8 @@ run("hud", initHud);
 run("page window", installPageWindow);
 run("desktop marquee", initDesktopMarquee);
 document.body.classList.add(READY_CLASS);
-// A site's own scripts (extend-footer.html) run before this deferred
-// bundle, so they wait for this event to call window.uiDialog and the
-// other desktop APIs.
+// A site's script that runs before this deferred bundle, such as a
+// classic script in either hook partial, waits for this event. A deferred
+// or module script in extend-footer.html runs after this event, so it
+// checks READY_CLASS first. README.md documents the rule.
 emitDocument(READY_EVENT, null);

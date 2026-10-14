@@ -3,9 +3,8 @@ import { join } from "node:path";
 
 import { defineConfig, devices } from "@playwright/test";
 
-// Runs the browser smoke suite against the example site in Chromium.
-// global-setup.ts builds the site and serves it, and `npm run test:browser`
-// runs this config. Install the browser with `npx playwright install chromium`.
+// Runs the browser suite in Chromium. global-setup.ts builds the example
+// site and serves it, and `npm run test:browser` runs this config. Install the browser with `npx playwright install chromium`.
 export default defineConfig({
   testDir: ".",
   globalSetup: "./global-setup.ts",

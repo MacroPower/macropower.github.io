@@ -320,7 +320,7 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
   Focus rings on the light window surfaces paint `color`, so give it a contrast of 4:1 or more with white. White text and the focus ring of a selected row sit on `light`, so give it 3:1 or more. When a visitor's system asks for more contrast, that white text sits on `dark` or `darker` instead, so give both a contrast of 4.5:1 or more with white. Accent text in the top panel's menus paints `lighter`, so give it a contrast of 4.5:1 or more with `#2A2825`, the lightest color of the menus' background. Give it 3:1 or more with `#4D4A47`, the lightest color of a titlebar, because focus rings, icons, and the battery and volume bars paint it too. The default `lighter` keeps both for every `color`.
 
   Hugo merges your presets into the theme's key by key, so a built-in preset whose `color` your site changes keeps the theme's other shades. Add a preset of your own instead. Do not set `--up-accent` or its shades in `custom.css`, because a value there beats every preset, and Edit > Preferences stops changing it.
-- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. The theme's scripts are deferred and run after yours, so a script that calls `window.uiDialog` waits for the `up:ready` event on `document`. A script that might run later, such as a module script, first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. `window.uiDialog` takes the dialog options that the **Script API** entry lists. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
+- **Extra head or body markup.** Add `layouts/_partials/extend-head.html` or `layouts/_partials/extend-footer.html` to your site. The theme renders the first at the end of `<head>` and the second just before `</body>`. `window.uiDialog` takes the dialog options that the **Script API** entry lists. A script raises a notification bubble by dispatching an `up:notify` event on `window`:
 
   ```js
   window.dispatchEvent(new CustomEvent("up:notify", {
@@ -329,6 +329,16 @@ In feeds, each player becomes a link to the same item on Spotify or YouTube, bec
   ```
 
   The detail takes a `summary`, which is required, and an optional `body`, `icon`, and `timeoutMs`. `icon` names one of the theme's glyphs, `info`, `warning`, `question`, `success`, `volume`, `volume-muted`, `network`, `battery`, `heart`, `lock`, `terminal`, or `music`, or a freedesktop icon name for one of them, such as `dialog-information`. Any other name shows no icon. `timeoutMs` sets how long the bubble shows, between 1000 and 20000 milliseconds, inclusive, and defaults to 5000.
+
+  The theme's deferred scripts load just before `extend-footer.html`. Browsers run deferred and module scripts in document order, so each script's hook and tag decide whether it runs before or after the desktop starts:
+
+  | Script tag | In `extend-head.html` | In `extend-footer.html` |
+  | --- | --- | --- |
+  | Without `defer`, `async`, or `type="module"` | Before | Before |
+  | With `defer` or `type="module"` | Before | After |
+  | With `async` | Before or after | Before or after |
+
+  A script that runs before the desktop starts waits for the `up:ready` event on `document` before it calls `window.uiDialog` or dispatches `up:notify`. A script that runs after the desktop starts, such as the one in the **Script API** example, never receives the event. Such a script first checks for the `up-ready` class on `<body>`, which the theme sets just before the event. It waits for the event only when the class is missing. An `async` script makes the same check, because it might run at either time. `whenReady()` from the Script API makes the same check, so a script that imports it works from either hook with any tag.
 - **Script API.** Your site's TypeScript can import the theme's script API from `unity/js/api`, and Hugo's `js.Build` resolves the import from the theme's assets. The other modules under `unity/js/` are internal, so import only `unity/js/api`.
 
   `notify()` raises a notification bubble and takes the fields of the `up:notify` detail. `dialog()` opens a dialog. Both functions wait for the desktop to start, so a script can call them at any time. `whenReady()` returns a promise that resolves when the desktop has started. The module also exports the event names as `READY_EVENT` and `NOTIFY_EVENT`, and the `UPNotifyDetail`, `UPDialogOptions`, `UPDialogButton`, and `UPDialogIcon` types.

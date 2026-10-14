@@ -146,6 +146,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 - The no-JavaScript fallbacks of the terminal, projects, and CV pages keep their layout under a `style-src 'self'` policy.
 - `hugo mod npm pack` collects no packages from the theme, and a change to the theme's dev tooling no longer warns your site that its packed dependencies are stale.
 - README.md's configuration example leaves out `theme = "unity"`, which broke the build of a site that installed the theme as a Hugo module or a Git submodule.
+- README.md's rule for when a hook's script runs follows document order. A deferred or module script in `extend-footer.html`, such as the one in the Script API example, runs after the `up:ready` event and never receives it. Such a script checks for the `up-ready` class first, as `whenReady()` does.
 - The theme ships the Ubuntu Font Licence and Canonical's copyright notice beside its fonts, and the CV viewer's script keeps pdf.js's licence notice.
 
 [Unreleased]: https://github.com/MacroPower/macropower.github.io/commits/main/themes/unity
