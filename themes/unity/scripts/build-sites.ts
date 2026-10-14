@@ -197,6 +197,43 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       ];
     },
   },
+  // A blog that tags its posts, as README.md suggests. The tags take the
+  // place of the categories in the Places lenses and the post chips.
+  tags: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+[taxonomies]
+  tag = "tags"
+[params.blog.taxonomies]
+  category = "tags"
+`,
+      "content/posts/one.md": page("One", "tags = ['go', 'Home Lab']\n"),
+    },
+    check: (out) => {
+      const list = read(join(out, "posts/index.html"));
+      return [
+        ...["go", "home-lab"]
+          .filter((term) => !list.includes(`href="/tags/${term}/"`))
+          .map((term) => `posts/index.html has no lens for the tag ${term}`),
+        !list.includes('<span class="up-post-chip">#Home Lab</span>') && "posts/index.html lacks the post's tag chip",
+        !read(join(out, "tags/home-lab/index.html")).includes('href="/posts/one/"')
+          && "tags/home-lab/index.html does not list the tagged post",
+      ];
+    },
+  },
+  // A blog without taxonomy pages, feeds, or a sitemap. The link check
+  // fails on any lens, feed, or sitemap link that names a missing page.
+  trimmed: {
+    files: {
+      "hugo.toml": `${BARE}mainSections = ["posts"]
+disableKinds = ["taxonomy", "term", "rss", "sitemap"]
+[taxonomies]
+  category = "categories"
+  series = "series"
+`,
+      "content/posts/one.md": page("One", "categories = ['meta']\nseries = ['intro']\n"),
+    },
+  },
   // A non-English default language whose translation covers one key. The
   // build must say so, and the other strings, in templates and scripts
   // alike, must fall back to English.
