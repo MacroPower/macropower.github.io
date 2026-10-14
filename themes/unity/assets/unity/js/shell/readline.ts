@@ -11,23 +11,11 @@ const WORD = /[A-Za-z0-9]/;
 const isWord = (ch: string | undefined): boolean => ch !== undefined && WORD.test(ch);
 const isSpace = (ch: string | undefined): boolean => ch !== undefined && /\s/.test(ch);
 
-// Strip C0 control characters (and DEL) so pasted/echoed text cannot inject
-// cursor moves, colors, or screen clears. ESC (\x1b) is the primary vector,
-// but the whole C0 range is removed. Tab/newline are optionally preserved for
-// command output (echo); the readline edit path keeps neither.
-export function stripControls(
-  s: string,
-  opts: { keepTab?: boolean; keepNewline?: boolean } = {},
-): string {
-  let out = "";
-  for (const ch of s) {
-    const code = ch.codePointAt(0) ?? 0;
-    if (ch === "\t") { if (opts.keepTab) out += ch; continue; }
-    if (ch === "\n") { if (opts.keepNewline) out += ch; continue; }
-    if (code < 0x20 || code === 0x7f) continue;
-    out += ch;
-  }
-  return out;
+// Strip the C0 control characters and DEL, tab and newline included, so
+// pasted text cannot inject cursor moves, colors, or screen clears. ESC
+// (\x1b) is the main vector, but every control character goes.
+export function stripControls(s: string): string {
+  return s.replace(/[\x00-\x1f\x7f]/g, "");
 }
 
 export interface CompletionContext {
