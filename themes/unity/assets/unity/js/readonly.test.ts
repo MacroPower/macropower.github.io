@@ -12,6 +12,7 @@ import type { MASK_COLORS, PALETTE, PALETTE_BRIGHT } from "./shell/ansi";
 import type { ALL_COMMANDS } from "./shell/commands/all";
 import type { FONT_PROBES } from "./shell/terminal";
 import type { TEST_DATA } from "./shell/testkit";
+import type { TABLE_BUTTONS, TOOLBAR_ACTIONS } from "./solitaire/controls";
 import type { RANK_LABELS, SUITS } from "./solitaire/klondike";
 import type { ICONS, IconName, PAL } from "./solitaire/sprites";
 
@@ -29,6 +30,8 @@ describe("exported tables", () => {
     expectTypeOf<typeof RANK_LABELS>().toEqualTypeOf<Readonly<typeof RANK_LABELS>>();
     expectTypeOf<typeof PAL>().toEqualTypeOf<Readonly<typeof PAL>>();
     expectTypeOf<typeof ICONS>().toEqualTypeOf<Readonly<typeof ICONS>>();
+    expectTypeOf<typeof TABLE_BUTTONS>().toEqualTypeOf<Readonly<typeof TABLE_BUTTONS>>();
+    expectTypeOf<typeof TOOLBAR_ACTIONS>().toEqualTypeOf<Readonly<typeof TOOLBAR_ACTIONS>>();
   });
 
   it("hold read-only icon rows", () => {

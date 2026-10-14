@@ -21,8 +21,9 @@ import {
   makeCanvas, pxRoundRect, pxRoundOutline, renderFelt, slotSprite, textWidth, ICONS, type IconName,
 } from "./sprites";
 import { Sfx } from "./sound";
+import { isToolbarAction, type TableButton, type ToolbarAction } from "./controls";
 import { locate, solve, type SolverMove } from "./solver";
-import { eventElement } from "../dom";
+import { eventElement, focusedElement } from "../dom";
 
 const GAP = 4;
 const TABLEAU_W = 7 * CARD_W + 6 * GAP;
@@ -118,7 +119,7 @@ interface Bouncer {
 }
 
 interface Button {
-  id: string;
+  id: TableButton;
   label?: string;
   icon?: IconName;
   color: string;
@@ -214,8 +215,8 @@ function cardName(card: Card): string {
   let popups: Popup[] = [];
   let press: Press | null = null;
   let hover: Placement | null = null;
-  let hoverButton: string | null = null;
-  let pressedButton: string | null = null;
+  let hoverButton: TableButton | "banner" | null = null;
+  let pressedButton: TableButton | "banner" | null = null;
   let dropTarget: Loc | null = null;
   let pointerX = 0;
   let lastAvailW = 0;
@@ -865,8 +866,8 @@ function cardName(card: Card): string {
     });
   }
 
-  function drawButton(b: Button, now: number): void {
-    const hovered = hoverButton === b.id && b.enabled;
+  function drawButton(b: Button, now: number, focused: boolean): void {
+    const hovered = (hoverButton === b.id || focused) && b.enabled;
     const pressed = pressedButton === b.id;
     let dy = 0;
     if (pressed) dy = 2;
@@ -887,6 +888,7 @@ function cardName(card: Card): string {
     } else if (b.icon) {
       drawIcon(loCtx, b.icon, b.x + 3, b.y + dy + 3, fg, PAL.ink);
     }
+    if (focused) drawHighlight(b.x, b.y + dy, b.w, b.h, PAL.white);
   }
 
   function chipWidth(text: string): number {
@@ -901,13 +903,13 @@ function cardName(card: Card): string {
     drawText(loCtx, text, x + 13, y + 3, color, PAL.ink);
   }
 
-  function drawHud(now: number): void {
+  function drawHud(now: number, focus: ToolbarAction | null): void {
     const top = hudTop();
     loCtx.fillStyle = "rgba(0,0,0,0.22)";
     loCtx.fillRect(0, top, W, hudRows * HUD_ROW);
     loCtx.fillStyle = "rgba(0,0,0,0.35)";
     loCtx.fillRect(0, top, W, 1);
-    for (const b of buttons) drawButton(b, now);
+    for (const b of buttons) drawButton(b, now, b.id === focus);
 
     // Readouts, right-aligned; on the second row when the HUD wraps.
     const y = (hudRows === 2 ? top + HUD_ROW : top) + 3;
@@ -934,7 +936,7 @@ function cardName(card: Card): string {
     return null;
   }
 
-  function runButton(id: string): void {
+  function runButton(id: TableButton): void {
     switch (id) {
       case "new": confirmNewGame(); break;
       case "undo": undo(); break;
@@ -950,9 +952,13 @@ function cardName(card: Card): string {
     layoutButtons();
     root.querySelectorAll<HTMLButtonElement>("[data-sol-action]").forEach((el) => {
       const id = el.dataset.solAction ?? "";
+      if (!isToolbarAction(id)) return;
       const b = buttons.find((x) => x.id === id);
-      if (id === "auto") {
+      // AUTO takes HINT's slot on the table, so the toolbar shows one of
+      // the two, and every focusable button has a drawn twin to ring.
+      if (id === "auto" || id === "hint") {
         el.hidden = !b;
+        if (b) el.disabled = !b.enabled;
         return;
       }
       if (id === "draw-stock") {
@@ -1097,7 +1103,7 @@ function cardName(card: Card): string {
     loCtx.restore();
   }
 
-  function drawBanner(now: number): void {
+  function drawBanner(now: number, focus: ToolbarAction | null): void {
     const lines = [
       t("js_solitaire_banner_score", { score: game.score }),
       t("js_solitaire_banner_time", { time: formatTime(frozenElapsed) }),
@@ -1121,17 +1127,32 @@ function cardName(card: Card): string {
     const bx = Math.round(W / 2 - bw / 2);
     const by = py + ph - 20;
     const pressed = pressedButton === "banner";
+    // The toolbar's New game button starts the next deal from the banner.
+    const focused = focus === "new";
+    let dy = 0;
+    if (pressed) dy = 2;
+    else if (hoverButton === "banner" || focused) dy = -1;
     pxRoundRect(loCtx, bx, by + 2, bw, 13, 2, PAL.ink);
     if (!pressed) pxRoundRect(loCtx, bx, by + 1, bw, 13, 2, PAL.redDark);
-    pxRoundRect(loCtx, bx, by + (pressed ? 2 : hoverButton === "banner" ? -1 : 0), bw, 13, 2, PAL.red);
-    drawText(loCtx, label, bx + 5, by + 3 + (pressed ? 2 : hoverButton === "banner" ? -1 : 0), PAL.white, PAL.ink);
+    pxRoundRect(loCtx, bx, by + dy, bw, 13, 2, PAL.red);
+    drawText(loCtx, label, bx + 5, by + 3 + dy, PAL.white, PAL.ink);
+    if (focused) drawHighlight(bx, by + dy, bw, 13, PAL.white);
     bannerButton = { x: bx, y: by, w: bw, h: 13 };
   }
   let bannerButton: { x: number; y: number; w: number; h: number } | null = null;
 
+  /** The id of the toolbar button that holds focus. The page hides the
+   *  toolbar from sight, so the table rings the button's drawn twin. */
+  function focusedAction(): ToolbarAction | null {
+    const el = focusedElement();
+    const id = el && root.contains(el) ? el.dataset.solAction ?? "" : "";
+    return isToolbarAction(id) ? id : null;
+  }
+
   function render(now: number): void {
     const dt = Math.min(50, now - lastFrame);
     lastFrame = now;
+    const focus = focusedAction();
 
     // Advance tweens.
     const finished: Tween[] = [];
@@ -1196,7 +1217,7 @@ function cardName(card: Card): string {
         }
       }
       drawParticles(dt);
-      drawBanner(now);
+      drawBanner(now, focus);
       hi.drawImage(lo, 0, 0, canvas.width, canvas.height);
       if (!reduceMotion() || particles.length) requestFrame();
       return;
@@ -1223,6 +1244,10 @@ function cardName(card: Card): string {
         drawCardSprite(p.card, f.faceUp ?? v.faceUp, v.x, v.y - lift, 0, f.sx, 1);
       }
       drawHints(now);
+      if (focus === "draw-stock") {
+        const s = slotPos(STOCK);
+        drawHighlight(s.x, s.y, CARD_W, CARD_H, PAL.white);
+      }
       if (dropTarget) {
         const r = pileRect(dropTarget);
         drawHighlight(r.x, r.y, r.w, r.h, PAL.green);
@@ -1243,7 +1268,7 @@ function cardName(card: Card): string {
       }
       drawParticles(dt);
       drawPopups(now);
-      drawHud(now);
+      drawHud(now, focus);
     }
 
     hi.drawImage(lo, 0, 0, canvas.width, canvas.height);
@@ -1584,10 +1609,14 @@ function cardName(card: Card): string {
     root.addEventListener(type, () => sfx.unlock(), { capture: true, passive: true });
   }
   root.addEventListener("keydown", onKeyDown);
+  // The next frame reads the focused toolbar button and rings its twin.
+  root.addEventListener("focusin", requestFrame);
+  root.addEventListener("focusout", requestFrame);
   root.querySelectorAll<HTMLButtonElement>("[data-sol-action]").forEach((el) => {
     el.addEventListener("click", () => {
       sfx.unlock();
       const id = el.dataset.solAction ?? "";
+      if (!isToolbarAction(id)) return;
       if (id === "draw-stock") draw();
       else runButton(id);
     });
