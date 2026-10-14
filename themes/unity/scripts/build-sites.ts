@@ -76,6 +76,7 @@ const SITES: Record<string, SiteSpec> = {
           && "the welcome post's TeX block does not render as MathML",
         !welcome.includes('<pre tabindex="0" class="chroma">') && "the welcome post's code is not highlighted with classes",
         !sitemap.includes("/series/</loc>") && "sitemap.xml lacks the series taxonomy",
+        robotsSitemap(out, "robots.txt", "https://example.org/sitemap.xml"),
         // The solitaire and icon pages set noindex.
         ...["solitaire", "icons"]
           .filter((p) => sitemap.includes(`/${p}/</loc>`))
@@ -224,6 +225,9 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
   multilingual: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "en"
+enableRobotsTXT = true
+[sitemap]
+  filename = "map.xml"
 [[menus.help]]
   name = "Imprint"
   pageRef = "/imprint"
@@ -273,6 +277,9 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
             .map((m) => m[1]).join(" ");
           return links !== hrefs.join(" ") && `${file} links the Help menu to "${links}", not "${hrefs.join(" ")}"`;
         }),
+      // Hugo writes a sitemap index at the root that names each
+      // language's sitemap, all under the site's sitemap filename.
+      robotsSitemap(out, "robots.txt", "https://example.org/map.xml"),
     ],
   },
   // Each language on its own host. The language menu links across hosts
@@ -281,9 +288,11 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
   // leads to the German home page. Hugo writes each language into its
   // own directory, and the build fails when it writes a file there twice.
   // German sets a wallpaper, so each language links its own stylesheet.
+  // Each host's robots.txt names that host's sitemap.
   multihost: {
     files: {
-      "hugo.toml": `${BARE}[languages.en]
+      "hugo.toml": `${BARE}enableRobotsTXT = true
+[languages.en]
   baseURL = "https://example.com/"
   weight = 1
 [languages.de]
@@ -307,7 +316,10 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       return rows.map(([file, lang, want]) => {
         const got = new RegExp(`up-lang-row[^"]*" href="([^"]*)" hreflang="${lang}"`).exec(read(join(out, file)))?.[1];
         return got !== want && `${file}'s ${lang} row links ${got}, not ${want}`;
-      });
+      }).concat([
+        robotsSitemap(out, "en/robots.txt", "https://example.com/sitemap.xml"),
+        robotsSitemap(out, "de/robots.txt", "https://example.de/sitemap.xml"),
+      ]);
     },
   },
   // A second language with its own highlight style, accent preset, and
@@ -756,10 +768,12 @@ copyright = "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) & Jane"
     },
   },
   // A blog without taxonomy pages, feeds, or a sitemap. The link check
-  // fails on any lens, feed, or sitemap link that names a missing page.
+  // fails on any lens, feed, or sitemap link that names a missing page,
+  // and robots.txt must not name a sitemap.
   trimmed: {
     files: {
       "hugo.toml": `${BARE}mainSections = ["posts"]
+enableRobotsTXT = true
 disableKinds = ["taxonomy", "term", "rss", "sitemap"]
 [taxonomies]
   category = "categories"
@@ -767,6 +781,7 @@ disableKinds = ["taxonomy", "term", "rss", "sitemap"]
 `,
       "content/posts/one.md": page("One", "categories = ['meta']\nseries = ['intro']\n"),
     },
+    check: (out) => [robotsSitemap(out, "robots.txt", "")],
   },
   // Posts that carry only tags, under Hugo's default taxonomies and no
   // params. The blog's Places lenses and chips must show the tags.
@@ -1739,6 +1754,13 @@ function homeTile(html: string): string {
 function cwdTitle(html: string): unknown {
   const island = /data-shell-data>([^<]*)<\/script>/.exec(html)?.[1];
   return island === undefined ? undefined : (JSON.parse(island) as { cwdTitle?: unknown }).cwdTitle;
+}
+
+// Returns a problem unless the robots.txt at file, under out, names the
+// sitemap at want. An empty want means the file must not name one.
+function robotsSitemap(out: string, file: string, want: string): string | false {
+  const got = [...read(join(out, file)).matchAll(/^Sitemap: (.*)$/gm)].map((m) => m[1]).join(" ");
+  return got !== want && `${file} names the sitemap "${got}", not "${want}"`;
 }
 
 // Each pattern matches a place that names a page but holds no text.

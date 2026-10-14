@@ -33,6 +33,11 @@ mainSections = ["posts"]
 # [privacy.youtube]
 #   privacyEnhanced = true
 
+# Hugo writes the sitemap under this file name, and robots.txt names
+# it. The value is Hugo's default.
+# [sitemap]
+#   filename = "sitemap.xml"
+
 [permalinks]
   # Optional; the theme works with any permalink shape.
   posts = "/posts/:year/:month/:title/"

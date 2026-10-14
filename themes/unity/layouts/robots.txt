@@ -1,2 +1,19 @@
+{{- /*
+  Points crawlers at the sitemap that the build writes. Hugo files its
+  sitemap pages under the internal paths /_sitemapindex and /_sitemap.
+  GetPage finds each one only when the build writes it, and its
+  permalink carries the site's sitemap filename. Hugo does not document
+  either path, so test sites in scripts/build-sites.ts check the line on
+  each Hugo release that CI builds.
+
+  On a multilingual site that serves every language from one host, Hugo
+  writes the index at the root, and the index names each language's
+  sitemap. On a site that gives each language its own host, each host's
+  robots.txt names that host's sitemap. On a site that disables the
+  sitemap kind, GetPage finds neither page, so the file does not name a
+  sitemap.
+*/ -}}
 User-agent: *
-Sitemap: {{ "sitemap.xml" | absURL }}
+{{ with or (site.GetPage "/_sitemapindex") (site.GetPage "/_sitemap") -}}
+Sitemap: {{ .Permalink }}
+{{ end -}}

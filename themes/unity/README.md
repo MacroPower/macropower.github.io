@@ -133,7 +133,7 @@ With `_merge` set, Hugo merges `markup` from every theme and module a site impor
 The theme does not set these, so set them in your site:
 
 - `mainSections` names the blog section. Without it, Hugo picks the section with the most pages.
-- `enableRobotsTXT = true` publishes the theme's `robots.txt`, which points crawlers at the sitemap.
+- `enableRobotsTXT = true` publishes the theme's `robots.txt`, which points crawlers at the sitemap under the file name that `[sitemap] filename` sets. On a multilingual site that serves every language from one host, it names the sitemap index, which names each language's sitemap. It does not name a sitemap when the site disables the `sitemap` kind.
 - `[build] noJSConfigInAssets = true` stops Hugo from writing an `assets/jsconfig.json` into your site each time it bundles the theme's scripts. Leave it unset if your editor reads that file.
 
 ### Params
