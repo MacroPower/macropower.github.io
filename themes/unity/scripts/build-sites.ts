@@ -1915,6 +1915,15 @@ function blankTitles(out: string): string[] {
     });
 }
 
+// HTML nests an article inside another to mark a part of it, such as a
+// comment on a post. No page of any site nests one, so each page's
+// article holds the whole post or page that a reader view shows.
+function nestedArticles(out: string): string[] {
+  return htmlFiles(out).flatMap((file) => [...elements(read(file))]
+    .filter((e) => e.tag === "article" && e.ancestors.some((a) => a.tag === "article"))
+    .map((e) => `${relative(out, file)} nests <article${e.attrs.slice(0, 60)}> inside another <article>`));
+}
+
 function htmlFiles(dir: string): string[] {
   return readdirSync(dir, { encoding: "utf8", recursive: true })
     .filter((f) => f.endsWith(".html"))
@@ -2139,7 +2148,7 @@ try {
     const links = site.hosts
       ? Object.entries(site.hosts).flatMap(([dir, url]) => brokenLinks(join(out, dir), url).map((p) => `${dir}/: ${p}`))
       : brokenLinks(out, siteBaseURL(source, flags));
-    const problems = [...(site.check?.(out, source) ?? []), ...links, ...blankTitles(out)]
+    const problems = [...(site.check?.(out, source) ?? []), ...links, ...blankTitles(out), ...nestedArticles(out)]
       .filter((p) => p !== false);
     const warns = site.warns;
     if (warns) {

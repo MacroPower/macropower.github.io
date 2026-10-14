@@ -1,7 +1,8 @@
 {{- /* A single post: pathbar with older/newer arrows, the reading-progress
      bar, and the reader. Rendered by single.html for pages in the blog
      section. The arrows step by date through every post in the post's
-     language and top-level section, across any nested sections. */ -}}
+     language and top-level section, across any nested sections. The
+     reader is the post's article, so this wrapper is a div. */ -}}
 {{- $posts := partialCached "unity/blog-section-posts.html" .Section .Section -}}
 {{- /* Hugo's Next returns the page before this one in the collection and
      Prev the page after it, so on this oldest-first list Next is the
@@ -13,7 +14,7 @@
 {{- $prevTitle := "" }}{{ with $older }}{{ $prevTitle = partial "unity/page-title.html" . }}{{ end }}
 {{- $nextTitle := "" }}{{ with $newer }}{{ $nextTitle = partial "unity/page-title.html" . }}{{ end }}
 {{- .Store.SetInMap "unity-bundles" "blog" "unity/js/blog.ts" }}
-<article class="up-blog up-selectable" data-blog-kind="post">
+<div class="up-blog up-selectable" data-blog-kind="post">
   {{ partial "unity/page/nav-pathbar.html" (dict
       "segments" (partial "unity/page/crumbs.html" .)
       "prevURL" $prevURL "prevTitle" $prevTitle
@@ -22,4 +23,4 @@
     <div class="up-reader-progress-bar" data-up-reader-progress-bar></div>
   </div>
   {{ partial "unity/page/post-reader.html" . }}
-</article>
+</div>
