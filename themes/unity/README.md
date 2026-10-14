@@ -55,6 +55,8 @@ Run `hugo mod get -u` again to update. The theme has no release tags yet, so Hug
 
 The theme does not add Node packages to `hugo mod npm pack`, so a site that runs it to install another module's packages, such as Tailwind CSS, installs nothing for the theme.
 
+Hugo ignores the theme's `hugo.toml` when your import sets `ignoreConfig = true`, so the build loses the theme's `module.mounts` and fails. Copy each `[[module.mounts]]` entry from the theme's `hugo.toml` into a `[[module.imports.mounts]]` entry under your import. The theme's list mounts `i18n` a second time, at `assets/unity/i18n`, so Hugo's default mounts do not cover it.
+
 ### Git submodule
 
 Git cannot add one directory of a repository as a submodule, so add the whole repository and point `theme` at the theme inside it:

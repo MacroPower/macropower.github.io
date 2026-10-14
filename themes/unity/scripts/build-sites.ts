@@ -328,6 +328,22 @@ themesDir = ${JSON.stringify(dirname(themesDir))}
       .filter((heading) => !readmeToml(heading))
       .map((heading) => `README.md has no TOML block under ${heading}`),
   },
+  // A Hugo module import that sets ignoreConfig, which drops the theme's
+  // hugo.toml. The import copies the theme's mounts, which README.md
+  // tells such a site to do.
+  ignoreconfig: {
+    files: {
+      "hugo.toml": `baseURL = "https://example.org/"
+[module]
+  [[module.imports]]
+    path = ${JSON.stringify(themeModule())}
+    ignoreConfig = true
+${[...read(join(theme, "hugo.toml")).matchAll(/\[\[module\.mounts\]\]\s+source = "([^"]+)"\s+target = "([^"]+)"/g)]
+  .map(([, source, target]) => `    [[module.imports.mounts]]\n      source = "${source}"\n      target = "${target}"\n`)
+  .join("")}`,
+      "config/_default/module.toml": moduleReplacement(),
+    },
+  },
   multilingual: {
     files: {
       "hugo.toml": `${BARE}defaultContentLanguage = "en"
