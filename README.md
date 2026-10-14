@@ -18,6 +18,7 @@ npm run typecheck      # production sources
 npm run typecheck:test # test sources
 npm run typecheck:node # dev scripts and Vitest config
 npm run test:sites     # theme example and bare sites, warnings fatal
+npm run test:browser   # theme example pages in Chromium
 ```
 
 The root `package.json` is an npm workspace over the theme, so these run the theme's own scripts and dev dependencies.

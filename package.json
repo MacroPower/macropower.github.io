@@ -12,6 +12,7 @@
     "lint": "npm run lint -w themes/unity",
     "test": "npm test -w themes/unity",
     "test:watch": "npm run test:watch -w themes/unity",
-    "test:sites": "npm run test:sites -w themes/unity"
+    "test:sites": "npm run test:sites -w themes/unity",
+    "test:browser": "npm run test:browser -w themes/unity"
   }
 }

@@ -9,6 +9,7 @@ Hugo site for jacobcolvin.com, deployed to GitHub Pages from `main`. The only th
 - `npm test`, `npm run typecheck`, `npm run typecheck:test`, `npm run typecheck:node`, and `npm run lint` run the theme's Vitest, tsc, and Biome passes from the repo root. CI runs them all before the Hugo build.
 - The root `package.json` is an npm workspace over `themes/unity`, and its scripts call the theme's. Add dev dependencies to the theme's `package.json`, then run `npm install` at the root to update the one `package-lock.json`.
 - `npm run test:sites` builds the theme's example site and a set of small sites with every Hugo warning fatal, then checks their output. CI runs it after the site build. `.github/workflows/theme-hugo-latest.yml` runs it on the newest Hugo release every week, and on each pull request or push to `main` that changes the theme.
+- `npm run test:browser` loads every page of the theme's example site in Chromium. It fails on any script error and on anything that the theme's Content Security Policy blocks. Run `npx playwright install chromium` once to download the browser. CI runs it in its own job, and the deploy waits for it.
 - `task populate-projects` regenerates `data/projects.yaml` from GitHub.
 
 ## Rules

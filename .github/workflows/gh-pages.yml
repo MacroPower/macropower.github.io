@@ -68,6 +68,35 @@ jobs:
           name: public
           path: public/
 
+  # Loads every page of the theme's example site in Chromium under the
+  # Content Security Policy that the theme's README documents.
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Keep hugo-version in sync with the build job.
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.166.0'
+          extended: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # --with-deps also installs the system libraries that Chromium needs.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser smoke test
+        run: npm run test:browser
+
   # The theme promises its module.hugoVersion floor, so its test sites
   # also build on that release. Keep it in sync with
   # module.hugoVersion.min in the theme's hugo.toml.
@@ -95,7 +124,7 @@ jobs:
         run: node themes/unity/scripts/build-sites.ts
 
   deploy:
-    needs: build
+    needs: [build, browser]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:

@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
-    "includes": ["assets/unity/js/**", "scripts/**", "vitest.config.ts"]
+    "includes": ["assets/unity/js/**", "scripts/**", "tests/**", "vitest.config.ts"]
   },
   "formatter": { "enabled": false },
   "assist": { "enabled": false },
