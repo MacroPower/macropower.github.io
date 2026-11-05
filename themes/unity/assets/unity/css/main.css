@@ -137,9 +137,10 @@
    block elements, and geometric shapes. Without these faces, a browser
    draws those characters from a system font with wider glyphs, so a
    diagram in a code block loses its columns. These faces subset Iosevka
-   Fixed 34.9.0, whose glyphs are half an em wide like Ubuntu Mono's, and
-   carry Ubuntu Mono's vertical metrics. Their range leaves out U+2191 and
-   U+2193, because the latin subset draws them. */
+   Fixed, whose glyphs are half an em wide like Ubuntu Mono's, and carry
+   Ubuntu Mono's vertical metrics. Their range leaves out U+2191 and
+   U+2193, because the latin subset draws them. `npm run vendor:iosevka`
+   builds them, and scripts/vendor-iosevka.py lists the same code points. */
 /* Ubuntu Mono 400 (symbols) */
 @font-face{
   font-family:"Ubuntu Mono";

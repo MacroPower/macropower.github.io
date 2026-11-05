@@ -457,6 +457,8 @@ The browser suite serves the example site with the Content Security Policy under
 
 The theme vendors xterm.js and pdf.js under `assets/unity/third_party/`, so sites build without npm. To upgrade either, edit the version in `scripts/vendor-xterm.ts` or `scripts/vendor-pdfjs.ts` and run `npm run vendor:xterm` or `npm run vendor:pdfjs`.
 
+The Ubuntu Mono symbols faces under `assets/unity/fonts/` are subsets of Iosevka Fixed. To upgrade Iosevka, edit the version in `scripts/vendor-iosevka.py`, run `npm run vendor:iosevka`, and change the version under [License](#license) to match. The script runs through [uv](https://docs.astral.sh/uv/), which installs the Python packages that the script pins.
+
 The `js_` keys in `i18n/en.toml` hold the strings that the scripts show, and `assets/unity/js/i18n-keys.ts` types them for tsc. After adding, renaming, or removing a `js_` key or a placeholder, run `npm run i18n:types` to regenerate that file.
 
 The bash-conformance suite skips itself where bash is absent. The suite that checks Hugo's output against the scripts' types builds the example site and a bare site. It skips itself where Hugo is absent.
