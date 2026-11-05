@@ -51,8 +51,6 @@ describe("tokens", () => {
     expect(strays).toEqual([
       // Light status text on the CV viewer's dark page area.
       "--up-content-line in .up-docv-status",
-      // The placeholder behind a sponsor's avatar.
-      "--up-sidebar-bg in .up-sponsor-avatar",
       // The icon page's toast.
       "--up-terminal-bg in .up-icons-toast",
       // The dark code block and its copy button.

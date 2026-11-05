@@ -255,6 +255,52 @@
   --up-btn-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 rgba(0,0,0,.04);
   --up-btn-shadow-active:inset 0 1px 2px rgba(0,0,0,.18);
   --up-btn-shadow-checked:inset 0 1px 2px rgba(0,0,0,.15);
+  /* The raised-button-disabled recipe's values. */
+  --up-btn-bg-disabled:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
+  --up-btn-border-disabled:#D4D0CD;
+  --up-btn-fg-disabled:#B4ADA7;
+  /* The window's own chrome between its titlebar and its content: the
+     pathbar and the toolbars under it, their inks, the fields they hold,
+     and the lines between panes. */
+  --up-toolbar-bg:linear-gradient(180deg,#F6F4F1,#E8E5E0);
+  --up-toolbar-bg-sunken:linear-gradient(180deg,#EAE7E3 0%,#DCD8D3 100%);
+  --up-toolbar-fg:#3A3733;
+  --up-toolbar-fg-hover:#1F1D1A;
+  --up-toolbar-label:#5A554E;
+  --up-toolbar-muted:#7A7570;
+  --up-toolbar-line:#D4D0CD;
+  --up-toolbar-line-strong:#C2BEB9;
+  --up-field-border:#B9B5B0;
+  --up-field-bg-disabled:#F1EFEC;
+  --up-pane-line:#C9C5C1;
+  --up-pane-edge:#E2DFDB;
+  --up-pane-hover:rgba(0,0,0,.045);
+  --up-pane-badge:rgba(0,0,0,.06);
+  /* A rule between rows and under headings on a content surface. */
+  --up-content-rule:#EBE8E5;
+  /* The one-pixel highlight along the top of a raised surface, the
+     sidebar's highlight inside its border, and the text shadow under a
+     sidebar's labels. */
+  --up-bevel:rgba(255,255,255,.6);
+  --up-sidebar-bevel:rgba(255,255,255,.45);
+  --up-emboss:0 1px 0 rgba(255,255,255,.6);
+  /* The projects page's preview pane, its pills and chips, and the dots
+     on its folder grid. */
+  --up-project-line:#D4CCBC;
+  --up-project-line-soft:#DCD5C7;
+  --up-project-ink:#8A7E60;
+  --up-chip-bg:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
+  --up-chip-fg:#5A5550;
+  --up-pill-bg:rgba(255,255,255,.75);
+  --up-grid-dot:rgba(90,58,13,.07);
+  /* The placeholder behind a sponsor's avatar and its monogram. */
+  --up-avatar-bg:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
+  --up-avatar-fg:#8A8175;
+  /* Red ink on a button face: a destructive dialog button's label and
+     the PDF icon on the CV viewer's open link. */
+  --up-red-fg:#A02B12;
+  /* The track of a Preferences toggle that is off. */
+  --up-toggle-bg:#C9C5C1;
   /* The bead-face recipe's values, for the titlebar's window controls.
      The focused window and every dialog paint the plain faces, and an
      unfocused window paints the -inactive ones. */
@@ -749,24 +795,24 @@ body.up-resizing *{ cursor:inherit !important; }
 /* ---------- Nautilus sidebar (shared chrome) ---------- */
 .up-naut-sidebar{
   background:var(--up-sidebar-bg);
-  border-inline-end:1px solid #C9C4BB;
+  border-inline-end:1px solid var(--up-pane-line);
   padding:8px 0 14px;min-width:0;overflow:auto;
-  box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
+  box-shadow:inset -1px 0 0 var(--up-sidebar-bevel);
   font-family:var(--up-font-sans);
   /* The highlight inside the border has no logical form, so it moves
      with the border here. */
-  [dir="rtl"] &{box-shadow:inset 1px 0 0 rgba(255,255,255,.45)}
+  [dir="rtl"] &{box-shadow:inset 1px 0 0 var(--up-sidebar-bevel)}
 }
 .up-naut-section{padding:0}
 .up-naut-section + .up-naut-section{
   margin-top:10px;padding-top:8px;
   border-top:1px solid rgba(0,0,0,.06);
-  box-shadow:0 -1px 0 rgba(255,255,255,.55);
+  box-shadow:0 -1px 0 var(--up-bevel);
 }
 .up-naut-section-label{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--up-content-label);padding:4px 14px 4px;
-  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  text-shadow:var(--up-emboss);
 }
 .up-naut-item{
   /* both <a> and <button> reach this rule; reset the button user-agent chrome */
@@ -777,7 +823,7 @@ body.up-resizing *{ cursor:inherit !important; }
   border-inline-start:3px solid transparent;
   cursor:pointer;outline:none;
   transition:background-color .08s linear, color .08s linear;
-  &:hover{background:rgba(0,0,0,.045)}
+  &:hover{background:var(--up-pane-hover)}
   &.is-active{
     /* The --up-accent-light to --up-accent gradient, which matches the
        selected tiles. White text on it contrasts less than 4.5:1 for some
@@ -807,7 +853,7 @@ body.up-resizing *{ cursor:inherit !important; }
   font-size:11px;font-variant-numeric:tabular-nums;
   color:var(--up-content-label);
   padding:1px 7px;border-radius:9999px;
-  background:rgba(0,0,0,.06);
+  background:var(--up-pane-badge);
   min-width:20px;text-align:center;
 }
 .up-naut-item.is-active .up-naut-item-count{
@@ -829,15 +875,15 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-docv-toolbar{
   display:flex;align-items:center;gap:6px;flex-wrap:wrap;
   padding:5px 10px;
-  background:linear-gradient(180deg,#EAE7E3 0%,#DCD8D3 100%);
-  border-bottom:1px solid #C2BEB9;
-  font-size:12px;color:#3A3733;
+  background:var(--up-toolbar-bg-sunken);
+  border-bottom:1px solid var(--up-toolbar-line-strong);
+  font-size:12px;color:var(--up-toolbar-fg);
 }
 .up-docv-group{display:inline-flex;align-items:stretch}
 .up-docv-btn{
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
   min-width:26px;height:24px;padding:0 6px;
-  font:inherit;font-size:12px;color:#3A3733;line-height:1;
+  font:inherit;font-size:12px;color:var(--up-toolbar-fg);line-height:1;
   cursor:pointer;text-decoration:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
@@ -855,8 +901,8 @@ body.up-resizing *{ cursor:inherit !important; }
   svg{flex-shrink:0}
   &:disabled{
     /* recipe: raised-button-disabled */
-    color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
-    border-color:#D4D0CD;cursor:default;pointer-events:none;
+    color:var(--up-btn-fg-disabled);background:var(--up-btn-bg-disabled);
+    border-color:var(--up-btn-border-disabled);cursor:default;pointer-events:none;
   }
 }
 .up-docv-group .up-docv-btn{
@@ -881,27 +927,27 @@ body.up-resizing *{ cursor:inherit !important; }
 }
 /* The page entry renders a translated sentence around its box, so its
    own spaces separate the box from the text. */
-.up-docv-pageentry{margin:0 2px;color:#5A554E;white-space:nowrap;font-variant-numeric:tabular-nums}
+.up-docv-pageentry{margin:0 2px;color:var(--up-toolbar-label);white-space:nowrap;font-variant-numeric:tabular-nums}
 .up-docv-pagenum{
   width:34px;height:22px;padding:0 2px;
   font:inherit;font-size:12px;font-variant-numeric:tabular-nums;text-align:center;
   color:var(--up-content-fg);background:var(--up-content-raised);
-  border:1px solid #B9B5B0;border-radius:2px;
+  border:1px solid var(--up-field-border);border-radius:2px;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
   &:focus{
     border-color:var(--up-accent);
     box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--up-accent-light) 22%, transparent);
   }
-  &:disabled{color:#B4ADA7;background:#F1EFEC}
+  &:disabled{color:var(--up-btn-fg-disabled);background:var(--up-field-bg-disabled)}
 }
 .up-docv-sep{
   width:1px;align-self:stretch;margin:2px 4px;
   background:rgba(0,0,0,.14);
-  box-shadow:1px 0 0 rgba(255,255,255,.5);
+  box-shadow:1px 0 0 var(--up-bevel);
 }
 .up-docv-spacer{flex:1}
-.up-docv-action svg{color:#6B6660}
+.up-docv-action svg{color:var(--up-toolbar-label)}
 
 .up-docv-body{
   flex:1;min-height:60vh;
@@ -911,15 +957,15 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-docv-side{
   display:flex;flex-direction:column;min-height:0;
   background:var(--up-sidebar-bg);
-  border-inline-end:1px solid #C9C4BB;
-  box-shadow:inset -1px 0 0 rgba(255,255,255,.45);
+  border-inline-end:1px solid var(--up-pane-line);
+  box-shadow:inset -1px 0 0 var(--up-sidebar-bevel);
   font-family:var(--up-font-sans);
-  [dir="rtl"] &{box-shadow:inset 1px 0 0 rgba(255,255,255,.45)}
+  [dir="rtl"] &{box-shadow:inset 1px 0 0 var(--up-sidebar-bevel)}
 }
 .up-docv-side-head{
   font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--up-content-label);padding:8px 12px 6px;
-  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  text-shadow:var(--up-emboss);
 }
 .up-docv-thumbs{
   flex:1;min-height:0;overflow:auto;
@@ -997,7 +1043,7 @@ body.up-resizing *{ cursor:inherit !important; }
 .up-docv-open{
   display:inline-flex;align-items:center;gap:6px;
   padding:5px 12px;
-  font-size:12.5px;color:#3A3733;text-decoration:none;text-shadow:none;
+  font-size:12.5px;color:var(--up-toolbar-fg);text-decoration:none;text-shadow:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
   border:1px solid var(--up-btn-border);
@@ -1007,8 +1053,8 @@ body.up-resizing *{ cursor:inherit !important; }
     background:var(--up-btn-bg-hover);
     border-color:var(--up-btn-border-hover);
   }
-  &:hover{color:#1F1D1A}
-  svg{flex-shrink:0;color:#A02B12}
+  &:hover{color:var(--up-toolbar-fg-hover)}
+  svg{flex-shrink:0;color:var(--up-red-fg)}
 }
 
 /* ---------- Sponsors ---------- */
@@ -1039,13 +1085,13 @@ a.up-sponsor-card[href]:hover{
 .up-sponsor-avatar{
   flex:0 0 auto;width:48px;height:48px;border-radius:50%;
   overflow:hidden;display:inline-flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#EFEDE8 0%,#E5E1DA 100%);
-  border:1px solid #C9C4BB;
+  background:var(--up-avatar-bg);
+  border:1px solid var(--up-pane-line);
 }
 .up-sponsor-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .up-sponsor-monogram{
-  font-family:var(--up-font-sans);font-size:20px;font-weight:600;color:#8A8175;
-  line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.6);
+  font-family:var(--up-font-sans);font-size:20px;font-weight:600;color:var(--up-avatar-fg);
+  line-height:1;text-shadow:var(--up-emboss);
 }
 .up-sponsor-name{
   font-size:14px;font-weight:500;min-width:0;
@@ -1499,8 +1545,8 @@ a.up-sponsor-card[href]:hover{
 
 /* ---------- Pathbar (Nautilus breadcrumb) ---------- */
 .up-pathbar-wrap{
-  background:linear-gradient(180deg,#F6F4F1,#E8E5E0);
-  border-bottom:1px solid #D4D0CD;
+  background:var(--up-toolbar-bg);
+  border-bottom:1px solid var(--up-toolbar-line);
 }
 .up-pathbar{
   display:flex;align-items:center;gap:6px;
@@ -1520,7 +1566,7 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-icon-btn{
   display:inline-flex;align-items:center;justify-content:center;
   width:24px;padding:0;
-  color:#3A3733;
+  color:var(--up-toolbar-fg);
 }
 .up-pathbar-arrow{
   text-decoration:none;
@@ -1547,8 +1593,8 @@ a.up-sponsor-card[href]:hover{
   [dir="rtl"] & svg{transform:scaleX(-1)}
   &.is-disabled{
     /* recipe: raised-button-disabled */
-    color:#B4ADA7;background:linear-gradient(180deg,#F1EFEC 0%,#E8E5E0 100%);
-    border-color:#D4D0CD;cursor:default;pointer-events:none;
+    color:var(--up-btn-fg-disabled);background:var(--up-btn-bg-disabled);
+    border-color:var(--up-btn-border-disabled);cursor:default;pointer-events:none;
   }
 }
 .up-pathbar-crumbs{
@@ -1559,7 +1605,7 @@ a.up-sponsor-card[href]:hover{
   align-items:center;
   gap:5px;
   padding:3px 10px;
-  color:#3A3733;
+  color:var(--up-toolbar-fg);
   text-decoration:none;
   line-height:1.6;
   /* recipe: raised-button */
@@ -1612,14 +1658,14 @@ a.up-sponsor-card[href]:hover{
 .up-pathbar-search{
   display:flex;align-items:center;gap:6px;
   padding:5px 10px 6px;
-  background:linear-gradient(180deg,#EAE7E3 0%,#DCD8D3 100%);
-  border-top:1px solid #C9C5C1;
-  border-bottom:1px solid #C2BEB9;
+  background:var(--up-toolbar-bg-sunken);
+  border-top:1px solid var(--up-pane-line);
+  border-bottom:1px solid var(--up-toolbar-line-strong);
   &[hidden]{display:none}
 }
 .up-pathbar-search-icon{
   display:inline-flex;align-items:center;justify-content:center;
-  color:#7A7570;
+  color:var(--up-toolbar-muted);
   margin-inline-start:2px;
 }
 .up-pathbar-search-input{
@@ -1627,7 +1673,7 @@ a.up-sponsor-card[href]:hover{
   font:inherit;font-size:12.5px;
   color:var(--up-content-fg);
   background:var(--up-content-raised);
-  border:1px solid #B9B5B0;border-radius:2px;
+  border:1px solid var(--up-field-border);border-radius:2px;
   padding:3px 8px;height:22px;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
@@ -1638,15 +1684,15 @@ a.up-sponsor-card[href]:hover{
   &::placeholder{color:var(--up-content-muted)}
 }
 .up-pathbar-search-count{
-  font-size:11px;color:#7A7570;font-variant-numeric:tabular-nums;
+  font-size:11px;color:var(--up-toolbar-muted);font-variant-numeric:tabular-nums;
   min-width:36px;text-align:end;
 }
 .up-pathbar-search-close{
   width:22px;height:22px;line-height:1;
   background:transparent;border:1px solid transparent;border-radius:2px;
-  color:#7A7570;font-size:16px;cursor:pointer;
+  color:var(--up-toolbar-muted);font-size:16px;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;padding:0;
-  &:hover{background:rgba(0,0,0,.08);color:#1F1D1A}
+  &:hover{background:rgba(0,0,0,.08);color:var(--up-toolbar-fg-hover)}
 }
 
 /* ---------- Blog layouts ---------- */
@@ -1660,20 +1706,20 @@ a.up-sponsor-card[href]:hover{
 
 /* ---------- Post list ---------- */
 .up-post-list{
-  border-inline-end:1px solid #E2DFDB;background:var(--up-content-raised);
+  border-inline-end:1px solid var(--up-pane-edge);background:var(--up-content-raised);
   overflow:auto;display:flex;flex-direction:column;
 }
 .up-post-list-header{
   display:grid;grid-template-columns:1fr 96px;gap:0;
   font-size:11px;font-weight:700;letter-spacing:.04em;
   color:var(--up-content-muted);background:linear-gradient(180deg,var(--up-content-bg) 0%,var(--up-content-shade) 100%);
-  border-bottom:1px solid #C9C5C1;
+  border-bottom:1px solid var(--up-pane-line);
   position:sticky;top:0;z-index:1;text-transform:uppercase;
 }
 .up-post-list-col{
   display:inline-flex;align-items:center;gap:6px;
   padding:6px 12px;height:24px;
-  background:transparent;border:0;border-inline-end:1px solid #D4D0CD;
+  background:transparent;border:0;border-inline-end:1px solid var(--up-toolbar-line);
   color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;
   font-weight:inherit;cursor:pointer;text-align:start;
   &:last-child{border-inline-end:0}
@@ -1688,7 +1734,7 @@ a.up-sponsor-card[href]:hover{
 .up-post-list-body{display:flex;flex-direction:column}
 .up-post-row{
   display:grid;grid-template-columns:1fr auto;gap:12px;
-  padding:10px 12px;border-bottom:1px solid #EBE8E5;
+  padding:10px 12px;border-bottom:1px solid var(--up-content-rule);
   color:var(--up-content-ink);text-decoration:none;
   border-inline-start:3px solid transparent;
   outline:none;
@@ -1735,7 +1781,7 @@ a.up-sponsor-card[href]:hover{
   position:relative;
   height:2px;
   background:rgba(0,0,0,.08);
-  border-bottom:1px solid #D4D0CD;
+  border-bottom:1px solid var(--up-toolbar-line);
   /* The bar grows from the start edge. */
   [dir="rtl"] &{transform:scaleX(-1)}
 }
@@ -1753,7 +1799,7 @@ a.up-sponsor-card[href]:hover{
 .up-reader-up{
   display:inline-flex;align-items:center;gap:5px;
   margin:14px 16px 0;padding-block:3px;padding-inline:6px 8px;width:fit-content;
-  font-size:12px;color:#3A3733;text-decoration:none;
+  font-size:12px;color:var(--up-toolbar-fg);text-decoration:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
   border:1px solid var(--up-btn-border);
@@ -1763,7 +1809,7 @@ a.up-sponsor-card[href]:hover{
     background:var(--up-btn-bg-hover);
     border-color:var(--up-btn-border-hover);
   }
-  svg{color:#3A3733}
+  svg{color:var(--up-toolbar-fg)}
   [dir="rtl"] & svg{transform:scaleX(-1)}
 }
 .up-reader-inner{max-width:720px;margin:0 auto;padding:40px 36px 64px}
@@ -1772,7 +1818,7 @@ a.up-sponsor-card[href]:hover{
   font-size:11.5px;color:var(--up-content-muted);letter-spacing:.04em;
   display:flex;flex-wrap:wrap;gap:6px;align-items:center;
 }
-.up-reader-meta-sep{color:#C4BFB9}
+.up-reader-meta-sep{color:var(--up-pane-line)}
 .up-reader-chip{color:var(--up-content-muted)}
 .up-reader-title{
   font-size:30px;font-weight:500;line-height:1.2;letter-spacing:-.01em;
@@ -1780,7 +1826,7 @@ a.up-sponsor-card[href]:hover{
 }
 .up-reader-body{font-size:15.5px;line-height:1.7;color:var(--up-content-fg)}
 .up-reader-signoff{
-  margin-top:26px;padding-top:14px;border-top:1px solid #ECE9E6;
+  margin-top:26px;padding-top:14px;border-top:1px solid var(--up-content-rule);
   font-family:var(--up-font-mono);
   font-size:12px;color:var(--up-content-muted);
 }
@@ -1789,7 +1835,7 @@ a.up-sponsor-card[href]:hover{
   font-family:var(--up-font-mono);
   font-size:11.5px;color:var(--up-content-muted);
   p{margin:0}
-  a{color:inherit;text-decoration:underline;text-decoration-color:#C4BFB9}
+  a{color:inherit;text-decoration:underline;text-decoration-color:var(--up-pane-line)}
   a:hover{color:var(--up-content-accent);text-decoration-color:currentColor}
 }
 /* ---------- Markdown prose (post reader and plain pages) ---------- */
@@ -1820,7 +1866,7 @@ a.up-sponsor-card[href]:hover{
     &:focus-visible{opacity:1}
   }
   :is(h1, h2, h3, h4, h5, h6):hover > .up-heading-anchor{opacity:1}
-  h2{font-size:20px;border-bottom:1px solid #EBE8E5;padding-bottom:6px}
+  h2{font-size:20px;border-bottom:1px solid var(--up-content-rule);padding-bottom:6px}
   h3{font-size:17px}
   h4{font-size:15px;color:var(--up-content-ink)}
   ul,
@@ -1828,7 +1874,7 @@ a.up-sponsor-card[href]:hover{
   li{margin:4px 0}
   blockquote{
     margin-inline-start:0;padding:8px 14px;color:var(--up-content-label);
-    background:var(--up-content-sunken);border-inline-start:3px solid #C9C5C1;
+    background:var(--up-content-sunken);border-inline-start:3px solid var(--up-pane-line);
   }
   img{max-width:100%;height:auto;border-radius:3px}
   table{
@@ -1926,7 +1972,7 @@ a.up-sponsor-card[href]:hover{
   --up-alert-line:color-mix(in srgb, var(--up-content-bg) 50%, var(--up-alert-hue));
   margin:0 0 14px;border:1px solid var(--up-alert-line);border-radius:3px;
   background:linear-gradient(180deg,color-mix(in srgb, var(--up-alert-bg) 60%, var(--up-content-raised)) 0%,var(--up-alert-bg) 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+  box-shadow:inset 0 1px 0 var(--up-bevel);
   &.is-tip{--up-alert-ink:#329600;--up-alert-hue:#75B92C}
   &.is-important{--up-alert-ink:#AF28AA;--up-alert-hue:#B260A8}
   &.is-warning{--up-alert-ink:#B96900;--up-alert-hue:#E0AE01}
@@ -2018,7 +2064,7 @@ details.up-alert{
   gap:20px;padding:18px 20px 24px;
   overflow:auto;
   background:
-    radial-gradient(circle at 1px 1px, rgba(90,58,13,.07) 1px, transparent 1.5px),
+    radial-gradient(circle at 1px 1px, var(--up-grid-dot) 1px, transparent 1.5px),
     linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-sunken) 100%);
   background-size:18px 18px, 100% 100%;
   align-content:start;
@@ -2043,7 +2089,7 @@ details.up-alert{
   &.is-focused{
     background:color-mix(in srgb, var(--up-accent) 12%, transparent);
     border-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
+    box-shadow:0 1px 0 var(--up-bevel) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
   }
   &.is-active{
     background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 92%, transparent) 0%, color-mix(in srgb, var(--up-accent) 95%, transparent) 100%);
@@ -2163,17 +2209,17 @@ details.up-alert{
      the folder grid's own top-light gradient directly below it, reading as a
      seam. The flat tone matches the grid's top so the border alone divides them. */
   background:var(--up-content-raised);
-  border-bottom:1px solid #CFC9BE;
+  border-bottom:1px solid var(--up-project-line);
   padding:0;overflow:auto;
   display:flex;flex-direction:column;
   font-size:13px;color:var(--up-content-fg);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow:inset 0 1px 0 var(--up-bevel);
 }
 .up-project-preview-header{
   display:grid;grid-template-columns:84px 1fr;
   gap:14px;align-items:center;
   padding:20px 18px 18px;
-  border-bottom:1px solid #DCD5C7;
+  border-bottom:1px solid var(--up-project-line-soft);
 }
 .up-project-preview-header-text{min-width:0}
 .up-project-preview-title{
@@ -2186,13 +2232,13 @@ details.up-alert{
   display:inline-flex;
   align-items:center;
   border-radius:9999px;
-  border:1px solid #D4CCBC;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+  border:1px solid var(--up-project-line);
+  box-shadow:inset 0 1px 0 var(--up-bevel);
   gap:6px;
   padding-block:2px;
   padding-inline:7px 9px;
-  background:rgba(255,255,255,.75);
-  font-size:11.5px;color:#3A3733;
+  background:var(--up-pill-bg);
+  font-size:11.5px;color:var(--up-toolbar-fg);
   svg{display:block}
 }
 
@@ -2206,7 +2252,7 @@ details.up-alert{
 .up-project-preview-desc{
   margin:0;padding:0 0 10px;
   color:var(--up-content-ink);font-size:13px;line-height:1.55;
-  border-bottom:1px dashed #D4CCBC;
+  border-bottom:1px dashed var(--up-project-line);
   font-style:italic;
   /* recipe: truncate */
   overflow:hidden;
@@ -2221,13 +2267,13 @@ details.up-alert{
 .up-project-preview-stat{
   display:flex;align-items:center;gap:7px;min-width:0;
   font-size:12.5px;color:var(--up-content-fg);font-variant-numeric:tabular-nums;
-  svg{color:#8A7E60;flex-shrink:0}
+  svg{color:var(--up-project-ink);flex-shrink:0}
   > span{min-width:0;overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   &.up-project-preview-stat-wide{grid-column:1 / -1}
 }
 .up-project-preview-section-label{
   font-size:10.5px;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;color:#8A7E60;
+  text-transform:uppercase;color:var(--up-project-ink);
   margin:4px 0 -2px;
 }
 .up-project-preview-topics{
@@ -2240,12 +2286,12 @@ details.up-alert{
   display:inline-flex;
   align-items:center;
   border-radius:9999px;
-  border:1px solid #D4CCBC;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+  border:1px solid var(--up-project-line);
+  box-shadow:inset 0 1px 0 var(--up-bevel);
   flex:none;
   padding:2px 8px;
-  background:linear-gradient(180deg,#fff 0%,#F0EBE0 100%);
-  color:#5A5550;
+  background:var(--up-chip-bg);
+  color:var(--up-chip-fg);
   font-size:11px;line-height:1.4;white-space:nowrap;
 }
 /* Multi-select summary chips wrap and scroll, unlike the single-row topic clip. */
@@ -2254,7 +2300,7 @@ details.up-alert{
 }
 .up-open-btn{
   display:inline-flex;align-items:center;gap:6px;padding-block:5px;padding-inline:10px 12px;
-  color:#3A3733;font-size:12.5px;font-weight:500;text-decoration:none;
+  color:var(--up-toolbar-fg);font-size:12.5px;font-weight:500;text-decoration:none;
   /* recipe: raised-button */
   background:var(--up-btn-bg);
   border:1px solid var(--up-btn-border);
@@ -2268,7 +2314,7 @@ details.up-alert{
     background:var(--up-btn-bg-active);
     box-shadow:var(--up-btn-shadow-active);
   }
-  svg{color:#3A3733}
+  svg{color:var(--up-toolbar-fg)}
 }
 /* projects preview pins the open button to the start edge under the stats */
 .up-project-preview .up-open-btn{margin-top:auto;align-self:flex-start}
@@ -2301,7 +2347,7 @@ details.up-alert{
   font-family:var(--up-font-mono);
   font-size:11.5px;color:var(--up-content-muted);letter-spacing:.02em;
   padding:2px 8px;border-radius:2px;
-  background:var(--up-content-raised);border:1px solid #E0D9CB;
+  background:var(--up-content-raised);border:1px solid var(--up-project-line-soft);
 }
 
 /* No-JS projects fallback: the only project links in the document when the
@@ -2362,7 +2408,7 @@ details.up-alert{
     height:auto;
   }
   .up-naut-sidebar{
-    border-inline-end:0;border-bottom:1px solid #D4D0CD;
+    border-inline-end:0;border-bottom:1px solid var(--up-toolbar-line);
     display:flex;flex-wrap:wrap;padding:6px 8px;
   }
   .up-naut-section + .up-naut-section{margin-top:0;margin-inline-start:10px}
@@ -2370,7 +2416,7 @@ details.up-alert{
   /* width:auto: the base rail rule's width:100% would stack each chip on its
      own full-width line instead of flowing them inline. */
   .up-naut-item{padding:4px 8px;display:inline-flex;gap:4px;width:auto}
-  .up-post-list{border-inline-end:0;border-bottom:1px solid #E2DFDB;max-height:50vh}
+  .up-post-list{border-inline-end:0;border-bottom:1px solid var(--up-pane-edge);max-height:50vh}
   .up-pathbar-label{max-width:180px}
   .up-pathbar-search-input{font-size:16px}
   .up-neofetch{grid-template-columns:1fr;padding:22px 24px;gap:18px}
@@ -2889,13 +2935,13 @@ details.up-alert{
   padding:5px 14px;
   background:linear-gradient(180deg,var(--up-content-raised) 0%,var(--up-content-shade) 100%);
   color:var(--up-content-fg);
-  border:1px solid #B5AFAA;
+  border:1px solid var(--up-btn-border);
   border-radius:3px;
   font-size:13px; font-weight:400;
   font-family:var(--up-font-sans);
   cursor:default;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
+    inset 0 1px 0 var(--up-bevel),
     0 1px 1px rgba(0,0,0,.08);
   outline:none;
   &:hover{
@@ -2926,7 +2972,7 @@ details.up-alert{
      Delete, Empty Trash) look like every other primary button — the danger cue
      lives in the dialog copy, as in Ambiance. */
   &.is-danger:not(.is-primary){
-    color:#A02B12;
+    color:var(--up-red-fg);
     &:active{
       background:linear-gradient(180deg,#8C2410 0%,#8C2410 100%);
       color:#fff;
@@ -2953,7 +2999,7 @@ details.up-alert{
   position:relative; flex-shrink:0;
   width:40px; height:22px; padding:0; border:0; cursor:default;
   border-radius:11px;
-  background:#C9C5C1;
+  background:var(--up-toggle-bg);
   box-shadow:inset 0 1px 2px rgba(0,0,0,.25);
   transition:background .15s ease;
   &::after{
@@ -3018,10 +3064,10 @@ details.up-alert{
   padding:3px 6px 4px;
   color:var(--up-content-ink);
   background:linear-gradient(180deg,var(--up-content-raised),var(--up-content-sunken));
-  border:1px solid #C9C5C1;
-  border-bottom-color:#ABA7A2;
+  border:1px solid var(--up-pane-line);
+  border-bottom-color:color-mix(in srgb, var(--up-pane-line) 85%, #000);
   border-radius:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(0,0,0,.08);
+  box-shadow:inset 0 1px 0 var(--up-bevel), 0 1px 0 rgba(0,0,0,.08);
   /* Mouse gestures are not keys: flat pill, no keycap bevel. */
   &.is-gesture{
     font-family:var(--up-font-sans);
@@ -3554,17 +3600,17 @@ body.up-reduce-motion *{
 }
 .up-trash-empty-btn{
   padding:6px 14px;
-  background:linear-gradient(180deg,#FBFAF9,#E5E2DF);
-  border:1px solid #C9C5C1; border-radius:3px;
-  font-size:12.5px; color:#3A3733; cursor:default;
+  background:var(--up-btn-bg);
+  border:1px solid var(--up-pane-line); border-radius:3px;
+  font-size:12.5px; color:var(--up-toolbar-fg); cursor:default;
   &:hover{
-    background:linear-gradient(180deg,#FFFFFF,#E5E2DF);
-    border-color:#A8A39E;
+    background:var(--up-btn-bg-hover);
+    border-color:var(--up-btn-border-hover);
   }
   &:disabled{
-    color:#A8A39E; cursor:default;
-    background:linear-gradient(180deg,#F4F2EF,#ECE9E5);
-    &:hover{border-color:#C9C5C1}
+    color:var(--up-btn-fg-disabled); cursor:default;
+    background:var(--up-btn-bg-disabled);
+    &:hover{border-color:var(--up-pane-line)}
   }
 }
 
@@ -3599,7 +3645,7 @@ body.up-reduce-motion *{
   &.is-focused{
     background:color-mix(in srgb, var(--up-accent) 12%, transparent);
     border-color:color-mix(in srgb, var(--up-accent) 55%, transparent);
-    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
+    box-shadow:0 1px 0 var(--up-bevel) inset, 0 0 0 1px color-mix(in srgb, var(--up-accent) 12%, transparent);
   }
   &.is-active{
     background:linear-gradient(180deg, color-mix(in srgb, var(--up-accent-light) 92%, transparent) 0%, color-mix(in srgb, var(--up-accent) 95%, transparent) 100%);
