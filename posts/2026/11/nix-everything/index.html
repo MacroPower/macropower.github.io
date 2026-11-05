@@ -1,0 +1,492 @@
+<!doctype html><html lang=en-us dir=ltr data-up-accent=orange><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=color-scheme content="only light"><title>Nix Everything | Jacob Colvin</title><link rel=icon href=/favicon.ico sizes=32x32><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=apple-touch-icon href=/apple-touch-icon.png><meta name=theme-color content="#1b1c1d"><meta name=description content="Why I think Nix is the future of machine configuration"><link rel=canonical href=https://jacobcolvin.com/posts/2026/11/nix-everything/><meta property="og:url" content="https://jacobcolvin.com/posts/2026/11/nix-everything/"><meta property="og:site_name" content="Jacob Colvin"><meta property="og:title" content="Nix Everything"><meta property="og:description" content="Why I think Nix is the future of machine configuration"><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="article:published_time" content="2026-11-04T00:00:00+00:00"><meta property="article:modified_time" content="2026-11-04T00:00:00+00:00"><meta property="article:section" content="posts"><meta property="article:tag" content="Nix"><meta property="article:tag" content="AI"><meta property="og:image" content="https://jacobcolvin.com/img/og-card.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Jacob Colvin's site as an Ubuntu Unity desktop, with a terminal showing his profile beside ASCII art"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://jacobcolvin.com/img/og-card.png"><meta name=twitter:image:alt content="Jacob Colvin's site as an Ubuntu Unity desktop, with a terminal showing his profile beside ASCII art"><meta name=twitter:title content="Nix Everything"><meta name=twitter:description content="Why I think Nix is the future of machine configuration"><meta name=twitter:site content="@0xMacro"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","author":{"@id":"https://jacobcolvin.com/#person","@type":"Person","name":"Jacob Colvin","url":"https://jacobcolvin.com/"},"dateModified":"2026-11-04T00:00:00+00:00","datePublished":"2026-11-04T00:00:00+00:00","description":"Why I think Nix is the future of machine configuration","headline":"Nix Everything","image":["https://jacobcolvin.com/img/og-card.png"],"inLanguage":"en-us","isPartOf":{"@id":"https://jacobcolvin.com/#website"},"mainEntityOfPage":"https://jacobcolvin.com/posts/2026/11/nix-everything/","url":"https://jacobcolvin.com/posts/2026/11/nix-everything/"}</script><link rel=preload as=font type=font/woff2 href=/css/ubuntu-400-latin-VBBSODEU.woff2 crossorigin><link rel=stylesheet href=/css/main.a004695da9a8bf7cc7f55798f5341ac3363697defc06ab41eb55dd377894e501.css integrity="sha256-oARpXamov3zH9VeY9TQawzY2l978BqtB61XdN3iU5QE="><link rel=alternate type=application/rss+xml href=https://jacobcolvin.com/index.xml title="Jacob Colvin"></head><body><a class=up-skip-link href=#up-main>Skip to content</a><div id=up-root><div class=up-top-panel data-ssr data-vol-playlist='[{"title":"","url":"/midi/nggyu.midi"},{"title":"","url":"/midi/rasp.midi"},{"title":"","url":"/midi/mii.midi"},{"title":"","url":"/midi/numb.midi"},{"title":"","url":"/midi/yes.midi"}]'><div dir=auto class="up-panel-title up-panel-trigger" data-panel-trigger data-panel-slot=title>Nix Everything</div><div class=up-panel-item><button type=button class="up-panel-menu up-panel-trigger" id=up-menu-file data-panel-trigger data-menu=file aria-haspopup=menu aria-controls=up-dropdown-file aria-expanded=false>File</button><div class=up-dropdown data-dropdown-for=file data-align=start hidden><div class=up-dropdown-body id=up-dropdown-file role=menu aria-labelledby=up-menu-file><button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=nav:cv><span dir=auto class=up-menu-item-label>Open <bdi dir=auto>CV</bdi></span></button>
+<button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=nav:projects><span dir=auto class=up-menu-item-label>Open <bdi dir=auto>Projects</bdi></span></button>
+<button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=nav:blog><span dir=auto class=up-menu-item-label>Open <bdi dir=auto>Blog</bdi></span></button>
+<button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=nav:sponsors><span dir=auto class=up-menu-item-label>Open <bdi dir=auto>Sponsors</bdi></span></button><div class=up-dropdown-sep role=separator></div><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Close window</span><span class=up-menu-item-shortcut>Ctrl+W</span></div></div></div></div><div class=up-panel-item><button type=button class="up-panel-menu up-panel-trigger" id=up-menu-edit data-panel-trigger data-menu=edit aria-haspopup=menu aria-controls=up-dropdown-edit aria-expanded=false>Edit</button><div class=up-dropdown data-dropdown-for=edit data-align=start hidden><div class=up-dropdown-body id=up-dropdown-edit role=menu aria-labelledby=up-menu-edit><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Undo</span><span class=up-menu-item-shortcut>Ctrl+Z</span></div><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Redo</span><span class=up-menu-item-shortcut>Ctrl+Y</span></div><div class=up-dropdown-sep role=separator></div><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Cut</span><span class=up-menu-item-shortcut>Ctrl+X</span></div><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Copy</span><span class=up-menu-item-shortcut>Ctrl+C</span></div><div class="up-menu-item is-disabled has-shortcut" role=menuitem aria-disabled=true tabindex=-1><span class=up-menu-item-label>Paste</span><span class=up-menu-item-shortcut>Ctrl+V</span></div><div class=up-dropdown-sep role=separator></div><button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=dlg:prefs><span class=up-menu-item-label>Preferences…</span></button></div></div></div><div class=up-panel-item><button type=button class="up-panel-menu up-panel-trigger" id=up-menu-view data-panel-trigger data-menu=view aria-haspopup=menu aria-controls=up-dropdown-view aria-expanded=false>View</button><div class=up-dropdown data-dropdown-for=view data-align=start hidden><div class=up-dropdown-body id=up-dropdown-view role=menu aria-labelledby=up-menu-view><button type=button class="up-menu-item has-shortcut" role=menuitem tabindex=-1 data-action=reload><span class=up-menu-item-label>Reload</span><span class=up-menu-item-shortcut>Ctrl+R</span></button>
+<button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=fullscreen><span class=up-menu-item-label>Toggle full window</span></button><div class=up-dropdown-sep role=separator></div><button type=button class="up-menu-item has-check" role=menuitemcheckbox aria-checked=true tabindex=-1 data-action=dlg:launcher-info><span class=up-menu-item-label>Show launcher</span></button><div class="up-menu-item has-check" role=menuitemcheckbox aria-checked=true tabindex=-1><span class=up-menu-item-label>Show top panel</span></div></div></div></div><div class=up-panel-item><button type=button class="up-panel-menu up-panel-trigger" id=up-menu-help data-panel-trigger data-menu=help aria-haspopup=menu aria-controls=up-dropdown-help aria-expanded=false>Help</button><div class=up-dropdown data-dropdown-for=help data-align=start hidden><div class=up-dropdown-body id=up-dropdown-help role=menu aria-labelledby=up-menu-help><button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=dlg:shortcuts><span class=up-menu-item-label>Keyboard shortcuts</span></button><div class=up-dropdown-sep role=separator></div><button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=dlg:github><span class=up-menu-item-label>View source</span></button>
+<button type=button class=up-menu-item role=menuitem tabindex=-1 data-action=nav:icons><span class=up-menu-item-label>Icon vault</span></button></div></div></div><div class=up-panel-spacer></div><div class=up-panel-item><button type=button class="up-indicator up-panel-trigger" data-panel-trigger data-indicator=inbox aria-label=Messages aria-controls=up-dropdown-inbox aria-expanded=false>
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1"><rect x="1" y="3" width="12" height="8" rx="1"/><path d="M1.5 3.5 7 8l5.5-4.5"/></svg></button><div class=up-dropdown id=up-dropdown-inbox data-dropdown-for=inbox data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header>Messages</div><div class=up-dropdown-body><div class=up-dropdown-empty>No new messages.</div><div class=up-dropdown-row-buttons><a class=up-dropdown-btn href=mailto:me@jacobcolvin.com>Compose</a>
+<button type=button class="up-dropdown-btn is-ghost" data-action=dlg:subscribe>Subscribe to feed</button></div></div></div></div><div class=up-panel-item><button type=button class="up-indicator up-panel-trigger" data-panel-trigger data-indicator=net aria-label=Network aria-controls=up-dropdown-net aria-expanded=false>
+<svg aria-hidden="true" width="11.5" height="14" viewBox="1 0 11.5 14" fill="currentColor"><rect x="2" y="9" width="2.5" height="3"/><rect x="5.5" y="6" width="2.5" height="6"/><rect x="9" y="3" width="2.5" height="9"/></svg></button><div class=up-dropdown id=up-dropdown-net data-dropdown-for=net data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header>Network</div><div class=up-dropdown-body><button type=button class="up-dropdown-row up-net-row is-strong is-on" data-net-name=café-do-bairro data-net-on>
+<span class=up-net-row-dot>●</span><span dir=auto class=up-net-row-name>café-do-bairro</span>
+</button>
+<button type=button class="up-dropdown-row up-net-row" data-net-name=MEO-WiFi>
+<span class=up-net-row-dot>○</span><span dir=auto class=up-net-row-name>MEO-WiFi</span>
+</button>
+<button type=button class="up-dropdown-row up-net-row is-mono" data-net-name=ngrok-tunnel>
+<span class=up-net-row-dot>○</span><span dir=auto class=up-net-row-name>ngrok-tunnel</span>
+</button>
+<button type=button class="up-dropdown-row up-net-row is-muted" data-net-name=(hidden) data-net-hidden>
+<span class=up-net-row-dot>○</span><span dir=auto class=up-net-row-name>(hidden)</span></button><div class=up-dropdown-sep></div><button type=button class=up-dropdown-row data-action=dlg:wired>Wired connection</button>
+<button type=button class=up-dropdown-row data-action=dlg:hotspot>Enable hotspot</button></div></div></div><div class=up-panel-item><button type=button class="up-indicator up-panel-trigger" data-panel-trigger data-indicator=vol aria-label=Volume aria-controls=up-dropdown-vol aria-expanded=false>
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-glyph="" data-vol-glyph-on=""><path d="M2 5h2l3-3v10L4 9H2z"/><path d="M9 4q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M11 2q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-glyph="" data-vol-glyph-mute="" hidden=""><path d="M2 5h2l3-3v10L4 9H2z"/><path d="M9 4l4 6m0-6-4 6" stroke="currentColor" stroke-width="1.2"/></svg></button><div class=up-dropdown id=up-dropdown-vol data-dropdown-for=vol data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header>Sound</div><div class=up-dropdown-body><div class=up-dropdown-row-flex><button type=button class=up-vol-toggle data-action=vol-toggle aria-label="Toggle mute">
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-glyph="" data-vol-glyph-on=""><path d="M2 5h2l3-3v10L4 9H2z"/><path d="M9 4q2 3 0 6" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M11 2q4 5 0 10" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-glyph="" data-vol-glyph-mute="" hidden=""><path d="M2 5h2l3-3v10L4 9H2z"/><path d="M9 4l4 6m0-6-4 6" stroke="currentColor" stroke-width="1.2"/></svg>
+</button>
+<input type=range min=0 max=100 value=62 class=up-vol-slider data-vol-slider aria-label=Volume>
+<span class=up-vol-readout data-vol-readout>62</span></div><div class=up-dropdown-meta>Output: <span class=up-dropdown-meta-strong>Built-in audio</span></div><div class=up-dropdown-meta-em><button type=button class=up-vol-play data-action=vol-play aria-label=Play/Pause>
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-play-glyph=""><path d="M4 2l8 5-8 5z"/></svg>
+<svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-play-glyph="" data-vol-play-glyph-playing="" hidden=""><rect x="4" y="2" width="2.5" height="10"/><rect x="9" y="2" width="2.5" height="10"/></svg>
+</button>
+<span data-vol-nowplaying>Paused</span>
+<button type=button class=up-vol-next data-action=vol-next aria-label="Next track" title="Next track">
+<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5 9 8l-7 4.5v-9zM11 3h2v10h-2V3z" fill="currentColor"/></svg></button></div><div class=up-dropdown-row-buttons><button type=button class="up-dropdown-btn is-ghost" data-action=daw:open>Open in Studio…</button></div></div></div></div><div class=up-panel-item><button type=button class="up-indicator up-panel-trigger" data-panel-trigger data-indicator=bat aria-label=Battery aria-controls=up-dropdown-bat aria-expanded=false>
+<svg aria-hidden="true" width="21" height="14" viewBox="0 0 21 14" fill="none" stroke="currentColor" stroke-width="1" data-bat-glyph="" data-bat-glyph-discharging=""><rect x="1" y="3" width="17" height="8" rx="1"/><rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/><rect x="2.5" y="4.5" width="14" height="5" fill="currentColor" stroke="none" data-bat-level-fill=""/></svg>
+<svg aria-hidden="true" width="21" height="14" viewBox="0 0 21 14" fill="none" stroke="currentColor" stroke-width="1" data-bat-glyph="" data-bat-glyph-charging="" hidden=""><rect x="1" y="3" width="17" height="8" rx="1"/><rect x="18.5" y="5" width="1.5" height="4" fill="currentColor" stroke="none"/><rect x="2.5" y="4.5" width="14" height="5" fill="currentColor" stroke="none" data-bat-level-fill=""/><path d="M10.5 4 7 7.6H9L8.5 10 12 6.4H10z" fill="currentColor" stroke="#252423" class="up-bat-bolt" stroke-width=".6" stroke-linejoin="round"/></svg></button><div class=up-dropdown id=up-dropdown-bat data-dropdown-for=bat data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header>Battery</div><div class=up-dropdown-body><div class=up-bat-headline data-bat-headline>76% — discharging</div><div class=up-bat-detail data-bat-detail>About 3 hours 14 minutes remaining</div><div class=up-bat-bar><div class=up-bat-bar-fill data-bat-fill></div></div><button type=button class=up-dropdown-row data-action=dlg:power-saver>Enable power saver</button>
+<button type=button class=up-dropdown-row data-action=dlg:power>Power settings…</button></div></div></div><div class=up-panel-item><button type=button class="up-indicator up-clock up-panel-trigger" data-panel-trigger data-indicator=clock aria-label=Clock aria-controls=up-dropdown-clock aria-expanded=false>
+<span data-clock-wide></span>
+<span data-clock-narrow hidden></span></button><div class="up-dropdown up-dropdown-wide" id=up-dropdown-clock data-dropdown-for=clock data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header data-clock-longdate></div><div class=up-dropdown-body><div class=up-calendar data-calendar></div><button type=button class=up-dropdown-row data-action=dlg:cal>Open calendar</button>
+<button type=button class=up-dropdown-row data-action=dlg:time>Time settings…</button></div></div></div><div class=up-panel-item><button type=button class="up-indicator up-panel-trigger" data-panel-trigger data-indicator=user aria-label=User aria-controls=up-dropdown-user aria-expanded=false>
+<svg aria-hidden="true" width="12" height="14" viewBox="1 0 12 14" fill="currentColor"><circle cx="7" cy="5" r="2.5"/><path d="M2 12c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/></svg></button><div class=up-dropdown id=up-dropdown-user data-dropdown-for=user data-align=end data-flyout-keepopen hidden><div class=up-dropdown-header>jacob</div><div class=up-dropdown-body><button type=button class=up-dropdown-row data-action=dlg:lock>Lock screen</button>
+<button type=button class=up-dropdown-row data-action=reload>Restart session</button>
+<button type=button class="up-dropdown-row is-danger" data-action=dlg:logout>Log out…</button></div></div></div></div><nav class=up-launcher aria-label=Launcher><button class="up-launcher-tile up-launcher-bfb" data-dash-open type=button aria-label="Search your computer" aria-haspopup=dialog aria-expanded=false>
+<span class=up-launcher-icon><img src=/unity/icons/launcher/dash.a8e3d645d534371e1101b762253ac3d2581e1bcfdc3e014cbdfed646af2a1c8a.svg alt width=48 height=48 draggable=false></span>
+<span class=up-tooltip aria-hidden=true>Search your computer</span></button><div class=up-launcher-sep aria-hidden=true></div><a class=up-launcher-tile href=/ data-launcher=home aria-label=Home><span class=up-launcher-icon><img src=/unity/icons/launcher/home.d209df4f521e78a3145d688098d4581aaf68078baad246ccc0164c0964dd1545.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Home</span></a>
+<a class=up-launcher-tile href=/cv/ data-launcher=cv aria-label=CV><span class=up-launcher-icon><img src=/unity/icons/launcher/cv.15be33fde04db88b87f90932a5fb3ec8b5adfc4b99f650591db1fedfffadf7c7.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>CV</span></a>
+<a class=up-launcher-tile href=/projects/ data-launcher=projects aria-label=Projects><span class=up-launcher-icon><img src=/unity/icons/launcher/projects.72967010dcfa00127b683ec3bb79dd3d47bf975a2e2e68b12e210bdf77b8d95e.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Projects</span></a>
+<a class="up-launcher-tile is-active" href=/posts/ data-launcher=blog aria-label=Blog aria-current=page data-page-current=1><span class=up-launcher-icon><img src=/unity/icons/launcher/blog.1b7c577ab0c0acabd2c182e8204932033333f9aaaa7488fc484018cdfd8501a8.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Blog</span></a>
+<a class=up-launcher-tile href=/sponsors/ data-launcher=sponsors aria-label=Sponsors><span class=up-launcher-icon><img src=/unity/icons/launcher/heart.728be9142f86ecd7df576b121da598503d1cabb2c02bcac7606f840022b2b389.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Sponsors</span></a>
+<button class=up-launcher-tile data-launcher=studio hidden aria-label=Studio type=button><span class=up-launcher-icon><img src=/unity/icons/launcher/piano.27a48aa49fac613b0f31037b5f93258b115dc94fc82cb272a74285c2f351c355.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Studio</span></button><div class=up-launcher-spacer></div><button class=up-launcher-tile data-launcher=trash data-launcher-trash aria-label=Trash type=button><span class=up-launcher-icon><img src=/unity/icons/launcher/trash.c5b6deb56b7e819dcd86cf65d87e3aec53daa10083213f38dda42c9eec51e17e.svg alt width=48 height=48 draggable=false></span>
+<span class="up-launcher-arrow up-launcher-arrow-left" aria-hidden=true></span>
+<span class="up-launcher-arrow up-launcher-arrow-right" aria-hidden=true></span>
+<span dir=auto class=up-tooltip aria-hidden=true>Trash</span></button></nav><div class=up-desktop-label><bdi dir=ltr>jacob-colvin/personal-site</bdi><br><bdi dir=ltr>v1.0 · "aubergine" · 2026</bdi></div><div class=up-window-stage><div class=up-window-chrome data-page-window><div class=up-titlebar data-titlebar><div class=up-tl-group><button class="up-tl up-tl-close" type=button aria-label=Close><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 5 5M5 1 1 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+</button>
+<button class="up-tl up-tl-min" type=button aria-label=Minimize><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 4.2H5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+</button>
+<button class="up-tl up-tl-max" type=button aria-label=Maximize><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><rect x="1" y="1" width="4" height="4" fill="none" stroke="currentColor" stroke-width="1"/></svg></button></div><span dir=auto class=up-titlebar-text>Nix Everything</span></div><main id=up-main class="up-window-body up-selectable"><div class="up-blog up-selectable" data-blog-kind=post><div class=up-pathbar-wrap><nav class=up-pathbar aria-label=Path><div class=up-pathbar-nav role=group aria-label=History><a class=up-pathbar-arrow href=/posts/2025/07/introducing-kat-a-tui-and-rule-based-rendering-engine-for-kubernetes-manifests/ title="Previous: Introducing kat: A TUI and rule-based rendering engine for Kubernetes manifests" aria-label="Previous: Introducing kat: A TUI and rule-based rendering engine for Kubernetes manifests"><svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M7.2 1.6 3 5.5l4.2 3.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</a><a class="up-pathbar-arrow is-disabled" href=# title=Forward aria-label=Forward aria-disabled=true tabindex=-1><svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M3.8 1.6 8 5.5 3.8 9.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class=up-pathbar-crumbs><a class=up-pathbar-btn href=/><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8 8 2.5 14 8"/><path d="M3.8 7v6.5h8.4V7"/><path d="M7 13.5V10H9v3.5"/></svg>
+<span dir=auto class=up-pathbar-label>Home</span>
+</a><a class=up-pathbar-btn href=/posts/><span dir=auto class=up-pathbar-label>Posts</span>
+</a><span class="up-pathbar-btn is-current" aria-current=page><span dir=auto class=up-pathbar-label>Nix Everything</span></span></div></nav></div><div class=up-reader-progress data-up-reader-progress aria-hidden=true><div class=up-reader-progress-bar data-up-reader-progress-bar></div></div><article class=up-reader data-up-reader><a class=up-reader-up href=/posts/ aria-label="Back to all posts"><svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M7.2 1.6 3 5.5l4.2 3.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>All posts</span></a><div class="up-reader-inner up-selectable"><div class=up-reader-meta><time datetime=2026-11-04>Nov 4, 2026</time>
+<span class=up-reader-meta-sep>·</span>
+<span>16 min read</span>
+<span class=up-reader-meta-sep>·</span>
+<span dir=auto class=up-reader-chip>#Nix</span>
+<span class=up-reader-meta-sep>·</span>
+<span dir=auto class=up-reader-chip>#AI</span></div><h1 class=up-reader-title>Nix Everything</h1><div class=up-reader-body data-up-reader-body><p>I think <a href=https://nixos.org/>Nix</a> is the future of machine configuration.</p><p>Nix has been around for a long time now. And up until recently, my impression
+was that it was <em>exclusively</em> for the uber nerds, sitting somewhere between Arch
+Linux and TempleOS. The benefits of Nix have always been hard to ignore, but it
+required a time investment I was not willing to make. Generally I&rsquo;ve seen this
+same sentiment among my peers.</p><p>What I want to propose in this article is that this sentiment is no longer
+accurate. This is because, in my opinion, <strong>Nix is the ideal tool in its class
+for coding agents</strong>.</p><h2 id=wait-whats-a-nix-why-do-the-robots-like-it>Wait, what&rsquo;s a Nix? Why do the robots like it?<a class=up-heading-anchor href=#wait-whats-a-nix-why-do-the-robots-like-it aria-label="Link to Wait, what’s a Nix? Why do the robots like it?"></a></h2><p>Nix describes a whole machine in code:</p><ul><li><a href=https://nix.dev/concepts/flakes>Flakes</a> pin every input to an exact revision
+via a lockfile.</li><li>A single build produces the entire machine configuration that the code
+describes.</li><li>Everything shares one vocabulary. A shell alias, a patched package, and a
+system service are edits to the same tree.</li><li>Two machines on the same platform that build the same flake get the same
+result.</li></ul><p>Agents edit a module, build the configuration, read the error, and try again.
+Building a configuration does not activate it, so failed attempts never touch
+the running system. When an activated change misbehaves, the previous generation
+is still there.</p><p>That loop lets me describe features instead of writing them. I tell the agent
+what I want my machine to do, and it iterates until the build passes and the
+feature works. The loop is the same for my shell, for a systemd service, for a
+patch to an upstream package, and for the agent&rsquo;s own hooks and permissions.
+When something breaks, it&rsquo;s isolated and easily reverted.</p><h2 id=why-would-a-human-ever-dislike-this>Why would a human ever dislike this?<a class=up-heading-anchor href=#why-would-a-human-ever-dislike-this aria-label="Link to Why would a human ever dislike this?"></a></h2><p>My major issues with Nix, pre-2026 edition:</p><ol><li>The learning curve. Nix is a lazy functional language with its own module
+system, and its error messages are often opaque.</li><li>The ecosystem has not settled. Flakes are still experimental. Multiple
+implementations, for example <a href=https://github.com/NixOS/nix>Nix</a> and
+<a href=https://lix.systems/>Lix</a>, diverge in small ways.</li><li>macOS is a second-class platform.
+<a href=https://github.com/nix-darwin/nix-darwin>nix-darwin</a> covers <em>most</em> system
+settings and packages, but you still encounter things that must be changed via
+the settings/privacy GUI.</li><li>On a managed laptop, MDM profiles can sometimes own the settings that Nix
+also wants to own, and the two can fight if you aren&rsquo;t careful.</li></ol><p>I argue that coding agents make the above items non-issues. The overall
+difficulty, general nuance, and complex interactions that come with Nix can be
+easily absorbed by coding agents circa 2026.</p><p>One major downside persists, inherent to Nix being a monolithic toolchain. It is
+most functional when used on teams with little to no fragmentation, where every
+team member, agent, and CI pipeline uses identical toolchains. Each
+exception brings back ad-hoc scripts and branching setup docs, which then
+results in bugs that only one laptop can reproduce. If alignment is an issue in
+your team/org, I recommend <a href=https://dagger.io/>Dagger</a>. Dagger is a much heavier
+tool, but it works much better in these scenarios.</p><h2 id=one-flake-many-machines>One flake, many machines<a class=up-heading-anchor href=#one-flake-many-machines aria-label="Link to One flake, many machines"></a></h2><p>My <a href=https://github.com/MacroPower/dotfiles>dotfiles</a> are a single flake with
+several outputs:</p><ul><li>A few different Macs, through
+<a href=https://github.com/nix-darwin/nix-darwin>nix-darwin</a> and
+<a href=https://github.com/nix-community/home-manager>home-manager</a>. The flake owns
+their system settings, casks, shell, and every tool I use.</li><li>A NixOS VM named <code>terrarium</code>, where my coding agents run.</li><li>A home-manager configuration for a portable Linux container. CI builds it with
+<a href=https://dagger.io/>Dagger</a> and publishes the image on every push.</li></ul><p>Every one of them imports the same home modules, so my shell, git, editor, tmux,
+and Claude Code configuration are the <em>same everywhere</em>. Host files set options,
+and the modules decide what those options mean on each platform.</p><p>Claude Code&rsquo;s own configuration is one of those modules. It generates the
+settings file, the hooks, the MCP servers, the skills, the permission rules, and
+the sandbox allowlists from Nix. For example, the <code>terrarium</code> host sets three
+options and inherits the rest:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=n>dotfiles</span><span class=o>.</span><span class=n>claude</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1># Start Claude Code with permission prompts off. That is only safe inside the VM, so no other host sets it.</span>
+</span></span><span class=line><span class=cl>  <span class=n>dangerouslySkipPermissions</span> <span class=o>=</span> <span class=no>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=c1># Let me watch and steer sessions from my phone. (I don&#39;t like giving Anthropic free RCE on my Macs.)</span>
+</span></span><span class=line><span class=cl>  <span class=n>remoteControl</span> <span class=o>=</span> <span class=no>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=c1># Let kubectl inside the guest use the clusters that the guest created itself.</span>
+</span></span><span class=line><span class=cl>  <span class=n>guestKubeconfigLocal</span> <span class=o>=</span> <span class=no>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></div><blockquote><p>As with my machine config, agents iterate on their own local Kubernetes
+clusters to arrive at working Talos cluster configs and Argo applications,
+rather than having access to my live clusters.</p></blockquote><p>I <em>never</em> edit my machine&rsquo;s dotfiles by hand. Home-manager links them from the
+repository on every activation and overwrites whatever drifted.</p><h2 id=the-agent-sandbox>The agent sandbox<a class=up-heading-anchor href=#the-agent-sandbox aria-label="Link to The agent sandbox"></a></h2><p><a href=https://github.com/raine/workmux>workmux</a> runs my agents. It gives each task a
+git worktree and a tmux window, and its <a href=https://lima-vm.io/>Lima</a> backend runs
+the agent pane inside a VM. Home-manager generates its configuration too, and
+that configuration points the backend at the image:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>sandbox</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>backend</span><span class=p>:</span><span class=w> </span><span class=l>lima</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>file:///Users/jacobcolvin/.lima/_images/terrarium.qcow2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>lima</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>isolation</span><span class=p>:</span><span class=w> </span><span class=l>shared</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>projects_dir</span><span class=p>:</span><span class=w> </span><span class=l>/Users/jacobcolvin/Documents/repos</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>skip_default_provision</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span></code></pre></div><p>Lima mounts my repositories directory into the guest at the same path it has on
+the Mac. Worktree paths are therefore valid on both sides.</p><h3 id=testing-machines>Testing machines<a class=up-heading-anchor href=#testing-machines aria-label="Link to Testing machines"></a></h3><p>The VM is where I test changes to the machines. The agent runs inside a NixOS
+host that the flake built, with a writable checkout of the flake mounted in. It
+can rebuild its own machine via the following loop:</p><ol><li>Edit a module.</li><li>Run <code>dagger check</code>. <a href=https://dagger.io/>Dagger</a> runs each check function
+from the repository&rsquo;s modules in its own container. The Nix module&rsquo;s checks
+evaluate every host and home-manager configuration, validate the flake&rsquo;s
+outputs, and lint the tree. Evaluation does not build anything, but it
+catches the type errors, missing options, and bad references that make up
+most mistakes. A change to a shared module must evaluate for every machine at
+once, not only for the one the agent runs on.</li><li>Run <code>nixos-rebuild switch</code> for the guest&rsquo;s own host, so the new generation
+activates on the machine the agent is sitting in.</li></ol><p>If the new generation misbehaves, the previous one is a reboot away. If the
+agent breaks the VM beyond repair, I can delete it and create it again from the
+image. The repositories survive because they live on my Mac, not in the VM.
+Changes that work in the VM then go to the Macs with <code>darwin-rebuild switch</code>
+on the host.</p><h3 id=sandbox-isolation>Sandbox isolation<a class=up-heading-anchor href=#sandbox-isolation aria-label="Link to Sandbox isolation"></a></h3><p>The guest has none of the Mac&rsquo;s SSH keys, cloud credentials, or kubeconfigs. The
+few narrowly scoped API tokens it needs arrive as environment variables that a
+wrapper reads from <a href=https://github.com/getsops/sops>sops</a> on the host. A shim
+from the VM lets MCP servers run specific commands on the host, where they have
+additional access and credentials. These are gated by workmux&rsquo;s host-command
+allowlist and Claude Code permissions, giving me a narrow, deliberate way out of
+the sandbox. For example, agents can issue themselves new read-only k8s
+ServiceAccount tokens, even though they have no permissions to manage
+ServiceAccounts otherwise.</p><p>Network egress is the part of a sandbox that most setups leave open. I use
+<a href=https://github.com/MacroPower/terrarium>Terrarium</a>, my own egress filter built
+around <a href=https://www.envoyproxy.io/>Envoy</a>. It reads
+<a href=https://cilium.io/>Cilium</a> network policy, so an allowlist of domains with
+HTTP rules is the same YAML I write for my Kubernetes clusters.</p><h2 id=patches>Patches<a class=up-heading-anchor href=#patches aria-label="Link to Patches"></a></h2><p>For most of my career, the software I used was whatever its maintainers decided
+it was. When a tool did something I disliked, I had three options:</p><ul><li>Open a pull request and hope for the best.</li><li>Fork the project and maintain the fork forever.</li><li>Live with it (most likely).</li></ul><p>Coding agents utilizing Nix gave me a fourth option. Agents read unfamiliar
+codebases and write working patches in a few minutes, and Nix applies each patch
+every time it builds the program. <strong>Together they make changing someone else&rsquo;s
+software about as cheap as changing a config file.</strong> My dotfiles apply several
+patches, spanning features, fixes, and performance improvements.</p><p>Nix builds every package from a recipe called a <em>derivation</em>, and you can edit
+that recipe without forking nixpkgs.</p><ul><li>An <a href=https://wiki.nixos.org/wiki/Overlays><em>overlay</em></a> is a function that
+receives the package set and returns the packages you want to replace.</li><li>Inside it,
+<a href=https://nixos.org/manual/nixpkgs/stable/#sec-pkg-overrideAttrs><code>overrideAttrs</code></a>
+takes an existing derivation and changes any of its attributes, including the
+list of <code>patches</code> that Nix applies to the source before it builds.</li></ul><p>For example, here is an overlay that patches
+<a href=https://www.jetify.com/devbox>devbox</a>:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=n>devboxOverlay</span> <span class=o>=</span> <span class=n>_final</span><span class=p>:</span> <span class=n>prev</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>devbox</span> <span class=o>=</span> <span class=n>prev</span><span class=o>.</span><span class=n>devbox</span><span class=o>.</span><span class=n>overrideAttrs</span> <span class=p>(</span><span class=n>old</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>patches</span> <span class=o>=</span> <span class=p>(</span><span class=n>old</span><span class=o>.</span><span class=n>patches</span> <span class=n>or</span> <span class=p>[</span> <span class=p>])</span> <span class=o>++</span> <span class=p>[</span> <span class=sr>../pkgs/make-devbox-work-better.patch</span> <span class=p>];</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></div><p>Every program on my machines that depends on devbox now gets the patched build.
+A few properties of this setup make it safe to do casually:</p><ul><li>The patch lives in my repository next to the code that applies it, so each
+change has a history and a stated reason.</li><li>If upstream rewrites the lines a patch touches, the patch fails to apply and
+the build stops. I learn about the breakage when I rebuild, not when the
+program misbehaves.</li><li>Deleting the patch and rebuilding restores the stock package.</li></ul><p>Nix has offered these properties for years, but writing and maintaining a patch
+like this was rarely worth the effort. Coding agents changed that. The examples
+that follow are all based on patches from my dotfiles.</p><h3 id=example-a-one-line-change>Example: A One-Line Change<a class=up-heading-anchor href=#example-a-one-line-change aria-label="Link to Example: A One-Line Change"></a></h3><p>When workmux started <a href=https://github.com/anthropics/claude-code>Claude Code</a>,
+it passed <code>--dangerously-skip-permissions</code>, which enabled bypass mode and
+overrode <code>--permission-mode plan</code>.</p><p>I wanted each pane to start in the permission mode that my settings choose, with
+bypass mode available when I ask for it. Claude Code has a flag for exactly
+that, so the fix is one line:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=cl><span class=gd>--- a/src/multiplexer/agent.rs
+</span></span></span><span class=line><span class=cl><span class=gi>+++ b/src/multiplexer/agent.rs
+</span></span></span><span class=line><span class=cl><span class=gu>@@ -91,7 +91,7 @@ impl AgentProfile for ClaudeProfile {
+</span></span></span><span class=line><span class=cl>     }
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>     fn skip_permissions_flag(&amp;self) -&gt; Option&lt;&amp;&#39;static str&gt; {
+</span></span><span class=line><span class=cl><span class=gd>-        Some(&#34;--dangerously-skip-permissions&#34;)
+</span></span></span><span class=line><span class=cl><span class=gi>+        Some(&#34;--allow-dangerously-skip-permissions&#34;)
+</span></span></span><span class=line><span class=cl>     }
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>     fn auto_name_command(&amp;self) -&gt; Option&lt;&amp;&#39;static str&gt; {
+</span></span></code></pre></div><p>Each pane now starts in the permission mode that my Claude Code settings choose,
+and I can still switch to bypass mode during the session.</p><h3 id=example-an-unmerged-fix>Example: An Unmerged Fix<a class=up-heading-anchor href=#example-an-unmerged-fix aria-label="Link to Example: An Unmerged Fix"></a></h3><p>A <a href=https://lix.systems/>Lix</a> upgrade left me stuck between two versions:</p><ul><li>Lix 2.95 removed
+<a href=https://nix.dev/manual/nix/latest/language/builtins.html#builtins-fetchClosure><code>builtins.fetchClosure</code></a>.</li><li>A nixpkgs bump removed Lix 2.94, so I had to move to 2.95.</li><li>Devbox used <code>fetchClosure</code> to pull packages from the binary cache, and devbox
+0.18.3 and later refused to start on Lix 2.95.</li></ul><p>Someone had already opened
+<a href=https://github.com/jetify-com/devbox/pull/2997>jetify-com/devbox#2997</a>, which
+replaces <code>fetchClosure</code> with <code>builtins.appendContext</code> and removes the Lix check.
+Nobody had merged the pull request, and it did not apply cleanly to devbox
+0.18.4 (the release that nixpkgs built at the time).</p><p>My devbox overlay applies that pull request, rebased onto 0.18.4. I moved to Lix
+2.95 with the same nixpkgs bump, <strong>without waiting for a devbox release</strong>. When
+a devbox release includes the change, I will delete the patch file and the
+overlay.</p><h3 id=example-closed-source>Example: Closed Source<a class=up-heading-anchor href=#example-closed-source aria-label="Link to Example: Closed Source"></a></h3><p>Patching does not always require source code. Claude Code ships as a single
+executable that <a href=https://bun.sh/>Bun</a> compiles from a minified JavaScript
+bundle, and the bundle sits inside the binary as plain text. If there&rsquo;s no
+precompiled bytecode present (no longer the case as of Claude Code 2.1.250), an
+edit to that plain text bundle changes the program.</p><p>The Claude Code sandbox denied writes to any directory named <code>config</code> or <code>hooks</code>
+at the root of the working directory, as a defense against bare git
+repositories. The check never looked for the files that mark a bare repository,
+such as <code>HEAD</code>, <code>objects</code>, and <code>refs</code>. As a result, every ordinary repository
+with a top-level <code>config/</code> directory became read-only whenever the sandbox ran.</p><p>While debugging, an agent searched the binary for the deny list and read the
+surrounding code. The list was the literal <code>["hooks","config"]</code>. A 60-line
+Python script replaced it with an empty array of the same length:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>PATTERN</span> <span class=o>=</span> <span class=sa>b</span><span class=s1>&#39;[&#34;hooks&#34;,&#34;config&#34;]&#39;</span>
+</span></span><span class=line><span class=cl><span class=n>REPLACEMENT</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;[&#34;</span> <span class=o>+</span> <span class=sa>b</span><span class=s2>&#34; &#34;</span> <span class=o>*</span> <span class=mi>16</span> <span class=o>+</span> <span class=sa>b</span><span class=s2>&#34;]&#34;</span>  <span class=c1># empty array, identical length</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>count</span> <span class=o>=</span> <span class=n>data</span><span class=o>.</span><span class=n>count</span><span class=p>(</span><span class=n>PATTERN</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=n>count</span> <span class=o>!=</span> <span class=mi>1</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>sys</span><span class=o>.</span><span class=n>exit</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;expected exactly 1 occurrence of </span><span class=si>{</span><span class=n>PATTERN</span><span class=si>!r}</span><span class=s2>, found </span><span class=si>{</span><span class=n>count</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=s2>&#34;wb&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>f</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>data</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=n>PATTERN</span><span class=p>,</span> <span class=n>REPLACEMENT</span><span class=p>))</span>
+</span></span></code></pre></div><p>A few details keep the edit safe:</p><ul><li>The padding keeps every byte after the list at its original offset. Bun&rsquo;s
+table of module lengths, and the Mach-O and ELF layouts, stay valid.</li><li>The minifier named the list&rsquo;s variable differently on each platform, <code>H</code> on
+linux-arm64 and <code>U</code> on darwin-arm64. The script matches the array literal
+instead of the assignment for that reason.</li><li>When an upstream release changes the literal, the count check stops the build.</li></ul><p>The overlay runs the script on the raw binary before Nix wraps it. Editing the
+binary breaks its code signature on macOS, so the overlay also adds the hook
+that signs the result again:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=n>claude-code</span> <span class=o>=</span> <span class=n>prev</span><span class=o>.</span><span class=n>llm-agents</span><span class=o>.</span><span class=n>claude-code</span><span class=o>.</span><span class=n>overrideAttrs</span> <span class=p>(</span><span class=n>old</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>nativeBuildInputs</span> <span class=o>=</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=n>old</span><span class=o>.</span><span class=n>nativeBuildInputs</span> <span class=n>or</span> <span class=p>[</span> <span class=p>])</span>
+</span></span><span class=line><span class=cl>    <span class=o>++</span> <span class=p>[</span> <span class=n>prev</span><span class=o>.</span><span class=n>python3</span> <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=o>++</span> <span class=n>prev</span><span class=o>.</span><span class=n>lib</span><span class=o>.</span><span class=n>optionals</span> <span class=n>prev</span><span class=o>.</span><span class=n>stdenv</span><span class=o>.</span><span class=n>hostPlatform</span><span class=o>.</span><span class=n>isDarwin</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>      <span class=n>prev</span><span class=o>.</span><span class=n>darwin</span><span class=o>.</span><span class=n>autoSignDarwinBinariesHook</span>
+</span></span><span class=line><span class=cl>    <span class=p>];</span>
+</span></span><span class=line><span class=cl>  <span class=n>postInstall</span> <span class=o>=</span> <span class=p>(</span><span class=n>old</span><span class=o>.</span><span class=n>postInstall</span> <span class=n>or</span> <span class=s2>&#34;&#34;</span><span class=p>)</span> <span class=o>+</span> <span class=s1>&#39;&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>    python3 </span><span class=si>${</span><span class=sr>../pkgs/claude-code-unprotect-config-dir.py</span><span class=si>}</span><span class=s1> $out/bin/claude
+</span></span></span><span class=line><span class=cl><span class=s1>  &#39;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><p>The package&rsquo;s version check then runs the patched, wrapped binary, so <strong>a broken
+edit fails the build and can be fixed immediately</strong>.</p><h2 id=magic-wrappers>Magic wrappers<a class=up-heading-anchor href=#magic-wrappers aria-label="Link to Magic wrappers"></a></h2><p>Nix can also wrap any binary with different flags and environment variables, or
+another binary entirely. For example, you can set defaults, sandbox the process,
+or intercept its traffic.</p><p><a href=https://github.com/terraform-linters/tflint>tflint</a> runs each of its plugins
+as a separate process and talks to it over Unix sockets through
+<a href=https://github.com/hashicorp/go-plugin>go-plugin</a>. go-plugin honored
+<code>PLUGIN_UNIX_SOCKET_DIR</code> only in the plugin processes, so tflint itself always
+created the socket for its plugins&rsquo; callbacks in the system temp directory. The
+Claude Code sandbox pointed <code>TMPDIR</code> at a directory that blocked socket binds,
+so <strong>tflint failed inside it</strong>.</p><p>My dotfiles fix tflint with a wrapper instead of a patch:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=n>tflintWrapped</span> <span class=o>=</span> <span class=n>pkgs</span><span class=o>.</span><span class=n>symlinkJoin</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>name</span> <span class=o>=</span> <span class=s2>&#34;tflint-wrapped&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=n>paths</span> <span class=o>=</span> <span class=p>[</span> <span class=n>pkgs</span><span class=o>.</span><span class=n>tflint</span> <span class=p>];</span>
+</span></span><span class=line><span class=cl>  <span class=n>nativeBuildInputs</span> <span class=o>=</span> <span class=p>[</span> <span class=n>pkgs</span><span class=o>.</span><span class=n>makeWrapper</span> <span class=p>];</span>
+</span></span><span class=line><span class=cl>  <span class=n>postBuild</span> <span class=o>=</span> <span class=s1>&#39;&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>    wrapProgram $out/bin/tflint \
+</span></span></span><span class=line><span class=cl><span class=s1>      --run &#34;mkdir -p </span><span class=si>${</span><span class=n>config</span><span class=o>.</span><span class=n>home</span><span class=o>.</span><span class=n>homeDirectory</span><span class=si>}</span><span class=s1>/.tflint.d/tmp&#34; \
+</span></span></span><span class=line><span class=cl><span class=s1>      --set TMPDIR &#34;</span><span class=si>${</span><span class=n>config</span><span class=o>.</span><span class=n>home</span><span class=o>.</span><span class=n>homeDirectory</span><span class=si>}</span><span class=s1>/.tflint.d/tmp&#34;
+</span></span></span><span class=line><span class=cl><span class=s1>  &#39;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></div><p><a href=https://nixos.org/manual/nixpkgs/stable/#fun-wrapProgram><code>wrapProgram</code></a>
+replaces <code>bin/tflint</code> with a shell script that creates the directory, sets
+<code>TMPDIR</code>, and runs the original binary. The sandbox allows writes and socket
+binds under <code>~/.tflint.d/tmp</code>, so the plugins start inside it.</p><h2 id=binaries-at-the-speed-of-shell>Binaries at the speed of shell<a class=up-heading-anchor href=#binaries-at-the-speed-of-shell aria-label="Link to Binaries at the speed of shell"></a></h2><p>Small commands usually start as shell aliases or scripts. Scripts have no types,
+no tests, and no dependency management, so they stay small and tend to be
+slightly broken. Generally the reason you&rsquo;d still use a shell script is
+simplicity (just <code>./run.sh</code>), not because of some inherent advantage. After
+all, who wants thousands of lines of boilerplate and a CI pipeline that breaks
+every 3 months?</p><p>Nix lets you have the best of both worlds. In my dotfiles, I have a collection
+of small programs that each live in their own directory under <code>tools/</code>. For
+example, a tiny Go program:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>tools/cookie
+</span></span><span class=line><span class=cl>├── cows/
+</span></span><span class=line><span class=cl>├── fortunes/
+</span></span><span class=line><span class=cl>├── go.mod
+</span></span><span class=line><span class=cl>├── go.sum
+</span></span><span class=line><span class=cl>├── main.go
+</span></span><span class=line><span class=cl>├── main_test.go
+</span></span><span class=line><span class=cl>└── package.nix
+</span></span></code></pre></div><p><code>cookie</code> prints a fortune, with an optional cow. It exists because I wanted one
+on the neovim start screen. It is around 500 lines of Go.</p><p>The derivation in <code>package.nix</code> is the entire build and release system:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>lib</span><span class=o>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>buildGoModule</span><span class=o>,</span>
+</span></span><span class=line><span class=cl><span class=p>}:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>buildGoModule</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>pname</span> <span class=o>=</span> <span class=s2>&#34;cookie&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=n>version</span> <span class=o>=</span> <span class=s2>&#34;0.1.0&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>src</span> <span class=o>=</span> <span class=sr>./.</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=n>vendorHash</span> <span class=o>=</span> <span class=s2>&#34;sha256-yqtj+zCo7u2UwaQ12bHCHPNucgQNkvkN7nfkLynB67Y=&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=n>meta</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>description</span> <span class=o>=</span> <span class=s2>&#34;Tiny fortune cookie generator&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>homepage</span> <span class=o>=</span> <span class=s2>&#34;https://github.com/MacroPower/dotfiles/tree/main/tools/cookie&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>license</span> <span class=o>=</span> <span class=n>lib</span><span class=o>.</span><span class=n>licenses</span><span class=o>.</span><span class=n>asl20</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>mainProgram</span> <span class=o>=</span> <span class=s2>&#34;cookie&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p><a href=https://nixos.org/manual/nixpkgs/stable/#sec-language-go><code>buildGoModule</code></a>
+downloads the module&rsquo;s dependencies into a separate derivation that <code>vendorHash</code>
+pins, compiles the program, and runs <code>go test ./...</code> before it installs
+anything.</p><p>One line in <code>lib/default.nix</code> turns the file into a package that every host
+configuration can see:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-nix data-lang=nix><span class=line><span class=cl><span class=n>cookie</span> <span class=o>=</span> <span class=n>final</span><span class=o>.</span><span class=n>callPackage</span> <span class=n>paths</span><span class=o>.</span><span class=n>cookie</span> <span class=p>{</span> <span class=p>};</span>
+</span></span></code></pre></div><p>The store path for <code>cookie</code> is automatically added to the <code>PATH</code> (via
+home-manager), and other configs can reference it at
+<code>${pkgs.cookie}/bin/cookie</code>.</p><p>The next <code>darwin-rebuild switch</code> or <code>nixos-rebuild switch</code> builds every
+derivation the configuration references, runs its tests, and links the result
+in. There is no separate release step.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> cookie -s -cow tux
+</span></span><span class=line><span class=cl><span class=go> ╭──────────────────────────────────────────╮
+</span></span></span><span class=line><span class=cl><span class=go> │ Kaablamm! You hear an explosion in the   │
+</span></span></span><span class=line><span class=cl><span class=go> │ distance.                                │
+</span></span></span><span class=line><span class=cl><span class=go> ╰──────────────────────────────────────────╯
+</span></span></span><span class=line><span class=cl><span class=go>   \
+</span></span></span><span class=line><span class=cl><span class=go>    \
+</span></span></span><span class=line><span class=cl><span class=go>        .--.
+</span></span></span><span class=line><span class=cl><span class=go>       |o_o |
+</span></span></span><span class=line><span class=cl><span class=go>       |:_/ |
+</span></span></span><span class=line><span class=cl><span class=go>      //   \ \
+</span></span></span><span class=line><span class=cl><span class=go>     (|     | )
+</span></span></span><span class=line><span class=cl><span class=go>    /&#39;\_   _/`\
+</span></span></span><span class=line><span class=cl><span class=go>    \___)=(___/
+</span></span></span></code></pre></div><p>The point of this is that programs are much easier for agents to iterate on,
+because they are significantly easier to test. With Nix acting as your entire
+build and release system, there&rsquo;s very little downside to just using Go or Rust
+for basically everything.</p><h2 id=some-of-this-just-sounds-like-docker>Some of this just sounds like Docker&mldr;<a class=up-heading-anchor href=#some-of-this-just-sounds-like-docker aria-label="Link to Some of this just sounds like Docker…"></a></h2><p>Docker and Nix make the same promise: the thing you built is the thing you run.
+How they accomplish this is entirely different.</p><ul><li>Docker describes a guest filesystem and the process that starts inside it.</li><li>Nix describes packages, and considers your entire machine to be just another
+package (one with a lot of dependencies).</li></ul><p>Inherently, <em>composition</em> is very different between these two. Docker images
+compose with other images only by copying files out of them. With Nix, the
+entire machine and all of its software is just a collection of store paths, all
+of which can reference each other.</p><p>That difference is why one set of home modules produces a Mac, a VM, and a
+container. It is also why Nix can configure my entire machine, and Docker
+cannot.</p><p>That said, containers win as the unit of deployment; I do not fight that. For
+example, containers offer isolation primitives that Nix does not. And good luck
+getting that derivation running on your Kubernetes cluster.</p><h3 id=nix-in-docker-and-docker-in-nix>Nix in Docker, and Docker in Nix<a class=up-heading-anchor href=#nix-in-docker-and-docker-in-nix aria-label="Link to Nix in Docker, and Docker in Nix"></a></h3><p>In many cases, Nix and Docker can complement each other.</p><p>For example, <code>oci.jacobcolvin.com/shell</code> is a portable container built from my
+flake. A Dagger function starts from the <a href=https://lix.systems/>Lix</a> image,
+mounts <code>/nix</code> as a cache volume, builds the <code>dev@&lt;arch></code> home-manager
+configuration, and activates it. Trimmed to the steps that matter:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nx>ctr</span><span class=p>.</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=nf>WithDirectory</span><span class=p>(</span><span class=s>&#34;/dotfiles&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>m</span><span class=p>.</span><span class=nx>Source</span><span class=p>).</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=nf>WithWorkdir</span><span class=p>(</span><span class=s>&#34;/dotfiles&#34;</span><span class=p>).</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=nf>WithExec</span><span class=p>([]</span><span class=kt>string</span><span class=p>{</span><span class=s>&#34;nix&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;build&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;.#homeConfigurations.\&#34;dev@aarch64-linux\&#34;.activationPackage&#34;</span><span class=p>}).</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=nf>WithExec</span><span class=p>([]</span><span class=kt>string</span><span class=p>{</span><span class=s>&#34;./result/activate&#34;</span><span class=p>})</span><span class=w>
+</span></span></span></code></pre></div><p>It imports the same home modules as my Macs, so the image has the same fish,
+git, tmux, neovim, and Claude Code configuration. Nix decides the contents.
+Dagger handles the layers, zstd compression, the multi-arch manifest, and
+publishing. The image runs as a utility container that I can reach over SSH.</p><p>On the host side, Nix is what installs and configures Docker and keeps it
+consistent across all of my machines.</p><h2 id=upgrades>Upgrades<a class=up-heading-anchor href=#upgrades aria-label="Link to Upgrades"></a></h2><p>A skill in my dotfiles repository, <code>/flake-upgrade</code>, handles the upgrade with
+more patience than I have:</p><ol><li>It bumps the lock and diffs it against the last commit.</li><li>It spawns one read-only agent per changed input. Each agent reads the
+upstream changelog and reports what this repository must change.</li><li>It applies the migrations, rebases any patch that stopped applying, and runs
+the checks.</li><li>It reports what it adopted and what it left for me.</li></ol><blockquote><p>Inputs that only carry packages, such as nixpkgs, get a different treatment in
+step #2. The flake has an <code>inventory</code> output that lists every package
+each host installs. A second script evaluates the diff of this output to
+find all packages whose version changed. The agent then reads individual
+changelogs instead of thousands of nixpkgs commits.</p></blockquote><h2 id=in-conclusion>In conclusion<a class=up-heading-anchor href=#in-conclusion aria-label="Link to In conclusion"></a></h2><p>The agents I used at the start of 2025 struggled to fix code that I pointed at
+explicitly. The agents I use in 2026 read a codebase they have never seen, find
+the function that caused some problem, comb through git logs to find when and
+why the behavior changed, then propose a working fix with little to no feedback.
+That ability changes what is reasonable to delegate to agents.</p><p>What an agent still needs is a <em>loop</em>. It must be able to make a change, run
+something that says whether the change worked, and undo the change when it did
+not. <strong>Imperative machine setup has no such loop.</strong> <code>brew</code> has no rollback, and
+ad-hoc edits to your system settings have no <code>git blame</code>.</p><p>Nix gives machines the loop that traditional code has always had. The
+configuration is text, builds pass or print an error, and activation is
+reversible and reproducible. The whole machine can be built as a VM, handed to
+an agent, broken, and thrown away as needed.</p><p>In reality, the future of machine configuration may or may not be Nix, but for
+the above reasons I expect it will at least be something similar.</p></div><div class=up-reader-signoff>— <bdi dir=ltr>jacob@unity:~/posts$</bdi></div><div class=up-reader-license><a href=https://creativecommons.org/licenses/by-nc/4.0/>CC BY-NC 4.0</a></div></div></article></div></main></div></div><div id=up-dialog-host></div><template id=up-dialog-template><div class=up-dlg-backdrop></div><div class=up-dialog role=dialog aria-modal=true><div class=up-dlg-titlebar data-titlebar><button type=button class=up-dlg-close aria-label=Close>
+<svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 5 5M5 1 1 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button><div class=up-dlg-title data-dlg-title>Information</div></div><div class=up-dlg-body><div class="up-dlg-icon up-dlg-icon-info" data-dlg-icon><span class=up-dlg-icon-glyph data-dlg-icon-glyph>i</span></div><div class=up-dlg-content><div class=up-dlg-content-title data-dlg-content-title hidden></div><div class=up-dlg-content-body data-dlg-content-body hidden></div><pre class=up-dlg-content-details data-dlg-content-details hidden></pre></div></div><div class=up-dlg-footer data-dlg-footer></div></div></template><div class="up-window-stage up-trash-stage" data-up-window=trash hidden><section class=up-window-chrome aria-label=Trash tabindex=-1><div class=up-titlebar data-titlebar><div class=up-tl-group><button class="up-tl up-tl-close" type=button aria-label=Close><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 5 5M5 1 1 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+</button>
+<button class="up-tl up-tl-min" type=button aria-label=Minimize><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 4.2H5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button></div><span class=up-titlebar-text>Trash</span></div><div class=up-window-body><div class=up-pathbar><div class=up-pathbar-crumbs><span class=up-pathbar-btn><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8 8 2.5 14 8"/><path d="M3.8 7v6.5h8.4V7"/><path d="M7 13.5V10H9v3.5"/></svg>
+<span class=up-pathbar-label>jacob</span>
+</span><span class="up-pathbar-btn is-current" aria-current=location><span class=up-pathbar-label>Trash</span></span></div></div><div class=up-trash-files data-trash-files><button type=button class=up-trash-tile data-trash-tile data-name=old-resume-FINAL-v3.pdf>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M10 6H34l4 4V42H10z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><path d="M10 6H34l4 4V42H10z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><line x1="14" y1="16" x2="34" y2="16" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="22" x2="34" y2="22" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="28" x2="34" y2="28" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="34" x2="28" y2="34" stroke="rgba(155,148,141,.7)" stroke-width=".9"/></svg>
+</span><span class=up-trash-tile-label>old-resume-FINAL-v3.pdf</span>
+</button>
+<button type=button class=up-trash-tile data-trash-tile data-name=passwords.txt>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M10 6H34l4 4V42H10z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><path d="M10 6H34l4 4V42H10z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><line x1="14" y1="16" x2="34" y2="16" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="22" x2="34" y2="22" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="28" x2="34" y2="28" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="34" x2="28" y2="34" stroke="rgba(155,148,141,.7)" stroke-width=".9"/></svg>
+</span><span class=up-trash-tile-label>passwords.txt</span>
+</button>
+<button type=button class=up-trash-tile data-trash-tile data-name=node_modules>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M4 11Q4 9 6 9H17l3 3H42q2 0 2 2V40q0 2-2 2H6q-2 0-2-2z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8"/><path d="M4 18H44V40q0 2-2 2H6q-2 0-2-2z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8"/><line x1="4.6" y1="18.4" x2="43.4" y2="18.4" stroke="rgba(255,255,255,.8)" stroke-width=".7"/></svg>
+</span><span class=up-trash-tile-label>node_modules</span>
+</button>
+<button type=button class=up-trash-tile data-trash-tile data-name=.DS_Store>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M10 6H34l4 4V42H10z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><path d="M10 6H34l4 4V42H10z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><line x1="14" y1="16" x2="34" y2="16" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="22" x2="34" y2="22" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="28" x2="34" y2="28" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="34" x2="28" y2="34" stroke="rgba(155,148,141,.7)" stroke-width=".9"/></svg>
+</span><span class=up-trash-tile-label>.DS_Store</span>
+</button>
+<button type=button class=up-trash-tile data-trash-tile data-name=screenshot-2009-08-14.png>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M10 6H34l4 4V42H10z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><path d="M10 6H34l4 4V42H10z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8" stroke-linejoin="round"/><line x1="14" y1="16" x2="34" y2="16" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="22" x2="34" y2="22" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="28" x2="34" y2="28" stroke="rgba(155,148,141,.7)" stroke-width=".9"/><line x1="14" y1="34" x2="28" y2="34" stroke="rgba(155,148,141,.7)" stroke-width=".9"/></svg>
+</span><span class=up-trash-tile-label>screenshot-2009-08-14.png</span>
+</button>
+<button type=button class=up-trash-tile data-trash-tile data-name=System32>
+<span class=up-trash-tile-icon><svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><path d="M4 11Q4 9 6 9H17l3 3H42q2 0 2 2V40q0 2-2 2H6q-2 0-2-2z" fill="#E2DCD2" stroke="#B6AC97" stroke-width=".8"/><path d="M4 18H44V40q0 2-2 2H6q-2 0-2-2z" fill="#EDE7DC" stroke="#B6AC97" stroke-width=".8"/><line x1="4.6" y1="18.4" x2="43.4" y2="18.4" stroke="rgba(255,255,255,.8)" stroke-width=".7"/></svg>
+</span><span class=up-trash-tile-label>System32</span></button></div><div class=up-trash-empty hidden><svg aria-hidden="true" width="68" height="76" viewBox="0 0 68 76" fill="none" stroke="#B5AFAA" stroke-width="2"><path d="M10 18h48l-4 54a2 2 0 01-2 2H16a2 2 0 01-2-2z" fill="#E8E3DE"/><rect x="4" y="12" width="60" height="6" rx="1" fill="#D4CFC8" stroke="#B5AFAA"/><rect x="26" y="4" width="16" height="8" rx="1" fill="#D4CFC8" stroke="#B5AFAA"/><path d="M22 28v36M34 28v36M46 28v36"/></svg><div class=up-trash-empty-headline>Trash is empty</div><div class=up-trash-empty-detail>Nothing thrown away yet.</div></div><div class=up-trash-footer><span class=up-trash-count data-trash-count>6 items</span>
+<button type=button class=up-trash-empty-btn data-trash-empty>Empty Trash</button></div></div></section></div><div class="up-window-stage up-daw-stage" data-up-window=daw hidden><section class="up-window-chrome up-daw-chrome" aria-label=Studio tabindex=-1><div class=up-titlebar data-titlebar><div class=up-tl-group><button class="up-tl up-tl-close" type=button aria-label=Close><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 1 5 5M5 1 1 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+</button>
+<button class="up-tl up-tl-min" type=button aria-label=Minimize><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><path d="M1 4.2H5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+</button>
+<button class="up-tl up-tl-max" type=button aria-label=Maximize><svg aria-hidden="true" width="6" height="6" viewBox="0 0 6 6"><rect x="1" y="1" width="4" height="4" fill="none" stroke="currentColor" stroke-width="1"/></svg></button></div><span class=up-titlebar-text data-daw-title>Studio</span></div><div class="up-window-body up-daw-body" dir=ltr><div class=up-daw-toolbar><div class=up-daw-transport><button type=button class="up-daw-btn up-daw-btn-play" data-daw-play aria-label=Play/Pause>
+<span data-daw-play-glyph><svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-play-glyph=""><path d="M4 2l8 5-8 5z"/></svg>
+</span><span data-daw-play-glyph-playing hidden><svg aria-hidden="true" width="13" height="14" viewBox="1 0 13 14" fill="currentColor" data-vol-play-glyph="" data-vol-play-glyph-playing="" hidden=""><rect x="4" y="2" width="2.5" height="10"/><rect x="9" y="2" width="2.5" height="10"/></svg>
+</span></button>
+<button type=button class=up-daw-btn data-daw-stop aria-label=Stop>
+<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="8" height="8" fill="currentColor"/></svg></button></div><div class=up-daw-trk><button type=button class=up-daw-btn data-daw-prev aria-label="Previous track" title="Previous track">
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button><div class=up-daw-lcdbox><span class=up-daw-lcd-label>trk</span>
+<span class="up-daw-lcd is-trk" data-daw-trk>—</span></div><button type=button class=up-daw-btn data-daw-next aria-label="Next track" title="Next track">
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button></div><div class=up-daw-lcdbox><span class=up-daw-lcd-label>pos</span>
+<span class=up-daw-lcd data-daw-pos>001.1</span></div><div class=up-daw-lcdbox><span class=up-daw-lcd-label>bpm</span>
+<span class="up-daw-lcd is-spin" data-daw-bpm tabindex=0 role=slider aria-label=Tempo title="Tempo — drag up/down, double-click to reset">—</span></div><span class="up-daw-led is-on" title="The song always loops">loop</span><div class=up-daw-toolbar-spacer></div><button type=button class="up-daw-btn is-toggle is-on" data-daw-follow aria-pressed=true title="Follow the playhead">
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8H14"/><path d="M10 4l4 4-4 4"/></svg>
+</button>
+<button type=button class=up-daw-btn data-daw-zoom-out aria-label="Zoom out">
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8H13"/></svg>
+</button>
+<button type=button class=up-daw-btn data-daw-zoom-in aria-label="Zoom in">
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3V13M3 8H13"/></svg></button></div><div class=up-daw-main><aside class=up-daw-rack><div class="up-daw-section is-tracks"><button type=button class=up-daw-section-title data-daw-collapse>Tracks</button><div class=up-daw-tracks data-daw-tracks></div></div><div class=up-daw-section><button type=button class=up-daw-section-title data-daw-collapse>Synth</button><div class=up-daw-synth data-daw-synth></div></div><div class=up-daw-section><button type=button class=up-daw-section-title data-daw-collapse>FX</button><div class=up-daw-fx data-daw-fx></div></div><div class=up-daw-section><button type=button class=up-daw-section-title data-daw-collapse>Groove</button><div class=up-daw-knobs data-daw-groove></div></div></aside><div class=up-daw-roll data-daw-roll><canvas class=up-daw-canvas data-daw-canvas></canvas><div class=up-daw-scroller data-daw-scroller><div class=up-daw-spacer data-daw-spacer></div></div><div class=up-daw-loading data-daw-loading>Loading…</div></div></div><div class=up-daw-status><span data-daw-status>Click the grid to audition · drag a note to transpose · right-click a note to mute it · knobs: drag, scroll, double-click resets</span></div></div></section></div><div class=up-dash data-up-dash hidden data-dash-src=/dash/results.en.min.89632fbfc6261c6c99cb1230ad5a9d8c2a6f952326a0e5693a7556c442a9526c.html><div class=up-dash-backdrop data-dash-backdrop aria-hidden=true></div><section class=up-dash-panel role=dialog aria-modal=true aria-label="Dash search"><div class=up-dash-searchbar><span class=up-dash-search-icon aria-hidden=true><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
+</span><input class=up-dash-search data-dash-search type=text placeholder="Search your computer" aria-label="Search your computer" autocomplete=off autocapitalize=off spellcheck=false></div><div class=up-dash-results data-dash-results><section class=up-dash-section data-dash-section=apps aria-label=Applications><header class=up-dash-cat><span class=up-dash-cat-icon aria-hidden=true><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/></svg>
+</span><span class=up-dash-cat-label>Applications</span>
+<button class=up-dash-more data-dash-more type=button hidden></button></header><div class=up-dash-grid data-dash-grid><a class=up-dash-tile data-dash-tile href=/ tabindex=-1 data-keywords="terminal shell bash console neofetch prompt tty home start"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/terminal.11cd574647525e4a8325c07b7413a40efbb458a5f4ae77edb577424cd3bac8a8.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Terminal</span>
+</a><a class=up-dash-tile data-dash-tile href=/cv/ tabindex=-1 data-keywords="cv resume curriculum vitae pdf work experience career history"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/cv.15be33fde04db88b87f90932a5fb3ec8b5adfc4b99f650591db1fedfffadf7c7.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>CV</span>
+</a><a class=up-dash-tile data-dash-tile href=/projects/ tabindex=-1 data-keywords="projects repositories repos github code open source software"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/projects.72967010dcfa00127b683ec3bb79dd3d47bf975a2e2e68b12e210bdf77b8d95e.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Projects</span>
+</a><a class=up-dash-tile data-dash-tile href=/posts/ tabindex=-1 data-keywords="blog posts articles writing files notes"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/blog.1b7c577ab0c0acabd2c182e8204932033333f9aaaa7488fc484018cdfd8501a8.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Blog</span>
+</a><a class=up-dash-tile data-dash-tile href=/sponsors/ tabindex=-1 data-keywords="sponsors sponsorship support donate heart thanks"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/heart.728be9142f86ecd7df576b121da598503d1cabb2c02bcac7606f840022b2b389.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Sponsors</span>
+</a><a class=up-dash-tile data-dash-tile href=/solitaire/ tabindex=-1 data-keywords="solitaire klondike cards card game patience aisleriot play deck"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/games.f36de92448e9a281f9483af52658160d8a20148b7028ffccd6b88a4daaaf69cc.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Solitaire</span>
+</a><a class=up-dash-tile data-dash-tile href=/icons/ tabindex=-1 data-keywords="icons gallery artwork svg viewer images eye of gnome"><span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/image-viewer.3d17ca6081b6181550624597aedede330ebc895595866cbf090222bf1ac86fb5.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Icons</span>
+</a><button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=daw:open data-keywords="studio daw music midi sequencer synth piano roll lmms audio">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/piano.27a48aa49fac613b0f31037b5f93258b115dc94fc82cb272a74285c2f351c355.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Studio</span>
+</button>
+<button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=trash data-keywords="trash rubbish bin wastebasket deleted files">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/trash.c5b6deb56b7e819dcd86cf65d87e3aec53daa10083213f38dda42c9eec51e17e.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Trash</span>
+</button>
+<button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=dlg:prefs data-keywords="appearance preferences settings theme accent color colour motion animations">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/paint.f6cbab1e1fdea73e6767f969e78098c11172d18335233d5b51a578d75f5020f8.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Appearance</span>
+</button>
+<button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=dlg:shortcuts data-keywords="keyboard shortcuts keys bindings hotkeys help reference">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/typewriter-key.fffd376376bbf8176140f7384b13f0f455544e16337586d2681cb968bb27c6cd.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Shortcuts</span>
+</button>
+<button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=dlg:lock data-keywords="lock screen security password greeter lightdm">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/padlock.2e919f129e6186fd93a29bf9b582d53057edaf8d53b422004c50565b8970530c.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Lock Screen</span>
+</button>
+<button class=up-dash-tile data-dash-tile type=button tabindex=-1 data-dash-action=dlg:logout data-keywords="log out logout session quit exit leave goodbye">
+<span class=up-dash-tile-icon aria-hidden=true><img src=/unity/icons/launcher/doorway.c561ed7b89d579d849b234a1fbd74498efdf7512922870f6de97a809f8986103.svg alt width=48 height=48 draggable=false></span>
+<span dir=auto class=up-dash-tile-label>Log Out</span></button></div></section><div class=up-dash-empty data-dash-empty hidden><span class=up-dash-empty-icon aria-hidden=true><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l3 3"/></svg></span><p>Sorry, there is nothing that matches your search.</p></div></div><div class=up-dash-lenses role=group aria-label="Filter results"><button class="up-dash-lens is-active" data-dash-lens=home type=button aria-pressed=true title=Home>
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8 8 2.5 14 8"/><path d="M3.8 7v6.5h8.4V7"/><path d="M7 13.5V10H9v3.5"/></svg>
+</button>
+<button class=up-dash-lens data-dash-lens=apps type=button aria-pressed=false title=Applications>
+<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/></svg>
+</button>
+<button class=up-dash-lens data-dash-lens=files type=button aria-pressed=false title="Files & Folders">
+<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4h4L8 5.5h5.5v7H2.5z"/><path d="M2.5 7.5h11"/></svg>
+</button>
+<button class=up-dash-lens data-dash-lens=projects type=button aria-pressed=false title=Projects>
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5 3 8l3 3m4-6 3 3-3 3"/></svg>
+</button>
+<button class=up-dash-lens data-dash-lens=music type=button aria-pressed=false title=Music>
+<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 12.5V3.8l6-1.3v8.7"/><circle cx="4.5" cy="12.5" r="1.8" fill="currentColor" stroke="none"/><circle cx="10.5" cy="11.2" r="1.8" fill="currentColor" stroke="none"/></svg></button></div><div class=up-sr-only data-dash-status role=status></div></section></div><div class=up-hud data-up-hud hidden><div class=up-hud-backdrop data-hud-backdrop aria-hidden=true></div><section class=up-hud-panel role=dialog aria-modal=true aria-label="HUD menu search"><div class=up-hud-searchrow><span class=up-hud-appicon aria-hidden=true><img src=/unity/icons/launcher/blog.1b7c577ab0c0acabd2c182e8204932033333f9aaaa7488fc484018cdfd8501a8.svg alt width=48 height=48 draggable=false></span>
+<input class=up-hud-input data-hud-input type=text placeholder="Type your command" aria-label="Type your command" autocomplete=off autocapitalize=off spellcheck=false role=combobox aria-expanded=false aria-autocomplete=list aria-controls=up-hud-list></div><ul class=up-hud-results data-hud-results id=up-hud-list role=listbox aria-label="Matching menu entries"></ul><div class=up-sr-only data-hud-status role=status></div></section></div><div class=up-notify-host data-up-notify aria-live=polite><template data-notify-icons><span data-icon=info><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><circle cx="8" cy="4.8" r=".6" fill="currentColor" stroke="none"/><path d="M8 7v4.5"/></svg>
+</span><span data-icon=warning><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l6 11H2z"/><path d="M8 6v4"/><circle cx="8" cy="11.5" r=".6" fill="currentColor" stroke="none"/></svg>
+</span><span data-icon=question><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M5.8 6.2a2.2 2.2.0 014.4.0C10.2 8 8 8 8 10"/><circle cx="8" cy="12" r=".6" fill="currentColor" stroke="none"/></svg>
+</span><span data-icon=success><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M4.5 8 7 10.5 11.5 6"/></svg>
+</span><span data-icon=volume><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6H5L9 3V13L5 10H2z"/><path d="M11 6.5q1.5 1.5.0 3"/><path d="M12.5 5q2.5 3 0 6"/></svg>
+</span><span data-icon=volume-muted><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6H5L9 3V13L5 10H2z"/><path d="M11 6l4 4m0-4-4 4"/></svg>
+</span><span data-icon=network><svg aria-hidden="true" width="11.5" height="14" viewBox="1 0 11.5 14" fill="currentColor"><rect x="2" y="9" width="2.5" height="3"/><rect x="5.5" y="6" width="2.5" height="6"/><rect x="9" y="3" width="2.5" height="9"/></svg>
+</span><span data-icon=battery><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5H12v6H2z"/><path d="M12 7h1.5V9H12"/><rect x="3" y="6.2" width="5" height="3.6" fill="currentColor" stroke="none"/></svg>
+</span><span data-icon=heart><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13.5s-6.5-4-6.5-8c0-2.5 2-4 4-4C7 1.5 8 2.5 8 2.5s1-1 2.5-1c2 0 4 1.5 4 4 0 4-6.5 8-6.5 8z"/></svg>
+</span><span data-icon=lock><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8H13v6H3z"/><path d="M5 8V5.5a3 3 0 016 0V8"/><circle cx="8" cy="10.5" r=".8"/><path d="M8 11v1.5"/></svg>
+</span><span data-icon=terminal><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 3h13V13H1.5z"/><path d="M4 6.5l2.5 2-2.5 2"/><path d="M8 10.5h3.5"/></svg>
+</span><span data-icon=music><img src=/unity/icons/launcher/music.3545836a11d4bdb6abf455608fcc59ceaa2a51f09bdc29f89e4a1caeaf416428.svg alt width=48 height=48 draggable=false></span></template></div><div class=up-lock data-up-lock role=dialog aria-modal=true aria-label="Lock screen" hidden><div class=up-lock-backdrop aria-hidden=true></div><div class=up-lock-inner><div class=up-lock-time data-lock-clock>00:00</div><div class=up-lock-date data-lock-date></div><div class=up-lock-card><div class=up-lock-user>jacob</div><form class=up-lock-form data-lock-form><input class=up-lock-input data-lock-input type=password placeholder=Password aria-label=Password autocomplete=off></form><div class=up-lock-hint data-lock-hint></div></div></div></div></div><script defer src=/js/runtime.en.min.7c7aceeac5de0452cd8ef343cd04e258b998585a67d3ba2d7d79d31b802e7d23.js integrity="sha256-fHrO6sXeBFLNjvNDzQTiWLmYWFpn07otfXnTG4AufSM="></script><script defer src=/js/app-studio.2a46ef557684f7b93617718709f001087c234420a3dc6b7cf54da328bb0cf29d.js integrity="sha256-KkbvVXaE97k2F3GHCfABCHwjRCCj3Gt89U2jKLsM8p0="></script><script defer src=/js/blog.e517e04ec65b129f5877df10c9c9bca403889befe2e1ed6c095518a8cb355b5f.js integrity="sha256-5RfgTsZbEp9Yd98Qycm8pAOIm+/i4e1sCVUYqMs1W18="></script></body></html>
