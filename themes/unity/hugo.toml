@@ -92,7 +92,7 @@
     ]
     # The top panel's indicators, in order. Each name renders
     # _partials/unity/indicators/<name>.html.
-    indicators = ["messages", "network", "sound", "battery", "clock", "user"]
+    indicators = ["messages", "network", "sound", "battery", "scheme", "clock", "user"]
     # Access points in the network indicator; the first starts connected.
     networks = [
       "home-wifi",

@@ -18,6 +18,12 @@
 <meta name="theme-color" content="{{ . }}">
 {{- end }}
 {{ partial "unity/head/meta.html" . }}
+{{- /* The scheme script blocks the parser, so the first paint shows the
+      visitor's light or dark scheme. A site that turns dark mode off
+      skips it, and baseof.html keeps the page light. */}}
+{{- if ne site.Params.desktop.darkMode false }}
+{{ partialCached "unity/ui/script.html" (dict "entry" "unity/js/scheme-boot.ts" "target" "js/scheme.js" "blocking" true) "unity/js/scheme-boot.ts" }}
+{{- end }}
 {{ partialCached "unity/head/css.html" . (partial "unity/is-terminal.html" .) }}
 {{- /* Every page advertises the site feed, and a section or taxonomy
       page also advertises its own. */}}

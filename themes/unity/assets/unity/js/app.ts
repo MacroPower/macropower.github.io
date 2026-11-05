@@ -9,6 +9,7 @@ import { installPageWindow } from "./page-window";
 import { initDesktopMarquee } from "./desktop-marquee";
 import { initLock } from "./lock";
 import { followSystemMotion } from "./prefs";
+import { initSchemeToggle } from "./scheme";
 import { emitDocument, READY_CLASS, READY_EVENT } from "./events";
 
 // Runs one module's init. A module that throws, on markup a site
@@ -33,6 +34,7 @@ run("notify", initNotify);
 // handler when Esc unlocks.
 run("lock", initLock);
 run("top panel", initTopPanel);
+run("dark mode toggle", initSchemeToggle);
 run("trash", initTrash);
 // UP_STUDIO is false on a site without MIDI files, and esbuild then drops
 // the Studio's code from this bundle.

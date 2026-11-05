@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { accentPresets, rules, siteTokens, type Rule } from "./testkit";
+import { accentPresets, darkSchemeTokens, rules, siteTokens, type Rule } from "./testkit";
 
 const isMore = (r: Rule): boolean => r.media.includes("prefers-contrast: more");
 const isForced = (r: Rule): boolean => r.media.includes("forced-colors: active");
@@ -141,9 +141,16 @@ const DARK_PAIR: ReadonlyMap<string, string> = new Map([
   ["--up-sidebar-bg", "#2A2A2A"],
 ]);
 
-// The custom properties under the default colors and under the dark pair.
+// The custom properties under main.css's dark scheme. Its block sets the
+// content tokens and the window chrome's recipe tokens over the default
+// colors.
+const schemeProps: ReadonlyMap<string, string> = new Map([...rootProps, ...darkSchemeTokens]);
+
+// The custom properties under the default colors, under the dark scheme,
+// and under the dark pair.
 const PAIRS: readonly (readonly [string, ReadonlyMap<string, string>])[] = [
   ["the default colors", rootProps],
+  ["the dark scheme", schemeProps],
   ["a dark pair", new Map([...rootProps, ...DARK_PAIR])],
 ];
 
@@ -227,7 +234,9 @@ const CONTENT_SURFACES: readonly string[] = ["--up-content-bg", "--up-content-ra
 
 // The rules that paint a page, without the :root blocks that declare the
 // tokens and without the frames of an animation.
-const painting = screen.filter((r) => r.selector !== ":root" && !r.media.includes("@keyframes"));
+const declaresTokens = (r: Rule): boolean =>
+  r.selector.startsWith(":root") && [...r.decls.keys()].every((prop) => prop.startsWith("--"));
+const painting = screen.filter((r) => !declaresTokens(r) && !r.media.includes("@keyframes"));
 
 // The values that a rule paints its accent with: its text color, each
 // custom property that reads the lighter shade, or else its background.
@@ -350,6 +359,31 @@ describe("contrast", () => {
         return under.some((u) => contrast(fg, u!) < 4.5) ? [`${ink} on ${surface} under ${pair}`] : [];
       });
     });
+    expect(low).toEqual([]);
+  });
+
+  it("keeps the window chrome's text at 4.5:1 on its surfaces under each scheme", () => {
+    // The toolbars and their buttons take their colors from recipe tokens
+    // that the dark scheme block repaints with the content tokens.
+    const pairs = [
+      ["--up-toolbar-fg", "--up-toolbar-bg"],
+      ["--up-toolbar-fg", "--up-toolbar-bg-sunken"],
+      ["--up-toolbar-fg", "--up-btn-bg"],
+      ["--up-toolbar-fg", "--up-btn-bg-hover"],
+      ["--up-toolbar-label", "--up-toolbar-bg-sunken"],
+      ["--up-btn-fg-checked", "--up-btn-bg-active"],
+      ["--up-chip-fg", "--up-chip-bg"],
+      // A destructive dialog button's label on the button's face.
+      ["--up-red-fg", "--up-content-raised"],
+      ["--up-red-fg", "--up-content-shade"],
+    ] as const;
+    const schemes = [["the default colors", rootProps], ["the dark scheme", schemeProps]] as const;
+    const low = schemes.flatMap(([scheme, props]) => pairs.flatMap(([ink, surface]) => {
+      const fg = color(`var(${ink})`, props);
+      const under = surfaceColors(`var(${surface})`, props);
+      if (!fg || under.length === 0 || under.some((u) => !u)) return [`${ink} on ${surface} has a color that this test cannot read`];
+      return under.some((u) => contrast(fg, u!) < 4.5) ? [`${ink} on ${surface} under ${scheme}`] : [];
+    }));
     expect(low).toEqual([]);
   });
 

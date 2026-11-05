@@ -2,7 +2,8 @@
   Compiles a TypeScript entry through esbuild (IIFE, ES2023 to match the
   tsconfig.json target; minified in production, with inline source maps
   under hugo server),
-  fingerprints it, and emits a deferred <script> with an SRI integrity hash.
+  fingerprints it, and emits a <script> with an SRI integrity hash, which
+  defers unless the call sets blocking.
   baseof.html routes every bundle through here so the build options and the
   script-tag shape are defined once.
 
@@ -11,6 +12,8 @@
                defines — optional dict of esbuild defines, each a global
                          name mapped to the JavaScript literal that
                          replaces it (e.g. "UP_STUDIO" "false")
+               blocking — optional true for a script in <head> that must
+                         run before the browser parses <body>
 
   The shims point the xterm and pdf.js package imports at the copies
   vendored under assets/unity/third_party/, so a site builds without npm.
@@ -27,4 +30,4 @@
 {{- if hugo.IsDevelopment }}{{ $opts = merge $opts (dict "sourceMap" "inline") }}{{ end -}}
 {{- with .defines }}{{ $opts = merge $opts (dict "defines" .) }}{{ end -}}
 {{- $built := resources.Get .entry | js.Build $opts | resources.Fingerprint -}}
-<script defer src="{{ $built.RelPermalink }}" integrity="{{ $built.Data.Integrity }}"></script>
+<script{{ if not .blocking }} defer{{ end }} src="{{ $built.RelPermalink }}" integrity="{{ $built.Data.Integrity }}"></script>

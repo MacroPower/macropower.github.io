@@ -1,0 +1,17 @@
+{{- /*
+  The dark mode toggle, the "scheme" entry of params.desktop.indicators. It
+  is a toggle button without a dropdown, so it carries no
+  data-panel-trigger. A click flips the windows between light and dark,
+  and scheme.ts stores the choice. The sun shows while the windows are
+  light and the moon while they are dark, which main.css picks from
+  data-up-scheme on <html>. A site that sets params.desktop.darkMode to
+  false gets no toggle. Context: the site.
+*/ -}}
+{{- if ne site.Params.desktop.darkMode false }}
+<div class="up-panel-item">
+  <button type="button" class="up-indicator up-scheme-toggle" data-indicator="scheme" data-scheme-toggle aria-pressed="false" aria-label="{{ partial "unity/ui/t" "dark_mode" }}" title="{{ partial "unity/ui/t" "dark_mode" }}">
+    <span class="up-scheme-sun">{{ partial "unity/icon.html" "glyphs/panel-sun" }}</span>
+    <span class="up-scheme-moon">{{ partial "unity/icon.html" "glyphs/panel-moon" }}</span>
+  </button>
+</div>
+{{- end }}

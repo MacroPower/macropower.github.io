@@ -567,6 +567,37 @@ enableRobotsTXT = true
       ];
     },
   },
+  // A second language that turns dark mode off. The first keeps the
+  // theme's default: the toggle in the panel, and the blocking script in
+  // <head> that applies the visitor's scheme before the first paint.
+  scheme: {
+    files: {
+      "hugo.toml": `${BARE}[languages.en]
+  weight = 1
+[languages.de]
+  weight = 2
+  [languages.de.params.desktop]
+    darkMode = false
+`,
+      "content/about.md": page("About"),
+      "content/about.de.md": page("Über"),
+    },
+    check: (out) => {
+      const head = (file: string): string => /<head>([\s\S]*?)<\/head>/.exec(read(join(out, file)))?.[1] ?? "";
+      const boot = (file: string): boolean => /<script src="[^"]*\/js\/scheme\.[^"]*"/.test(head(file));
+      const toggle = (file: string): boolean => read(join(out, file)).includes("data-scheme-toggle");
+      return [
+        ...["index.html", "about/index.html"].flatMap((file) => [
+          !boot(file) && `${file} lacks the blocking scheme script in <head>`,
+          !toggle(file) && `${file} lacks the dark mode toggle`,
+        ]),
+        ...["de/index.html", "de/about/index.html"].flatMap((file) => [
+          boot(file) && `${file} loads the scheme script with darkMode off`,
+          toggle(file) && `${file} renders the dark mode toggle with darkMode off`,
+        ]),
+      ];
+    },
+  },
   // A section outside mainSections renders as a plain list of its pages.
   notes: {
     files: {

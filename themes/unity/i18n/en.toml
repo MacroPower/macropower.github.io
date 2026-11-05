@@ -357,6 +357,8 @@ other = "About 3 hours 14 minutes remaining"
 other = "Enable power saver"
 [power_settings]
 other = "Power settings…"
+[dark_mode]
+other = "Dark mode"
 [clock]
 other = "Clock"
 [open_calendar]

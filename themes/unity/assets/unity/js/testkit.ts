@@ -111,6 +111,15 @@ function parse(): { rules: readonly Rule[]; declarations: readonly Declaration[]
 // declaration in source order.
 export const { rules, declarations } = parse();
 
+// The custom properties that the dark scheme block sets, by name. The
+// block applies under data-up-scheme="dark" on <html>, which scheme.ts
+// sets.
+export const darkSchemeTokens: ReadonlyMap<string, string> = new Map(
+  rules
+    .filter((r) => r.selector === ':root[data-up-scheme="dark"]')
+    .flatMap((r) => [...r.decls].filter(([prop]) => prop.startsWith("--"))),
+);
+
 export interface AccentPreset {
   // The preset's key under params.desktop.accents.
   readonly name: string;

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { accentPresets as presets, rules, siteTokens } from "./testkit";
+import { accentPresets as presets, darkSchemeTokens, rules, siteTokens } from "./testkit";
 
-const accent = /var\(\s*--up-accent/;
+// An accent ring paints an accent token, or --up-content-ring on a
+// window's content and chrome.
+const accent = /var\(\s*--up-(accent|content-ring)/;
 
 // The rules a screen draws without forced colors.
 const screen = rules.filter((r) => !/forced-colors|print/.test(r.media));
@@ -39,7 +41,7 @@ function edgeCues(decls: ReadonlyMap<string, string>): string[] {
 
 // A cue that paints a ring's shade at full opacity, with no mix toward
 // the surface under it.
-const PLAIN = /(?:^|\s)var\(--up-accent(?:-lighter)?\)$/;
+const PLAIN = /(?:^|\s)var\(--up-(?:accent(?:-lighter)?|content-ring)\)$/;
 
 const noOutline = (outline: string | undefined): boolean => outline === undefined || /^(none|0)$/.test(outline);
 
@@ -102,6 +104,43 @@ const darkSurfaces = [
   ...["--up-daw-bg", "--up-daw-panel", "--up-daw-btn-bg", "--up-daw-btn-bg-hover"].map((name) => studio?.get(name)),
 ].flatMap((value) => value?.match(/#[0-9a-f]{6}\b/gi) ?? []).concat(glass);
 
+// The custom properties under the default colors, from the :root blocks
+// outside any at-rule, and under main.css's dark scheme.
+const rootProps: ReadonlyMap<string, string> = new Map(
+  rules
+    .filter((r) => r.selector === ":root" && r.media === "")
+    .flatMap((r) => [...r.decls].filter(([prop]) => prop.startsWith("--"))),
+);
+const schemeProps: ReadonlyMap<string, string> = new Map([...rootProps, ...darkSchemeTokens]);
+
+// A #rrggbb color, #fff, a var() of a property in props, or a
+// color-mix() in srgb of two such values, as #rrggbb.
+function resolve(value: string, props: ReadonlyMap<string, string>): string | undefined {
+  const v = value.trim();
+  if (HEX.test(v)) return v;
+  if (/^#fff$/i.test(v)) return "#ffffff";
+  const ref = /^var\((--[\w-]+)\)$/.exec(v);
+  if (ref) {
+    const next = props.get(ref[1]!);
+    return next === undefined ? undefined : resolve(next, props);
+  }
+  const mix = /^color-mix\(in srgb,\s*(.+?)\s+([\d.]+)%,\s*(.+)\)$/.exec(v);
+  const [a, b] = mix ? [resolve(mix[1]!, props), resolve(mix[3]!, props)] : [];
+  if (!mix || !a || !b) return undefined;
+  const p = Number(mix[2]) / 100;
+  return `#${[1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * p + parseInt(b.slice(i, i + 2), 16) * (1 - p))
+    .toString(16).padStart(2, "0")).join("")}`;
+}
+
+// The surfaces under the content ring under the dark scheme: the content
+// surfaces and each stop of the sidebar and toolbar gradients.
+const schemeSurfaces = [
+  ...["--up-content-bg", "--up-content-raised", "--up-content-sunken", "--up-content-shade"]
+    .map((name) => resolve(`var(${name})`, schemeProps) ?? `${name}, which this test cannot read`),
+  ...["--up-sidebar-bg", "--up-toolbar-bg", "--up-toolbar-bg-sunken"]
+    .flatMap((name) => schemeProps.get(name)?.match(/#[0-9a-f]{6}\b/gi) ?? [`${name}, which this test cannot read`]),
+];
+
 describe("focus rings", () => {
   it("draws every accent ring 2px solid in a plain accent token", () => {
     const rings = rules
@@ -111,7 +150,7 @@ describe("focus rings", () => {
         return outline && accent.test(outline) ? [`${r.selector} ${outline}`] : [];
       });
     expect(rings.length).toBeGreaterThan(0);
-    const weak = rings.filter((ring) => !/ 2px solid var\(--up-accent(-lighter)?\)$/.test(ring));
+    const weak = rings.filter((ring) => !/ 2px solid var\(--up-(accent(-lighter)?|content-ring)\)$/.test(ring));
     expect(weak).toEqual([]);
   });
 
@@ -182,14 +221,18 @@ describe("focus rings", () => {
   });
 
   it("keeps each preset's ring shades at 3:1 or more", () => {
-    // These rings sit on the light surfaces, where --up-accent-light
-    // contrasts less than 3:1 for some presets.
+    // These rings sit on a window's content and chrome, which the dark
+    // scheme darkens, so each paints --up-content-ring.
     const onLight = [
       ".up-naut-item", ".up-post-row", ".up-project-tile", ".up-trash-tile",
       ".up-docv-thumb", ".up-docv-btn", ".up-docv-pagenum", ".up-pathbar-btn", ".up-pathbar-search-input",
       ".up-dlg-btn", ".up-icons-cell", ".up-icons-seg button",
-    ].filter((base) => !/var\(--up-accent\)/.test(ringColor(`${base}:focus-visible`, `${base}:focus`) ?? ""));
+    ].filter((base) => !/var\(--up-content-ring\)/.test(ringColor(`${base}:focus-visible`, `${base}:focus`) ?? ""));
     expect(onLight).toEqual([]);
+    // The content ring paints --up-accent on the light surfaces and the
+    // lighter shade on the dark scheme's surfaces.
+    expect([rootProps.get("--up-content-ring"), schemeProps.get("--up-content-ring")])
+      .toEqual(["var(--up-accent)", "var(--up-accent-lighter)"]);
     // These rings sit on the dark surfaces, where --up-accent-light
     // contrasts less than 3:1 for some presets.
     const onDark = [
@@ -214,6 +257,9 @@ describe("focus rings", () => {
         ...surfaces.filter((s) => contrast(color, s) < 3).map((s) => `${name}: color ${color} on ${s}`),
         // The --up-accent-lighter ring sits on the dark surfaces.
         ...darkSurfaces.filter((s) => contrast(lighter, s) < 3).map((s) => `${name}: lighter ${lighter} on ${s}`),
+        // The content ring paints --up-accent-lighter under the dark scheme.
+        ...schemeSurfaces.filter((s) => !HEX.test(s) || contrast(lighter, s) < 3)
+          .map((s) => `${name}: lighter ${lighter} on the dark scheme's ${s}`),
       ];
     });
     expect(low).toEqual([]);

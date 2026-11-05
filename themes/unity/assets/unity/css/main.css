@@ -261,7 +261,8 @@
   --up-btn-fg-disabled:#B4ADA7;
   /* The window's own chrome between its titlebar and its content: the
      pathbar and the toolbars under it, their inks, the fields they hold,
-     and the lines between panes. */
+     and the lines between panes. The dark scheme block repaints each of
+     these tokens and the content tokens together. */
   --up-toolbar-bg:linear-gradient(180deg,#F6F4F1,#E8E5E0);
   --up-toolbar-bg-sunken:linear-gradient(180deg,#EAE7E3 0%,#DCD8D3 100%);
   --up-toolbar-fg:#3A3733;
@@ -301,6 +302,10 @@
   --up-red-fg:#A02B12;
   /* The track of a Preferences toggle that is off. */
   --up-toggle-bg:#C9C5C1;
+  /* The focus ring on a window's content and chrome. It paints the
+     accent, and the dark scheme block turns it to the lighter shade,
+     which keeps 3:1 with the dark surfaces. */
+  --up-content-ring:var(--up-accent);
   /* The bead-face recipe's values, for the titlebar's window controls.
      The focused window and every dialog paint the plain faces, and an
      unfocused window paints the -inactive ones. */
@@ -325,6 +330,74 @@
   --up-accent-lighter:#FF6C3D;
   --up-accent-dark:#B23B11;
   --up-accent-darker:#922F0C;
+}
+
+/* The dark scheme: dark window bodies and dialogs. scheme.ts sets
+   data-up-scheme="dark" on <html> from the visitor's choice in the top
+   panel's toggle, or else from the system's preference. A blocking script
+   in <head> sets it before the first paint, and a site that sets
+   params.desktop.darkMode to false never loads that script. The block
+   repaints the content tokens and the window chrome's recipe tokens, and
+   the desktop around the windows keeps its colors. contrast.test.ts and
+   focus-ring.test.ts check these colors beside the light ones. Print
+   keeps the light colors, because the print rules put each post on white
+   paper. */
+@media screen{
+  :root[data-up-scheme="dark"]{
+    --up-content-bg:#1F1E1C;
+    --up-content-fg:#F2F0EE;
+    --up-content-muted:#A8A39E;
+    --up-content-line:#45423F;
+    --up-link:#8AB4F8;
+    --up-sidebar-bg:linear-gradient(180deg,#2F2E2B 0%,#292826 100%);
+    --up-btn-bg:linear-gradient(180deg,#4A4744 0%,#3B3936 100%);
+    --up-btn-bg-hover:linear-gradient(180deg,#54514D 0%,#43403D 100%);
+    --up-btn-bg-active:linear-gradient(180deg,#2B2927 0%,#33312E 100%);
+    --up-btn-border:#1E1D1B;
+    --up-btn-border-hover:#151413;
+    --up-btn-border-checked:#121110;
+    --up-btn-fg-checked:#FFFFFF;
+    --up-btn-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.03);
+    --up-btn-shadow-active:inset 0 1px 2px rgba(0,0,0,.45);
+    --up-btn-shadow-checked:inset 0 1px 2px rgba(0,0,0,.4);
+    --up-btn-bg-disabled:linear-gradient(180deg,#363431 0%,#312F2D 100%);
+    --up-btn-border-disabled:#252422;
+    --up-btn-fg-disabled:#76716B;
+    --up-toolbar-bg:linear-gradient(180deg,#3B3936,#31302D);
+    --up-toolbar-bg-sunken:linear-gradient(180deg,#2F2D2B 0%,#2A2927 100%);
+    --up-toolbar-fg:#E8E5E2;
+    --up-toolbar-fg-hover:#FFFFFF;
+    --up-toolbar-label:#CFCAC5;
+    --up-toolbar-muted:#A8A39E;
+    --up-toolbar-line:#1C1B19;
+    --up-toolbar-line-strong:#181716;
+    --up-field-border:#1E1D1B;
+    --up-field-bg-disabled:#312F2D;
+    --up-pane-line:#4A4743;
+    --up-pane-edge:#1E1D1B;
+    --up-pane-hover:rgba(255,255,255,.05);
+    --up-pane-badge:rgba(255,255,255,.08);
+    --up-content-rule:#383633;
+    --up-bevel:rgba(255,255,255,.06);
+    --up-sidebar-bevel:rgba(255,255,255,.04);
+    --up-emboss:0 1px 0 rgba(0,0,0,.55);
+    --up-project-line:#4A4641;
+    --up-project-line-soft:#3E3B37;
+    --up-project-ink:#BDB18F;
+    --up-chip-bg:linear-gradient(180deg,#46433F 0%,#3B3834 100%);
+    --up-chip-fg:#D9D4CE;
+    --up-pill-bg:rgba(255,255,255,.07);
+    --up-grid-dot:rgba(255,255,255,.05);
+    --up-avatar-bg:linear-gradient(180deg,#3A3835 0%,#33312E 100%);
+    --up-avatar-fg:#A69C8E;
+    --up-red-fg:#FF8A6E;
+    --up-toggle-bg:#5A5652;
+    --up-content-ring:var(--up-accent-lighter);
+    /* The browser draws the scrollbars and form controls in windows and
+       dialogs dark. */
+    .up-window-body,
+    .up-dialog{color-scheme:dark}
+  }
 }
 
 *{box-sizing:border-box}
@@ -451,6 +524,19 @@ svg[hidden]{ display:none; }
   position:relative;
   display:inline-flex; align-items:stretch;
   height:100%;
+}
+/* The dark mode toggle shows the sun while the windows are light and the
+   moon while they are dark. */
+.up-scheme-toggle{
+  .up-scheme-sun,
+  .up-scheme-moon{display:inline-flex}
+  .up-scheme-moon{display:none}
+  :root[data-up-scheme="dark"] & .up-scheme-sun{display:none}
+  :root[data-up-scheme="dark"] & .up-scheme-moon{display:inline-flex}
+}
+/* The toggle needs scheme.ts, so a page without JavaScript hides it. */
+@media (scripting: none){
+  .up-scheme-toggle{display:none}
 }
 
 /* ---- launcher ----------------------------------------------------------- */
@@ -936,7 +1022,7 @@ body.up-resizing *{ cursor:inherit !important; }
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
   &:focus{
-    border-color:var(--up-accent);
+    border-color:var(--up-content-ring);
     box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--up-accent-light) 22%, transparent);
   }
   &:disabled{color:var(--up-btn-fg-disabled);background:var(--up-field-bg-disabled)}
@@ -1193,7 +1279,7 @@ a.up-sponsor-card[href]:hover{
    own. The group clips its overflow, so the ring sits inside the button.
    The active button fills with the accent, so its ring turns white and
    moves 2px in, where the fill frames it on both sides. */
-.up-icons-seg button:focus-visible{ outline:2px solid var(--up-accent); outline-offset:-2px; }
+.up-icons-seg button:focus-visible{ outline:2px solid var(--up-content-ring); outline-offset:-2px; }
 .up-icons-seg button.is-active:focus-visible{ outline-color:#fff; outline-offset:-4px; }
 
 .up-icons-section{ border-top:1px solid var(--up-content-line); }
@@ -1242,11 +1328,11 @@ a.up-sponsor-card[href]:hover{
 }
 .up-icons-cell:hover{ border-color:var(--up-accent); box-shadow:0 4px 12px rgba(0,0,0,.08); }
 /* all:unset also drops the browser's focus ring. This ring sits outside
-   the tile, on the page's light background, whatever backdrop the tile
+   the tile, on the window's background, whatever backdrop the tile
    takes. */
 .up-icons-cell:focus-visible{
   border-color:var(--up-accent);
-  outline:2px solid var(--up-accent); outline-offset:1px;
+  outline:2px solid var(--up-content-ring); outline-offset:1px;
 }
 .up-icons-cell.is-copied{ border-color:var(--up-accent); }
 
@@ -1678,7 +1764,7 @@ a.up-sponsor-card[href]:hover{
   box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
   outline:none;
   &:focus{
-    border-color:var(--up-accent);
+    border-color:var(--up-content-ring);
     box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 0 0 2px color-mix(in srgb, var(--up-accent-light) 22%, transparent);
   }
   &::placeholder{color:var(--up-content-muted)}
@@ -4234,10 +4320,12 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 
 /* =========================================================================
    accessibility: focus rings on interactive surfaces. Every ring keeps a
-   contrast of at least 3:1 with the surface under it. A ring on a light
-   surface paints --up-accent, and a ring on a dark surface paints the
-   brighter --up-accent-lighter. focus-ring.test.ts checks each preset's
-   shades against white, the light surfaces, and the dark ones.
+   contrast of at least 3:1 with the surface under it. A ring on a
+   window's content or chrome paints --up-content-ring, which holds
+   --up-accent and turns to the brighter --up-accent-lighter under the
+   dark scheme. A ring on another dark surface paints --up-accent-lighter.
+   focus-ring.test.ts checks each preset's shades against white, the
+   light surfaces, and the dark ones.
    ========================================================================= */
 .up-launcher-tile:focus-visible{
   outline:2px solid var(--up-accent-lighter);
@@ -4263,7 +4351,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-project-tile:focus-visible,
 .up-trash-tile:focus-visible,
 .up-docv-thumb:focus-visible{
-  outline:2px solid var(--up-accent);
+  outline:2px solid var(--up-content-ring);
   outline-offset:-2px;
 }
 /* A selected row or tile fills with the accent, so its ring turns white and
@@ -4278,7 +4366,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
   outline-offset:-4px;
 }
 .up-dlg-btn:focus-visible{
-  outline:2px solid var(--up-accent);
+  outline:2px solid var(--up-content-ring);
   outline-offset:1px;
 }
 /* The skip link baseof.html puts first in the page. It stays off screen
@@ -4297,7 +4385,7 @@ body.up-daw-transposing, body.up-daw-transposing *{cursor:ns-resize}
 .up-pathbar-search-input:focus-visible,
 .up-docv-btn:focus-visible,
 .up-reader-up:focus-visible{
-  outline:2px solid var(--up-accent);
+  outline:2px solid var(--up-content-ring);
   outline-offset:1px;
 }
 /* The copy button sits on the code block, which a light highlight style

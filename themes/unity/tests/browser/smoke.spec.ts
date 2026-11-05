@@ -361,6 +361,39 @@ test("a dark content pair keeps the text in a page and a dialog readable", async
   }
 });
 
+test("the dark mode toggle flips the windows and keeps the choice on the next page", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await open(page, "/posts/");
+  const html = page.locator("html");
+  const toggle = page.getByRole("button", { name: "Dark mode" });
+  await expect(html).toHaveAttribute("data-up-scheme", "light");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(html).toHaveAttribute("data-up-scheme", "dark");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  const texts = {
+    "a pathbar button": page.locator(".up-pathbar-btn").first(),
+    "a post's title": page.locator(".up-post-title").first(),
+    "a sidebar row": page.locator(".up-naut-item:not(.is-active) .up-naut-item-label").first(),
+  };
+  // Some rows fade their colors, so each check polls until the fade ends.
+  for (const [name, text] of Object.entries(texts)) {
+    await expect.poll(() => lowestContrast(text), { message: name }).toBeGreaterThanOrEqual(4.5);
+  }
+  // The blocking script in <head> applies the stored choice, so the next
+  // page parses its body dark.
+  await page.goto("/about/", { waitUntil: "commit" });
+  await expect(html).toHaveAttribute("data-up-scheme", "dark");
+  await open(page, "/about/");
+  // A click back to the system's scheme clears the choice, so the page
+  // follows the system again.
+  await toggle.click();
+  await expect(html).toHaveAttribute("data-up-scheme", "light");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(html).toHaveAttribute("data-up-scheme", "dark");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+});
+
 test("a code block with a line number table draws one box with one copy button", async ({ page }) => {
   await open(page, "/posts/2024/02/welcome-to-the-desktop/");
   // Hugo puts the line numbers and the code in a pre of their own each.

@@ -86,6 +86,15 @@ describe("color-scheme", () => {
     expect(wrong).toEqual([]);
   });
 
+  it("declares the dark scheme on windows and dialogs under the dark scheme", () => {
+    // The dark scheme block darkens the content tokens, so the browser
+    // must draw the scrollbars and controls inside windows dark too.
+    const dark = [...rules]
+      .filter(([rule, decls]) => rule.includes(':root[data-up-scheme="dark"]') && decls.get("color-scheme") === "dark")
+      .map(([rule]) => rule.replace(/^.*\]\s+/, ""));
+    expect(dark).toEqual([".up-window-body, .up-dialog"]);
+  });
+
   it("draws the parts of every range slider itself", () => {
     // Chrome picks a native range's trough color from accent-color, not
     // from color-scheme, so a native slider can draw a light trough on a
