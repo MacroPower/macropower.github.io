@@ -94,6 +94,7 @@ The theme has no release yet. This section lists the changes after commit `5e05c
 
 ### Fixed
 
+- Diagrams in code blocks keep their columns. Ubuntu Mono's arrows, box drawing, block elements, and geometric shapes come from Iosevka Fixed, whose glyphs match Ubuntu Mono's width.
 - Focus rings, selected rows, and pressed toggles stay visible under Windows contrast themes and other forced colors. Each window has an edge there, and the focused window's titlebar fills with the system's highlight color.
 - Under forced colors, the top panel's menus, the context menu, the Dash, the HUD, the lock screen, and the post list's header hide the content under them. The reading progress bar shows there too, and the Studio's mute and solo buttons fill with the system's highlight color while pressed.
 - Focus rings contrast 3:1 or more with the surface under them. Selected rows, the titlebars, the launcher, the CV toolbar, the icon vault, and the copy button over a light code block each get such a ring. The CV page's document pane, the search fields of the Dash and the HUD, and the Dash's tiles and buttons get one too.

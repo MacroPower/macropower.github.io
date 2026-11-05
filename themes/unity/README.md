@@ -466,6 +466,7 @@ The bash-conformance suite skips itself where bash is absent. The suite that che
 Apache-2.0. See [LICENSE.md](https://github.com/MacroPower/macropower.github.io/blob/main/themes/unity/LICENSE.md).
 
 - [Ubuntu font family](https://design.ubuntu.com/font) 0.83 ([Ubuntu Font Licence 1.0](https://ubuntu.com/legal/font-licence)), self-hosted subsets under `assets/unity/fonts/`. The licence text is in `LICENCE.txt` and Canonical's copyright notice is in `copyright.txt` in the same directory.
+- [Iosevka](https://typeof.net/Iosevka/) 34.9.0 ([SIL Open Font License 1.1](https://openfontlicense.org/)), subsets of Iosevka Fixed under `assets/unity/fonts/` that draw Ubuntu Mono's arrows, box drawing, block elements, and geometric shapes. The license text and copyright notice are in `iosevka-LICENSE.md` in the same directory.
 - [xterm.js](https://xtermjs.org/) 6.0.0 (MIT), vendored under `assets/unity/third_party/xterm/`.
 - [pdf.js](https://mozilla.github.io/pdf.js/) 6.4.299 legacy build (Apache-2.0), vendored under `assets/unity/third_party/pdf-js/`.
 - Ubuntu and Unity are trademarks of Canonical Ltd. This theme is a fan recreation, and Canonical neither endorses it nor has any affiliation with it.
